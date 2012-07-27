@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent" android:layout_width="fill_parent"
+	android:orientation="vertical">
+	<TextView android:layout_height="wrap_content"
+		android:layout_width="fill_parent" android:textAppearance="?android:attr/textAppearanceMedium"
+		android:textColor="?android:attr/textColorPrimary" android:text="@string/setup_basics_instructions"></TextView>
+	<EditText android:layout_height="wrap_content"
+		android:hint="@string/setup_basics_address_hint" android:layout_width="fill_parent"
+		android:imeOptions="actionNext" android:inputType="textEmailAddress" android:id="@+id/setup_basics_edt_address"></EditText>
+	<EditText android:hint="@string/setup_basics_password_hint"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:inputType="textPassword" android:imeOptions="actionDone" android:id="@+id/setup_basics_edt_password"></EditText>
+		<View
+           android:layout_width="fill_parent"
+           android:layout_height="0px"
+           android:layout_weight="1"
+          />
+<RelativeLayout android:id="@+id/RelativeLayout01" android:layout_width="fill_parent" android:layout_height="54dip" android:background="@android:drawable/bottom_bar"><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/setup_basics_btn_next" android:text="@string/setup_btn_next" android:layout_alignParentRight="true" android:minWidth="100sp" android:drawableRight="@drawable/button_indicator_next" android:layout_centerVertical="true"></Button>
+</RelativeLayout>
+</LinearLayout>

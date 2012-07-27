@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+    <TextView android:layout_height="wrap_content" android:text="Room name:" android:layout_gravity="left" android:layout_width="match_parent" android:layout_margin="5dip"></TextView>
+    <EditText android:layout_height="wrap_content" android:id="@+id/muc_create_room" android:layout_width="match_parent" android:layout_margin="5dip" android:layout_gravity="right"></EditText>
+    <TextView android:layout_height="wrap_content" android:text="Nickname:" android:layout_width="match_parent" android:layout_margin="5dip"></TextView>
+    <EditText android:layout_height="wrap_content" android:id="@+id/muc_create_nick" android:layout_width="match_parent" android:layout_margin="5dip" android:layout_gravity="right">
+        <requestFocus></requestFocus>
+    </EditText>
+    <Button android:layout_height="wrap_content" android:text="Create" android:layout_width="match_parent" android:id="@+id/muc_create_button"></Button>
+    
+</LinearLayout>

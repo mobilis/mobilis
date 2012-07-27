@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent" android:layout_width="fill_parent"
+	android:orientation="vertical">
+	<LinearLayout android:layout_height="fill_parent"
+		android:layout_width="fill_parent" android:orientation="vertical"
+		android:gravity="bottom" android:background="#ff000000">
+		<ListView android:id="@+id/cs_list_history"
+			android:layout_height="fill_parent" android:layout_width="fill_parent"
+			android:layout_weight="1.0" android:stackFromBottom="true" android:transcriptMode="alwaysScroll" android:scrollbarAlwaysDrawVerticalTrack="true" android:scrollbarStyle="insideInset" android:fadingEdge="none" android:layout_marginBottom="1dip" android:visibility="visible"></ListView>
+		<ScrollView android:layout_height="wrap_content"
+			android:layout_width="fill_parent">
+			<LinearLayout android:layout_height="fill_parent"
+				android:layout_width="fill_parent" android:orientation="vertical" android:paddingBottom="5dip" android:paddingLeft="5dip" android:paddingRight="5dip" android:paddingTop="5dip">
+				<LinearLayout android:layout_height="wrap_content"
+					android:id="@+id/cs_lyt_bottom" android:layout_width="fill_parent">
+					<RelativeLayout android:layout_height="wrap_content"
+						android:id="@+id/cs_lyt_editor" android:layout_weight="1.0"
+						android:layout_width="0dip" android:addStatesFromChildren="true">
+						<EditText android:layout_height="wrap_content" android:id="@+id/cs_edt_editor"
+							android:layout_width="fill_parent" android:nextFocusRight="@+id/cs_btn_send" android:hint="@string/cs_edt_editor_hint" android:maxLines="4" android:inputType="textMultiLine"></EditText>
+					</RelativeLayout>
+					<Button android:layout_width="wrap_content"
+						android:id="@+id/cs_btn_send"
+						android:text="@string/cs_btn_send" android:layout_weight="0.0" android:layout_marginLeft="5dip" android:layout_height="fill_parent" style="?android:attr/buttonStyleSmall" android:layout_gravity="center_vertical" android:nextFocusLeft="@+id/cs_edt_editor"></Button>
+				</LinearLayout>
+			</LinearLayout>
+		</ScrollView>
+	</LinearLayout>
+</LinearLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent" android:layout_width="fill_parent">
+	<LinearLayout android:layout_height="fill_parent"
+		android:layout_width="fill_parent" android:orientation="vertical">
+		<TextView android:layout_height="wrap_content"
+			android:layout_width="fill_parent" android:textSize="20sp"
+			android:textColor="?android:attr/textColorPrimary" android:id="@+id/setup_txt_welcome"
+			android:text="@string/setup_welcome"></TextView>
+		<View android:layout_width="fill_parent" android:layout_height="0px"
+			android:layout_weight="1"></View>
+		<RelativeLayout android:layout_width="fill_parent"
+			android:layout_height="54dip" android:background="@android:drawable/bottom_bar">
+			<Button android:layout_centerVertical="true"
+				android:layout_height="wrap_content" android:layout_width="wrap_content"
+				android:id="@+id/setup_btn_manual"
+				android:text="@string/setup_btn_manual" android:minWidth="100sp"
+				android:layout_alignParentLeft="true"></Button>
+			<Button android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:minWidth="100sp"
+				android:drawableRight="@drawable/button_indicator_next"
+				android:layout_alignParentRight="true"
+				android:layout_centerVertical="true" android:id="@+id/setup_btn_next"
+				android:text="@string/setup_btn_next"></Button>
+		
+</RelativeLayout>
+	</LinearLayout>
+</FrameLayout>

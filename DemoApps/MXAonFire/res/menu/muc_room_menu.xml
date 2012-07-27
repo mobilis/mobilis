@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="Change nick" android:id="@+id/menu_item_muc_change_nick"></item>
+    <item android:title="Invite" android:id="@+id/menu_item_muc_invite"></item>
+    <item android:title="Kick" android:id="@+id/menu_item_muc_kick"></item>
+    
+    <item android:title="Leave" android:id="@+id/menu_item_muc_leave"></item>
+</menu>

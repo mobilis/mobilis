@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="ISO-8859-2"?>
+
+<project name="MobilisServer" default="release" basedir=".">
+
+	<!--
+		- some variables declaring important directories and names for the
+		tasks
+	-->
+	<target name="init">
+
+		<property name="project.filename" value="MobilisServer" />
+		<property name="main.class" value="de.tudresden.inf.rn.mobilis.server.MobilisServer" />
+		<property name="manifest" value="MANIFEST.MF" />			<!-- manifest-file's name -->
+		<property name="src.dir" value="src" />					<!-- directory containing the sources -->
+		<property name="build.dir" value="bin" />					<!-- build directory of the .classes -->
+		<property name="dist.dir" value="release" />				<!-- build directory of the .classes -->
+		<property name="build.jar" value="${dist.dir}/${project.filename}.jar" />	<!-- jar-file's name -->
+		<property name="resources.dir" value="res" />					<!-- directory containing images ... -->
+		<property name="lib.dir" value="libs" />					<!-- directory of libraries -->
+
+		<property name="javadoc.dir" value="doc" />				<!-- directory of the javadocs -->
+		<property name="javadoc.zip" value="${project.filename}-javadoc.zip" />			<!-- name of javadoc-archive -->
+		<property name="javadoc.pkg" value="de.*" /> 		<!-- packages to consider for javadocs, separated by commas -->
+		<property name="javadoc.head" value="Mobilis Server - Documentation" />
+		<property name="javadoc.title" value="Mobilis Server - Documentation" />
+
+		<!--
+			<path id="classpath"> <fileset dir="${lib.dir}" includes="**/*.jar"/>
+			<pathelement location="${basedir}/${build.dir}"/> </path>
+		-->
+
+		<!-- Add all the jar files in lib folder to the class path -->
+		<path id="classpath">
+			<fileset dir="${lib.dir}" includes="**/*.jar" />
+		</path>
+
+	</target>
+
+	<!--
+	 - Delete old build and dist directories
+	-->
+	<target name="clear" description="Delete old build and dist directories">
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<!--
+	 - Delete old javadoc directory
+	-->
+	<target name="cleardoc" description="Delete old javadoc directory">
+		<delete dir="${javadoc.dir}" />
+	</target>
+
+	<!--
+		- compiles the project into build.dir and copies all .properties files
+		- and other resources (images, ...) into the build directory
+	-->
+	<target name="compile" depends="init,clear">
+		<mkdir dir="${build.dir}" />
+		<javac srcdir="${src.dir}/" destdir="${build.dir}" classpathref="classpath">
+			<include name="**/*.java" />
+			<exclude name="**/package.html" />
+		</javac>
+		<copy todir="${build.dir}">
+			<fileset dir="${src.dir}" includes="**/*.properties" />
+			<fileset dir="${resources.dir}" />
+		</copy>
+	</target>
+
+
+	<!--
+		- creates an executable jar-file. This is done via firstly compiling
+		the - project, decompressing all libs in lib.dir into build.dir
+		afterwards and - finally compressing all files in build.dir into
+		build.jar.
+	-->
+	<target depends="compile" name="release">
+
+		<unjar dest="${build.dir}">
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+			</fileset>
+		</unjar>
+
+		<mkdir dir="${dist.dir}" />
+		<jar compress="true" destfile="${build.jar}">
+			<fileset dir="${build.dir}" />
+			<manifest>
+				<attribute name="Main-Class" value="${main.class}" />
+				<attribute name="Class-Path" value="${classpath}" />
+			</manifest>
+		</jar>
+
+	</target>
+
+	<!--
+		- builds the javadoc-api of all packages in javadoc.pkg into
+		javadoc.dir. - furthermore it creates a compressed version of the
+		api-specification in - javadoc.zip
+	-->
+	<target name="javadoc" depends="init,cleardoc">
+		<mkdir dir="${javadoc.dir}" />
+		<javadoc packagenames="${javadoc.pkg}" header="${javadoc.head}"
+			windowtitle="${javadoc.title}" sourcepath="${src.dir}" classpathref="classpath"
+			destdir="${javadoc.dir}" author="true" version="false" use="false">
+			<!-- additionalparam="-linksource"> -->
+			<link href="http://java.sun.com/javase/6/docs/api/" />
+		</javadoc>
+	</target>
+</project>
+

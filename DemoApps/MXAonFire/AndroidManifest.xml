@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="de.inf.tudresden.rn.mobilis.mxaonfire"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <uses-sdk android:minSdkVersion="8" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" ></uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" ></uses-permission>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
+        <activity android:name=".activities.MXAonFireActivity"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+		<activity android:name=".activities.RosterActivity" android:label="@string/app_name"></activity>
+		<activity android:name=".activities.ChatActivity" android:label="@string/app_name"></activity>
+		<activity android:name=".activities.FileTransferActivity" android:label="@string/app_name"></activity>
+		<activity android:name=".activities.FileChooserActivity" android:label="@string/app_name"></activity>
+		<activity android:name=".activities.FileReceiveActivity" android:label="@string/app_name"></activity>
+		<activity android:name=".activities.ServiceDiscoveryActivity" android:label="@string/app_name"></activity>
+		<activity android:name=".activities.MultiUserChatActivity" android:label="@string/app_name"></activity>
+		<activity android:name=".activities.MUCRoomActivity" 
+		android:label="@string/app_name" android:windowSoftInputMode="stateHidden"></activity>
+		<activity android:name=".activities.PubSubActivity" android:label="@string/app_name"></activity>
+
+	 	<service android:name=".service.ListeningFileTransferService"></service>
+		<service android:name=".service.ListeningMUCService"></service>
+		<service android:name=".service.ListeningSubscribeService"></service>
+    </application>
+</manifest>

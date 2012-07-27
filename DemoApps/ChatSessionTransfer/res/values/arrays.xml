@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="transfer_options">
+        <item>Manual Selection</item>
+        <item>Scan QR Code</item>
+    </string-array>	
+
+</resources>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent" android:layout_width="fill_parent">
+	<LinearLayout android:layout_height="fill_parent"
+		android:layout_width="fill_parent" android:orientation="vertical">
+		<TextView android:layout_height="wrap_content"
+			android:layout_width="fill_parent" android:textSize="20sp"
+			android:textColor="?android:attr/textColorPrimary" android:id="@+id/setup_complete_txt_conclusion" android:text="@string/setup_complete_conclusion"></TextView>
+		<View android:layout_width="fill_parent" android:layout_height="0px"
+			android:layout_weight="1"></View>
+		<RelativeLayout android:layout_width="fill_parent"
+			android:layout_height="54dip" android:background="@android:drawable/bottom_bar">
+			
+			<Button android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:minWidth="100sp"
+				android:layout_alignParentRight="true"
+				android:layout_centerVertical="true" android:text="@string/setup_btn_close" android:id="@+id/setup_complete_btn_close"></Button>
+		
+</RelativeLayout>
+	</LinearLayout>
+</FrameLayout>

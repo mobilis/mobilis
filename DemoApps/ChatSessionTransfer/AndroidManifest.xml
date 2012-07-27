@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="de.tudresden.inf.rn.mobilis.migration.chat"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="15"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name" >
+        <activity
+            android:name=".activities.ContactsActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.ChatActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="de.tudresden.inf.rn.mobilis.intent.action.send" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name=".util.TransferReceiver" >
+            <intent-filter android:priority="2" >
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="de.tudresden.inf.rn.mobilis.chatmigration" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://mobilis.inf.tu-dresden.de/xmpp/"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://mobilis.inf.tu-dresden.de/xmpp/">
+	<xs:attribute name="type" type="xs:string" default="type" />
+	<xs:attribute name="ident" type="xs:string" default="identity" />
+	<xs:attribute name="errortype" type="xs:string" default="wait" />
+	<xs:attribute name="errortext" type="xs:string" default="Error detected" />
+	<xs:attribute name="errorcondition" type="xs:string"
+		default="internal-server-error" />
+</xs:schema>

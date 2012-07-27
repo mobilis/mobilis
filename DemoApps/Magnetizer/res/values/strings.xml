@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="hello">Hello World, MainView!</string>
+	<string name="app_name">Magnetizer</string>
+	<string name="main_btn_connect">Connect to XMPP</string>
+	<string name="main_btn_friends">Show Friends</string>
+	<string name="main_btn_preferences">XMPP Settings</string>
+	<string name="cs_btn_send">Send</string>
+	<string name="cs_edt_editor_hint">Type to compose</string>
+<string name="main_btn_sendfile">Select friend to send a file</string>
+</resources>

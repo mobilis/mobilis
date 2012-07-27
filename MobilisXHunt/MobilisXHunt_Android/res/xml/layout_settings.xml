@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android">	
+  
+	<PreferenceCategory
+        android:title="General">
+                
+		<EditTextPreference
+			android:key="@string/bundle_key_settings_username"
+			android:title="@string/settings_edit_title_username"
+			android:dialogTitle="@string/settings_dialog_title_username"
+			android:summary="@string/settings_summary_username" />
+            
+    </PreferenceCategory>
+    
+    <PreferenceCategory
+        android:title="XMPP" />
+        
+      	<EditTextPreference
+			android:key="@string/bundle_key_settings_serverjid"
+			android:title="@string/settings_edit_title_serverjid"
+			android:dialogTitle="@string/settings_dialog_title_serverjid"
+			android:summary="@string/settings_summary_serverjid" />
+    
+</PreferenceScreen>

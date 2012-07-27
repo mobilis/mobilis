@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<msdl:description targetNamespace="http://mobilis.inf.tu-dresden.de/TreasureHunt"
+	xmlns:msdl="http://mobilis.inf.tu-dresden.de/msdl/" xmlns:xmpp="http://mobilis.inf.tu-dresden.de/xmpp/"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://mobilis.inf.tu-dresden.de/TreasureHunt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<msdl:types>
+		<xs:schema targetNamespace="http://mobilis.inf.tu-dresden.de/TreasureHunt">
+			<xs:element name="PickUpTreasureRequest">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TreasureLocation" type="tns:Location" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="PickUpTreasureResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TreasureValue" type="xs:long" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetLocationRequest" />
+			<xs:element name="GetLocationResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="PlayerLocation" type="tns:Location" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TreasureCollected">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="PlayerName" type="xs:string" />
+						<xs:element name="TreasureLocation" type="tns:Location" />
+						<xs:element name="TreasureValue" type="xs:long" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="PickUpTreasureFault">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ErrorCode" type="xs:int" />
+						<xs:element name="Timestamp" type="xs:long" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:complexType name="Location">
+				<xs:sequence>
+					<xs:element name="Latitude" type="xs:long" />
+					<xs:element name="Longitude" type="xs:long" />
+				</xs:sequence>
+			</xs:complexType>
+		</xs:schema>
+	</msdl:types>
+	<msdl:interface name="THInterface">
+		<msdl:fault name="PickUpFault" element="tns:PickUpTreasureFault" />
+		<msdl:fault name="GetLocationFault" />
+		<msdl:operation name="PickUpTreasure" pattern="http://www.w3.org/ns/wsdl/in-out">
+			<msdl:input element="tns:PickUpTreasureRequest" />
+			<msdl:output element="tns:PickUpTreasureResponse" />
+			<msdl:outfault ref="tns:PickUpFault" />
+		</msdl:operation>
+		<msdl:operation name="GetLocation" pattern="http://www.w3.org/ns/wsdl/out-in">
+			<msdl:input element="tns:GetLocationResponse" />
+			<msdl:output element="tns:GetLocationRequest" />
+			<msdl:infault ref="tns:GetLocationFault" />
+		</msdl:operation>
+		<msdl:operation name="TreasureCollected"
+			pattern="http://www.w3.org/ns/wsdl/out-only">
+			<msdl:output element="tns:TreasureCollected" />
+		</msdl:operation>
+	</msdl:interface>
+	<msdl:binding name="THBinding" interface="tns:THInterface"
+		type="http://mobilis.inf.tu-dresden.de/xmpp/">
+		<msdl:fault ref="tns:PickUpFault" xmpp:errortype="modify"
+			xmpp:errorcondition="not-acceptable" xmpp:errortext="This Treasure is not valid" />
+		<msdl:fault ref="tns:GetLocationFault" xmpp:errortype="wait"
+			xmpp:errorcondition="resource-constraint" xmpp:errortext="Waiting for Location" />
+		<msdl:operation ref="tns:PickUpTreasure" xmpp:ident="treasurehunt:iq:pickuptreasure">
+			<msdl:input xmpp:type="set" />
+			<msdl:output xmpp:type="result" />
+			<msdl:outfault ref="tns:PickUpFault" />
+		</msdl:operation>
+		<msdl:operation ref="tns:GetLocation" xmpp:ident="treasurehunt:iq:getlocation">
+			<msdl:input xmpp:type="result" />
+			<msdl:output xmpp:type="get" />
+			<msdl:infault ref="tns:GetLocationFault" />
+		</msdl:operation>
+		<msdl:operation ref="tns:TreasureCollected" xmpp:ident="treasurehunt:iq:treasurecollected">
+			<msdl:output xmpp:type="chat" />
+		</msdl:operation>
+	</msdl:binding>
+	<msdl:service name="TreasureHunt" interface="tns:THInterface"
+		ident="http://mobilis.inf.tu-dresden.de#services/TreasureHuntService"
+		version="1">
+		<msdl:endpoint name="THEndpoint" binding="tns:THBinding" />
+		<msdl:dependencies />
+	</msdl:service>
+</msdl:description>

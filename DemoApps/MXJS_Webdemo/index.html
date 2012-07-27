@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mobilis Context</title>
+	
+    <link href="css/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <link href="css/mobilis.css" rel="stylesheet" type="text/css"/> 
+    
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+  	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
+  	
+  	<script src="../MXJS/js/bosh/strophe.js"></script>
+    <script src="../MXJS/js/mobilis/mobilis.js"></script>
+    <script src="../MXJS/js/mobilis/mobilis.core.js"></script>
+    
+	<script src="js/demo.js"></script> <!-- Application logic -->
+	
+  </head>
+
+	<body>
+		<div id="tabs">
+			<ul>
+				<li><a href="#tabs-1">Connection</a></li>
+				<li><a href="#tabs-2">Services</a></li>
+				<li><a href="#tabs-3">Roster</a></li>
+				<li><a href="#tabs-4">Publish</a></li>
+				<li><a href="#tabs-5">Subscribe</a></li>
+			</ul>
+			<div id="tabs-1">
+				<div id="status"><img id='status_img' src='img/user-clear-16x16.gif'/>disconnected</div>
+				<button id="disconnect">Disconnect</button>
+				<button id="go_online">Go online!</button>
+				<button id="go_offline">Go offline!</button>					
+			</div>
+			<div id="tabs-2">
+				<button id="serviceDisco">Discover Mobilis Services</button>
+				<div id="mobilisService-list"></div>		
+			</div>
+			<div id="tabs-3">
+				<div id="roster"><ul></ul></div>
+			</div>
+			<div id="tabs-4">
+				<form> 
+					Path: <input id="pub_path" type="text" /> <br/>
+					Key: <input id="pub_key" type="text" /> <br/>
+					Value: <input id="pub_value" type="text" /> <br/>
+					<button id="publish">Publish</button>
+					<div id="pubsuc"><ul></ul></div>
+					<div id="auth"><ul></ul></div>
+				</form>					
+			</div>
+			<div id="tabs-5">
+				<form>
+					Node: <input id="sub_node" type="text" /> <br/>
+					JID: <input id="sub_jid" type="text" /> <br/>
+					<button id="subscribe">Subscribe</button>
+					<button id="unsubscribe">Unsubscribe</button>
+				</form>	
+				<div id="subnode"><ul></ul></div>
+				<div id="sub"><ul></ul></div>
+			</div>	
+
+		</div>	
+		<!-- login dialog -->
+    <div id='login_dialog' class='hidden'>
+      <label>JID:</label><br /><input type='text' id='jid'>
+      <label>Password:</label><br /><input type='password' id='password'>
+    </div>
+	</body>	
+</html>

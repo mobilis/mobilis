@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<project name="Ant-Test" default="main" basedir=".">
+
+	<!-- Directory variables -->
+	<property name="src.dir" location="src" />
+	<!-- none: ""; separate entrylist by ':' -->
+	<property name="src.dirs.extern" value="basedir/../../MobilisServer/src:basedir/../../MobilisXMPP/src" />
+	<property name="build.dir" location="build" />
+	<property name="dist.dir" location="dist" />
+	<property name="lib.dir" location="lib" />
+	<property name="res.dir" value="resource" />
+
+	<!-- Meta information variables -->
+	<property name="service.package" value="service.package.namespace" />
+	<property name="msdl.filepath" value="META-INF" />
+	<property name="service.name" value="MyServiceClassname" />
+	<property name="msdl.filename" value="MyMsdlFile.msdl" />
+
+	<!-- Jar archive variables -->
+	<property name="jar.filename" value="MyPackedServiceName.jar" />
+	<property name="root.packages" value="service/package/namespace/**/*.*" />
+	<!-- all: "**/*.jar"; none: "none"; separate entrylist by ',' -->
+	<property name="required.libraries" value="none" />
+	<!-- all: "**/*.*"; none: "none"; separate entrylist by ',' -->
+	<property name="required.resources" value="none" />
+	
+
+
+	<!-- Create build and dist directory-->
+	<target name="makedir">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${dist.dir}" />
+	</target>
+
+	<!-- Create classpath for libraries to compile binaries -->
+	<path id="build.classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+		
+		<!-- Add external library dirs of all projects in ${src.dirs.extern} -->
+		<fileset dir="basedir/../../MobilisServer/libs" includes="**/*.jar" />
+		<fileset dir="basedir/../../MobilisXMPP/libs" includes="**/*.jar" />
+	</path>
+
+	<!-- Create classpath for libraries on jar-packing -->
+	<path id="jar.classpath">
+		<fileset dir="${lib.dir}" includes="${required.libraries}" />
+	</path>
+
+	<!-- Convert classpath to one mf attribute value -->
+	<pathconvert property="mf.classpath" pathsep=" ">
+		<path refid="jar.classpath" />
+		<mapper>
+			<chainedmapper>
+				<flattenmapper />
+				<globmapper from="*.jar" to="lib/*.jar" />
+			</chainedmapper>
+		</mapper>
+	</pathconvert>
+
+	<!-- Compile java code -->
+	<target name="compile" depends="makedir">
+		<javac srcdir="${src.dir}:${src.dirs.extern}" destdir="${build.dir}" 
+			classpathref="build.classpath" debug="on" nowarn="on" failonerror="false"
+			encoding="ISO-8859-1">
+		</javac>
+
+	</target>
+
+	<!--Create jar archive (delete in "<fileset dir="${src.dir}"/>" the attribute "${root.packages}"
+		 if source files shouldn't be included in jar) -->
+	<target name="jar" depends="compile">
+		<jar jarfile="${dist.dir}\${jar.filename}">
+			<fileset dir="${build.dir}" includes="${root.packages}" />
+			<fileset dir="${src.dir}" includes="${root.packages},${msdl.filepath}/${msdl.filename}" />
+			<fileset dir="${basedir}" includes="${res.dir}/${required.resources}" />
+
+			<zipgroupfileset dir="${lib.dir}" includes="${required.libraries}" excludes="" />
+
+			<manifest>
+				<attribute name="Class-Path" value="${mf.classpath}" />
+
+				<attribute name="Service-Class" value="${service.package}.${service.name}" />
+				<attribute name="MSDL-File" value="${msdl.filepath}/${msdl.filename}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- Clean up temporary files -->
+	<target name="cleanup" depends="jar">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<!-- Main entry point -->
+	<target name="main" depends="compile, jar, cleanup" />
+
+</project>
