@@ -1,5 +1,7 @@
 *.class
 
 # Package Files #
+*/bin
+*/gen
 *.war
 *.ear
