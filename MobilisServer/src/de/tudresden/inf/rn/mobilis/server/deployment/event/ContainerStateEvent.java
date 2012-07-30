@@ -14,7 +14,7 @@ public class ContainerStateEvent extends EventObject {
 	private static final long serialVersionUID = 273027913415309893L;
 
 	/** The namespace of the ServiceContainer. */
-	private String namespace;
+	private String namespace, mychange;
 
 	/** The version of the ServiceContainer. */
 	private int version;
