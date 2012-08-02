@@ -10,6 +10,12 @@
 			android:title="@string/settings_edit_title_username"
 			android:dialogTitle="@string/settings_dialog_title_username"
 			android:summary="@string/settings_summary_username" />
+		
+		<CheckBoxPreference
+		    android:key="@string/bundle_key_settings_staticmode"
+		    android:title="@string/settings_edit_title_staticmode"
+		    android:summary="@string/settings_summary_staticmode"
+		    android:defaultValue="false" />
             
     </PreferenceCategory>
     

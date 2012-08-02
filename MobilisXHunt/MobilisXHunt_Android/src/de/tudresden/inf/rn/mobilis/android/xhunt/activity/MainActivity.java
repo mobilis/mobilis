@@ -120,13 +120,18 @@ public class MainActivity extends Activity {
 			mServiceConnector.getXHuntService().setGameState(new GameStateMain());
 			mMxaProxy = mServiceConnector.getXHuntService().getMXAProxy();	
 			
-			//TODO: Switch static mode off
-			mMxaProxy.setStaticMode(true);
-			mServiceConnector.getXHuntService().getGPSProxy().setLocation(51033880, 13783272);
+			
+			boolean staticMode = mServiceConnector.getXHuntService().getSharedPrefHelper()
+					.getValueAsBool(getResources().getString(R.string.bundle_key_settings_staticmode));
+			if(staticMode) {
+				mMxaProxy.setStaticMode(true);
+				mServiceConnector.getXHuntService().getGPSProxy().setLocation(51033880, 13783272);
+			} else {
+				mMxaProxy.setStaticMode(false);
+			}
 		}
 	};
-	
-	
+		
 	/**
 	 * Bind XHuntService using the mXHuntServiceBoundHandler and start local XHuntService.
 	 */

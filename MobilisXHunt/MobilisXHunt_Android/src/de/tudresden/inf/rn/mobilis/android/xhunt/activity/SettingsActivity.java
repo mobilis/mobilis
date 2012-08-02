@@ -23,8 +23,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -38,11 +41,17 @@ import de.tudresden.inf.rn.mobilis.mxa.ConstMXA;
 public class SettingsActivity extends PreferenceActivity 
 	/*implements OnSharedPreferenceChangeListener*/ {
 	
+	/** The Constant TAG for logging. */
+	private static final String TAG = "SettingsActivity";
+	
 	/** The EditText for the servers jid. */
 	private EditTextPreference mEditServerJID;
 	
 	/** The EditText for the nickname. */
 	private EditTextPreference mEditNickname;	
+	
+	/** The CheckBox for switching between Static Mode/GPS Mode. */
+	private CheckBoxPreference mSetStaticMode;
 	
 	/** The Button to start the MXA preferences. */
 	private Button btnMxaSettings;
@@ -78,7 +87,6 @@ public class SettingsActivity extends PreferenceActivity
 	@Override
 	public void finish() {
 		mServiceConnector.doUnbindXHuntService();
-		
 		super.finish();
 	}
 	
@@ -99,6 +107,15 @@ public class SettingsActivity extends PreferenceActivity
 	private String getKeyServerJid(){
 		return getResources().getString(R.string.bundle_key_settings_serverjid);
 	}
+	
+	/**
+	 * Gets the shared preference key for the static mode.
+	 * 
+	 * @return the key of the static mode
+	 */
+	private String getKeyStaticMode() {
+		return getResources().getString(R.string.bundle_key_settings_staticmode);
+	}
 
 	/**
 	 * Gets the shared preference value of a key.
@@ -110,7 +127,7 @@ public class SettingsActivity extends PreferenceActivity
 		return mServiceConnector.getXHuntService().getSharedPrefHelper()
 			.getValue(key);
 	}
-
+	
 	
 	/**
 	 * Inits the components.
@@ -121,6 +138,24 @@ public class SettingsActivity extends PreferenceActivity
 		
 		mEditServerJID = (EditTextPreference)getPreferenceScreen().findPreference(
 				getKeyServerJid());
+		
+		
+		mSetStaticMode = (CheckBoxPreference)getPreferenceScreen().findPreference(getKeyStaticMode());
+		mSetStaticMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean staticMode = (Boolean)newValue;
+				Log.v(TAG, "User set StaticMode to " + staticMode);	
+				if(staticMode) {
+					mServiceConnector.getXHuntService().getMXAProxy().setStaticMode(true);
+					mServiceConnector.getXHuntService().getGPSProxy().setLocation(51033880, 13783272);
+				} else {
+					mServiceConnector.getXHuntService().getMXAProxy().setStaticMode(false);
+				}
+				return true;
+			}
+		});
+			
 		
 		btnMxaSettings = (Button)findViewById(R.id.settings_btn_mxa_preferences);
 		btnMxaSettings.setOnClickListener(new OnClickListener() {
@@ -141,7 +176,6 @@ public class SettingsActivity extends PreferenceActivity
 	 */
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       
 		bindXHuntService();
     }
 
@@ -151,9 +185,9 @@ public class SettingsActivity extends PreferenceActivity
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		updateSummaries();
-		
 		super.onWindowFocusChanged(hasFocus);
 	}
+	
 	/**
 	 * Update summaries of all preference entries.
 	 * A summary displays the current value of a preference.
