@@ -20,6 +20,8 @@
 package de.tudresden.inf.rn.mobilis.android.xhunt.helper;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import android.content.Context;
 import android.os.Environment;
@@ -89,7 +91,9 @@ public class Tools {
 			if(!logFolder.isDirectory())
 				logFolder.mkdir();
 			
-			File logFile = new File(logFolder.getAbsoluteFile(), System.currentTimeMillis() + ".log");
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+			File logFile = new File(logFolder.getAbsoluteFile(), formatter.format(new Date()) + ".log");
+			//File logFile = new File(logFolder.getAbsoluteFile(), System.currentTimeMillis() + ".log");
 			
 			String[] cmd = { "/system/bin/logcat", "-v", "time", "-f", logFile.getAbsolutePath() };
 			ProcessBuilder procBuilder = new ProcessBuilder(cmd);
