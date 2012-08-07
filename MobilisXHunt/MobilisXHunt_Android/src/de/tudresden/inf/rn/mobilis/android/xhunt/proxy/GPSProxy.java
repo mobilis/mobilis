@@ -35,6 +35,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 
@@ -186,7 +187,7 @@ public class GPSProxy {
 	/**
 	 * Start GPS.
 	 */
-	public void startGps(){		
+	public void startGps(){
 		if(!mIsGpsRunning){			
 			if(mLocationListener != null){
 				mLocationManager.removeUpdates(mLocationListener);
