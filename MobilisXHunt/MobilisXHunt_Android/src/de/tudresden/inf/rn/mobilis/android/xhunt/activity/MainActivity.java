@@ -129,6 +129,13 @@ public class MainActivity extends Activity {
 			} else {
 				mMxaProxy.setStaticMode(false);
 			}
+			
+			boolean logging = mServiceConnector.getXHuntService().getSharedPrefHelper()
+					.getValueAsBool(getResources().getString(R.string.bundle_key_settings_logging));
+			if(logging)
+				mServiceConnector.getXHuntService().getTools().writeLogToFile();
+			else
+				mServiceConnector.getXHuntService().getTools().stopWritingLogToFile();
 		}
 	};
 		

@@ -19,7 +19,10 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.android.xhunt.helper;
 
+import java.io.File;
+
 import android.content.Context;
+import android.os.Environment;
 import android.os.Vibrator;
 
 import com.google.android.maps.GeoPoint;
@@ -31,6 +34,9 @@ public class Tools {
 	
 	/** The context of the application. */
 	private Context mContext;
+	
+	/** The process which continuously writes the logcat output into a file. */
+	private Process logProcess;
 
 	/**
 	 * Instantiates a new Tool class.
@@ -67,5 +73,40 @@ public class Tools {
     	
     	// -1 prevent vibration from repeating the pattern
     	vibrator.vibrate(vibrate, -1);
+	}
+	
+	/**
+	 * Reads '/system/bin/logcat' and writes it output to '\Memory Stick\xhunt\logcat\' until
+	 * stopWritingLogToFile() is called.
+	 */
+	public void writeLogToFile() {
+		try {
+			File sdFolder = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(), "xhunt");
+			if(!sdFolder.isDirectory())
+				sdFolder.mkdir();
+			
+			File logFolder = new File(sdFolder.getAbsoluteFile(), "logcat");
+			if(!logFolder.isDirectory())
+				logFolder.mkdir();
+			
+			File logFile = new File(logFolder.getAbsoluteFile(), System.currentTimeMillis() + ".log");
+			
+			String[] cmd = { "/system/bin/logcat", "-v", "time", "-f", logFile.getAbsolutePath() };
+			ProcessBuilder procBuilder = new ProcessBuilder(cmd);
+			if(logProcess != null)
+				logProcess.destroy();
+			logProcess = procBuilder.start();
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}	
+	}
+	
+	/**
+	 * Stops writeLogToFile().
+	 */
+	public void stopWritingLogToFile() {
+		if(logProcess != null)
+			logProcess.destroy();
 	}
 }

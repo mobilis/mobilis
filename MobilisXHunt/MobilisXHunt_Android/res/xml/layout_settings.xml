@@ -3,29 +3,35 @@
 	xmlns:android="http://schemas.android.com/apk/res/android">	
   
 	<PreferenceCategory
-        android:title="General">
-                
+        android:title="General">               
 		<EditTextPreference
 			android:key="@string/bundle_key_settings_username"
 			android:title="@string/settings_edit_title_username"
 			android:dialogTitle="@string/settings_dialog_title_username"
-			android:summary="@string/settings_summary_username" />
-		
-		<CheckBoxPreference
-		    android:key="@string/bundle_key_settings_staticmode"
-		    android:title="@string/settings_edit_title_staticmode"
-		    android:summary="@string/settings_summary_staticmode"
-		    android:defaultValue="false" />
-            
+			android:summary="@string/settings_summary_username" />       
     </PreferenceCategory>
     
+	<PreferenceCategory
+        android:title="Debugging">
+      	    <CheckBoxPreference
+      	    	android:key="@string/bundle_key_settings_staticmode"
+		   		android:title="@string/settings_edit_title_staticmode"
+		    	android:summary="@string/settings_summary_staticmode"
+		    	android:defaultValue="false" />
+      	    <CheckBoxPreference 
+      	        android:key="@string/bundle_key_settings_logging"
+      	    	android:title="@string/settings_edit_title_logging"
+      	    	android:summary="@string/settings_summary_logging"
+      	    	android:defaultValue="false" />
+      	</PreferenceCategory>
+    
     <PreferenceCategory
-        android:title="XMPP" />
-        
+        android:title="XMPP">      
       	<EditTextPreference
 			android:key="@string/bundle_key_settings_serverjid"
 			android:title="@string/settings_edit_title_serverjid"
 			android:dialogTitle="@string/settings_dialog_title_serverjid"
 			android:summary="@string/settings_summary_serverjid" />
+      	</PreferenceCategory>
     
 </PreferenceScreen>

@@ -53,6 +53,9 @@ public class SettingsActivity extends PreferenceActivity
 	/** The CheckBox for switching between Static Mode/GPS Mode. */
 	private CheckBoxPreference mSetStaticMode;
 	
+	/** The CheckBox for activating/deactivating logging. */
+	private CheckBoxPreference mSetLogging;
+	
 	/** The Button to start the MXA preferences. */
 	private Button btnMxaSettings;
 	
@@ -116,6 +119,15 @@ public class SettingsActivity extends PreferenceActivity
 	private String getKeyStaticMode() {
 		return getResources().getString(R.string.bundle_key_settings_staticmode);
 	}
+	
+	/**
+	 * Gets the shared preference key for the checkbox.
+	 * 
+	 * @return the key of the logging checkbox
+	 */
+	private String getKeyLogging() {
+		return getResources().getString(R.string.bundle_key_settings_logging);
+	}
 
 	/**
 	 * Gets the shared preference value of a key.
@@ -151,6 +163,22 @@ public class SettingsActivity extends PreferenceActivity
 					mServiceConnector.getXHuntService().getGPSProxy().setLocation(51033880, 13783272);
 				} else {
 					mServiceConnector.getXHuntService().getMXAProxy().setStaticMode(false);
+				}
+				return true;
+			}
+		});
+		
+		
+		mSetLogging = (CheckBoxPreference)getPreferenceScreen().findPreference(getKeyLogging());
+		mSetLogging.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean logging = (Boolean) newValue;
+				Log.v(TAG, "User set logging to " + logging);
+				if(logging) {
+					mServiceConnector.getXHuntService().getTools().writeLogToFile();
+				} else {
+					mServiceConnector.getXHuntService().getTools().stopWritingLogToFile();
 				}
 				return true;
 			}

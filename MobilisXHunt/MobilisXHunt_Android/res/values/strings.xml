@@ -31,7 +31,8 @@
    	
    	<string name="bundle_key_settings_serverjid">key_settings_serverjid</string>
    	<string name="bundle_key_settings_username">key_settings_username</string>  
-    <string name="bundle_key_settings_staticmode" >key_settings_staticmode</string>
+    <string name="bundle_key_settings_staticmode" >key_settings_staticmode</string> 
+    <string name="bundle_key_settings_logging" >key_settings_logging</string>
     
     <string name="main_button_play_title">Play</string>
     <string name="main_button_settings_title">Settings</string>
@@ -77,10 +78,12 @@
     
     <string name="settings_edit_title_serverjid">Server Coordinator Jid</string>
     <string name="settings_edit_title_username">Display Name</string>
-    <string name="settings_edit_title_staticmode">Activate Static Mode</string>
+    <string name="settings_edit_title_staticmode">Static Mode</string>
+    <string name="settings_edit_title_logging">Logging</string>
     
     <string name="settings_summary_serverjid">Not set</string>
     <string name="settings_summary_username">Not set</string>
-    <string name="settings_summary_staticmode">for playing without GPS</string>    
+    <string name="settings_summary_staticmode">play without location detection</string>    
+    <string name="settings_summary_logging">pipe logcat output into file</string>    
 
 </resources>
