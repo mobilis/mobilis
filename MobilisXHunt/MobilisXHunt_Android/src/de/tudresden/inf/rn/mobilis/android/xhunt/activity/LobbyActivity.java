@@ -122,7 +122,7 @@ public class LobbyActivity extends Activity {
 	/** Dialog that displays if client is waiting for server acks. */
 	private DialogRemoteLoading mRemoteLoadingDialog;
 
-	/** The request code for FileTransfers to identofy them. */
+	/** The request code for FileTransfers to identify them. */
 	private int mTransferRequestCode = 0;
 
 	/** The incoming files(requestCode, filePath) like map an pictures. */

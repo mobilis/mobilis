@@ -64,11 +64,20 @@ public class GPSProxy {
 	/** The thread who is listening for location changes. */
 	private LocationListenerThread mLocationListener;
 	
-	/** The min distance(in meters) before a new GPS fix is needed. */
+	/** The min distance (in meters) before a new GPS fix is needed. */
 	float mGpsMinDistance = 2;
 	
-	/** The time in millisecond before a new GPS fix is needed.. */
+	/** The min distance (in meters) before a new Network Provider location fix is needed. */
+	float mNwpMinDistance = 2;
+	
+	/** The time in milliseconds before a new GPS fix is needed. */
 	long mGpsMinTime = 5 * 1000;
+	
+	/** The time in milliseconds before a new Network Provider location fix is needed. */
+	long mNwpMinTime = 5 * 1000;
+	
+	/** The time in milliseconds after which a location fix is considered as old */
+	int locationExpireTime = 15 * 1000;
 	
 	/** The applications context. */
 	private Context mContext;
@@ -124,8 +133,7 @@ public class GPSProxy {
 	 * the current timestamp.
 	 */
 	private void initGpx(){
-		File sdFolder = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(),
-				"xhunt");
+		File sdFolder = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(), "xhunt");
 		if(!sdFolder.isDirectory())
 			sdFolder.mkdir();
 		
@@ -186,7 +194,7 @@ public class GPSProxy {
 	/**
 	 * Start GPS.
 	 */
-	public void startGps(){		
+	public void startGps(){
 		if(!mIsGpsRunning){			
 			if(mLocationListener != null){
 				mLocationManager.removeUpdates(mLocationListener);
@@ -195,20 +203,40 @@ public class GPSProxy {
 			
 			mLocationListener = new LocationListenerThread();
 			mLocationManager.requestLocationUpdates(
-					LocationManager.GPS_PROVIDER,
-					mGpsMinTime,
-					mGpsMinDistance,
-					mLocationListener);
+					LocationManager.GPS_PROVIDER, mGpsMinTime, mGpsMinDistance, mLocationListener);
+			mLocationManager.requestLocationUpdates(
+					LocationManager.NETWORK_PROVIDER, mNwpMinTime, mNwpMinDistance, mLocationListener);
 			
-			Location lastLocation = 
-					mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			Location lastGpsLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			Location lastNwpLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			
-			if(lastLocation != null)
-				mCurrentLocation = lastLocation;  
+			if((lastGpsLocation==null) && (lastNwpLocation!=null))
+				mCurrentLocation = lastNwpLocation;
+			
+			if((lastNwpLocation==null) && (lastGpsLocation!=null))
+				mCurrentLocation = lastGpsLocation;
+			
+			if((lastGpsLocation!=null) && (lastNwpLocation!=null)) {
+				int twoMinutes = 2 * 60 * 1000;
+				long timeDiff = lastNwpLocation.getTime() - lastGpsLocation.getTime();
+				
+				//if GPS less than 2min older than NWP: use GPS location
+				if(timeDiff>0 && timeDiff<twoMinutes)
+					mCurrentLocation = lastGpsLocation;
+				
+				//if GPS more than 2min older than NWP: use NWP location
+				if(timeDiff>0 && timeDiff>twoMinutes)
+					mCurrentLocation = lastNwpLocation;
+				
+				//if GPS newer than NWP: use GPS location
+				if(timeDiff <= 0)
+					mCurrentLocation = lastGpsLocation;
+			}
 			
 			mIsGpsRunning = true;
 		}
 	}
+	
 	
 	/**
 	 * Sets a location for testing purposes.
@@ -278,15 +306,19 @@ public class GPSProxy {
 		 */
 		@Override
 		public void onLocationChanged(Location location) {
-				// store new locations locally
-				mCurrentLocation = location;
-				
-				// log new location if logging is on
-				if(mLogTracks)
-					writeLocationToFile(location);
-				
-				// notify all listening components for new location
+			
+			//use new location if it's from GPS or if current location is old/null
+			boolean update =
+					((mCurrentLocation == null)
+						|| (location.getProvider().equals(LocationManager.GPS_PROVIDER))
+						|| (System.currentTimeMillis() - mCurrentLocation.getTime() > locationExpireTime));
+			
+			if(update) {
+				mCurrentLocation = location;	
 				sendLocationChangedBroadcast();
+				if(mLogTracks)
+					writeLocationToFile(location);	
+			}
 		}
 
 		/* (non-Javadoc)

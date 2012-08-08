@@ -172,6 +172,7 @@ public class XHuntService extends Service{
 	  super.onDestroy();
 
 	  stopService();
+	  mTools.stopWritingLogToFile();
 	}	
 	
 	/**
