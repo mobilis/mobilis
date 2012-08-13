@@ -87,6 +87,6 @@
     <string name="settings_summary_username">Not set</string>
     <string name="settings_summary_staticmode">play without location detection</string>    
     <string name="settings_summary_logging">pipe logcat output into file</string>
-    <string name="settings_summary_deletelogs">delete logfiles from ext. memory</string>
+    <string name="settings_summary_deletelogs">delete logfiles from sdcard/xhunt/logcat</string>
 
 </resources>
