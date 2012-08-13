@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -39,6 +40,7 @@ import android.util.Log;
 import com.google.android.maps.GeoPoint;
 
 import de.tudresden.inf.rn.mobilis.android.xhunt.Const;
+import de.tudresden.inf.rn.mobilis.android.xhunt.R;
 
 /**
  * The Class GPSProxy is used to update the players current position.
@@ -195,45 +197,51 @@ public class GPSProxy {
 	 * Start GPS.
 	 */
 	public void startGps(){
-		if(!mIsGpsRunning){			
-			if(mLocationListener != null){
-				mLocationManager.removeUpdates(mLocationListener);
-				mLocationListener.interrupt();
-			}
-			
-			mLocationListener = new LocationListenerThread();
-			mLocationManager.requestLocationUpdates(
-					LocationManager.GPS_PROVIDER, mGpsMinTime, mGpsMinDistance, mLocationListener);
-			mLocationManager.requestLocationUpdates(
-					LocationManager.NETWORK_PROVIDER, mNwpMinTime, mNwpMinDistance, mLocationListener);
-			
-			Location lastGpsLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-			Location lastNwpLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			
-			if((lastGpsLocation==null) && (lastNwpLocation!=null))
-				mCurrentLocation = lastNwpLocation;
-			
-			if((lastNwpLocation==null) && (lastGpsLocation!=null))
-				mCurrentLocation = lastGpsLocation;
-			
-			if((lastGpsLocation!=null) && (lastNwpLocation!=null)) {
-				int twoMinutes = 2 * 60 * 1000;
-				long timeDiff = lastNwpLocation.getTime() - lastGpsLocation.getTime();
+		SharedPreferences prefs = mContext.getSharedPreferences(Const.SHARED_PREF_KEY_FILE_NAME, Context.MODE_PRIVATE);
+		String key = mContext.getResources().getString(R.string.bundle_key_settings_staticmode);
+		boolean staticMode = prefs.getBoolean(key, false);
 				
-				//if GPS less than 2min older than NWP: use GPS location
-				if(timeDiff>0 && timeDiff<twoMinutes)
-					mCurrentLocation = lastGpsLocation;
+		if(!staticMode) {
+			if(!mIsGpsRunning){			
+				if(mLocationListener != null){
+					mLocationManager.removeUpdates(mLocationListener);
+					mLocationListener.interrupt();
+				}
 				
-				//if GPS more than 2min older than NWP: use NWP location
-				if(timeDiff>0 && timeDiff>twoMinutes)
+				mLocationListener = new LocationListenerThread();
+				mLocationManager.requestLocationUpdates(
+						LocationManager.GPS_PROVIDER, mGpsMinTime, mGpsMinDistance, mLocationListener);
+				mLocationManager.requestLocationUpdates(
+						LocationManager.NETWORK_PROVIDER, mNwpMinTime, mNwpMinDistance, mLocationListener);
+				
+				Location lastGpsLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+				Location lastNwpLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+				
+				if((lastGpsLocation==null) && (lastNwpLocation!=null))
 					mCurrentLocation = lastNwpLocation;
 				
-				//if GPS newer than NWP: use GPS location
-				if(timeDiff <= 0)
+				if((lastNwpLocation==null) && (lastGpsLocation!=null))
 					mCurrentLocation = lastGpsLocation;
+				
+				if((lastGpsLocation!=null) && (lastNwpLocation!=null)) {
+					int twoMinutes = 2 * 60 * 1000;
+					long timeDiff = lastNwpLocation.getTime() - lastGpsLocation.getTime();
+					
+					//if GPS less than 2min older than NWP: use GPS location
+					if(timeDiff>0 && timeDiff<twoMinutes)
+						mCurrentLocation = lastGpsLocation;
+					
+					//if GPS more than 2min older than NWP: use NWP location
+					if(timeDiff>0 && timeDiff>twoMinutes)
+						mCurrentLocation = lastNwpLocation;
+					
+					//if GPS newer than NWP: use GPS location
+					if(timeDiff <= 0)
+						mCurrentLocation = lastGpsLocation;
+				}
+				
+				mIsGpsRunning = true;
 			}
-			
-			mIsGpsRunning = true;
 		}
 	}
 	
