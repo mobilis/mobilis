@@ -113,4 +113,22 @@ public class Tools {
 		if(logProcess != null)
 			logProcess.destroy();
 	}
+	
+	/**
+	 * Deletes all logfiles.
+	 */
+	public void deleteLogFiles() {
+		 File sdFolder = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(), "xhunt");
+		 
+		 if(sdFolder.isDirectory()) {
+			 File logFolder = new File(sdFolder.getAbsoluteFile(), "logcat");
+			 
+			 if(logFolder.isDirectory()) {
+				 String[] files = logFolder.list();
+				 for(int i=0; i<files.length; i++) {
+					 new File(logFolder, files[i]).delete();
+				 }
+			 }
+		 }
+	}
 }

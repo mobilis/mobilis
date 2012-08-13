@@ -19,6 +19,8 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.android.xhunt.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,6 +33,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.xhunt.R;
 import de.tudresden.inf.rn.mobilis.android.xhunt.service.ServiceConnector;
 import de.tudresden.inf.rn.mobilis.mxa.ConstMXA;
@@ -55,6 +58,9 @@ public class SettingsActivity extends PreferenceActivity
 	
 	/** The CheckBox for activating/deactivating logging. */
 	private CheckBoxPreference mSetLogging;
+	
+	/** A button-like field for deleting logfiles. */
+	private Preference mDeleteLogs;
 	
 	/** The Button to start the MXA preferences. */
 	private Button btnMxaSettings;
@@ -128,6 +134,15 @@ public class SettingsActivity extends PreferenceActivity
 	private String getKeyLogging() {
 		return getResources().getString(R.string.bundle_key_settings_logging);
 	}
+	
+	/**
+	 * Gets the shared preference key for the delete-logfiles-button.
+	 * 
+	 * @return the key of the button to delete logfiles
+	 */
+	private String getKeyDeleteLogs() {
+		return getResources().getString(R.string.bundle_key_settings_deletelogs);
+	}
 
 	/**
 	 * Gets the shared preference value of a key.
@@ -183,11 +198,38 @@ public class SettingsActivity extends PreferenceActivity
 				return true;
 			}
 		});
-			
+		
+		
+		mDeleteLogs = (Preference)getPreferenceScreen().findPreference(getKeyDeleteLogs());
+		mDeleteLogs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SettingsActivity.this);
+				dialogBuilder.setMessage("Delete all logfiles from external memory?").setCancelable(false);
+				
+				dialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						mServiceConnector.getXHuntService().getTools().deleteLogFiles();
+						Log.v(TAG, "User deleted logfiles from external memory");
+					}
+				});
+				
+				dialogBuilder.setNegativeButton("no", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+					}
+				});
+				
+				dialogBuilder.create().show();
+				return false;
+			}
+		});
+		
 		
 		btnMxaSettings = (Button)findViewById(R.id.settings_btn_mxa_preferences);
 		btnMxaSettings.setOnClickListener(new OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(ConstMXA.INTENT_PREFERENCES);
