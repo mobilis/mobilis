@@ -175,7 +175,8 @@ public class SettingsActivity extends PreferenceActivity
 				Log.v(TAG, "User set StaticMode to " + staticMode);	
 				if(staticMode) {
 					mServiceConnector.getXHuntService().getMXAProxy().setStaticMode(true);
-					mServiceConnector.getXHuntService().getGPSProxy().setLocation(51033880, 13783272);
+					//mServiceConnector.getXHuntService().getGPSProxy().setLocation(51033880, 13783272);
+					mServiceConnector.getXHuntService().getGPSProxy().setLocation(51033280, 13728472);
 				} else {
 					mServiceConnector.getXHuntService().getMXAProxy().setStaticMode(false);
 				}

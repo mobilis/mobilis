@@ -121,12 +121,20 @@ public class Tools {
 		 File sdFolder = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(), "xhunt");
 		 
 		 if(sdFolder.isDirectory()) {
-			 File logFolder = new File(sdFolder.getAbsoluteFile(), "logcat");
+			 File logcatFolder = new File(sdFolder.getAbsoluteFile(), "logcat");
+			 File gpslogFolder = new File(sdFolder.getAbsoluteFile(), "gpx");
 			 
-			 if(logFolder.isDirectory()) {
-				 String[] files = logFolder.list();
+			 if(logcatFolder.isDirectory()) {
+				 String[] files = logcatFolder.list();
 				 for(int i=0; i<files.length; i++) {
-					 new File(logFolder, files[i]).delete();
+					 new File(logcatFolder, files[i]).delete();
+				 }
+			 }
+			 
+			 if(gpslogFolder.isDirectory()) {
+				 String[] files = gpslogFolder.list();
+				 for(int i=0; i<files.length; i++) {
+					 new File(gpslogFolder, files[i]).delete();
 				 }
 			 }
 		 }
