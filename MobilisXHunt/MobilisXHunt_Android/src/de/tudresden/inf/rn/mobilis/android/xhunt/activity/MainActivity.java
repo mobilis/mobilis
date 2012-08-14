@@ -123,12 +123,10 @@ public class MainActivity extends Activity {
 			
 			boolean staticMode = mServiceConnector.getXHuntService().getSharedPrefHelper()
 					.getValueAsBool(getResources().getString(R.string.bundle_key_settings_staticmode));
-			if(staticMode) {
+			if(staticMode)
 				mMxaProxy.setStaticMode(true);
-				mServiceConnector.getXHuntService().getGPSProxy().setLocation(51033880, 13783272);
-			} else {
+			else
 				mMxaProxy.setStaticMode(false);
-			}
 			
 			boolean logging = mServiceConnector.getXHuntService().getSharedPrefHelper()
 					.getValueAsBool(getResources().getString(R.string.bundle_key_settings_logging));

@@ -33,7 +33,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.xhunt.R;
 import de.tudresden.inf.rn.mobilis.android.xhunt.service.ServiceConnector;
 import de.tudresden.inf.rn.mobilis.mxa.ConstMXA;
@@ -173,13 +172,11 @@ public class SettingsActivity extends PreferenceActivity
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean staticMode = (Boolean)newValue;
 				Log.v(TAG, "User set StaticMode to " + staticMode);	
-				if(staticMode) {
+				if(staticMode)
 					mServiceConnector.getXHuntService().getMXAProxy().setStaticMode(true);
-					//mServiceConnector.getXHuntService().getGPSProxy().setLocation(51033880, 13783272);
-					mServiceConnector.getXHuntService().getGPSProxy().setLocation(51033280, 13728472);
-				} else {
+				else
 					mServiceConnector.getXHuntService().getMXAProxy().setStaticMode(false);
-				}
+
 				return true;
 			}
 		});

@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Random;
 
 import android.content.Context;
 import android.content.Intent;
@@ -41,6 +43,9 @@ import com.google.android.maps.GeoPoint;
 
 import de.tudresden.inf.rn.mobilis.android.xhunt.Const;
 import de.tudresden.inf.rn.mobilis.android.xhunt.R;
+import de.tudresden.inf.rn.mobilis.android.xhunt.activity.XHuntMapActivity;
+import de.tudresden.inf.rn.mobilis.android.xhunt.model.Station;
+import de.tudresden.inf.rn.mobilis.android.xhunt.service.XHuntService;
 
 /**
  * The Class GPSProxy is used to update the players current position.
@@ -79,7 +84,7 @@ public class GPSProxy {
 	long mNwpMinTime = 5 * 1000;
 	
 	/** The time in milliseconds after which a location fix is considered as old */
-	int locationExpireTime = 15 * 1000;
+	int locationExpireTime = 10 * 1000;
 	
 	/** The applications context. */
 	private Context mContext;
@@ -92,6 +97,7 @@ public class GPSProxy {
 	
 	/** True if logging of movement is active. */
 	private boolean mLogTracks = false;
+	
 	
 	/**
 	 * Instantiates a new GPSProxy.
@@ -196,13 +202,28 @@ public class GPSProxy {
 	/**
 	 * Start GPS.
 	 */
-	public void startGps(){
-		SharedPreferences prefs = mContext.getSharedPreferences(Const.SHARED_PREF_KEY_FILE_NAME, Context.MODE_PRIVATE);
-		String key = mContext.getResources().getString(R.string.bundle_key_settings_staticmode);
-		boolean staticMode = prefs.getBoolean(key, false);
+	public void startGps() {
+
+		if(!mIsGpsRunning) {
+			SharedPreferences prefs = mContext.getSharedPreferences(Const.SHARED_PREF_KEY_FILE_NAME, Context.MODE_PRIVATE);
+			String key = mContext.getResources().getString(R.string.bundle_key_settings_staticmode);
+			boolean staticMode = prefs.getBoolean(key, false);
+
+			if(staticMode) {
+				List<Station> allStations = null;
 				
-		if(!staticMode) {
-			if(!mIsGpsRunning){			
+				if(mContext instanceof XHuntService)
+					allStations = ((XHuntService) mContext).getCurrentGame().getRouteManagement().getStationsAsList();
+				if(mContext instanceof XHuntMapActivity)
+					allStations = ((XHuntMapActivity) mContext).getGame().getRouteManagement().getStationsAsList();
+				
+				if(allStations == null)
+					setLocation(51033880, 13783272);
+				if(allStations != null)
+					mCurrentLocation = getRandomLocation(allStations);			
+			}
+			
+			else if(!staticMode) {
 				if(mLocationListener != null){
 					mLocationManager.removeUpdates(mLocationListener);
 					mLocationListener.interrupt();
@@ -239,10 +260,49 @@ public class GPSProxy {
 					if(timeDiff <= 0)
 						mCurrentLocation = lastGpsLocation;
 				}
-				
-				mIsGpsRunning = true;
 			}
+			
+			mIsGpsRunning = true;
 		}
+	}
+	
+	
+	/**
+	 *  Calculates the bounds of the area by using a list of all stations and returns a random location
+	 *  inside of those bounds.
+	 *  
+	 * @param allStations the list of all stations of the area
+	 * @return a random location object which lies inside of the area
+	 */
+	private Location getRandomLocation(List<Station> allStations) {
+		int lat_min = Integer.MAX_VALUE;
+		int long_min = Integer.MAX_VALUE;
+		int lat_max = Integer.MIN_VALUE;
+		int long_max = Integer.MIN_VALUE;
+		GeoPoint currStation;
+		
+		for(Station station : allStations) {
+			currStation = station.getGeoPoint();
+			
+			if(currStation.getLatitudeE6() < lat_min)
+				lat_min = currStation.getLatitudeE6();
+			if(currStation.getLatitudeE6() > lat_max)
+				lat_max = currStation.getLatitudeE6();
+			if(currStation.getLongitudeE6() < long_min)
+				long_min = currStation.getLongitudeE6();
+			if(currStation.getLongitudeE6() > long_max)
+				long_max = currStation.getLongitudeE6();
+		}
+		
+		Random rndm = new Random();
+		int lat_rndm = rndm.nextInt(lat_max-lat_min +1) + lat_min;
+		int long_rndm = rndm.nextInt(long_max-long_min +1) + long_min;
+		
+		Location result = new Location(LocationManager.GPS_PROVIDER);
+		result.setLatitude((double)lat_rndm/1E6);
+		result.setLongitude((double)long_rndm/1E6);
+		
+		return result;
 	}
 	
 	

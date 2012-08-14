@@ -526,6 +526,15 @@ public class XHuntMapActivity extends MapActivity {
 		return mGame.getPlayerByJID(mMxaProxy.getXmppJid());
 	}
 	
+	/**
+	 * Gets the Game object.
+	 * 
+	 * @return the Game object
+	 */
+	public Game getGame() {
+		return mGame;
+	}
+	
     /**
      * Initializes the components.
      */
