@@ -1,6 +1,6 @@
 <!DOCTYPE html> 
 <html> 
-	<head>
+	<head> 
 	<title>Mobilis XHunt</title> 
 	<meta charset="utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
@@ -26,25 +26,20 @@
 </head> 
 <body> 
 
-<div id="index-page" data-role="page">
+<div id="game-list-page" data-role="page">
 
 	<div data-role="header">
-
-		<h1>Mobilis XHunt</h1>
-
+		<a id="refresh-button" href="gamelist.html" data-icon="refresh">Refresh</a>
+		<h1>Available Games</h1>
+		<a id="newgame-button" href="newgame.html" data-icon="plus">New</a>		
 	</div><!-- /header -->
 
 	<div data-role="content">
 
-		<div id="start-screen">
-			<a id="play-xhunt" href="gamelist.html" data-role="button" data-theme="b">Play XHunt</a>
-			<div data-role="controlgroup">
-				<a href="settings.html" data-role="button" data-icon="gear">Settings</a>
-				<a href="index.html" data-role="button" data-icon="info">Instructions</a>
-			</div>
-		</div>
-
-		<div id="no-connection-screen">
+		<div id="game-list-screen">
+			<ul data-role="listview" data-theme="g" id="game-list">
+				<!-- List of available Games -->
+			</ul>
 		</div>
 
 	</div><!-- /content -->

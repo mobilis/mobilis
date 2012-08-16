@@ -1,6 +1,6 @@
 <!DOCTYPE html> 
 <html> 
-	<head>
+	<head> 
 	<title>Mobilis XHunt</title> 
 	<meta charset="utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
@@ -21,31 +21,26 @@
 	<script type="text/javascript" src="js/mobilis/mobilis.xhunt.js"></script>
 
 	<script type="text/javascript" src="js/xhunt/xhunt.events.js"></script>
-
+	
 
 </head> 
-<body> 
+<body>
 
-<div id="index-page" data-role="page">
+<div id="game-page" data-role="page">
 
 	<div data-role="header">
-
-		<h1>Mobilis XHunt</h1>
-
+		<a href="gamelist.html" data-icon="arrow-l" data-transition="slide" data-direction="reverse">leave</a>
+		<h1 id="game-name"></h1>
+		<a href="dialog.html" data-icon="info" data-rel="dialog" data-transition="pop">Dialog</a>
 	</div><!-- /header -->
 
-	<div data-role="content">
+	<div id="content" data-role="content">
 
-		<div id="start-screen">
-			<a id="play-xhunt" href="gamelist.html" data-role="button" data-theme="b">Play XHunt</a>
-			<div data-role="controlgroup">
-				<a href="settings.html" data-role="button" data-icon="gear">Settings</a>
-				<a href="index.html" data-role="button" data-icon="info">Instructions</a>
-			</div>
-		</div>
+		<div id="map_canvas"></div>
 
-		<div id="no-connection-screen">
-		</div>
+
+
+
 
 	</div><!-- /content -->
 
