@@ -1,0 +1,39 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<title>XHunt Settings</title> 
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
+	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
+</head> 
+<body> 
+
+<div data-role="page">
+
+	<div data-role="header">
+		<a href="index.html" data-icon="delete">Cancel</a>
+		<h1>XHunt Settings</h1>
+		<a href="index.html" data-icon="check">Save</a>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<form action="form.php" method="post">
+			
+			<div data-role="fieldcontain" class="ui-hide-label">
+				<label for="username">Username:</label>
+				<input type="text" name="username" id="username" value="" placeholder="Username"/>
+			</div>
+
+			<div data-role="fieldcontain" class="ui-hide-label">
+				<label for="username">Password:</label>
+				<input type="password" name="password" id="password" value="" placeholder="Password"/>
+			</div>
+
+		</form>
+	</div><!-- /content -->
+
+</div><!-- /page -->
+
+</body>
+</html>
