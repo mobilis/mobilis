@@ -773,7 +773,9 @@ public class XHuntMapActivity extends MapActivity {
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onContextMenuClosed(android.view.Menu)
 	 */
+	@Override
 	public void onContextMenuClosed (Menu menu){
+		super.onContextMenuClosed(menu);
 		// Reset the tappedReachableStation
 		tappedReachableStation = null;
 	}
