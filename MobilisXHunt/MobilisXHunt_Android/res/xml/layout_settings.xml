@@ -23,6 +23,10 @@
       	    	android:title="@string/settings_edit_title_logging"
       	    	android:summary="@string/settings_summary_logging"
       	    	android:defaultValue="false" />
+      	    <Preference
+      	        android:key="@string/bundle_key_settings_deletelogs"
+      	        android:title="@string/settings_edit_title_deletelogs"
+      	   		android:summary="@string/settings_summary_deletelogs" /> 
       	</PreferenceCategory>
     
     <PreferenceCategory

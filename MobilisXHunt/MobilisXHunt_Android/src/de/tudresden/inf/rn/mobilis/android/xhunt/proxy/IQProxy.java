@@ -691,14 +691,22 @@ public class IQProxy {
 	}
 
 
-	/** The Abstract callback to receive each IQ registered by an YMPPBean prototype. 
-	 * the incoming IQ will be converted to an XMPPBean and refered to the current 
+	/** The Abstract callback to receive each IQ registered by an XMPPBean prototype. 
+	 * the incoming IQ will be converted to an XMPPBean and referred to the current 
 	 * running GameState inside the specific Activity. */
 	private IXMPPIQCallback AbstractCallback = new IXMPPIQCallback.Stub() {
 		
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
 		public void processIQ(XMPPIQ iq) throws RemoteException {
+			
+			if(!(iq.from.equals(mGameServiceJid) || iq.from.equals(mServerCoordinatorJid))) {
+				String msg = "Discarded IQ from unknown JID " + iq.from + " to prevent GameService zombies from interfering" +
+						" - see IQProxy.AbstractCallback.processIQ()";
+				Log.w(TAG, msg);
+				return;
+			}
+
 			Log.v(TAG, "AbstractCallback: ID: " + iq.packetID 
 					+ " type: " + iq.type 
 					+ " ns: " + iq.namespace 

@@ -526,6 +526,15 @@ public class XHuntMapActivity extends MapActivity {
 		return mGame.getPlayerByJID(mMxaProxy.getXmppJid());
 	}
 	
+	/**
+	 * Gets the Game object.
+	 * 
+	 * @return the Game object
+	 */
+	public Game getGame() {
+		return mGame;
+	}
+	
     /**
      * Initializes the components.
      */
@@ -764,7 +773,9 @@ public class XHuntMapActivity extends MapActivity {
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onContextMenuClosed(android.view.Menu)
 	 */
+	@Override
 	public void onContextMenuClosed (Menu menu){
+		super.onContextMenuClosed(menu);
 		// Reset the tappedReachableStation
 		tappedReachableStation = null;
 	}
