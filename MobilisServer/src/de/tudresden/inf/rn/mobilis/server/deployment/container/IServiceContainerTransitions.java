@@ -30,10 +30,14 @@ public interface IServiceContainerTransitions {
 	 * 
 	 * @param newJarFile
 	 *            the new jar file to update the old one
+	 * @param fileUserId
+	 * 			  id which idententifies the byte array in the database,
+	 * 			  normally the name of the file from which the byte array
+	 * 			  was extracted
 	 * @throws UpdateServiceException
 	 *             is thrown if update failed
 	 */
-	void update( File newJarFile ) throws UpdateServiceException;
+	void update( byte[] newJarFile, String fileUserId ) throws UpdateServiceException;
 
 	/**
 	 * Switch to state Configure.

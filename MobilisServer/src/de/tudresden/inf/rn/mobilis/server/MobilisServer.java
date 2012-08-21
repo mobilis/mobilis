@@ -24,6 +24,8 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jivesoftware.smack.Connection;
 
+import de.tudresden.inf.rn.mobilis.server.persistency.Persistency;
+
 /**
  * The main class of the application.
  */
@@ -36,6 +38,9 @@ public class MobilisServer extends SingleFrameApplication {
      * Also startup Mobilis Manager and associate with main frame.
      */
     @Override protected void startup() {
+    	// prepare DB
+    	Persistency.getInstance();
+    	
     	parentView = new MobilisServerView(this);
     	Connection.DEBUG_ENABLED = true;
     	MobilisManager.getInstance().registerServerView(parentView);
@@ -50,6 +55,7 @@ public class MobilisServer extends SingleFrameApplication {
     @Override protected void shutdown() {
     	MobilisManager.getInstance().shutdown();
     	MobilisManager.getInstance().unregisterServerView(parentView);
+    	Persistency.getInstance().shutdown();
     	super.shutdown();
     }
 

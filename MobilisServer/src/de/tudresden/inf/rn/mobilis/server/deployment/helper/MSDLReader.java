@@ -1,7 +1,13 @@
 package de.tudresden.inf.rn.mobilis.server.deployment.helper;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -10,8 +16,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
@@ -49,11 +58,11 @@ public abstract class MSDLReader {
 	 *            the msdl file which should be queried
 	 * @return the service version
 	 */
-	public static int getServiceVersion( File msdlFile ) {
+	public static int getServiceVersion( byte[] msdlFile ) {
 		int entity = -1;
 
 		try {
-			entity = Integer.parseInt( getXMLAttribute( msdlFile.getAbsolutePath(),
+			entity = Integer.parseInt( getXMLAttribute(new ByteArrayInputStream(msdlFile),
 					MSDL_ELEMENT_SERVICE, MSDL_ATTRIBUTE_SERVICE_VERSION ) );
 		} catch ( Exception e ) {
 			MobilisManager.getLogger().log(
@@ -72,11 +81,11 @@ public abstract class MSDLReader {
 	 *            the msdl file which should be queried
 	 * @return the service namespace
 	 */
-	public static String getServiceNamespace( File msdlFile ) {
+	public static String getServiceNamespace( byte[] msdlFile ) {
 		String entity = null;
 
 		try {
-			entity = getXMLAttribute( msdlFile.getAbsolutePath(), MSDL_ELEMENT_SERVICE,
+			entity = getXMLAttribute( new ByteArrayInputStream(msdlFile), MSDL_ELEMENT_SERVICE,
 					MSDL_ATTRIBUTE_SERVICE_NAMESPACE );
 		} catch ( Exception e ) {
 			MobilisManager.getLogger().log(
@@ -95,11 +104,11 @@ public abstract class MSDLReader {
 	 *            the msdl file which should be queried
 	 * @return the service name
 	 */
-	public static String getServiceName( File msdlFile ) {
+	public static String getServiceName( byte[] msdlFile ) {
 		String entity = null;
 
 		try {
-			entity = getXMLAttribute( msdlFile.getAbsolutePath(), MSDL_ELEMENT_SERVICE,
+			entity = getXMLAttribute( new ByteArrayInputStream(msdlFile), MSDL_ELEMENT_SERVICE,
 					MSDL_ATTRIBUTE_SERVICE_NAME );
 		} catch ( Exception e ) {
 			MobilisManager.getLogger().log(
@@ -118,7 +127,7 @@ public abstract class MSDLReader {
 	 *            the msdl file which should be queried
 	 * @return the service dependencies
 	 */
-	public static List< ServiceDependency > getServiceDependencies( File msdlFile ) {
+	public static List< ServiceDependency > getServiceDependencies( byte[] msdlFile ) {
 		List< ServiceDependency > resultList = new ArrayList< MSDLReader.ServiceDependency >();
 
 		try {
@@ -127,7 +136,7 @@ public abstract class MSDLReader {
 
 			SAXServiceDependencyHandler saxHandler = new MSDLReader.SAXServiceDependencyHandler();
 
-			saxParser.parse( msdlFile.getAbsolutePath(), saxHandler );
+			saxParser.parse(new ByteArrayInputStream(msdlFile), saxHandler );
 
 			resultList = saxHandler.getResultList();
 		} catch ( Exception e ) {
@@ -144,8 +153,8 @@ public abstract class MSDLReader {
 	/**
 	 * Gets an XML attribute from xml.
 	 * 
-	 * @param uri
-	 *            the uri path to xml based file
+	 * @param is
+	 *            the input stream containing the XML source
 	 * @param keyNode
 	 *            the tag in a xml which should be queried
 	 * @param keyAttribute
@@ -158,15 +167,20 @@ public abstract class MSDLReader {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static String getXMLAttribute( String uri, final String keyNode,
+	public static String getXMLAttribute( InputStream is, final String keyNode,
 			final String keyAttribute ) throws ParserConfigurationException, SAXException,
 			IOException {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
 
 		SAXEntityHandler saxHandler = new MSDLReader.SAXEntityHandler( keyNode, keyAttribute );
-
-		saxParser.parse( uri, saxHandler );
+		
+		// this ensures the correct encoding detection
+		Reader isr = new InputStreamReader(is);
+		InputSource iSource = new InputSource();
+		iSource.setCharacterStream(isr);
+		
+		saxParser.parse( iSource, saxHandler );
 
 		return saxHandler.getResultValue();
 	}

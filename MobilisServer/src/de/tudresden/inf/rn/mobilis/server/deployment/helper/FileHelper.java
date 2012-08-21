@@ -16,6 +16,8 @@ import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.IOUtils;
+
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 
 /**
@@ -115,7 +117,7 @@ public abstract class FileHelper {
 	}
 
 	/**
-	 * Gets queries a value of the manifest of a jar file by a specific key.
+	 * Queries a value of the manifest of a jar file by a specific key.
 	 * 
 	 * @param jarFile
 	 *            the jar file which should be queried

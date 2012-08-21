@@ -676,7 +676,7 @@ public class MobilisManager {
 	 */
 	public ServiceContainer getServiceContainerByFileName(String fileName){		
 		for ( ServiceContainer container : _serviceContainers.getListOfAllValues() ) {
-			if(container.getJarFile().getName().toLowerCase().equals( fileName.toLowerCase() )){
+			if(container.getFileUserId().toLowerCase().equals( fileName.toLowerCase() )){
 				return container;
 			}
 		}
@@ -739,7 +739,7 @@ public class MobilisManager {
 	 */
 	public ServiceContainer getPendingServiceByFileName(String fileName){		
 		for ( ServiceContainer container : _pendingServices ) {
-			if(container.getJarFile().getName().toLowerCase().equals( fileName.toLowerCase() )){
+			if(container.getFileUserId().toLowerCase().equals( fileName.toLowerCase() )){
 				return container;
 			}
 		}
@@ -757,7 +757,7 @@ public class MobilisManager {
 		ServiceContainer pendingService = null;
 		
 		for ( ServiceContainer container : _pendingServices ) {
-			if(container.getJarFile().getName().toLowerCase().equals( fileName.toLowerCase() )){
+			if(container.getFileUserId().toLowerCase().equals( fileName.toLowerCase() )){
 				pendingService = container;
 			}
 		}

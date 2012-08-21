@@ -9,6 +9,17 @@
 	<classpathentry kind="lib" path="libs/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="libs/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="libs/jdom.jar"/>
+	<classpathentry kind="lib" path="/home/sven/opt/db-derby-10.9.1.0-bin/lib/derby.jar"/>
+	<classpathentry kind="lib" path="/home/sven/lib/eclipselink/jlib/eclipselink.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/sven/lib/eclipselink/eclipselink-javadocs.zip!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/sven/lib/eclipselink/jlib/jpa/javax.persistence_2.0.4.v201112161009.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/sven/lib/eclipselink/eclipselink-javadocs.zip!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="libs/mysql-connector-java-5.1.10-bin.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-annotations.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-entitymanager.jar"/>
@@ -16,5 +27,7 @@
 	<classpathentry kind="lib" path="libs/hibernate-commons-annotations.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-core.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/MobilisXMPP"/>
+	<classpathentry kind="lib" path="/home/sven/lib/commons-io-2.4/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="/home/sven/git/JCL/JCL2/core/target/jcl-core-2.5-SNAPSHOT.jar" sourcepath="/home/sven/git/JCL/JCL2/core"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -19,6 +19,7 @@ import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceEx
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.UpdateServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.DoubleKeyMap;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
+import de.tudresden.inf.rn.mobilis.server.persistency.Persistency;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.ConfigureServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.InstallServiceBean;
@@ -106,25 +107,31 @@ public class AdminService extends MobilisService {
 	 *            the filename of the jarfile
 	 * @return the jar file
 	 */
-	private File getExistingJarFile( String filepath, String filename ) {
-		File jarFile = null;
+	private byte[] getExistingJarFile( String filepath, String filename ) {
+		byte[] jarFile = null;
 
-		try {
-			ArrayList< String > jarFiles = FileHelper.getFilenames( filepath,
-					new String[] { ".jar" } );
-
-			for ( String file : jarFiles ) {
-				if ( file.matches( String.format( "(?i)(.*?)(%s)$", filename ) ) ) {
-					jarFile = new File( file );
-					break;
-				}
-			}
-		} catch ( IOException e ) {
+		jarFile = Persistency.getInstance().loadFile(filename);
+		if (jarFile == null) {
 			MobilisManager.getLogger().log(
 					Level.WARNING,
-					String.format( "Couldn't find jar file [%s] at [%s]: %s", filename, filepath,
-							e.getMessage() ) );
+					String.format( "Couldn't find jar file [%s] in database!", filename) );
 		}
+//		try {
+//			ArrayList< String > jarFiles = FileHelper.getFilenames( filepath,
+//					new String[] { ".jar" } );
+//
+//			for ( String file : jarFiles ) {
+//				if ( file.matches( String.format( "(?i)(.*?)(%s)$", filename ) ) ) {
+//					jarFile = new File( file );
+//					break;
+//				}
+//			}
+//		} catch ( IOException e ) {
+//			MobilisManager.getLogger().log(
+//					Level.WARNING,
+//					String.format( "Couldn't find jar file [%s] at [%s]: %s", filename, filepath,
+//							e.getMessage() ) );
+//		}
 
 		return jarFile;
 	}
@@ -208,11 +215,11 @@ public class AdminService extends MobilisService {
 
 			// Look for all Jar-Archives in service folder
 			if ( null == container ) {
-				File jarFile = getExistingJarFile( UPLOADED_SERVICE_DICTIONARY_PATH,
+				byte[] jarFile = getExistingJarFile( UPLOADED_SERVICE_DICTIONARY_PATH,
 						inBean.FileName );
 
 				if ( null != jarFile ) {
-					container = new ServiceContainer( jarFile );
+					container = new ServiceContainer(jarFile , inBean.FileName);
 				}
 			}
 
@@ -465,12 +472,12 @@ public class AdminService extends MobilisService {
 
 			if ( null != container ) {
 				// look for jar file to update the old one
-				File jarFile = getExistingJarFile( UPLOADED_SERVICE_DICTIONARY_PATH,
-						inBean.FileName );
+				byte[] jarFile = getExistingJarFile(UPLOADED_SERVICE_DICTIONARY_PATH,
+						inBean.FileName);
 
-				if ( null != jarFile && jarFile.exists() ) {
+				if (null != jarFile) {
 					try {
-						container.update( jarFile );
+						container.update(jarFile, inBean.FileName);
 
 						responseBean = (UpdateServiceBean)BeanHelper.CreateResultBean( inBean,
 								responseBean );

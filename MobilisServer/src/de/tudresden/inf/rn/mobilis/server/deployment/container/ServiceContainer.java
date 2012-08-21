@@ -19,7 +19,10 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.server.deployment.container;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
@@ -28,11 +31,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
 import java.util.logging.Level;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.swing.event.EventListenerList;
 
+import org.apache.commons.io.IOUtils;
 import org.jivesoftware.smack.XMPPException;
+import org.xeustechnologies.jcl.JarClassLoader;
 
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
@@ -42,11 +51,12 @@ import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceExc
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.StartNewServiceInstanceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.UpdateServiceException;
+import de.tudresden.inf.rn.mobilis.server.deployment.helper.ByteClassLoader;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.DoubleKeyMap;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.JarClassLoader;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.MSDLReader;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.MSDLReader.ServiceDependency;
+import de.tudresden.inf.rn.mobilis.server.persistency.Persistency;
 import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
 
 /**
@@ -63,10 +73,17 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	private final String MANIFEST_MSDLFILE_KEY = "MSDL-File";
 
 	/** The jar file of this service. */
-	private File _jarFile;
+	private byte[] _jarFile;
 
 	/** The msdl file of this service. */
-	private File _msdlFile;
+	private byte[] _msdlFile;
+	
+	/** The ID which identifies the corresponding byte arrays in the database:\n
+	 *  \n
+	 *  fileId -> JAR file
+	 *  fileId_msdl -> MSDL file 
+	 */
+	private String fileUserId;
 
 	/** The running service instances (jid, service). */
 	private Map<String, MobilisService> _runningServiceInstances;
@@ -154,8 +171,9 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	 * @param jarFile
 	 *            the jar file of this container
 	 */
-	public ServiceContainer(File jarFile) {
+	public ServiceContainer(byte[] jarFile, String userFileId) {
 		_jarFile = jarFile;
+		this.setFileUserId(userFileId);
 
 		_runningServiceInstances = Collections
 				.synchronizedMap(new HashMap<String, MobilisService>());
@@ -189,7 +207,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	private void resetContainer() {
 		changeContainerState(ServiceContainerState.UNINSTALLED);
 
-		_msdlFile.delete();
+		Persistency.getInstance().deleteFile(getFileUserId() + "_msdl");
 		_msdlFile = null;
 
 		_serviceClassTemplate = null;
@@ -378,46 +396,58 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	public void install() throws InstallServiceException {
 		if (_containerState == ServiceContainerState.UNINSTALLED
 				|| _containerState == ServiceContainerState.INSTALLED) {
-			JarClassLoader jarClassLoader = new JarClassLoader();
-			String msdlFilepath = null;
-			String serviceFilePath = null;
-
 			try {
-				// read msdl file from manifest of jar file
-				jarClassLoader.addFilePathAbsolute(_jarFile.getAbsolutePath());
-				// Read MSDL file location from MANIFEST.MF
-				msdlFilepath = FileHelper.getJarManifestValue(_jarFile,
-						MANIFEST_MSDLFILE_KEY);
+				JarInputStream is = new JarInputStream(new ByteArrayInputStream(_jarFile));
+				
+				// read path of the MobilisService class from manifest of jar file
+				String serviceFilePath = is.getManifest().getMainAttributes().getValue(MANIFEST_SERVICECLASS_KEY);
+				
+				/*
+				 * TODO: reading the MSDL from the input stream using the path given in the MSDL
+				 * is technically impossible, therefore we have to sequentially read the stream
+				 * until we find the MSDL. Not really nice especially for huge JARs.
+				 */
+				ZipEntry entry = is.getNextEntry();
+				while (entry != null) {					
 
-				// If MSDL was not found at described location, query whole jar
-				// archive for a msdl file and use the first match
-				if (null == msdlFilepath) {
-					List<String> msdlFiles = FileHelper.getJarFiles(_jarFile,
-							".msdl");
-
-					if (msdlFiles.size() > 0) {
-						msdlFilepath = msdlFiles.get(0);
-					} else {
-						throw new InstallServiceException(
-								"Cannot find MSDL file in jar archive.");
+					if (entry.getName().endsWith(".msdl")) {
+						// read the MSDL file and load it into a byte array
+						int size = (int) entry.getSize();
+						_msdlFile = new byte[size];
+						_msdlFile = IOUtils.toByteArray(is, size);
+						break;
 					}
+					entry = is.getNextEntry();
 				}
-
-				// Load MSDL file from jar archive and cache it localy in temp
-				// directory using the name of the jar archive extended by .msdl
-				_msdlFile = FileHelper.createFileFromInputStream(
-						jarClassLoader.getResourceAsStream(msdlFilepath),
-						MobilisManager.DIRECTORY_TEMP_PATH + File.separator
-								+ _jarFile.getName() + ".msdl");
-
+				
+				is.close();
+				if (entry == null) {
+					throw new InstallServiceException("Cannot find MSDL file in jar archive.");
+				}
+				
+				
 				// if msdl was not found, throw InstallServiceException
-				if (null == _msdlFile)
+				if (null == _msdlFile) {
 					throw new InstallServiceException(
 							"Result of MSDL file was NULL while loading from jar archive.");
-				else
+				}
+				else {
 					MobilisManager.getLogger().log(Level.INFO,
 							String.format("MSDL found"));
-
+				}
+				
+				JarInputStream is2 = new JarInputStream(new ByteArrayInputStream(_jarFile));
+				JarClassLoader classLoader = new JarClassLoader();
+				classLoader.add(is2);
+				_serviceClassTemplate = classLoader.loadClass(serviceFilePath);
+				if (_serviceClassTemplate != null) {
+					MobilisManager.getLogger().log(Level.INFO,
+							"Service class template created.");
+				} else {
+					throw new InstallServiceException("Couldn't load service class from jar archive.");
+				}
+				
+				Persistency.getInstance().storeFile(_msdlFile, fileUserId + "_msdl");
 				// TODO: validate MSDL file against schema
 
 				// read service namespace, version and name from msdl file
@@ -431,18 +461,6 @@ public class ServiceContainer implements IServiceContainerTransitions,
 								+ _serviceNamespace + "; version="
 								+ _serviceVersion + ")"));
 
-				// read path of the MobilisService class from manifest of jar
-				// file
-				serviceFilePath = FileHelper.getJarManifestValue(_jarFile,
-						MANIFEST_SERVICECLASS_KEY);
-
-				// generate template class of service to instantiate service
-				// instance
-				_serviceClassTemplate = jarClassLoader
-						.loadClass(serviceFilePath);
-
-				MobilisManager.getLogger().log(Level.INFO,
-						"Service class template created.");
 
 				// Switch ContainerState to INSTALLED if everything goes right
 				changeContainerState(ServiceContainerState.INSTALLED);
@@ -500,20 +518,21 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	 * (non-Javadoc)
 	 * 
 	 * @see de.tudresden.inf.rn.mobilis.server.deployment.container.
-	 * IServiceContainerTransitions#update(java.io.File)
+	 * IServiceContainerTransitions#update(java.lang.byte, java.lang.String)
 	 */
 	@Override
-	public void update(File newJarFile) throws UpdateServiceException {
+	public void update(byte[] newJarFile, String fileUserId) throws UpdateServiceException {
 		MobilisManager
 				.getLogger()
 				.log(Level.INFO,
 						String.format(
 								"Start updating Service [ %s ] version < %d > with new file: %s.",
 								_serviceNamespace, _serviceVersion,
-								newJarFile.getName()));
+								fileUserId));
 
 		// backup old jar file, namepsace and version
-		File oldJarFile = _jarFile;
+		byte[] oldJarFile = _jarFile;
+		String oldFileUserId = this.fileUserId;
 		String oldNamespace = _serviceNamespace;
 		int oldVersion = _serviceVersion;
 
@@ -522,6 +541,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 
 		// replace old jarFile with new one
 		_jarFile = newJarFile;
+		this.fileUserId = fileUserId;
 
 		// install new jarFile, if fails, reset oldJarFile and install
 		try {
@@ -530,7 +550,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			changeContainerState(ServiceContainerState.INSTALLED);
 		} catch (InstallServiceException e) {
 			_jarFile = oldJarFile;
-
+			this.fileUserId = oldFileUserId;
 			try {
 				install();
 			} catch (InstallServiceException e1) {
@@ -757,7 +777,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	 * 
 	 * @return the jar file
 	 */
-	public File getJarFile() {
+	public byte[] getJarFile() {
 		return _jarFile;
 	}
 
@@ -766,8 +786,16 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	 * 
 	 * @return the msdl file
 	 */
-	public File getMsdlFile() {
+	public byte[] getMsdlFile() {
 		return _msdlFile;
+	}
+
+	public String getFileUserId() {
+		return fileUserId;
+	}
+
+	public void setFileUserId(String userFileId) {
+		this.fileUserId = userFileId;
 	}
 
 	/**

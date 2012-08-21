@@ -19,6 +19,7 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.server.services;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -228,7 +229,7 @@ public class CoordinatorService extends MobilisService {
 			ServiceContainer container = MobilisManager.getInstance().getServiceContainer( bean.serviceNamespace, bean.serviceVersion );
 			
 			if(null != container){
-				transmitFile( container.getMsdlFile(), "MSDL", bean.getFrom() );
+				transmitFile( container.getMsdlFile(), container.getFileUserId(), "MSDL", bean.getFrom() );
 			}
 		}
 	}
@@ -371,44 +372,39 @@ public class CoordinatorService extends MobilisService {
 		return null;
 	}
 
-	public boolean transmitFile(File file, String fileDesc, String toJid){
+	public boolean transmitFile(byte[] file, String fileUserId, String fileDesc, String toJid){
 		boolean transferSuccessful = false;
 		OutgoingFileTransfer transfer = _fileTransferManager.createOutgoingFileTransfer(toJid);
         
 		// check if file exists
-		if(file.exists()) {
-			MobilisManager.getLogger().log(Level.INFO ,"Start transmitting file: " + file.getAbsolutePath()
+		if(file != null) {
+			MobilisManager.getLogger().log(Level.INFO ,"Start transmitting file: " + fileUserId
 					+ " to: " + toJid);
-	        try {
-	        	// counter for sending tries
-	        	int counter = 0;
-	        	
-	        	// start sending file
-	        	transfer.sendFile(file, fileDesc);
-	        	
-	        	// while file is sending
-	        	while(!transfer.isDone()) {
-	        		// if counter of maximum tries has reached, cancel transmission
-	        		if(counter == 15){
-	        			MobilisManager.getLogger().log(Level.WARNING ,"ERROR: Filetransfer canceled. No Response!");
-	        			break;
-	        		}
-	        		// increase try counter of sending tries
-	        		counter++;
-	        		
-	        		// wait for 1000 ms and try sending the file again
-	        		try {
-	        			Thread.sleep(1000);
-	        		} catch (InterruptedException e1) {
-	        			MobilisManager.getLogger().log(Level.WARNING ,"ERROR: Thread interrupted while transmitting file: " + file.getName());
-	        		}
-	        	}
-	        	
-	        	transferSuccessful = transfer.isDone();
-	        } catch (XMPPException e) {
-	        	MobilisManager.getLogger().log(Level.WARNING ,"FileTransfer throws XMPPException:");
-	        	e.printStackTrace();
-	        }
+        	// counter for sending tries
+        	int counter = 0;
+        	
+        	// start sending file
+        	transfer.sendStream(new ByteArrayInputStream(file), fileUserId, file.length, fileDesc);
+        	
+        	// while file is sending
+        	while(!transfer.isDone()) {
+        		// if counter of maximum tries has reached, cancel transmission
+        		if(counter == 15){
+        			MobilisManager.getLogger().log(Level.WARNING ,"ERROR: Filetransfer canceled. No Response!");
+        			break;
+        		}
+        		// increase try counter of sending tries
+        		counter++;
+        		
+        		// wait for 1000 ms and try sending the file again
+        		try {
+        			Thread.sleep(1000);
+        		} catch (InterruptedException e1) {
+        			MobilisManager.getLogger().log(Level.WARNING ,"ERROR: Thread interrupted while transmitting file: " + fileUserId);
+        		}
+        	}
+        	
+        	transferSuccessful = transfer.isDone();
 		}
 		
 		MobilisManager.getLogger().log(Level.INFO ,"FileTransfer=" + transfer.getStreamID() + " successful=" + transferSuccessful);
