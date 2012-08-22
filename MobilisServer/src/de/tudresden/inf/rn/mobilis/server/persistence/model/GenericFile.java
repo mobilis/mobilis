@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.server.persistency.model;
+package de.tudresden.inf.rn.mobilis.server.persistence.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

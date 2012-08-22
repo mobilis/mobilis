@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.server.persistency;
+package de.tudresden.inf.rn.mobilis.server.persistence;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -9,21 +9,21 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
-import de.tudresden.inf.rn.mobilis.server.persistency.model.GenericFile;
+import de.tudresden.inf.rn.mobilis.server.persistence.model.GenericFile;
 
-public class Persistency {
+public class MobilisPersistence {
 	private static final String PERSISTENCE_UNIT_NAME = "files";
 	private static EntityManagerFactory factory;
-	private static Persistency persistencyInstance;
+	private static MobilisPersistence persistencyInstance;
 	
-	public Persistency() {
+	public MobilisPersistence() {
 		factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
 		// TODO: set mode (DB or filesystem) based on corresponding MobilisSettings.xml entry
 	}
 	
-	public static Persistency getInstance() {
+	public static MobilisPersistence getInstance() {
 		if (persistencyInstance == null) {
-			persistencyInstance = new Persistency();
+			persistencyInstance = new MobilisPersistence();
 			EntityManager em = factory.createEntityManager();
 			Query q = em.createQuery("select f from GenericFile f");
 			@SuppressWarnings("unchecked")

@@ -56,7 +56,7 @@ import de.tudresden.inf.rn.mobilis.server.deployment.helper.DoubleKeyMap;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.MSDLReader;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.MSDLReader.ServiceDependency;
-import de.tudresden.inf.rn.mobilis.server.persistency.Persistency;
+import de.tudresden.inf.rn.mobilis.server.persistence.MobilisPersistence;
 import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
 
 /**
@@ -207,7 +207,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	private void resetContainer() {
 		changeContainerState(ServiceContainerState.UNINSTALLED);
 
-		Persistency.getInstance().deleteFile(getFileUserId() + "_msdl");
+		MobilisPersistence.getInstance().deleteFile(getFileUserId() + "_msdl");
 		_msdlFile = null;
 
 		_serviceClassTemplate = null;
@@ -447,7 +447,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 					throw new InstallServiceException("Couldn't load service class from jar archive.");
 				}
 				
-				Persistency.getInstance().storeFile(_msdlFile, fileUserId + "_msdl");
+				MobilisPersistence.getInstance().storeFile(_msdlFile, fileUserId + "_msdl");
 				// TODO: validate MSDL file against schema
 
 				// read service namespace, version and name from msdl file

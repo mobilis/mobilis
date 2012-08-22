@@ -23,7 +23,7 @@ import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
 import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainer;
-import de.tudresden.inf.rn.mobilis.server.persistency.Persistency;
+import de.tudresden.inf.rn.mobilis.server.persistence.MobilisPersistence;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
@@ -175,7 +175,7 @@ public class DeploymentService extends MobilisService {
 							
 							// upload file to database
 							userFileId = createNewFileName(request.getFileName());
-							Persistency.getInstance().storeFile(jarData, userFileId);
+							MobilisPersistence.getInstance().storeFile(jarData, userFileId);
 
 							// Add a new uploaded service as a pending service which is
 							// waiting for installation

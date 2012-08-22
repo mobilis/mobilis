@@ -19,7 +19,7 @@ import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceEx
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.UpdateServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.DoubleKeyMap;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
-import de.tudresden.inf.rn.mobilis.server.persistency.Persistency;
+import de.tudresden.inf.rn.mobilis.server.persistence.MobilisPersistence;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.ConfigureServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.InstallServiceBean;
@@ -110,7 +110,7 @@ public class AdminService extends MobilisService {
 	private byte[] getExistingJarFile( String filepath, String filename ) {
 		byte[] jarFile = null;
 
-		jarFile = Persistency.getInstance().loadFile(filename);
+		jarFile = MobilisPersistence.getInstance().loadFile(filename);
 		if (jarFile == null) {
 			MobilisManager.getLogger().log(
 					Level.WARNING,

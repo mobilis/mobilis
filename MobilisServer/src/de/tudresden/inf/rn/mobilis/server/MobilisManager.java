@@ -50,9 +50,6 @@ import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainerS
 import de.tudresden.inf.rn.mobilis.server.deployment.event.ContainerStateEvent;
 import de.tudresden.inf.rn.mobilis.server.deployment.event.IContainerStateChangedListener;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.DoubleKeyMap;
-import de.tudresden.inf.rn.mobilis.server.persistency.IORPersistenceImplementor;
-import de.tudresden.inf.rn.mobilis.server.persistency.PIDerby;
-import de.tudresden.inf.rn.mobilis.server.persistency.PIHibernate;
 import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.Mobilis;
 
@@ -537,12 +534,6 @@ public class MobilisManager {
 	 */
 	private DoubleKeyMap< String, Integer, ServiceContainer > _serviceContainers
 		= new DoubleKeyMap< String, Integer, ServiceContainer >( true );
-	
-	
-	// TODO: PersistenceInterfaces
-	private static IORPersistenceImplementor _persistenceImplementorServer = new PIDerby();
-	private static IORPersistenceImplementor _persistenceImplementorServices = new PIHibernate();
-	
 	
 	/**
 	 * Adds a new ServiceContainer.

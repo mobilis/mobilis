@@ -9,12 +9,6 @@
 	<classpathentry kind="lib" path="libs/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="libs/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="libs/jdom.jar"/>
-	<classpathentry kind="lib" path="libs/mysql-connector-java-5.1.10-bin.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate-annotations.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate-entitymanager.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate3.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate-commons-annotations.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate-core.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/MobilisXMPP"/>
 	<classpathentry kind="lib" path="libs/commons-io-2.4.jar"/>
 	<classpathentry kind="lib" path="libs/derby.jar"/>

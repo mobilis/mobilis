@@ -24,7 +24,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jivesoftware.smack.Connection;
 
-import de.tudresden.inf.rn.mobilis.server.persistency.Persistency;
+import de.tudresden.inf.rn.mobilis.server.persistence.MobilisPersistence;
 
 /**
  * The main class of the application.
@@ -39,7 +39,7 @@ public class MobilisServer extends SingleFrameApplication {
      */
     @Override protected void startup() {
     	// prepare DB
-    	Persistency.getInstance();
+    	MobilisPersistence.getInstance();
     	
     	parentView = new MobilisServerView(this);
     	Connection.DEBUG_ENABLED = true;
@@ -55,7 +55,7 @@ public class MobilisServer extends SingleFrameApplication {
     @Override protected void shutdown() {
     	MobilisManager.getInstance().shutdown();
     	MobilisManager.getInstance().unregisterServerView(parentView);
-    	Persistency.getInstance().shutdown();
+    	MobilisPersistence.getInstance().shutdown();
     	super.shutdown();
     }
 
