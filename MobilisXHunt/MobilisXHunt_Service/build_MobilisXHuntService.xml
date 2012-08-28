@@ -70,7 +70,8 @@
 	<target name="jar" depends="compile">
 		<jar jarfile="${dist.dir}\${jar.filename}">
 			<fileset dir="${build.dir}" includes="${root.packages}" />
-			<fileset dir="${src.dir}" includes="${root.packages},${msdl.filepath}/${msdl.filename}" />
+			<fileset dir="${src.dir}" includes="
+" />
 			<fileset dir="${basedir}" includes="${res.dir}/${required.resources}" />
 
 			<zipgroupfileset dir="${lib.dir}" includes="${required.libraries}" excludes="" />

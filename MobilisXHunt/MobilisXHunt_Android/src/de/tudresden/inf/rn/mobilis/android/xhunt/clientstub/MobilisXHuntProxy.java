@@ -1,7 +1,6 @@
 package de.tudresden.inf.rn.mobilis.android.xhunt.clientstub;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-
 public class MobilisXHuntProxy {
 
 	private IMobilisXHuntOutgoing _bindingStub;

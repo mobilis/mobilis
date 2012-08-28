@@ -169,6 +169,7 @@ public class CreateGameRequest extends XMPPBean {
 		CreateGameRequest fault = ( CreateGameRequest )this.clone();
 
 		fault.setTo( this.getFrom() );
+    	fault.setId(this.getId());
 		fault.setType( XMPPBean.TYPE_ERROR );
 		fault.errorType = "modify";
 		fault.errorCondition = "not-acceptable";

@@ -51,14 +51,14 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.Const;
 import de.tudresden.inf.rn.mobilis.android.xhunt.R;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.GameDetailsResponse;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.IXMPPCallback;
-import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.MobilisServiceDiscoveryBean;
-import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.MobilisServiceInfo;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.GameState;
 import de.tudresden.inf.rn.mobilis.android.xhunt.proxy.MXAProxy;
 import de.tudresden.inf.rn.mobilis.android.xhunt.service.ServiceConnector;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogGameDetails;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogRemoteLoading;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
 
 /**
  * The Class OpenGamesActivity gives an overview of all running and open games on the current 

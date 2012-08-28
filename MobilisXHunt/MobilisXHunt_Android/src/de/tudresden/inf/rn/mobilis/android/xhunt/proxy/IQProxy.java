@@ -36,7 +36,6 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.CancelTimerRequest;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.CancelTimerResponse;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.CreateGameRequest;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.CreateGameResponse;
-import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.DepartureDataRequest;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.DepartureDataResponse;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.GameDetailsRequest;
@@ -49,7 +48,6 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.JoinGameRequest;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.JoinGameResponse;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.LocationRequest;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.LocationResponse;
-import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.MobilisServiceDiscoveryBean;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.MobilisXHuntProxy;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.PlayerExitRequest;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.PlayerExitResponse;
@@ -75,6 +73,8 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.service.XHuntService;
 import de.tudresden.inf.rn.mobilis.mxa.callbacks.IXMPPIQCallback;
 import de.tudresden.inf.rn.mobilis.mxa.parcelable.XMPPIQ;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
 
 /**
  * The Class IQProxy is a wrapper to simpify the IQ handling.

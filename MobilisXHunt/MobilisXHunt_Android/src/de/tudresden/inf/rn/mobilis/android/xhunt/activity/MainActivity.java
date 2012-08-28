@@ -37,13 +37,13 @@ import android.widget.Button;
 import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.xhunt.Const;
 import de.tudresden.inf.rn.mobilis.android.xhunt.R;
-import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.MobilisServiceDiscoveryBean;
-import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.MobilisServiceInfo;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.GameState;
 import de.tudresden.inf.rn.mobilis.android.xhunt.proxy.MXAProxy;
 import de.tudresden.inf.rn.mobilis.android.xhunt.service.ServiceConnector;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogRemoteLoading;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
 
 /**
  * The Class MainActivity is the entrypoint of the game.

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
     <jar path="MXA/build/MXAClient.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/MXA/buildMXAClientjar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
@@ -15,6 +15,7 @@
         <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa.services.servicediscovery"/>
         <file path="/MXA/src/de/tudresden/inf/rn/mobilis/mxa/IXMPPService.aidl"/>
         <file path="/MXA/src/de/tudresden/inf/rn/mobilis/mxa/services/serverlessmessaging/IServerlessMessagingService.aidl"/>
+        <javaElement handleIdentifier="=MobilisXMPP/src&lt;de.tudresden.inf.rn.mobilis.xmpp.beans.coordination{MobilisServiceDiscoveryBean.java"/>
         <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa.services.pubsub"/>
         <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa.services.multiuserchat"/>
         <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa{IXMPPService.java"/>
@@ -37,6 +38,8 @@
         <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa.services.serverlessmessaging"/>
         <file path="/MXA/src/de/tudresden/inf/rn/mobilis/mxa/services/multiuserchat/IMultiUserChatService.aidl"/>
         <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa.services.sessionmobility"/>
+        <javaElement handleIdentifier="=MobilisXMPP/src&lt;de.tudresden.inf.rn.mobilis.xmpp.beans.coordination{MobilisServiceInfo.java"/>
+        <javaElement handleIdentifier="=MobilisXMPP/src&lt;de.tudresden.inf.rn.mobilis.xmpp.beans.coordination{CreateNewServiceInstanceBean.java"/>
         <javaElement handleIdentifier="=MXA/src&lt;de.tudresden.inf.rn.mobilis.mxa{MXAController.java"/>
         <file path="/MXA/src/de/tudresden/inf/rn/mobilis/mxa/services/messagecarbons/IMessageCarbonsService.aidl"/>
         <javaElement handleIdentifier="=MXA/src&lt;de.tudresden.inf.rn.mobilis.mxa{ConstMXA.java"/>

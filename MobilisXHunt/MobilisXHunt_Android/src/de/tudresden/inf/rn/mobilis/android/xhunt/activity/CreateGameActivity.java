@@ -48,7 +48,6 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.R;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.AreaInfo;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.AreasResponse;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.CreateGameResponse;
-import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.Ticket;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.TicketAmount;
@@ -62,6 +61,7 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogInput;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogRemoteLoading;
 import de.tudresden.inf.rn.mobilis.mxa.parcelable.XMPPIQ;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 
 /**
  * The Class CreateGameActivity is used to start up a new XHunt Service on Mobilis-Server

@@ -115,6 +115,7 @@ public class TransferTicketRequest extends XMPPBean {
 		TransferTicketRequest fault = ( TransferTicketRequest )this.clone();
 
 		fault.setTo( this.getFrom() );
+    	fault.setId(this.getId());
 		fault.setType( XMPPBean.TYPE_ERROR );
 		fault.errorType = "modify";
 		fault.errorCondition = "not-acceptable";
