@@ -28,11 +28,13 @@ import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.xhunt.R;
 import de.tudresden.inf.rn.mobilis.android.xhunt.service.ServiceConnector;
 import de.tudresden.inf.rn.mobilis.mxa.ConstMXA;
@@ -164,7 +166,27 @@ public class SettingsActivity extends PreferenceActivity
 		
 		mEditServerJID = (EditTextPreference)getPreferenceScreen().findPreference(
 				getKeyServerJid());
-		
+		mEditServerJID.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				String cJid = (String) newValue;
+				if (cJid!=null && !cJid.equals("")) {				
+					String[] arr = cJid.split("/");
+					if (arr.length<2) {							
+							((EditTextPreference)preference).setText(arr[0].toLowerCase() + "/Coordinator");
+							Toast.makeText(getApplicationContext(), "No resource set. '/Coordinator' has been added.", Toast.LENGTH_LONG).show();
+							return false;
+					}					
+					((EditTextPreference)preference).setText(arr[0].toLowerCase() + "/" + arr[1]);
+					return false;
+				} else {					
+					((EditTextPreference)preference).setText("mobilis@mobilis.inf.tu-dresden.de/Coordinator");
+					Toast.makeText(getApplicationContext(), "No JID set. Using default value 'mobilis@mobilis.inf.tu-dresden.de/Coordinator'.", Toast.LENGTH_LONG).show();
+					return false;
+				}
+			}
+		});
 		
 		mSetStaticMode = (CheckBoxPreference)getPreferenceScreen().findPreference(getKeyStaticMode());
 		mSetStaticMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -245,8 +267,8 @@ public class SettingsActivity extends PreferenceActivity
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		bindXHuntService();
-    }
-
+    }	
+	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onWindowFocusChanged(boolean)
 	 */

@@ -35,7 +35,8 @@
 			android:key="@string/bundle_key_settings_serverjid"
 			android:title="@string/settings_edit_title_serverjid"
 			android:dialogTitle="@string/settings_dialog_title_serverjid"
-			android:summary="@string/settings_summary_serverjid" />
+			android:summary="@string/settings_summary_serverjid"
+			android:defaultValue="mobilis@mobilis.inf.tu-dresden.de/Coordinator"/>
       	</PreferenceCategory>
     
 </PreferenceScreen>
