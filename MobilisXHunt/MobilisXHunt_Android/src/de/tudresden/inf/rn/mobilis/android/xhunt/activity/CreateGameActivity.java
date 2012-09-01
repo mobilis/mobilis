@@ -59,6 +59,7 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.proxy.MXAProxy;
 import de.tudresden.inf.rn.mobilis.android.xhunt.service.ServiceConnector;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogInput;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogRemoteLoading;
+import de.tudresden.inf.rn.mobilis.android.xhunt.ui.SeekBarPreference;
 import de.tudresden.inf.rn.mobilis.mxa.parcelable.XMPPIQ;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
@@ -102,15 +103,15 @@ public class CreateGameActivity extends PreferenceActivity {
 	/** The textfield to configure the start timer for Mr.X. */
 	private EditTextPreference mEditStartTimer;
 	
-	/** The map(ticketId, textfield with amount of tickets) 
-	 * contains the for Mr.X. */
-	private HashMap<Integer, EditTextPreference> mPrefTicketsMrX 
-		= new HashMap<Integer, EditTextPreference>();
+	/** The map(ticketId, seekbar with amount of tickets) 
+	 * contains the tickets for Mr.X. */
+	private HashMap<Integer, SeekBarPreference> mPrefTicketsMrX 
+		= new HashMap<Integer, SeekBarPreference>();
 	
-	/** The map(ticketId, textfield with amount of tickets) 
-	 * contains the for the agents. */
-	private HashMap<Integer, EditTextPreference> mPrefTicketsAgents 
-		= new HashMap<Integer, EditTextPreference>();
+	/** The map(ticketId, seekbar with amount of tickets) 
+	 * contains the tickets for the agents. */
+	private HashMap<Integer, SeekBarPreference> mPrefTicketsAgents 
+		= new HashMap<Integer, SeekBarPreference>();
 	
 	
     /** The handler for the AreasBean shows a dialog to choose an area. */
@@ -204,31 +205,32 @@ public class CreateGameActivity extends PreferenceActivity {
 		}
 		catch(NumberFormatException e){}
 		
-		List<TicketAmount> ticketsMrX = new ArrayList< TicketAmount >();
-		List<TicketAmount> ticketsAgetns = new ArrayList< TicketAmount >();
+		List<TicketAmount> ticketsMrX = new ArrayList<TicketAmount>();
+		List<TicketAmount> ticketsAgents = new ArrayList<TicketAmount>();
 		
-		for(Map.Entry<Integer, EditTextPreference> entry : mPrefTicketsMrX.entrySet()){
+		for(Map.Entry<Integer, SeekBarPreference> entry : mPrefTicketsMrX.entrySet()){
 			int amount = 0;
 			
 			try{
-				amount = Integer.valueOf(mSharedPrefHelper.getValue(entry.getValue().getKey()));
+				//amount = Integer.valueOf(mSharedPrefHelper.getValue(entry.getValue().getKey()));
+				amount = mSharedPrefHelper.getValueAsInt(entry.getValue().getKey());
 			}
 			catch(NumberFormatException e){}
 
 			if(amount > 0)
-				ticketsMrX.add( new TicketAmount( entry.getKey(), amount ));
+				ticketsMrX.add(new TicketAmount(entry.getKey(), amount));
 		}
 		
-		for(Map.Entry<Integer, EditTextPreference> entry : mPrefTicketsAgents.entrySet()){
+		for(Map.Entry<Integer, SeekBarPreference> entry : mPrefTicketsAgents.entrySet()){
 			int amount = 0;
 			
 			try{
-				amount = Integer.valueOf(mSharedPrefHelper.getValue(entry.getValue().getKey()));
+				amount = mSharedPrefHelper.getValueAsInt(entry.getValue().getKey());
 			}
 			catch(NumberFormatException e){}
 			
 			if(amount > 0)
-				ticketsAgetns.add( new TicketAmount( entry.getKey(), amount ));
+				ticketsAgents.add( new TicketAmount(entry.getKey(), amount));
 		}
 		
 		// Send a create game request with the configuration to the XHunt-Service
@@ -242,7 +244,7 @@ public class CreateGameActivity extends PreferenceActivity {
 				maxplayers,
 				starttimer,
 				new TicketsMrX( ticketsMrX ),
-				new TicketsAgents( ticketsAgetns ), 
+				new TicketsAgents( ticketsAgents ), 
 				_createGameCallback );
 	}
 	
@@ -309,18 +311,18 @@ public class CreateGameActivity extends PreferenceActivity {
      * @param role the role of the player (Mr.X or Agent)
      * @return the edits the text preference
      */
-    private EditTextPreference createTicketPrefEntry(String ticketName, String role){
-		EditTextPreference pref = new EditTextPreference(this);
+    private SeekBarPreference createTicketPrefEntry(String ticketName, String role) {
+    	int defaultTicketCount = 30;
+    	SeekBarPreference seekbar = new SeekBarPreference(this, 0, 99, defaultTicketCount, "tickets");
 		
-		pref.setKey("key_newgame_" + role.toLowerCase() + ticketName.toLowerCase());
-		pref.setTitle(ticketName + " (" + role + ")");
-		pref.setDialogTitle("Amount of " + ticketName + " tickets for " + role);
-		pref.setSummary("");
+		seekbar.setKey("key_newgame_" + role.toLowerCase() + ticketName.toLowerCase());
+		seekbar.setTitle(ticketName + " (" + role + ")");
+		seekbar.setSummary("set number of tickets");
 		
-		if(mSharedPrefHelper.getValue(pref.getKey()) == null)
-			mSharedPrefHelper.setValue(pref.getKey(), "0");
+		if(mSharedPrefHelper.getValueAsInt(seekbar.getKey()) == -1)
+			mSharedPrefHelper.setValueInt(seekbar.getKey(), defaultTicketCount);
 		
-		return pref;
+		return seekbar;
     }
 	
 	/* (non-Javadoc)
@@ -329,7 +331,6 @@ public class CreateGameActivity extends PreferenceActivity {
 	@Override
 	public void finish() {
 		mServiceConnector.doUnbindXHuntService();
-		
 		super.finish();
 	}
 	
@@ -489,7 +490,6 @@ public class CreateGameActivity extends PreferenceActivity {
 	    if ((keyCode == KeyEvent.KEYCODE_BACK)) {
 	    	destroyCreatedServiceInstance();
 	    }
-	    
 	    return super.onKeyDown(keyCode, event);	    
 	}
 	
@@ -503,7 +503,6 @@ public class CreateGameActivity extends PreferenceActivity {
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		updateSummaries();
-		
 		super.onWindowFocusChanged(hasFocus);
 	}
     
@@ -520,7 +519,6 @@ public class CreateGameActivity extends PreferenceActivity {
 	    	
 	    	final CharSequence[] items = areaList.toArray(new CharSequence[areaList.size()]);
 	
-	
 	    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
 	    	builder.setTitle("Choose an Area:");
 	    	builder.setItems(items, new DialogInterface.OnClickListener() {
@@ -528,8 +526,8 @@ public class CreateGameActivity extends PreferenceActivity {
 	    	    	mSelectedArea = mAreas.get(item);
 	    	    	
 	    	    	for(Ticket entry : mSelectedArea.getTickets()){
-	    	    		EditTextPreference prefMrX = createTicketPrefEntry(entry.getName(), "Mr.X");
-	    	    		EditTextPreference prefAgents = createTicketPrefEntry(entry.getName(), "Agents");
+	    	    		SeekBarPreference prefMrX = createTicketPrefEntry(entry.getName(), "Mr.X");
+	    	    		SeekBarPreference prefAgents = createTicketPrefEntry(entry.getName(), "Agents");
 	    	    		
 	    	    		getPreferenceScreen().addPreference(prefMrX);
 	    	    		getPreferenceScreen().addPreference(prefAgents);
@@ -584,15 +582,7 @@ public class CreateGameActivity extends PreferenceActivity {
 		}
 		else{
 			mEditStartTimer.setSummary(startTimerVal);
-		}
-		
-		for(EditTextPreference pref : mPrefTicketsAgents.values()){
-			pref.setSummary(mSharedPrefHelper.getValue(pref.getKey()));
-		}
-		
-		for(EditTextPreference pref : mPrefTicketsMrX.values()){
-			pref.setSummary(mSharedPrefHelper.getValue(pref.getKey()));
-		}
+		}	
 	}
 	
 	
