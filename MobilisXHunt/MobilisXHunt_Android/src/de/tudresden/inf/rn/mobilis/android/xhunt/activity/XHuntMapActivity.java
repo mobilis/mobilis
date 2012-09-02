@@ -1036,7 +1036,7 @@ public class XHuntMapActivity extends MapActivity {
 					
 					// Get the icons of the tickets and add them to the used ticket list
 					for(Integer ticketId : entry.getTicketIds()){
-						tickets.add(mRouteManagement.getAreaTickets().get(ticketId).getIcon());
+						tickets.add(mRouteManagement.getAreaTickets().get(ticketId).getIcon(getResources()));
 					}
 					
 					// add player icon, name and the used tickets as icons to the used ticket dialog
@@ -1063,7 +1063,7 @@ public class XHuntMapActivity extends MapActivity {
 				// Store new departures in mDialogDepartures
 				for(DepartureInfo departure : bean.getDepartures()){
 					mDialogDepartures.addDeparture(
-							mRouteManagement.getAreaTickets().get(departure.getVehicleId()).getIcon(),
+							mRouteManagement.getAreaTickets().get(departure.getVehicleId()).getIcon(getResources()),
 							departure.getVehicleName(),
 							departure.getDirection(),
 							departure.getTimeLeft());

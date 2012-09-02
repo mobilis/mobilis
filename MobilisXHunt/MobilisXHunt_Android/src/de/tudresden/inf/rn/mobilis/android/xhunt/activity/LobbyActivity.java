@@ -19,7 +19,8 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.android.xhunt.activity;
 
-import java.io.File;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,7 +36,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
@@ -261,8 +261,7 @@ public class LobbyActivity extends Activity {
 	};
 
 	/** The messenger for incoming files to get the packets. */
-	private Messenger mIncomingFileMessenger = new Messenger(
-			mIncomingFileHandler);
+	private Messenger mIncomingFileMessenger = new Messenger(mIncomingFileHandler);
 
 	/** The handler for JoinGameBeans. */
 	private Handler mJoinGameHandler = new Handler() {
@@ -275,8 +274,13 @@ public class LobbyActivity extends Activity {
 			// Store information about the incoming files which will be
 			// transmitted
 			// after this bean has arrived and start progress dialog
-			mDialogIncomingFiles.setMaxValue(mAnnouncedIncomingFiles.size());
-			mDialogIncomingFiles.run();
+			/*
+			 * Commented out because although the server could still send files, they are not used anymore.
+			 * Instead they are integrated in the /res folder.
+			 * 
+			 * mDialogIncomingFiles.setMaxValue(mAnnouncedIncomingFiles.size());
+			 * mDialogIncomingFiles.run();
+			 */
 
 			// If joining game was successful, enter chatroom and register popup
 			// for incoming
@@ -447,6 +451,13 @@ public class LobbyActivity extends Activity {
 					new GameStateLobby());
 			mMxaProxy = mServiceConnector.getXHuntService().getMXAProxy();
 			mGame = mServiceConnector.getXHuntService().createNewGame();
+			
+			/*
+			 * parseDataXML() was formerly called in handleDeliveredFile(), now moved to mXHuntServiceBoundHandler because
+			 * the area.xml now is integrated in res/raw/ instead of being sent by the server
+			 */
+			Reader reader = new InputStreamReader(getResources().openRawResource(R.raw.area_1_v1));
+			mGame.getRouteManagement().parseDataXML(reader);
 
 			registerXMPPCallbacks();
 			joinGame();
@@ -490,14 +501,18 @@ public class LobbyActivity extends Activity {
 	private void handleDeliveredFile(int requestCode) {
 		// If file contains the area information, then parse information and
 		// store it in the Game class.
-		if (mIncomingFiles.get(requestCode) != null
+		/*
+		 * Not needed anymore because the area.xml was integrated in res/raw/.
+		 * I'll keep the code here just in case someone wants to change it back.
+		 * parseDataXML() is called in onCreate() now.
+		 * 
+		 * if (mIncomingFiles.get(requestCode) != null
 				&& mIncomingFiles.get(requestCode).contains("area")) {
-			mGame.getRouteManagement().parseDataXML(
-					mIncomingFiles.get(requestCode));
-		}
+			mGame.getRouteManagement().parseDataXML(mIncomingFiles.get(requestCode));
+		}*/
 
 		// Increment progress of dialog by 1 and if transmission is complete,
-		// then dismiss th dialog.
+		// then dismiss the dialog.
 		if (mDialogIncomingFiles != null) {
 			mDialogIncomingFiles.incrementCurrentValueBy(1);
 
@@ -955,11 +970,8 @@ public class LobbyActivity extends Activity {
 					+ mGame.getRouteManagement().getMyTickets().size());
 
 			// Get the icons of the tickets and add them to the used ticket list
-			for (Map.Entry<Integer, Integer> entity : mGame
-					.getRouteManagement().getMyTickets().entrySet()) {
-				tickets.put(
-						mGame.getRouteManagement().getAreaTickets()
-								.get(entity.getKey()).getIcon(),
+			for (Map.Entry<Integer, Integer> entity : mGame.getRouteManagement().getMyTickets().entrySet()) {
+				tickets.put(mGame.getRouteManagement().getAreaTickets().get(entity.getKey()).getIcon(getResources()),
 						entity.getValue());
 			}
 
@@ -1028,8 +1040,7 @@ public class LobbyActivity extends Activity {
 	 * Start game and send an UpdatePlayerIQ to the server.
 	 * 
 	 * @param player
-	 *            the player which will start the game which should be the own
-	 *            player
+	 *            the player which will start the game which should be the own player            
 	 */
 	private void startGame(XHuntPlayer player) {
 		mRemoteLoadingDialog
@@ -1070,9 +1081,12 @@ public class LobbyActivity extends Activity {
 		public void processFile(IFileAcceptCallback accepCallback,
 				FileTransfer xmppFile, String streamID) throws RemoteException {
 
+			/*
+			 * Not needed anymore because the area.xml and vehicle icons were integrated in the res folder.
+			 * I'll keep the code here just in case someone wants to change it back.
+			 * 
 			// TODO: requires sd card
-			File sdFolder = new File(Environment.getExternalStorageDirectory()
-					.getAbsoluteFile()
+			File sdFolder = new File(Environment.getExternalStorageDirectory().getAbsoluteFile()
 					+ File.separator
 					+ Const.GAME_DATA_DIR_NAME);
 			// If the xhunt directory doesn't exist, create it
@@ -1088,10 +1102,16 @@ public class LobbyActivity extends Activity {
 			// Accept file if its not already on our phone to save bandwidth
 			if (inFile.exists()) {
 				Log.v(TAG, "file exists: " + xmppFile.path);
+				
+			*/
 
 				mIncomingFileExistsHandler.sendEmptyMessage(0);
-				accepCallback.denyFileTransferRequest(mDummyMessenger,
-						mTransferRequestCode, streamID);
+				accepCallback.denyFileTransferRequest(mDummyMessenger, mTransferRequestCode, streamID);
+				
+			/*
+			 * Not needed anymore because the area.xml and vehicle icons were integrated in the res folder.
+			 * I'll keep the code here just in case someone wants to change it back.
+			 * 
 			} else {
 				accepCallback.acceptFile(mIncomingFileMessenger,
 						mTransferRequestCode, streamID,
@@ -1100,6 +1120,8 @@ public class LobbyActivity extends Activity {
 				Log.v(TAG, "File received: " + xmppFile.path + "(" + streamID
 						+ ")");
 			}
+			
+			*/
 
 			mTransferRequestCode++;
 		}
@@ -1239,7 +1261,7 @@ public class LobbyActivity extends Activity {
 									bean.getId());
 				}
 			}
-			// Hnadle StartRoundBean and store the tickets in the Game class.
+			// Handle StartRoundBean and store the tickets in the Game class.
 			else if (inBean instanceof StartRoundRequest) {
 				StartRoundRequest bean = (StartRoundRequest) inBean;
 
@@ -1279,7 +1301,7 @@ public class LobbyActivity extends Activity {
 
 		/**
 		 * Handle location bean which was transmitted from server and send back
-		 * own current postion.
+		 * own current position.
 		 * 
 		 * @param bean
 		 *            the transmitted bean

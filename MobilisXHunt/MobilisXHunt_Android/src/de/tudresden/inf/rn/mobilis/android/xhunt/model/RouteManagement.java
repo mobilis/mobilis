@@ -19,10 +19,9 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.android.xhunt.model;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +32,6 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.graphics.Paint;
-import android.os.Environment;
 import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
@@ -74,7 +72,6 @@ public class RouteManagement {
 	/** The tickets of the area (ticketId, Ticket). */
 	private HashMap<Integer, Ticket> mAreaTickets;
 	
-	// 
 	/** The amount of own tickets in this game (ticketId, amount). */
 	private Map<Integer, Integer> mMyTickets;
 	
@@ -428,8 +425,13 @@ public class RouteManagement {
 			else if(parser.getAttributeName(i).equals("name"))
 				ticket.setName(parser.getAttributeValue(i));
 			else if(parser.getAttributeName(i).equals("icon")){
-				ticket.setIconPath(Environment.getExternalStorageDirectory().getAbsoluteFile()
+				/*
+				 * Changed because vehicle icons now are included in res/drawable-mdpi/.
+				 * 
+				 * ticket.setIconPath(Environment.getExternalStorageDirectory().getAbsoluteFile()
 						+ File.separator + Const.GAME_DATA_DIR_NAME + File.separator + parser.getAttributeValue(i));
+				*/
+				ticket.setIconFileName(parser.getAttributeValue(i));
 			}
 			else if(parser.getAttributeName(i).equals("issuperior"))
 				ticket.setSuperior(Boolean.valueOf(parser.getAttributeValue(i)));
@@ -501,17 +503,26 @@ public class RouteManagement {
 	/**
 	 * Parse an xml which contains the game data.
 	 *
-	 * @param path the path to the xml file
+	 * @param reader a reader for the xml file.
 	 * @return true, if successful
 	 */
-	public boolean parseDataXML(String path){
+	/*
+	 * Changed argument because the area.xml isn't stored on the external memory any more,
+	 * instead it's integrated in /res/raw/. I'll keep the two old lines outcommented just
+	 * in case someone wants to change it back.
+	 * 
+	 * public boolean parseDataXML(String path){
+	 */
+	public boolean parseDataXML(Reader reader) {
 		boolean success = false;
 		
 		XmlPullParserFactory factory;
 		try {
 			factory = XmlPullParserFactory.newInstance();
 			XmlPullParser parser = factory.newPullParser();
-			parser.setInput(new FileReader(path));
+			
+			//parser.setInput(new FileReader(path));
+			parser.setInput(reader);
 			
 			boolean done = false;
 			
