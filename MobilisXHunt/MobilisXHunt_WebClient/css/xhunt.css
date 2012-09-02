@@ -14,3 +14,21 @@
 #content{
 	padding: 0;
 }
+
+/*
+#user-list-panel-popup {
+    right: 0 !important;
+    left: auto !important;
+}
+#user-list-panel {
+    width: auto;
+    border: 1px solid #000;
+    border-right: none;
+    background: rgba(0,0,0,.5);
+    margin: -1px 0;
+}
+#user-list-panel .ui-btn {
+    margin: 2em 15px;
+}
+
+*/

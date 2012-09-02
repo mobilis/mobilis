@@ -4,21 +4,10 @@
     *
     */
     var xhunt = {
-         /** Constants: xHunt Namespaces
-         *
-         *  NS.JOINGAME - JoinGameIQ
-         *  NS.GAMEDETAILS - GameDetailsIQ
-         *  NS.USEDTICKETS - UsedTicketsIQ
-         *  NS.SNAPSHOT - SnapshotIQ
-         *  NS.PLAYEREXIT - PlayerExitIQ
-         *  NS.LOCATION - LocationIQ
-         *  NS.PLAYERS - PlayersIQ
-         *  NS.STARTROUND - StartRoundIQ
-         *  NS.ROUNDSTATUS - RoundStatusIQ
-         */
         
         NS: {
             JOINGAME: 'mobilisxhunt:iq:joingame',
+            UPDATEPLAYER: 'mobilisxhunt:iq:updateplayer',
             GAMEDETAILS: 'mobilisxhunt:iq:gamedetails',
             USEDTICKETS: 'mobilisxhunt:iq:usedtickets',
             SNAPSHOT: 'mobilisxhunt:iq:snapshot',
@@ -32,7 +21,14 @@
         settings: {},
         
         handlers: {},
-        
+
+        /** Function:  setXhuntServer
+        *  Sets the URL to the mobilis Server
+        *
+        *  Parameters:
+        *    (Function) resultcallback - Callback for incoming response IQ stanzas of type RESULT
+        *    (Function) errorcallback - Callback for incoming response IQ stanzas of type ERROR, or timeout
+        */
         setXhuntServer: function(resultcallback, errorcallback) {
             if (!resultcallback) {
                 resultcallback = Mobilis.core.defaultcallback;
@@ -56,7 +52,7 @@
         },
 
         /** Function:  joinGame
-        *  Sends joinGameIQ of type 'set' to join as Spectator.
+        *  Sends joinGameIQ of type 'set' to join Game.
         *
         *  Parameters:
         *    (String) gameJID - JID of the Xhuntservice representing the game
@@ -71,22 +67,78 @@
                 errorcallback = Mobilis.core.defaulterrorback;
                  
             if (gameJID){ 
-                Mobilis.xhunt.gameJID = gameJID;        
+                Mobilis.xhunt.gameJID = gameJID;
                 var customiq = $iq({
                     to: gameJID,
-                    type: 'get'
+                    type: 'set'
                 })
                 .c('JoinGameRequest' , {xmlns : Mobilis.xhunt.NS.JOINGAME})
                 .c('GamePassword').up();
                 if (playerName) 
-                    customiq.c('PlayerName').t(playerName).up().c('IsSpectator').t('true');
+                    customiq.c('PlayerName').t(playerName).up().c('IsSpectator').t('false');
             } else {
                 errorcallback(null, 'Game JID not defined');
             }
 
             Mobilis.core.sendIQ(customiq, resultcallback, errorcallback);
         },
-        
+
+        respondPlayer: function(gameJID, resultcallback, errorcallback){
+            if (!resultcallback) 
+                resultcallback = Mobilis.core.defaultcallback; 
+            if (!errorcallback) 
+                errorcallback = Mobilis.core.defaulterrorback;
+
+            var customIq = $iq({
+                to: gameJID,
+                type: 'result'
+            })
+            .c('PlayersResponse', {xmlns : Mobilis.xhunt.NS.PLAYERS});
+            Mobilis.core.sendIQ(customIq);
+        },
+
+        /** Function:  updatePlayer
+        *  Sends updatePlayerIQ of type 'set'.
+        *
+        *  Parameters:
+        *    (String) gameJID - JID of the Xhuntservice representing the game
+        *    (Array) attr - Attribute. [playername] toDo password
+        *    (Function) resultcallback - Callback for incoming response IQ stanzas of type RESULT
+        *    (Function) errorcallback - Callback for incoming response IQ stanzas of type ERROR, or timeout
+        */
+        updatePlayer: function(gameJID, playerJid, playerName, isModerator, isMrX, isReady, resultcallback, errorcallback) {
+            if (!resultcallback) 
+                resultcallback = Mobilis.core.defaultcallback; 
+            if (!errorcallback) 
+                errorcallback = Mobilis.core.defaulterrorback;
+
+            if (gameJID) {
+                if (playerName) {
+                    Mobilis.xhunt.gameJID = gameJID;
+                    var customIq = $iq({
+                        to: gameJID,
+                        type: 'set'
+                    })
+                    .c('UpdatePlayerRequest', {xmlns : Mobilis.xhunt.NS.UPDATEPLAYER})
+                    .c('PlayerInfo')
+                    .c('Jid').t(playerJid).up()//+'@mobilis.inf.tu-dresden.de/35098e1e').up()
+                    .c('PlayerName').t(playerName).up()
+                    .c('IsModerator').t(isModerator ?'true':'false').up()
+                    .c('IsMrX').t(isMrX ?'true':'false').up()
+                    .c('IsReady').t(isReady ?'true':'false').up();
+                    // if (isModerator) customIq.c('IsModerator').t('true').up();
+                    // if (isMrX) customIq.c('IsMrX').t('true').up();
+                    // if (isReady) customIq.c('IsReady').t('true').up();
+                } else {
+                    errorcallback(null, 'playerName not defined');
+                }
+            } else {
+                errorcallback(null, 'gameJID not defined');
+            }
+
+            Mobilis.core.sendIQ(customIq, resultcallback, errorcallback);
+        }, 
+
         /** Function:  gameDetails
         *  Sends gameDetailsIQ of type 'get'.
         *
@@ -95,7 +147,7 @@
         *    (Function) resultcallback - Callback for incoming response IQ stanzas of type RESULT
         *    (Function) errorcallback - Callback for incoming response IQ stanzas of type ERROR, or timeout
         */
-        gameDetails: function(gameJID,resultcallback, errorcallback) {
+        gameDetails: function(gameJID, resultcallback, errorcallback) {
             if (!resultcallback) 
                 resultcallback = Mobilis.core.defaultcallback; 
             if (!errorcallback) 
@@ -190,7 +242,7 @@
                     })
                     .c('PlayerExitRequest' , {xmlns : Mobilis.xhunt.NS.PLAYEREXIT});
                     if (playerJID) 
-                        customiq.c('Jid').t(playerJID).up().c('IsSpectator').t('true');
+                        customiq.c('Jid').t(playerJID).up().c('IsSpectator').t('false');
             } else {
                 errorcallback(null, 'Game JID not defined');
             }
@@ -272,6 +324,13 @@
             Mobilis.connection.addHandler(
                 handler,
                 Mobilis.xhunt.NS.JOINGAME
+            );
+        },
+       
+        addUpdatePlayerHandler: function(handler) {
+            Mobilis.connection.addHandler(
+                handler,
+                Mobilis.xhunt.NS.UPDATEPLAYER
             );
         },
        

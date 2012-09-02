@@ -468,7 +468,7 @@ $(document).bind('joinGame',
 		xhunt.addHandlers();
         Mobilis.xhunt.joinGame(
             data.jid,
-            'Spectator',
+            'WebSpectator',
             function (iq){
                 // ToDO Game Name
                 $.jGrowl('Game joined');
