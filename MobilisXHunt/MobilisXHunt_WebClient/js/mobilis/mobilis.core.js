@@ -259,7 +259,7 @@
         },
         
         defaulterrorback: function (iq,msg) {
-            console.log('default error');
+            console.log('default error from core');
             if (iq) {
                 console.log(iq);
             }
