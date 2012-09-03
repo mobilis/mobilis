@@ -26,7 +26,7 @@ package de.tudresden.inf.rn.mobilis.android.xhunt.ui;
 import java.util.HashMap;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -95,10 +95,9 @@ public class PanelTickets extends PanelTransparent {
 		for(Ticket ticket : mGame.getRouteManagement().getAreaTickets().values()){
 			if(mGame.getRouteManagement().getMyTickets().containsKey(ticket.getId())){
 				ImageTextViewPair pair = new ImageTextViewPair(mContext);
-				pair.create(ticket.getIconPath(), "" 
-						+ mGame.getRouteManagement().getMyTickets().get(ticket.getId()));
+				pair.create(ticket.getIcon(getResources()),
+						"" + mGame.getRouteManagement().getMyTickets().get(ticket.getId()));
 				mImageTextViewPairs.put(ticket.getId(), pair);
-				Log.v("", "iPath: " + ticket.getIconPath());
 				
 				this.addView(pair);
 			}
@@ -211,12 +210,12 @@ public class PanelTickets extends PanelTransparent {
 		 * Creates the ImageTextViewPair.
 		 *
 		 * @param imagePath the path to the image of the ticket
-		 * @param text the anount of the ticket
+		 * @param text the amount of the ticket
 		 */
-		public void create(String imagePath, String text){
+		public void create(Bitmap icon, String text){
 			this.mImageView = new ImageView(mContext);
 			this.mImageView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-			this.mImageView.setImageBitmap(BitmapFactory.decodeFile(imagePath));
+			this.mImageView.setImageBitmap(icon);
 			this.addView(mImageView);
 			
 			this.mTextView = new TextView(mContext);

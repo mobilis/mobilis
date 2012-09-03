@@ -19,6 +19,7 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.android.xhunt.model;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -33,8 +34,8 @@ public class Ticket {
 	/** The name of the ticket. */
 	private String mName;
 	
-	/** The path to the icon of this ticket type. */
-	private String mIconPath;
+	/** The name of the icon resource in res/drawable-mdpi/. */
+	private String mIconFileName;
 	
 	/** If this type of ticket is special (currently if 
 	 * this type is independent from routes like black ticket). */
@@ -46,47 +47,15 @@ public class Ticket {
 	public Ticket() {}
 	
 	/**
-	 * Instantiates a new ticket.
-	 *
-	 * @param id the id of the ticket
-	 * @param name the name of the ticket
-	 */
-	public Ticket(int id, String name) {
-		this.mId = id;
-		this.mName = name;
-	}
-
-	/**
-	 * Instantiates a new ticket.
-	 *
-	 * @param id the id of the ticket
-	 * @param name the name of the ticket
-	 * @param iconPath the path to the icon of this ticket type
-	 * @param isSuperior if this ticket type is special
-	 */
-	public Ticket(int id, String name, String iconPath, boolean isSuperior) {
-		this.mId = id;
-		this.mName = name;
-		this.mIconPath = iconPath;
-		this.mIsSuperior = isSuperior;
-	}
-	
-	/**
 	 * Gets the icon as Bitmap (@see android.graphics.Bitmap).
 	 *
 	 * @return the icon
 	 */
-	public Bitmap getIcon(){
-		return BitmapFactory.decodeFile(mIconPath);
-	}
-	
-	/**
-	 * Gets the icon path.
-	 *
-	 * @return the icon path
-	 */
-	public String getIconPath() {
-		return mIconPath;
+	public Bitmap getIcon(Resources res) {
+		String iconName = mIconFileName.substring(0, mIconFileName.indexOf(".png"));
+		int id = res.getIdentifier(iconName, "drawable", "de.tudresden.inf.rn.mobilis.android.xhunt");
+		
+		return BitmapFactory.decodeResource(res, id);
 	}
 	
 	/**
@@ -117,12 +86,12 @@ public class Ticket {
 	}
 	
 	/**
-	 * Sets the icon path.
+	 * Sets the icon file name in /res/drawable-mdpi/.
 	 *
-	 * @param mIconPath the new icon path
+	 * @param iconFileName the new icon file name
 	 */
-	public void setIconPath(String mIconPath) {
-		this.mIconPath = mIconPath;
+	public void setIconFileName(String iconFileName) {
+		this.mIconFileName = iconFileName;
 	}
 
 	/**
@@ -157,7 +126,7 @@ public class Ticket {
 	 */
 	@Override
 	public String toString() {
-		return "Ticket [mId=" + mId + ", mName=" + mName + ", mIconPath="
-				+ mIconPath + ", mIsSuperior=" + mIsSuperior + "]";
+		return "Ticket [mId=" + mId + ", mName=" + mName + ", mIconPath=res/drawable-mdpi/"
+				+ mIconFileName + ", mIsSuperior=" + mIsSuperior + "]";
 	}	
 }
