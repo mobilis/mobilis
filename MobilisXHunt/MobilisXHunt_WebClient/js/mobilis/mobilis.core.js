@@ -79,9 +79,9 @@
     	        //console.log('Send: ' + data);
     	    	//$('#log1').append('<div></div>').append(document.createTextNode('SEND: ' + data ))
     	    };
-    	    var barejid = jid + '@mobilis.inf.tu-dresden.de';
-    	    console.log(barejid);
-            conn.connect(barejid, password,
+    	    //var barejid = jid + '@mobilis.inf.tu-dresden.de';
+    	    console.log(jid);
+            conn.connect(jid, password,
             function(status) {
                 if (status == Mobilis.core.Status.ERROR) {
                     console.log('connection error');

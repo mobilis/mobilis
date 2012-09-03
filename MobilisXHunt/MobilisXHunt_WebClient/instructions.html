@@ -1,7 +1,7 @@
 <!DOCTYPE html> 
 <html> 
-	<head> 
-	<title>Settings | Mobilis XHunt</title> 
+	<head>
+	<title>Instructions | Mobilis XHunt</title> 
 	<meta charset="utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 
@@ -28,31 +28,23 @@
 </head> 
 <body> 
 
-<div id="settings-page" data-role="page">
+<div id="index-page" data-role="page">
 
 	<div data-role="header">
 		<a href="index.html" class="ui-btn-left" data-icon="back">Back</a>
-		<h1>Settings | Mobilis XHunt</h1>
+		<h1>Instructions | Mobilis XHunt</h1>
 
 	</div><!-- /header -->
 
 	<div data-role="content">
 
-		<form id="settings-form" action="#" method="post">	
-			<div data-role="fieldcontain" class="ui-hide-label">
-				<label for="username">Username:</label>
-				<input type="text" name="username" id="username" value="" placeholder="Username" required="required"/>
-			</div>
-			<div data-role="fieldcontain" class="ui-hide-label">
-				<label for="jid">JID:</label>
-				<input type="text" name="jid" id="jid" value="" placeholder="JID" required="required"/>
-			</div>
-			<div data-role="fieldcontain" class="ui-hide-label">
-				<label for="username">Password:</label>
-				<input type="password" name="password" id="password" value="" placeholder="Password" required="required"/>
-			</div>
-			<button type="submit" name="submit" id="submit" value="submit" data-theme="b">Submit</button>
-		</form>
+		<div id="start-screen">
+			<p>This game is the real-time version of the famous board game Scotland Yard.</p>
+			<p>here are two kinds of characters: Mister X, a criminal, and some agents that haunt him. Mr. X tries not to be caught. Everyone only has a certain number of different tickets, for example 5 bus tickets, 5 tram tickets and 2 railway tickets.</p>
+			<p>The game consists of 10 rounds, in each one first Mr. X has to choose his next target and then the agents. After this it needs some time until everybody reaches the target station by bus, tram or railway. If everybody arrived and Mr. X is not on the same station as one agent, the next round starts.</p>
+			<p>If Mr. X is caught the agents win, but if the ten rounds are over and Mr. X wasn't found, he wins.</p>
+			<a id="play-xhunt" href="game.html" data-role="button" data-theme="b">Play XHunt</a>			
+		</div>
 
 	</div><!-- /content -->
 
