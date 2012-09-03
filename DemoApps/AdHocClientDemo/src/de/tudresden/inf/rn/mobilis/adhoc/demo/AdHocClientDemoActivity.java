@@ -25,7 +25,6 @@ package de.tudresden.inf.rn.mobilis.adhoc.demo;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -59,7 +58,7 @@ public class AdHocClientDemoActivity extends Activity implements MXAListener {
 	private SetColorMessage mColorMessage = new SetColorMessage(0xFFFF0000);
 
 	/** Called when the activity is first created. */
-	@Override
+	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
@@ -68,7 +67,7 @@ public class AdHocClientDemoActivity extends Activity implements MXAListener {
 		mBtnPublish = (Button) findViewById(R.id.main_btn_register);
 		mBtnPublish.setOnClickListener(new OnClickListener() {
 
-			@Override
+			
 			public void onClick(View v) {
 				XMPPPresence presence = new XMPPPresence();
 				try {
@@ -88,7 +87,7 @@ public class AdHocClientDemoActivity extends Activity implements MXAListener {
 		mBtnUnregister = (Button) findViewById(R.id.main_btn_unregister);
 		mBtnUnregister.setOnClickListener(new OnClickListener() {
 
-			@Override
+			
 			public void onClick(View v) {
 				try {
 					mMXAController.getXMPPService()
@@ -107,7 +106,7 @@ public class AdHocClientDemoActivity extends Activity implements MXAListener {
 		mBtnSelectColor = (Button) findViewById(R.id.main_btn_selectcolor);
 		mBtnSelectColor.setOnClickListener(new OnClickListener() {
 
-			@Override
+			
 			public void onClick(View v) {
 				ColorPickerDialog dlg = new ColorPickerDialog(v.getContext(),
 						new OnColorChangedListener() {

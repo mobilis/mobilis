@@ -37,14 +37,11 @@
     <string name="bundle_key_settings_logging">key_settings_logging</string>
     <string name="bundle_key_settings_deletelogs">key_settings_deletelogs</string>
     
-    <string name="main_button_play_title">Start</string>
+    <string name="main_button_play_title">Play</string>
     <string name="main_button_settings_title">Settings</string>
     <string name="main_button_instructions_title">Instructions</string>
     <string name="main_button_profile_title">Profile</string>
     <string name="main_button_exit_title">Exit</string>
-    
-    <string name="lobby_button_invite_title">Invite Player</string>
-    <string name="lobby_button_ready_title">Ready</string>
     
     <string name="muc_button_send_title">Send</string>
 	<string name="muc_editor_hint_title">Type in here</string>
