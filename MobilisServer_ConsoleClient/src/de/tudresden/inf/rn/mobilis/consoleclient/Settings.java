@@ -51,8 +51,8 @@ public class Settings {
 	 * Inits the default values.
 	 */
 	private void init() {
-		_clientNode = "adminclient";
-		_clientPassword = "mobilis_pass";
+		_clientNode = "mobilis";
+		_clientPassword = "54321#pca";
 		_clientResource = "JavaClient";		
 		
 		_mobilisCoordinatorResource = "Coordinator";
