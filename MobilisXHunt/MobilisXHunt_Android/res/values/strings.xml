@@ -43,6 +43,9 @@
     <string name="main_button_profile_title">Profile</string>
     <string name="main_button_exit_title">Exit</string>
     
+    <string name="lobby_button_invite_title">Invite Player</string>
+    <string name="lobby_button_ready_title">Ready</string>
+    
     <string name="muc_button_send_title">Send</string>
 	<string name="muc_editor_hint_title">Type in here</string>
 	
