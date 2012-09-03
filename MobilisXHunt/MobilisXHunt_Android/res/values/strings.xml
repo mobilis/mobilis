@@ -21,6 +21,8 @@
 <resources>
     <string name="app_name">MobilisXHunt</string>
     
+    <string name="default_jid_server">mobilis@mobilis.inf.tu-dresden.de/Coordinator</string>
+    
     <string name="bundle_key_newgame_name">key_newgame_name</string>   	
    	<string name="bundle_key_newgame_maxplayers">key_newgame_maxplayers</string>
    	<string name="bundle_key_newgame_minplayers">key_newgame_minplayers</string>

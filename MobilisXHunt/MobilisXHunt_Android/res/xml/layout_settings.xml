@@ -8,7 +8,8 @@
 			android:key="@string/bundle_key_settings_username"
 			android:title="@string/settings_edit_title_username"
 			android:dialogTitle="@string/settings_dialog_title_username"
-			android:summary="@string/settings_summary_username" />       
+			android:summary="@string/settings_summary_username"
+			android:defaultValue="" />       
     </PreferenceCategory>
     
 	<PreferenceCategory
@@ -36,7 +37,7 @@
 			android:title="@string/settings_edit_title_serverjid"
 			android:dialogTitle="@string/settings_dialog_title_serverjid"
 			android:summary="@string/settings_summary_serverjid"
-			android:defaultValue="mobilis@mobilis.inf.tu-dresden.de/Coordinator"/>
+			android:defaultValue="@string/default_jid_server"/>
       	</PreferenceCategory>
     
 </PreferenceScreen>
