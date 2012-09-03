@@ -1,8 +1,7 @@
 var xhunt = {
-	XMPP: 'mobilis.inf.tu-dresden.de',
-	NAME: 'WebClient',
-	USER: 'xhunt03',
-	PASSWORD: '54321#pca',
+	NAME: localStorage.getItem('mobilis.xhunt.username'),
+	JID: localStorage.getItem('mobilis.xhunt.jid'),
+	PASSWORD: localStorage.getItem('mobilis.xhunt.password'),
 	gameinfo: {
 		joined : 'false'
 	},
@@ -362,14 +361,17 @@ var xhunt = {
 		// if (Mobilis.core.Status.CONNECTED){
 		// 	Mobilis.core.disconnect('reconnect');
 		// };
+		console.log('connect: ' + xhunt.JID + ' '+ xhunt.PASSWORD);
 		Mobilis.core.connect(
-		xhunt.USER,
+		xhunt.JID,
 		xhunt.PASSWORD,
 		function(status) {
 			
 			if (status == Mobilis.core.Status.CONNECTED) {
 				xhunt.queryGames();
-			} 
+			} else {
+				console.log('connection failed')
+			}
 		}
 		);
 	},
@@ -424,7 +426,7 @@ var xhunt = {
 
 	updatePlayer : function () {
 		Mobilis.xhunt.updatePlayer(
-			localStorage.getItem('mobilis.xhunt.jid'), //gameJID
+			localStorage.getItem('mobilis.xhunt.gamejid'), //gameJID
 			Mobilis.connection.jid, //playerJid
 			xhunt.NAME, //playerName
 			false, //isModerator
@@ -459,7 +461,8 @@ var xhunt = {
 				xhunt.gameinfo['nick'] = xhunt.NAME;
 
   				$('#query-games-button').remove();
-				$('#game-name').append(': ' + xhunt.gameinfo.name);
+				$('#game-name').prepend(xhunt.gameinfo.name+' | Mobilis XHunt');
+				$('title').prepend(xhunt.gameinfo.name+' | Mobilis XHunt');
 				$('#header').append('<a href="#user-list-panel" class="ui-btn-left" id="show-players-button" data-rel="popup" data-position-to="window" data-role="button">Show Players</a>');
 				$('#header').append('<a href="#"class="ui-btn-right" id="ingame-menu-button" data-rel="popup" data-position-to="window" data-role="button">Menu</a>');
 
@@ -515,7 +518,7 @@ var xhunt = {
 		if (Mobilis.connection.connected) {
 			if (Mobilis.xhunt.gameJID){
 				Mobilis.xhunt.playerExit(
-					localStorage.getItem('mobilis.xhunt.jid'), //gameJID
+					localStorage.getItem('mobilis.xhunt.gamejid'), //gameJID
 					Mobilis.connection.jid, //playerJid
 					function (iq){  // resultcallback
 						console.log('playerExit result:');
@@ -528,7 +531,8 @@ var xhunt = {
 				);
 				$('#ingame-menu-button').remove();
 				$('#show-players-button').remove();
-				$('#game-name').empty().append('XHunt');
+				$('#game-name').empty().append('Mobilis XHunt');
+				$('title').empty().append('Mobilis XHunt');
 				$('#header').append('<a href="#" class="ui-btn-right" id="query-games-button" >Games</a>');
 
 				xhunt.queryGames();
@@ -714,7 +718,7 @@ var xhunt = {
 
 
 
-$(document).on('pageinit', '#game', function() {
+$(document).on('pageinit', '#game-page', function() {
 
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(
@@ -755,7 +759,7 @@ $(document).on('pageinit', '#game', function() {
 
 $(document).on('click', '.available-game', function () {
 
-	localStorage.setItem('mobilis.xhunt.jid', $(this).attr('id'));
+	localStorage.setItem('mobilis.xhunt.gamejid', $(this).attr('id'));
 
 	xhunt.gameinfo['gameJID'] = $(this).attr('id');
 	xhunt.gameinfo['name'] = $(this).text();
@@ -792,6 +796,31 @@ $(document).on('click', '#ingame-menu-button', function() {
 		corners: true
 	});
 });
+
+
+$(document).on('pageinit', '#settings-page', function() {
+	$('#settings-form #username').val( function() {
+		return localStorage.getItem('mobilis.xhunt.username');
+	});
+	$('#settings-form #jid').val( function() {
+		return localStorage.getItem('mobilis.xhunt.jid');
+	});
+	$('#settings-form #password').val( function() {
+		return localStorage.getItem('mobilis.xhunt.password');
+	});
+});
+
+
+$(document).on('click', '#settings-form #submit', function() {
+	localStorage.setItem('mobilis.xhunt.username', $('#settings-form #username').val());
+	localStorage.setItem('mobilis.xhunt.jid', $('#settings-form #jid').val());
+	localStorage.setItem('mobilis.xhunt.password', $('#settings-form #password').val());
+	console.log(localStorage.getItem('mobilis.xhunt.username'));
+	console.log(localStorage.getItem('mobilis.xhunt.jid'));
+	console.log(localStorage.getItem('mobilis.xhunt.password'));
+	return true;
+});
+
 
 
 $(window).on('orientationchange resize pageshow', function() {

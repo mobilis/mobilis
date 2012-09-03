@@ -19,9 +19,9 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.android.xhunt.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.graphics.Color;
 import android.util.Log;
@@ -46,7 +46,7 @@ public class Game {
 	private int currentRound;
 	
 	/** The game players. (jid, xhuntplayer) */
-	private HashMap<String, XHuntPlayer> gamePlayers;
+	private ConcurrentHashMap<String, XHuntPlayer> gamePlayers;
 	
 	/** The chat id. */
 	private String chatID;
@@ -55,19 +55,19 @@ public class Game {
 	private String chatPassword;
 	
 	/** Available tickets for this game (id, ticket). */
-	private HashMap<Integer, Ticket> mTickets;
+	private ConcurrentHashMap<Integer, Ticket> mTickets;
     
     /** The game start timer. */
     private int gameStartTimer;
     
     /** The remain player icons and colors for the agents. */
-    private ArrayList<IconColorPair> mAgentsIconColorPairs;
+    private CopyOnWriteArrayList<IconColorPair> mAgentsIconColorPairs;
     
     /** The icon and color for mr.x. */
     private IconColorPair mMrXIconColorPair;
     
     /** The informations for the available areas fetched from server. */
-    private ArrayList<AreaInfo> Areas = new ArrayList<AreaInfo>();
+    private CopyOnWriteArrayList<AreaInfo> Areas = new CopyOnWriteArrayList<AreaInfo>();
     
     /** The routemanagement to handle map data. */
     private RouteManagement mRoutemanagement;
@@ -85,9 +85,9 @@ public class Game {
 		
 		mRoutemanagement = new RouteManagement();
 		
-		gamePlayers = new HashMap<String, XHuntPlayer>();		
-		mTickets = new HashMap<Integer, Ticket>();		
-		mAgentsIconColorPairs = new ArrayList<Game.IconColorPair>();
+		gamePlayers = new ConcurrentHashMap<String, XHuntPlayer>();		
+		mTickets = new ConcurrentHashMap<Integer, Ticket>();		
+		mAgentsIconColorPairs = new CopyOnWriteArrayList<Game.IconColorPair>();
 		
 		// Loads the available player icons and colors
 		mAgentsIconColorPairs.add(new IconColorPair(R.drawable.ic_player_blue_36,
@@ -121,7 +121,7 @@ public class Game {
 	 *
 	 * @return the all tickets
 	 */
-	public HashMap<Integer, Ticket> getAllTickets(){
+	public ConcurrentHashMap<Integer, Ticket> getAllTickets(){
 		return mTickets;
 	}
 
@@ -130,7 +130,7 @@ public class Game {
 	 *
 	 * @return the area infos.
 	 */
-	public ArrayList<AreaInfo> getAreas() {
+	public CopyOnWriteArrayList<AreaInfo> getAreas() {
 		return Areas;
 	}
 	
@@ -186,7 +186,7 @@ public class Game {
 	 * 
 	 * @return the game players
 	 */
-	public HashMap<String, XHuntPlayer> getGamePlayers() {
+	public ConcurrentHashMap<String, XHuntPlayer> getGamePlayers() {
 		return gamePlayers;
 	}
 	
@@ -285,7 +285,7 @@ public class Game {
 	 *
 	 * @param areas the new areas
 	 */
-	public void setAreas(ArrayList<AreaInfo> areas) {
+	public void setAreas(CopyOnWriteArrayList<AreaInfo> areas) {
 		Areas = areas;
 	}
 	
