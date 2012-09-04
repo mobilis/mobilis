@@ -134,7 +134,7 @@ public class PrepareServiceUploadBean extends XMPPBean {
 				.append("</" + _xmlTag_SingleMode + ">");
 		}
 		
-		if (getType() == XMPPBean.TYPE_GET) {
+		if (getType() == XMPPBean.TYPE_RESULT) {
 			sb.append("<" + _xmlTag_AcceptServiceUpload + ">")
 			.append(this.AcceptServiceUpload)
 			.append("</" + _xmlTag_AcceptServiceUpload + ">");	
