@@ -87,7 +87,7 @@ public class BeanSenderReceiver<B extends XMPPBean, ResultBeanType extends XMPPB
 				resultBean = (ResultBeanType)(adapter.getBean());
 			}
 			if (adapter == null || resultBean == null) {
-				if (retryCount > maxRetries) {
+				if (retryCount >= maxRetries) {
 					return null;
 				} else {
 					retryCount++;
