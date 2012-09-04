@@ -152,7 +152,7 @@ public class CommandShell {
 			sb.append( "\nhelp" );
 			sb.append( "\ninstall <filename>" );
 			sb.append( "\nregister <namespace> <version>" );
-			sb.append( "\nsend <path>" );
+			sb.append( "\nsend [single | multi] <path>" );
 			sb.append( "\nset <clientnode | clientpw | clientresource | coordinatorresource | adminresource | deploymentresource | servernode | serverresource | serveraddress | serverport | serverdomain> <value>" );
 			sb.append( "\nstartsvc <namespace> [<version>]" );
 			sb.append( "\nstopsvc <jid>" );
@@ -192,8 +192,16 @@ public class CommandShell {
 			break;
 
 		case Send:
-			if ( inputArray.length > 1 ) {
-				_commandInterpreter.sendFile( inputArray[1] );
+			if ( inputArray.length == 2 ) {
+				_commandInterpreter.sendFile( inputArray[1], false, false);
+			} else if (inputArray.length > 2) {
+				if (inputArray[1].equals("single")) {
+					_commandInterpreter.sendFile(inputArray[2], true, true);
+				} else if (inputArray[1].equals("multi")) {
+					_commandInterpreter.sendFile(inputArray[2], true, false);
+				} else {
+					_controller.getLog().writeToConsole( "Unknown parameter " + inputArray[1] + " for command <Send>");
+				}
 			} else
 				_controller.getLog().writeToConsole( "Missing parameter for command <Send>" );
 

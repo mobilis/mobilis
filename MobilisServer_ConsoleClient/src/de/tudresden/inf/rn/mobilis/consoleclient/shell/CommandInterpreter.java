@@ -109,12 +109,11 @@ public class CommandInterpreter {
 	 *
 	 * @param filepath the filepath
 	 */
-	public void sendFile(String filepath){
+	public void sendFile(String filepath, boolean autoDeploy, boolean singleMode){
 		File file = new File(filepath);
 		
-		
 		if(file.exists()){
-			if (sendPrepareFile(file.getName())) {
+			if (sendPrepareFile(file.getName(), autoDeploy, singleMode)) {
 				boolean success = _controller.getConnection().transmitFile( 
 						file,
 						"",
@@ -137,9 +136,11 @@ public class CommandInterpreter {
 	 *
 	 * @param filename the filename
 	 */
-	private boolean sendPrepareFile(String filename){
+	private boolean sendPrepareFile(String filename, boolean autoDeploy, boolean singleMode){
 		PrepareServiceUploadBean bean = new PrepareServiceUploadBean(filename);
 		bean.setTo( _controller.getSettings().getMobilisDeploymentJid() );
+		bean.autoDeploy = autoDeploy;
+		bean.singleMode = singleMode;
 		bean.setType( XMPPBean.TYPE_SET );
 		
 		BeanSenderReceiver<PrepareServiceUploadBean, PrepareServiceUploadBean> bsr = new BeanSenderReceiver<PrepareServiceUploadBean, PrepareServiceUploadBean>(_controller.getConnection().getXMPPConnection());

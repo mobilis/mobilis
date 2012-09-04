@@ -17,9 +17,13 @@ public class PrepareServiceUploadBean extends XMPPBean {
 	
 	// SET
 	public String Filename = null;
+	public boolean autoDeploy = false;
+	public boolean singleMode = false;
 	
 	private String _xmlTag_AcceptServiceUpload = "acceptServiceUpload";
 	private String _xmlTag_Filename = "filename";
+	private String _xmlTag_AutoDeploy = "autoDeploy";
+	private String _xmlTag_SingleMode = "singleMode";
 	
 	
 	public PrepareServiceUploadBean() {
@@ -38,6 +42,14 @@ public class PrepareServiceUploadBean extends XMPPBean {
 		super();
 		
 		this.Filename = fileName;
+	}
+	
+	public PrepareServiceUploadBean(String fileName, boolean autoDeploy, boolean singleMode) {
+		super();
+		
+		this.Filename = fileName;
+		this.autoDeploy = autoDeploy;
+		this.singleMode = singleMode;
 	}
 	
 	// ERROR
@@ -69,8 +81,12 @@ public class PrepareServiceUploadBean extends XMPPBean {
 					parser.next();
 				} else if (tagName.equals(_xmlTag_Filename)) {
 					this.Filename = parser.nextText();		
+				} else if (tagName.equals(_xmlTag_AutoDeploy)) {
+					this.autoDeploy = Boolean.parseBoolean(parser.nextText());
+				} else if (tagName.equals(_xmlTag_SingleMode)) {
+					this.singleMode = Boolean.parseBoolean(parser.nextText());
 				} else if (tagName.equals(_xmlTag_AcceptServiceUpload)) {
-					this.AcceptServiceUpload = Boolean.parseBoolean( parser.nextText() );	
+					this.AcceptServiceUpload = Boolean.parseBoolean( parser.nextText() );
 				} else if (tagName.equals("error")) {
 					parser = parseErrorAttributes(parser);
 				} else
@@ -104,15 +120,25 @@ public class PrepareServiceUploadBean extends XMPPBean {
 	@Override
 	public String payloadToXML() {
 		StringBuilder sb = new StringBuilder();
-		
-		if (null != this.Filename)
-			sb.append("<" + _xmlTag_Filename + ">")
+
+		if (getType() == XMPPBean.TYPE_SET) {
+			if (null != this.Filename)
+				sb.append("<" + _xmlTag_Filename + ">")
 				.append(this.Filename)
 				.append("</" + _xmlTag_Filename + ">");
+			sb.append("<" + _xmlTag_AutoDeploy + ">")
+				.append(this.autoDeploy)
+				.append("</" + _xmlTag_AutoDeploy + ">");
+			sb.append("<" + _xmlTag_SingleMode + ">")
+				.append(this.singleMode)
+				.append("</" + _xmlTag_SingleMode + ">");
+		}
 		
-		sb.append("<" + _xmlTag_AcceptServiceUpload + ">")
+		if (getType() == XMPPBean.TYPE_GET) {
+			sb.append("<" + _xmlTag_AcceptServiceUpload + ">")
 			.append(this.AcceptServiceUpload)
 			.append("</" + _xmlTag_AcceptServiceUpload + ">");	
+		}
 		
 		sb = appendErrorPayload(sb);
 		
