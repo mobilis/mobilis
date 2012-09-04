@@ -192,16 +192,8 @@ public class CommandShell {
 			break;
 
 		case Send:
-			if ( inputArray.length > 2 ) {
-				if ( inputArray[1].toLowerCase().equals( "preparefile" ) ) {
-					_commandInterpreter.sendPrepareFile( inputArray[2] );
-				} else if ( inputArray[1].toLowerCase().equals( "file" ) ) {
-					_commandInterpreter.sendFile( inputArray[2] );
-				} else {
-					_controller.getLog().writeToConsole(
-							"Unknown parameters <" + inputArray[1] + ", " + inputArray[2]
-									+ "> for command <" + input + ">" );
-				}
+			if ( inputArray.length > 1 ) {
+				_commandInterpreter.sendFile( inputArray[1] );
 			} else
 				_controller.getLog().writeToConsole( "Missing parameter for command <Send>" );
 

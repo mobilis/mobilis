@@ -17,7 +17,6 @@ import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
 import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 
-import de.tudresden.inf.rn.mobilis.consoleclient.bean.BeanProviderAdapter;
 import de.tudresden.inf.rn.mobilis.consoleclient.listener.IQListener;
 import de.tudresden.inf.rn.mobilis.consoleclient.listener.MessageListener;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
@@ -32,6 +31,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscove
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
 
 /**
  * The Class Connection.
@@ -69,6 +69,10 @@ public class Connection {
 		_controller = controller;
 	}
 
+	public XMPPConnection getXMPPConnection() {
+		return _xmppConnection;
+	}
+	
 	/**
 	 * Converts an xmpp bean to iq.
 	 * 
