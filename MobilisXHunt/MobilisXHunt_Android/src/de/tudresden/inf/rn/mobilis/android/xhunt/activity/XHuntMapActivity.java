@@ -741,7 +741,7 @@ public class XHuntMapActivity extends MapActivity {
 		}
 		// If ticket was tapped (see first if-case) and not the "Cancel" item
 		else if(item.getGroupId() > -1 && item.getItemId() > -1
-				&& item.getItemId() != R.id.menu_context_map_cancel){
+				&& item.getItemId() != R.id.menu_context_map_cancel){		
 			// If player isn't unmovable
 			if(!mGame.getRouteManagement().isMyPlayerUnmovable(getMyPlayer())){
 				Log.v("", "ticket: " 
@@ -774,10 +774,15 @@ public class XHuntMapActivity extends MapActivity {
 	 * @see android.app.Activity#onContextMenuClosed(android.view.Menu)
 	 */
 	@Override
-	public void onContextMenuClosed (Menu menu){
+	public void onContextMenuClosed(Menu menu){
 		super.onContextMenuClosed(menu);
-		// Reset the tappedReachableStation
-		tappedReachableStation = null;
+		
+		/*
+		 *  Reset the tappedReachableStation
+		 *  commented out because in Android 4.1 onContextMenuClosed() was even called when going from menu to submenu,
+		 *  which led to NullPointer Exceptions. Not needed anyway, as it seems 
+		 */
+		//tappedReachableStation = null;
 	}
 	
 	/**
