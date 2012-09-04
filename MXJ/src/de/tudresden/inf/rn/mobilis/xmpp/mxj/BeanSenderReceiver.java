@@ -77,7 +77,9 @@ public class BeanSenderReceiver<B extends XMPPBean, ResultBeanType extends XMPPB
 	
 	@SuppressWarnings("unchecked")
 	private ResultBeanType sendAndWaitForResult(B bean) {
-		this.connection.sendPacket(new BeanIQAdapter(bean));
+		if (bean != null) {
+			this.connection.sendPacket(new BeanIQAdapter(bean));
+		}
 		while(true) {
 			BeanIQAdapter adapter = (BeanIQAdapter)(beanCollector.nextResult(timeout));
 			ResultBeanType resultBean = null;
