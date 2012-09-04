@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universität Dresden
+ * Copyright (C) 2010 Technische Universitï¿½t Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -326,6 +326,15 @@ public class CommandShell {
 		case XMPPInfo:
 			_controller.getConnection().printXMPPInfo();
 
+			break;
+			
+		case FastInstall:
+			if (inputArray.length > 1) {
+				_controller.getLog().writeToConsole("Not yet implemented!");
+			} else {
+				_controller.getLog().writeToConsole(
+						"Missing parameter for command <" + input + ">" );
+			}
 			break;
 
 		default:
