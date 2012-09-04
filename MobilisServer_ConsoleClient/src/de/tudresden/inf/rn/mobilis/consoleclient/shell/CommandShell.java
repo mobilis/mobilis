@@ -152,7 +152,7 @@ public class CommandShell {
 			sb.append( "\nhelp" );
 			sb.append( "\ninstall <filename>" );
 			sb.append( "\nregister <namespace> <version>" );
-			sb.append( "\nsend [preparefile | file] <filename | path>" );
+			sb.append( "\nsend <path>" );
 			sb.append( "\nset <clientnode | clientpw | clientresource | coordinatorresource | adminresource | deploymentresource | servernode | serverresource | serveraddress | serverport | serverdomain> <value>" );
 			sb.append( "\nstartsvc <namespace> [<version>]" );
 			sb.append( "\nstopsvc <jid>" );
