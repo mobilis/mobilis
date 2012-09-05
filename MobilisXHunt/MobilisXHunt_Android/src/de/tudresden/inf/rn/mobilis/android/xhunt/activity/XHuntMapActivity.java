@@ -882,8 +882,16 @@ public class XHuntMapActivity extends MapActivity {
 			}
 			
  			return true;
+ 			
  		// Menu 'game info' was tapped
 		case R.id.menu_map_ingameinfo:
+			
+			// no ticket info before first round, show Toast instead
+			if (mGame.getCurrentRound() == 0) {
+				Toast.makeText(this, "no tickets consumed yet", Toast.LENGTH_LONG).show();
+				return true;
+			}
+			
 			// Start loading dialog
 			mRemoteLoadingDialog.setLoadingText("Requesting ticket data.\n\n     Please wait...");
 			mRemoteLoadingDialog.run();
