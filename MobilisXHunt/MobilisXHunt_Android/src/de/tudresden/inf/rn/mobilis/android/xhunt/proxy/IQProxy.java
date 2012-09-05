@@ -543,15 +543,6 @@ public class IQProxy {
 		
 		Log.v("IQProxy", "MobilisServiceDiscoveryBean send");
 	}
-	
-	/**
-	 * Sets the jid of the Mobilis server Coordinator.
-	 *
-	 * @param mServerCoordinatorJid the new jid of the coordinator
-	 */
-	public void setServerCoordinatorJid(String mServerCoordinatorJid) {
-		this.mServerCoordinatorJid = mServerCoordinatorJid;
-	}
 
 	/**
 	 * Sets the jid of the Mobilis XHunt service (game service).
@@ -680,14 +671,16 @@ public class IQProxy {
 	 * Updates the server jid from shared preferences (can be modified by user in SettingsActivity).
 	 */
 	public void updateServerJid(){
-		String serverJid = mXhuntService.getSharedPrefHelper()
-			.getValue(mXhuntService.getResources()
+		String serverJid = mXhuntService.getSharedPrefHelper().getValue(mXhuntService.getResources()
 					.getString(R.string.bundle_key_settings_serverjid));
 		
-		Log.v(TAG, "jid: " + serverJid);
+		if(serverJid == null)
+			serverJid = mXhuntService.getResources().getString(R.string.default_jid_server);
 		
-		if(serverJid != null)
+		if(!serverJid.equals(mServerCoordinatorJid)) {
+			Log.v(TAG, "ServerJID changed from " + mServerCoordinatorJid + " to " + serverJid);
 			mServerCoordinatorJid = serverJid;
+		}
 	}
 
 

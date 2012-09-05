@@ -180,9 +180,10 @@ public class SettingsActivity extends PreferenceActivity
 					}					
 					((EditTextPreference)preference).setText(arr[0].toLowerCase() + "/" + arr[1]);
 					return false;
-				} else {					
-					((EditTextPreference)preference).setText("mobilis@mobilis.inf.tu-dresden.de/Coordinator");
-					Toast.makeText(getApplicationContext(), "No JID set. Using default value 'mobilis@mobilis.inf.tu-dresden.de/Coordinator'.", Toast.LENGTH_LONG).show();
+				} else {
+					String defaultJID = getResources().getString(R.string.default_jid_server);
+					((EditTextPreference)preference).setText(defaultJID);
+					Toast.makeText(getApplicationContext(), "No JID set. Using default value '" + defaultJID + "'.", Toast.LENGTH_LONG).show();
 					return false;
 				}
 			}
