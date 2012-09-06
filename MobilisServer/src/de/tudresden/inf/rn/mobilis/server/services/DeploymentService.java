@@ -110,7 +110,7 @@ public class DeploymentService extends MobilisService {
 					
 					@Override
 					public void run() {
-						String message = null;
+						String message = "";
 						boolean transmissionSuccessful = false;
 						File incomingFile = createNewIncomingFile( request.getFileName() );
 						
@@ -140,10 +140,11 @@ public class DeploymentService extends MobilisService {
 									
 		//							if (transfer.getStatus().equals(FileTransfer.Status.complete)) {
 										transmissionSuccessful = true;
+										message = String.format( "Successful FileTransfer of file: %s",
+												incomingFile.getName() );
 										MobilisManager.getLogger().log(
 												Level.INFO,
-												String.format( "Successful FileTransfer of file: %s",
-														incomingFile.getName() ) );
+												message );
 		//							} else {
 		//								message = String.format( "FileTransfer of file: %s failed: ",
 		//										incomingFile.getName()); 
@@ -176,11 +177,13 @@ public class DeploymentService extends MobilisService {
 								try {
 									// install
 									serviceContainer.install();
+									message += "\n***" + serviceContainer.getServiceNamespace() + " version " + serviceContainer.getServiceVersion() + "***";
 									if ( serviceContainer.getContainerState() == ServiceContainerState.INSTALLED ) {
 										MobilisManager.getInstance().addServiceContainer( serviceContainer );
 
 										MobilisManager.getInstance().removePendingServiceByFileName(
 												incomingFile.getName() );
+										message += "\nService installation successful.";
 
 									} else {
 										message += "\nInstallation failed: Couldn't move service from pending to regular.";
@@ -228,23 +231,25 @@ public class DeploymentService extends MobilisService {
 									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password",
 												getAgent().getSettingString( "password" ) );
 									serviceContainer.configure(configuration);
+									message += "\nService configuration successful.";
 									
 									// register
 									serviceContainer.register();
+									message += "\nService registration successful.";
 								} catch (InstallServiceException e) {
-									message = e.getMessage();
+									message += "\n" + e.getMessage();
 									e.printStackTrace();
 								} catch (RegisterServiceException e) {
-									message = e.getMessage();
+									message += "\n" + e.getMessage();
 									e.printStackTrace();
 								}
 							}
-						} else if ( null == message ) {
-							message += "\nUnknown failure while uploading file";
+						} else if ( message.equals("") || message == null ) {
+							message = "Unknown failure while uploading file";
 						}
 		
-						if ( null != message ) {
-							MobilisManager.getLogger().log( Level.WARNING, message );
+						if ( null != message && !message.equals("") ) {
+							MobilisManager.getLogger().log( Level.INFO, message );
 						}
 		
 						sendServiceUploadConclusionBeanSET( request.getRequestor(), transmissionSuccessful,
