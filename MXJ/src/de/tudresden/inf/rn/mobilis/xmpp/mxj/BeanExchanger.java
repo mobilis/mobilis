@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universität Dresden
+ * Copyright (C) 2010 Technische Universitï¿½t Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  * mobilis project: http://mobilisplatform.sourceforge.net
  ******************************************************************************/
 
-package de.tudresden.inf.rn.mobilis.consoleclient.bean;
+package de.tudresden.inf.rn.mobilis.xmpp.mxj;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

@@ -1,6 +1,7 @@
 package de.tudresden.inf.rn.mobilis.server.services;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,12 @@ import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
 import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainer;
+import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainerState;
+import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceException;
+import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceException;
+import de.tudresden.inf.rn.mobilis.server.deployment.helper.DoubleKeyMap;
+import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
+import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileUploadInformation;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
@@ -43,8 +50,8 @@ public class DeploymentService extends MobilisService {
 	 * The list with expected jar files (a PrepareServiceUploadBean is required
 	 * first).
 	 */
-	private Map< String, String > _expectedUploads = Collections
-			.synchronizedMap( new HashMap< String, String >() );
+	private Map< String, FileUploadInformation > _expectedUploads = Collections
+			.synchronizedMap( new HashMap< String, FileUploadInformation >() );
 
 	// public void log( String str ) {
 	// System.out.println( "[" + _dateFormatter.format(
@@ -98,70 +105,158 @@ public class DeploymentService extends MobilisService {
 		FileTransferNegotiator.setServiceEnabled( getAgent().getConnection(), true );
 
 		_fileTransferManager.addFileTransferListener( new FileTransferListener() {
-			public void fileTransferRequest( FileTransferRequest request ) {
-				String message = null;
-				boolean transmissionSuccessful = false;
-				File incomingFile = createNewIncomingFile( request.getFileName() );
-
-				MobilisManager.getLogger().log(
-						Level.INFO,
-						String.format( "Incoming FileTransfer from: %s with filename: %s",
-								request.getRequestor(), request.getFileName() ) );
-
-				// log( "file expected: requestor="
-				// + _expectedUploads.containsKey( request.getRequestor() ) +
-				// " filename="
-				// + _expectedUploads.get( request.getRequestor() ) );
-
-				// Only if 'preparefile' bean was sent, requestor can upload the
-				// service
-				if ( _expectedUploads.containsKey( request.getRequestor() )
-						&& request.getFileName().equals(
-								_expectedUploads.get( request.getRequestor() ) )
-						&& null != incomingFile ) {
-					// Accept Filetransfer
-					try {
-						if ( request.getFileSize() > 0 ) {
-							IncomingFileTransfer transfer = request.accept();
-							transfer.recieveFile( incomingFile );
-
-							transmissionSuccessful = true;
-
-							MobilisManager.getLogger().log(
-									Level.INFO,
-									String.format( "Successful FileTransfer of file: %s",
-											incomingFile.getName() ) );
+			public void fileTransferRequest(final FileTransferRequest request ) {
+				Thread t = new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						String message = "";
+						boolean transmissionSuccessful = false;
+						File incomingFile = createNewIncomingFile( request.getFileName() );
+						
+						MobilisManager.getLogger().log(
+								Level.INFO,
+								String.format( "Incoming FileTransfer from: %s with filename: %s",
+										request.getRequestor(), request.getFileName() ) );
+						
+						// log( "file expected: requestor="
+						// + _expectedUploads.containsKey( request.getRequestor() ) +
+						// " filename="
+						// + _expectedUploads.get( request.getRequestor() ) );
+						
+						// Only if 'preparefile' bean was sent, requestor can upload the
+						// service
+						FileUploadInformation inf = _expectedUploads.get( request.getRequestor() );
+						if ( _expectedUploads.containsKey( request.getRequestor() )
+								&& request.getFileName().equals(
+										inf.fileName )
+								&& null != incomingFile ) {
+							// Accept Filetransfer
+							try {
+								if ( request.getFileSize() > 0 ) {
+									IncomingFileTransfer transfer = request.accept();
+									InputStream recieveFileInputStream = transfer.recieveFile();
+									FileHelper.createFileFromInputStream(recieveFileInputStream, incomingFile.getAbsolutePath());
+									
+		//							if (transfer.getStatus().equals(FileTransfer.Status.complete)) {
+										transmissionSuccessful = true;
+										message = String.format( "Successful FileTransfer of file: %s",
+												incomingFile.getName() );
+										MobilisManager.getLogger().log(
+												Level.INFO,
+												message );
+		//							} else {
+		//								message = String.format( "FileTransfer of file: %s failed: ",
+		//										incomingFile.getName()); 
+		//							}
+		
+								}
+							} catch ( XMPPException e ) {
+								transmissionSuccessful = false;
+								message = String.format( "FileTransfer of file: %s failed: ",
+										incomingFile.getName(), e.getMessage() );
+							}
+						} else {
+							message = "File was not expected.";
+		
+							request.reject();
 						}
-					} catch ( XMPPException e ) {
-						transmissionSuccessful = false;
-						message = String.format( "FileTransfer of file: %s failed: ",
-								incomingFile.getName(), e.getMessage() );
+		
+						if ( transmissionSuccessful ) {
+							synchronized ( _expectedUploads ) {
+								_expectedUploads.remove( request.getRequestor() );
+							}
+		
+							// Add a new uploaded service as a pending service which is
+							// waiting for installation
+							ServiceContainer serviceContainer = new ServiceContainer( incomingFile );
+							MobilisManager.getInstance().addPendingService(
+									serviceContainer );
+							
+							if (inf.autoDeploy) {
+								try {
+									// install
+									serviceContainer.install();
+									message += "\n***" + serviceContainer.getServiceNamespace() + " version " + serviceContainer.getServiceVersion() + "***";
+									if ( serviceContainer.getContainerState() == ServiceContainerState.INSTALLED ) {
+										MobilisManager.getInstance().addServiceContainer( serviceContainer );
+
+										MobilisManager.getInstance().removePendingServiceByFileName(
+												incomingFile.getName() );
+										message += "\nService installation successful.";
+
+									} else {
+										message += "\nInstallation failed: Couldn't move service from pending to regular.";
+
+										MobilisManager.getLogger().log( Level.WARNING, message );
+									}
+
+									
+									// configure
+									DoubleKeyMap< String, String, Object > configuration = new DoubleKeyMap< String, String, Object >(
+											false );
+									
+									// use data from admins agent / default if nothing was set
+									
+									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "name",
+											serviceContainer.getServiceName() );
+									
+									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "mode",
+											inf.singleMode?"single":"multi" );
+									
+									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "port",
+											getAgent().getSettingString( "port" ) );
+									
+									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username",
+											getAgent().getSettingString( "username" ) );
+									
+									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "host",
+											getAgent().getSettingString( "host" ) );
+									
+									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "start",
+											"ondemand" );
+									
+									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "description",
+											serviceContainer.getServiceName() );
+									
+									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "service",
+												getAgent().getSettingString( "service" ) );
+									
+									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "resource",
+											serviceContainer.getServiceName() );
+									
+									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "type",
+											"de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent" );
+									
+									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password",
+												getAgent().getSettingString( "password" ) );
+									serviceContainer.configure(configuration);
+									message += "\nService configuration successful.";
+									
+									// register
+									serviceContainer.register();
+									message += "\nService registration successful.";
+								} catch (InstallServiceException e) {
+									message += "\n" + e.getMessage();
+									e.printStackTrace();
+								} catch (RegisterServiceException e) {
+									message += "\n" + e.getMessage();
+									e.printStackTrace();
+								}
+							}
+						} else if ( message.equals("") || message == null ) {
+							message = "Unknown failure while uploading file";
+						}
+		
+						if ( null != message && !message.equals("") ) {
+							MobilisManager.getLogger().log( Level.INFO, message );
+						}
+		
+						sendServiceUploadConclusionBeanSET( request.getRequestor(), transmissionSuccessful,
+								incomingFile.getName(), message );
 					}
-				} else {
-					message = "File was not expected.";
-
-					request.reject();
-				}
-
-				if ( transmissionSuccessful ) {
-					synchronized ( _expectedUploads ) {
-						_expectedUploads.remove( request.getRequestor() );
-					}
-
-					// Add a new uploaded service as a pending service which is
-					// waiting for installation
-					MobilisManager.getInstance().addPendingService(
-							new ServiceContainer( incomingFile ) );
-				} else if ( null == message ) {
-					message = "Unkown failure while uploading file";
-				}
-
-				if ( null != message ) {
-					MobilisManager.getLogger().log( Level.INFO, message );
-				}
-
-				sendServiceUploadConclusionBeanSET( request.getRequestor(), transmissionSuccessful,
-						incomingFile.getName(), message );
+				});
+				t.start();
 			}
 		} );
 	}
@@ -310,7 +405,7 @@ public class DeploymentService extends MobilisService {
 			} else {
 				// store information in expected upload collection
 				synchronized ( _expectedUploads ) {
-					_expectedUploads.put( inBean.getFrom(), inBean.Filename );
+					_expectedUploads.put( inBean.getFrom(), new FileUploadInformation(inBean.Filename, inBean.autoDeploy, inBean.singleMode) );
 				}
 
 				outBean = BeanHelper

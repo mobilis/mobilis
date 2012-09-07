@@ -54,7 +54,6 @@ public class BeanSenderReceiver<B extends XMPPBean, ResultBeanType extends XMPPB
 	public ResultBeanType exchange(B bean, ResultBeanType resultBeanPrototype, int retries) {
 		synchronized (this) {
 			this.maxRetries = retries;
-			BeanSenderReceiver<B, ResultBeanType> owner = BeanSenderReceiver.this;
 			this.beanOut = bean;
 			try {
 				// add IQ provider if necessary
@@ -69,7 +68,7 @@ public class BeanSenderReceiver<B extends XMPPBean, ResultBeanType extends XMPPB
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			this.beanCollector = owner.connection.createPacketCollector(
+			this.beanCollector = connection.createPacketCollector(
 					new BeanFilterAdapter(resultBeanPrototype));
 			return sendAndWaitForResult(bean);
 		}
@@ -77,7 +76,9 @@ public class BeanSenderReceiver<B extends XMPPBean, ResultBeanType extends XMPPB
 	
 	@SuppressWarnings("unchecked")
 	private ResultBeanType sendAndWaitForResult(B bean) {
-		this.connection.sendPacket(new BeanIQAdapter(bean));
+		if (bean != null) {
+			this.connection.sendPacket(new BeanIQAdapter(bean));
+		}
 		while(true) {
 			BeanIQAdapter adapter = (BeanIQAdapter)(beanCollector.nextResult(timeout));
 			ResultBeanType resultBean = null;
@@ -85,7 +86,7 @@ public class BeanSenderReceiver<B extends XMPPBean, ResultBeanType extends XMPPB
 				resultBean = (ResultBeanType)(adapter.getBean());
 			}
 			if (adapter == null || resultBean == null) {
-				if (retryCount > maxRetries) {
+				if (retryCount >= maxRetries) {
 					return null;
 				} else {
 					retryCount++;

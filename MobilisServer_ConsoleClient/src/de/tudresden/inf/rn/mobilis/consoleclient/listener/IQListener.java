@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universität Dresden
+ * Copyright (C) 2010 Technische Universitï¿½t Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 
 import de.tudresden.inf.rn.mobilis.consoleclient.Controller;
-import de.tudresden.inf.rn.mobilis.consoleclient.bean.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.ConfigureServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.InstallServiceBean;
@@ -39,6 +38,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
 
 /**
  * The listener interface for receiving IQ events.
@@ -105,7 +105,7 @@ public class IQListener implements PacketListener {
 					}
 					
 					if( null != cBean.Message ){
-						sb.append( "\nmessgae=" ).append( cBean.Message );
+						sb.append( "\nmessage=" ).append( cBean.Message );
 					}
 					
 					_controller.getLog().writeToConsole( sb.toString() );
