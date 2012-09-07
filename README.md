@@ -2,4 +2,4 @@ Mobilis is a platform for collaborative mobile applications. Its main purpose is
 
 For further information please visit the project Wiki: https://github.com/danielschuster/mobilis/wiki
 
-![Package structure](packages.png)
+![Package structure](danielschuster.github.com/mobilis/packages.png)
