@@ -12,7 +12,7 @@
 	height: 100%;
 }*/
 #content{
-	padding: 0;
+	/*padding: 0;*/
 }
 
 /*
@@ -32,3 +32,25 @@
 }
 
 */
+
+.ui-li-static.ui-li-has-thumb {
+	min-height: 20px;
+	padding-left: 40px;
+}
+.ui-li-thumb {
+	top: 2px;
+}
+
+.ui-li-has-count .ui-li-count {
+	margin: 0;
+	position: static;
+	float: right;
+}
+
+#game-page #content {
+	padding: 0px;
+}
+#map {
+	height: inherit;
+
+}

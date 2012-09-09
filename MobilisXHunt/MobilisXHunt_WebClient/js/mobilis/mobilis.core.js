@@ -88,8 +88,11 @@
                 } else if (status == Mobilis.core.Status.CONNECTING) {
                     console.log('connecting');
                 } else if (status == Mobilis.core.Status.CONNFAIL) {
+                    console.log('connection fail');
                 } else if (status == Mobilis.core.Status.AUTHENTICATING) {
+                    console.log('authenticating');
                 } else if (status == Mobilis.core.Status.AUTHFAIL) {
+                    console.log('authentication fail');
                 } else if (status == Mobilis.core.Status.CONNECTED) {
                     console.log('connected');
                     conn.send($pres());
