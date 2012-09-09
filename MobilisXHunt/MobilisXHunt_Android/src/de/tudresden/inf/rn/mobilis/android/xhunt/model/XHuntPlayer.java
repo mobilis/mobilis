@@ -107,15 +107,6 @@ public class XHuntPlayer {
 	}
 	
 	/**
-	 * Sets the name of the player.
-	 * 
-	 * @param name the new name
-	 */
-	public void setName(String name) {
-		this.name=name;
-	}
-	
-	/**
 	 * Gets the name of the player.
 	 * 
 	 * @return the name of the player

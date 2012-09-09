@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universität Dresden
+ * Copyright (C) 2010 Technische Universitï¿½t Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.RegisterServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanSenderReceiver;
 
 /**
  * The Class CommandInterpreter interpretes the commands.
@@ -108,19 +109,23 @@ public class CommandInterpreter {
 	 *
 	 * @param filepath the filepath
 	 */
-	public void sendFile(String filepath){
+	public void sendFile(String filepath, boolean autoDeploy, boolean singleMode){
 		File file = new File(filepath);
 		
 		if(file.exists()){
-			boolean success = _controller.getConnection().transmitFile( 
-					file,
-					"",
-					_controller.getSettings().getMobilisDeploymentJid() );
-			
-			if( success )
-				_controller.getLog().writeToConsole( "Filetransfer successful" );
-			else
-				_controller.getLog().writeErrorToConsole( "Filetransfer unsuccessful" );
+			if (sendPrepareFile(file.getName(), autoDeploy, singleMode)) {
+				boolean success = _controller.getConnection().transmitFile( 
+						file,
+						"",
+						_controller.getSettings().getMobilisDeploymentJid() );
+				
+				if( success )
+					_controller.getLog().writeToConsole( "Filetransfer successful" );
+				else
+					_controller.getLog().writeErrorToConsole( "Filetransfer unsuccessful!" );
+			} else {
+				_controller.getLog().writeErrorToConsole("Couldn't prepare file upload!");
+			}
 		}
 		else
 			_controller.getLog().writeToConsole( "No such file was found." );		
@@ -131,12 +136,20 @@ public class CommandInterpreter {
 	 *
 	 * @param filename the filename
 	 */
-	public void sendPrepareFile(String filename){
+	private boolean sendPrepareFile(String filename, boolean autoDeploy, boolean singleMode){
 		PrepareServiceUploadBean bean = new PrepareServiceUploadBean(filename);
 		bean.setTo( _controller.getSettings().getMobilisDeploymentJid() );
+		bean.autoDeploy = autoDeploy;
+		bean.singleMode = singleMode;
 		bean.setType( XMPPBean.TYPE_SET );
 		
-		_controller.getConnection().sendXMPPBean( bean );
+		BeanSenderReceiver<PrepareServiceUploadBean, PrepareServiceUploadBean> bsr = new BeanSenderReceiver<PrepareServiceUploadBean, PrepareServiceUploadBean>(_controller.getConnection().getXMPPConnection());
+		PrepareServiceUploadBean result = bsr.exchange(bean, new PrepareServiceUploadBean(), 0);
+		if (result != null) {
+			return result.AcceptServiceUpload;
+		} else {
+			return false;
+		}
 	}
 	
 	/**

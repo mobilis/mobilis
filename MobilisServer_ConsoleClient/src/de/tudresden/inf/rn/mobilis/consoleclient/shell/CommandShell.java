@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universität Dresden
+ * Copyright (C) 2010 Technische Universitï¿½t Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,7 +152,7 @@ public class CommandShell {
 			sb.append( "\nhelp" );
 			sb.append( "\ninstall <filename>" );
 			sb.append( "\nregister <namespace> <version>" );
-			sb.append( "\nsend [preparefile | file] <filename | path>" );
+			sb.append( "\nsend [single | multi] <path>" );
 			sb.append( "\nset <clientnode | clientpw | clientresource | coordinatorresource | adminresource | deploymentresource | servernode | serverresource | serveraddress | serverport | serverdomain> <value>" );
 			sb.append( "\nstartsvc <namespace> [<version>]" );
 			sb.append( "\nstopsvc <jid>" );
@@ -192,15 +192,15 @@ public class CommandShell {
 			break;
 
 		case Send:
-			if ( inputArray.length > 2 ) {
-				if ( inputArray[1].toLowerCase().equals( "preparefile" ) ) {
-					_commandInterpreter.sendPrepareFile( inputArray[2] );
-				} else if ( inputArray[1].toLowerCase().equals( "file" ) ) {
-					_commandInterpreter.sendFile( inputArray[2] );
+			if ( inputArray.length == 2 ) {
+				_commandInterpreter.sendFile( inputArray[1], false, false);
+			} else if (inputArray.length > 2) {
+				if (inputArray[1].equals("single")) {
+					_commandInterpreter.sendFile(inputArray[2], true, true);
+				} else if (inputArray[1].equals("multi")) {
+					_commandInterpreter.sendFile(inputArray[2], true, false);
 				} else {
-					_controller.getLog().writeToConsole(
-							"Unknown parameters <" + inputArray[1] + ", " + inputArray[2]
-									+ "> for command <" + input + ">" );
+					_controller.getLog().writeToConsole( "Unknown parameter " + inputArray[1] + " for command <Send>");
 				}
 			} else
 				_controller.getLog().writeToConsole( "Missing parameter for command <Send>" );
@@ -326,6 +326,15 @@ public class CommandShell {
 		case XMPPInfo:
 			_controller.getConnection().printXMPPInfo();
 
+			break;
+			
+		case FastInstall:
+			if (inputArray.length > 1) {
+				_controller.getLog().writeToConsole("Not yet implemented!");
+			} else {
+				_controller.getLog().writeToConsole(
+						"Missing parameter for command <" + input + ">" );
+			}
 			break;
 
 		default:

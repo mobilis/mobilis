@@ -103,11 +103,11 @@ public class PlayerIconOverlay extends ItemizedOverlay<OverlayItem> {
 			if (mXhuntService.getMXAProxy().isStaticMode()) {
 				Station currentTarget = mXhuntService.getCurrentGame().getRouteManagement().getStationById(player.getCurrentTargetId());
 				
-				System.out.println("isfinal:" + player.isCurrentTargetFinal() + " currenttarget:"  +currentTarget);
+				//System.out.println("isfinal:" + player.isCurrentTargetFinal() + " currenttarget:"  +currentTarget);
 				if(currentTarget == null || !player.isCurrentTargetFinal())
 					return true;
 				
-				System.out.println("" + currentTarget.getLatitude() + " " + currentTarget.getLongitude());
+				//System.out.println("" + currentTarget.getLatitude() + " " + currentTarget.getLongitude());
 				mXhuntService.getGPSProxy().setLocation(currentTarget.getLatitude(), currentTarget.getLongitude());
 				
 				updatePlayers();

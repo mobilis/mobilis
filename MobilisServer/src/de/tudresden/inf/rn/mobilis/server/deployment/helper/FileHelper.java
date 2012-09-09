@@ -133,8 +133,10 @@ public abstract class FileHelper {
 				Attributes attrs = (Attributes)manifest.getMainAttributes();
 
 				value = attrs.getValue( key );
+				jarfile.close();
 			}
 		} catch ( IOException e ) {
+			e.printStackTrace();
 		}
 
 		return value;

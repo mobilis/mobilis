@@ -26,6 +26,7 @@ import java.util.Date;
 import android.content.Context;
 import android.os.Environment;
 import android.os.Vibrator;
+import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 
@@ -102,7 +103,7 @@ public class Tools {
 			logProcess = procBuilder.start();
 			
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			Log.e("Tools", "Error writing log to file", e);
 		}	
 	}
 	
