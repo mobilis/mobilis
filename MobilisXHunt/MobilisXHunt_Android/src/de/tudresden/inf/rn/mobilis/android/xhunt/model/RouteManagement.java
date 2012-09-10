@@ -38,6 +38,7 @@ import com.google.android.maps.GeoPoint;
 
 import de.tudresden.inf.rn.mobilis.android.xhunt.Const;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.TicketAmount;
+import de.tudresden.inf.rn.mobilis.android.xhunt.helper.TicketMap;
 
 /**
  * The Class RouteManagement provides all necessary data for the current 
@@ -73,7 +74,7 @@ public class RouteManagement {
 	private HashMap<Integer, Ticket> mAreaTickets;
 	
 	/** The amount of own tickets in this game (ticketId, amount). */
-	private Map<Integer, Integer> mMyTickets;
+	private TicketMap mMyTickets;
 	
 	/** The available paints for the routes. */
 	private ArrayList<Paint> mPathPaints;
@@ -86,7 +87,8 @@ public class RouteManagement {
 		mAreaStations = new HashMap<Integer, Station>();
 		mAreaTickets = new HashMap<Integer, Ticket>();
 		mapCenter = null;
-		mMyTickets = new HashMap<Integer, Integer>();
+		mMyTickets = new TicketMap();
+		
 		mPathPaints = new ArrayList<Paint>();
 		
 		initPathPaints();
