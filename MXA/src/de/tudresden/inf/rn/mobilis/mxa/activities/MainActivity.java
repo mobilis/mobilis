@@ -203,7 +203,11 @@ public class MainActivity extends Activity implements MXAListener {
 				mXMPPService
 						.unregisterConnectionCallback(mXMPPConnectionListener);
 				if (isFinishing()) {
-					unbindService(MXAController.get());
+					try {
+						unbindService(MXAController.get());
+					} catch (IllegalArgumentException e) {
+						// do nothing, service simply has not been registered yet
+					}
 				}
 			}
 		} catch (RemoteException e) {
