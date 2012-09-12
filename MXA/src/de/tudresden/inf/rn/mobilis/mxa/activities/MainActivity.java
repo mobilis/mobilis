@@ -202,6 +202,13 @@ public class MainActivity extends Activity implements MXAListener {
 			if (mXMPPService != null) {
 				mXMPPService
 						.unregisterConnectionCallback(mXMPPConnectionListener);
+				if (isFinishing()) {
+					try {
+						unbindService(MXAController.get());
+					} catch (IllegalArgumentException e) {
+						// do nothing, service simply has not been registered yet
+					}
+				}
 			}
 		} catch (RemoteException e) {
 			showMessage("Error pausing activity: " + e.getMessage());
@@ -296,8 +303,14 @@ public class MainActivity extends Activity implements MXAListener {
 	 * Updates the buttons according to the mxa status.
 	 */
 	private void updateUI() {
-		mLoginButton.setEnabled(!mXMPPConnected);
-		mLogoffButton.setEnabled(mXMPPConnected);
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				mLoginButton.setEnabled(!mXMPPConnected);
+				mLogoffButton.setEnabled(mXMPPConnected);
+			}
+		});
 	}
 
 	private IConnectionCallback mXMPPConnectionListener = new IConnectionCallback.Stub() {
