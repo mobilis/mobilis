@@ -58,7 +58,7 @@ public class GameStateRoundInitial extends GameState{
 	private boolean mIsFirstLocationRequest = true;
 	
 	/** The timer which polls the location of all players if ticks. */
-	private Timer mPollingTimer;
+	private Timer mPollingTimer = null;
 	
 	/** The start round timer for Mr.X. */
 	private Timer mStartTimerMrX;
@@ -232,7 +232,7 @@ public class GameStateRoundInitial extends GameState{
 				
 				if(allLocationsAvailable){
 					mIsFirstLocationRequest = false;
-					startLocationPolling();
+					startLocationPolling(5000);
 				}
 			}
 
@@ -367,8 +367,12 @@ public class GameStateRoundInitial extends GameState{
 	 * Start location polling. This will poll the location of all players periodically. 
 	 * This will also update the locations on clientside of the players.
 	 */
-	private void startLocationPolling(){
+	private void startLocationPolling(long delay){
 		// Define and start the polling timer
+		if (mPollingTimer!=null) {
+			mPollingTimer.cancel();
+		}
+		
 		mPollingTimer = new Timer();
 		mPollingTimer.schedule(
 			new TimerTask() {
@@ -408,7 +412,7 @@ public class GameStateRoundInitial extends GameState{
 					}
 		        }
 				// Timer will be start after 5000 ms
-		}, 5000, control.getSettings().getLocationPollingIntervalMillis());
+		}, delay, control.getSettings().getLocationPollingIntervalMillis());
 	}
 	
 	/**
@@ -543,11 +547,12 @@ public class GameStateRoundInitial extends GameState{
 	
 	public void onStartRound( StartRoundResponse in ) {
 		// Confirm the start of the round
-		for ( String toJid : game.getPlayers().keySet() ) {
+		/*for ( String toJid : game.getPlayers().keySet() ) {
 			control.getConnection().getProxy().Location( 
 					toJid, 
 					new ArrayList< LocationInfo >(),
-					LocationCallback);
-		}
+					LocationCallback);		
+		}*/
+		startLocationPolling(0);
 	}
 }
