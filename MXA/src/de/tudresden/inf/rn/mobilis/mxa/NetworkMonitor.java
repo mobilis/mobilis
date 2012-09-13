@@ -1,16 +1,11 @@
 package de.tudresden.inf.rn.mobilis.mxa;
 
-import org.jivesoftware.smack.ConnectionListener;
-
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Bundle;
-import android.os.Message;
 import android.util.Log;
-import android.content.BroadcastReceiver;
 /**
  * This class waits for changes in the connectivity of android,
  * if a connection is reestablished, we have to reconnect the mxa manager.
@@ -20,6 +15,8 @@ import android.content.BroadcastReceiver;
  */
 public class NetworkMonitor extends BroadcastReceiver{
 
+	private boolean connectScheduled = false;
+	
 	//holds the xmpp service
 	private XMPPRemoteService mXMPPRemoteService;
 	private static String TAG="NetworkMonitor";
@@ -47,20 +44,36 @@ public class NetworkMonitor extends BroadcastReceiver{
 			//thats the correct action, now check if the connectivity is broken
 			ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 			//NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-			NetworkInfo activeNetworkInfo = intent.getExtras().getParcelable(ConnectivityManager.EXTRA_NETWORK_INFO);
-			 
-			if (!activeNetworkInfo.isConnected())
+			NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+			
+			if (activeNetworkInfo != null && activeNetworkInfo.getReason() == null) {
+				return;
+			}
+			
+			Log.v(TAG, "Connectivity change");
+			
+			if (activeNetworkInfo == null || !activeNetworkInfo.isConnected())
 			{
 				//disconnected
 				mConnected=false;				
-			}else
-			{
+			} else {
 				//connected, test if we did failover from mobile
 				mConnected=true;
-				mXMPPRemoteService.reconnect();
+				
+				if (connectScheduled) {
+					connectScheduled = false;
+					mXMPPRemoteService.connect();
+				} else {
+//				if (intent.getBooleanExtra(ConnectivityManager.EXTRA_IS_FAILOVER, false))
+					mXMPPRemoteService.reconnect();
+				}
+				
 			}
-			Log.v(TAG,activeNetworkInfo.toString());
-			Log.v(TAG,activeNetworkInfo.getDetailedState().toString());
+			
+			if (activeNetworkInfo != null) {
+				Log.v(TAG,activeNetworkInfo.toString());
+				Log.v(TAG,activeNetworkInfo.getDetailedState().toString());
+			}
 			Log.v(TAG,"isfailover: "+intent.getExtras().getBoolean(ConnectivityManager.EXTRA_IS_FAILOVER));
 			if (intent.getExtras().getParcelable(ConnectivityManager.EXTRA_OTHER_NETWORK_INFO)!=null)
 				Log.v(TAG,"oni: "+intent.getExtras().getParcelable(ConnectivityManager.EXTRA_OTHER_NETWORK_INFO).toString());
@@ -75,6 +88,10 @@ public class NetworkMonitor extends BroadcastReceiver{
 	public boolean isConnected()
 	{
 		return mConnected;
+	}
+
+	public void scheduleConnect() {
+		connectScheduled = true;
 	}
 
 }

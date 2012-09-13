@@ -536,32 +536,32 @@ public class XMPPRemoteService extends Service {
 								Log.v(TAG, "Trying to reconnect");
 
 								// read server preferences
-								String host2 = mPreferences.getString(
-										"pref_host", null);
-								int port2 = Integer.parseInt(mPreferences
-										.getString("pref_port", "5222"));
-								String serviceName2 = mPreferences.getString(
-										"pref_service", "");
-
-								boolean useEncryption2 = mPreferences
-										.getBoolean("pref_xmpp_encryption",
-												true);
-								boolean useCompressio2n = mPreferences
-										.getBoolean("pref_xmpp_compression",
-												false);
-
-								ConnectionConfiguration config2 = new ConnectionConfiguration(
-										host2, port2, serviceName2);
-								if (!useEncryption2)
-									config2.setSecurityMode(SecurityMode.disabled);
-								else
-									config2.setSecurityMode(SecurityMode.enabled);
-								// TODO: insert compression possiblity
-								// config.setCompressionEnabled(useCompression);
-
-								mConn = new XMPPConnection(config2);
-
-								mConn.connect();
+//								String host2 = mPreferences.getString(
+//										"pref_host", null);
+//								int port2 = Integer.parseInt(mPreferences
+//										.getString("pref_port", "5222"));
+//								String serviceName2 = mPreferences.getString(
+//										"pref_service", "");
+//
+//								boolean useEncryption2 = mPreferences
+//										.getBoolean("pref_xmpp_encryption",
+//												true);
+//								boolean useCompressio2n = mPreferences
+//										.getBoolean("pref_xmpp_compression",
+//												false);
+//
+//								ConnectionConfiguration config2 = new ConnectionConfiguration(
+//										host2, port2, serviceName2);
+//								if (!useEncryption2)
+//									config2.setSecurityMode(SecurityMode.disabled);
+//								else
+//									config2.setSecurityMode(SecurityMode.enabled);
+//								// TODO: insert compression possiblity
+//								// config.setCompressionEnabled(useCompression);
+//
+//								mConn = new XMPPConnection(config2);
+//
+//								mConn.connect();
 
 								String username2 = mPreferences.getString(
 										"pref_xmpp_user", "");
@@ -588,6 +588,29 @@ public class XMPPRemoteService extends Service {
 							Log.v(TAG,
 									"Connection established to "
 											+ mConn.getServiceName());
+							
+							// Notification
+							NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+							Notification status = new Notification(
+									R.drawable.stat_notify_chat,
+									getString(R.string.sb_txt_text),
+									System.currentTimeMillis());
+							status.setLatestEventInfo(
+									XMPPRemoteService.this,
+									getString(R.string.sb_txt_title),
+									getString(R.string.sb_txt_text),
+									PendingIntent
+											.getActivity(
+													XMPPRemoteService.this,
+													0,
+													new Intent(
+															ConstMXA.INTENT_SERVICEMONITOR),
+													0));
+							status.flags |= Notification.FLAG_ONGOING_EVENT;
+							status.icon = R.drawable.stat_notify_chat;
+							nm.notify(XMPPSERVICE_STATUS, status);
+							
 							Message msgResend = new Message();
 							msgResend.what = ConstMXA.MSG_IQ_RESEND;
 							xmppWriteWorker.mHandler.sendMessage(msgResend);
@@ -1388,6 +1411,8 @@ public class XMPPRemoteService extends Service {
 			Log.v(TAG, "CL:connection closed on error " + e.getMessage());
 			if (mNetworkMonitor.isConnected())
 				reconnect();
+			else 
+				mNetworkMonitor.scheduleConnect();
 		}
 
 		@Override
@@ -2047,7 +2072,16 @@ public class XMPPRemoteService extends Service {
 		msg.what = ConstMXA.MSG_RECONNECT;
 		xmppWriteWorker.mHandler.sendMessage(msg);
 	}
-
+	
+	/**
+	 * Forwards the MSG_CONNECT to the XMPPRemoteService.
+	 */
+	protected void connect() {
+		Message msg = new Message();
+		msg.what = ConstMXA.MSG_CONNECT;
+		xmppWriteWorker.mHandler.sendMessage(msg);
+	}
+	
 	/**
 	 * Get all packets that are in the LostIQQueue and sends them. Assumes that
 	 * for every packet there is a corresponding thread.
