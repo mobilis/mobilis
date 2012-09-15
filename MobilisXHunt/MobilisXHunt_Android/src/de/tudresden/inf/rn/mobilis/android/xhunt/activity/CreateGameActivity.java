@@ -535,6 +535,8 @@ public class CreateGameActivity extends PreferenceActivity {
 	    	    		mPrefTicketsMrX.put(entry.getID(), prefMrX);
 	    	    		mPrefTicketsAgents.put(entry.getID(), prefAgents);
 	    	    	}
+	    	    	
+	    	    	mSharedPrefHelper.save();
 	    	    }
 	
 	    	});
