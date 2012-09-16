@@ -405,7 +405,7 @@ public class XHuntMapActivity extends MapActivity {
 	    		mPanelInfo.setTargetReached(getMyPlayer().getReachedTarget());
 	    		mPanelInfo.setInfoText("Follow the arrow to your target.");
 	    		
-	    		// Update tha map data
+	    		// Update the map data
 	    		updateMapData();
 	    		
 	    		// If Mr.X is visible in current round, notify the player by a toast about this
@@ -435,6 +435,9 @@ public class XHuntMapActivity extends MapActivity {
     private Handler mUpdateMapDataHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
+			// move to current target if in static mode
+			movePlayerIfInStaticMode();
+			
 			// Update the map data
 			updateMapData();
 		}
@@ -975,7 +978,26 @@ public class XHuntMapActivity extends MapActivity {
 		tappedReachableStation = s;
 		mapView.showContextMenu();
 	}
-    
+	
+	/**
+	 * Sets the player's location to its current target, the player icon is also moved.
+	 * Needed when playing in Static Mode.
+	 */
+	private void movePlayerIfInStaticMode() {
+		
+		if(mMxaProxy.isStaticMode()) {
+			XHuntPlayer player = mGame.getPlayerByJID(mMxaProxy.getXmppJid());
+			Station currentTarget = mGame.getRouteManagement().getStationById(player.getCurrentTargetId());
+			
+			if((currentTarget != null) && (player.isCurrentTargetFinal())) {
+				mGpsProxy.setLocation(currentTarget.getLatitude(), currentTarget.getLongitude());
+				playerOverlay.updatePlayers();
+				playerOverlay.invalidateMapView();
+				Log.v(TAG, "moved player because you are playing in static mode");
+			}
+		}
+	}	
+	
     /**
      * This function will redraw and refresh all map components and it's data
      */
