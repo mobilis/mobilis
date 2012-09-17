@@ -1726,7 +1726,11 @@ public class XMPPRemoteService extends Service {
 
 		@Override
 		public String getUsername() throws RemoteException {
-			return mConn.getUser();
+			if (mConn != null) {
+				return mConn.getUser();
+			} else {
+				return null;
+			}
 			// Bundle xmppConnectionParameters = getXMPPConnectionParameters();
 			// return xmppConnectionParameters.getString("xmpp_user") + "@" +
 			// xmppConnectionParameters.getString("xmpp_service") + "/" +
