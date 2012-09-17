@@ -1,5 +1,10 @@
 package de.tudresden.inf.rn.mobilis.consoleclient;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  * The Class Settings.
  */
@@ -51,20 +56,33 @@ public class Settings {
 	 * Inits the default values.
 	 */
 	private void init() {
-		_clientNode = "adminclient";
-		_clientPassword = "mobilis_pass";
-		_clientResource = "JavaClient";		
+		Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream("Settings.properties"));
+		} catch (FileNotFoundException e) {
+			System.out.println("Couldn\'t find settings file. Aborting...");
+			e.printStackTrace();
+			System.exit(1);
+		} catch (IOException e) {
+			System.out.println("Couldn\'t read settings file. Aborting...");
+			e.printStackTrace();
+			System.exit(2);
+		}
 		
-		_mobilisCoordinatorResource = "Coordinator";
-		_mobilisAdminResource = "Admin";
-		_mobilisDeploymentResource = "Deployment";
-		_mobilisServerNode = "mobilis";
-		_mobilisServerResource = "Smack";
+		_clientNode = properties.getProperty("clientNode").trim();
+		_clientPassword = properties.getProperty("clientPassword").trim();
+		_clientResource = properties.getProperty("clientResource").trim();		
 		
-		_xmppServerAddress = "mobilis.inf.tu-dresden.de";
-		_xmppServerPort = 5222;				
+		_mobilisCoordinatorResource = properties.getProperty("mobilisCoordinatorResource").trim();
+		_mobilisAdminResource = properties.getProperty("mobilisAdminResource").trim();
+		_mobilisDeploymentResource = properties.getProperty("mobilisDeploymentResource").trim();
+		_mobilisServerNode = properties.getProperty("mobilisServerNode").trim();
+		_mobilisServerResource = properties.getProperty("mobilisServerResource").trim();
 		
-		_xmppServerDomain = "mobilis.inf.tu-dresden.de";
+		_xmppServerAddress = properties.getProperty("xmppServerAddress").trim();
+		_xmppServerPort = Integer.parseInt(properties.getProperty("xmppServerPort").trim());				
+		
+		_xmppServerDomain = properties.getProperty("xmppServerDomain").trim();
 	}
 	
 	

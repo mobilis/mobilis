@@ -1,0 +1,15 @@
+# make a copy of this template, remove the ".template" suffix and edit appropriately
+clientNode=adminclient
+clientPassword=adminclient
+clientResource=JavaClient		
+
+mobilisCoordinatorResource=Coordinator
+mobilisAdminResource=Admin
+mobilisDeploymentResource=Deployment
+mobilisServerNode=mobilis
+mobilisServerResource=Smack
+
+xmppServerAddress=mobilis.inf.tu-dresden.de
+xmppServerPort=5222
+
+xmppServerDomain=mobilis.inf.tu-dresden.de
