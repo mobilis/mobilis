@@ -21,6 +21,7 @@ package de.tudresden.inf.rn.mobilis.services.xhunt;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.GeoPoint;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.Route;
@@ -55,6 +56,8 @@ public class RouteManagement {
 	/** The tickets of the area (ticketId, Ticket). */
 	private HashMap<Integer, Ticket> mAreaTickets;
 	
+	private List<Station> assignedStartStations;
+	
 	/** The m controller. */
 	private XHunt mController;
 	
@@ -68,6 +71,7 @@ public class RouteManagement {
 		mAreaRoutes = new HashMap<Integer, Route>();
 		mAreaStations = new HashMap<Integer, Station>();
 		mAreaTickets = new HashMap<Integer, Ticket>();
+		assignedStartStations = new ArrayList<Station>();
 	}
 	
 	/**
@@ -122,25 +126,27 @@ public class RouteManagement {
 	}
 	
 	/**
-	 * Gets the nearest station of a GeoPoint.
+	 * Gets the nearest station of a GeoPoint, but only returns a specific station once.
+	 * In case a specific station was already returned, it returns the second nearest station instead.
 	 *
 	 * @param geoPoint the GeoPoint where to start searching
 	 * @return the nearest station
 	 */
-	public Station getNearestStation(GeoPoint geoPoint){
+	public Station getNearestStation(GeoPoint geoPoint) {
 		Station nearestStation = null;
 		double minDistance = Double.MAX_VALUE;
 		double computedDistance = Double.MAX_VALUE;
 		
-		for(Station station : mAreaStations.values()){
+		for(Station station : mAreaStations.values()) {
 			computedDistance = computeDistance(geoPoint, station.getGeoPoint());
 			
-			if(computedDistance < minDistance){
+			if((computedDistance < minDistance) && (!assignedStartStations.contains(station))) {
 				minDistance = computedDistance;
 				nearestStation = station;
 			}
 		}
 		
+		assignedStartStations.add(nearestStation);
 		return nearestStation;
 	}
 	
