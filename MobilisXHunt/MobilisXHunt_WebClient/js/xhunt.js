@@ -132,16 +132,27 @@ var xhunt = {
 
 	onPlayersRequest: function (iq) { //  <PlayersRequest xmlns="mobilisxhunt:iq:players">
 
-		// console.log('PlayersRequest: '); console.log(iq); 
+		// xhunt.log('PlayersRequest: '); xhunt.log(iq); 
 
-		Mobilis.xhunt.respondPlayer($(iq).attr('from'));
+		Mobilis.xhunt.respondPlayer(
+			//$(iq).attr('from'), // gameJID
+			localStorage.getItem('mobilis.xhunt.gamejid'), // gameJID			
+			iq.getAttribute('id'), // iqid
+			function (result){  // resultcallback
+				xhunt.log('respondPlayer result:'); xhunt.log(result);
+			},
+			function (error){ // errorcallback
+				xhunt.log('respondPlayer error:'); xhunt.log(error);
+				xhunt.log($(error).find('text').text());
+			}
+		);		
 
 		$('#user-list').empty();
 
 		$(iq).find('PlayerInfo').each(function(){ 
 			// var flag_ready = '';
 			var jid = $(this).find('Jid').text(	);
-			// console.log('PlayerInfo Jid: '+jid);
+			// xhunt.log('PlayerInfo Jid: '+jid);
 
 			//xhunt.createPlayer(jid);
 
@@ -165,9 +176,6 @@ var xhunt = {
 			player.ismod = Boolean($(this).find('IsModerator').text().match(/^true$/i));
 			player.ismrx = Boolean($(this).find('IsMrX').text().match(/^true$/i));
 			var isready = Boolean($(this).find('IsReady').text().match(/^true$/i));
-			// console.log('player.ismrx: '); console.log(player.ismrx);
-			// console.log('player.ismod: '); console.log(player.ismod);
-			// console.log('isready: '); console.log(isready);
 
 			player.icon.used = false;
 			var mrxHtml = '';
@@ -188,9 +196,17 @@ var xhunt = {
 			var modHtml = (player.ismod) ? '<span class="ui-li-count">M</span>' : '';
 			var rdyHtml = (isready) ? '  &#10003;' : '';
 
-			$('#user-list').append('<li><img src="' + player.icon.url + ' "/>' +
-					player.name + rdyHtml + modHtml + mrxHtml + 
-					'</li>').listview('refresh');
+			$('#user-list').append('<li><img src="' 
+									+ player.icon.url 
+									+ ' "/>' 
+									+ player.name 
+									+ rdyHtml 
+									+ modHtml 
+									+ mrxHtml 
+									+ '</li>')
+			.listview('refresh');
+			xhunt.log('player: ');
+			xhunt.log(player);
 			// $('#players').append('<div id="' + jid + '" class="playerinfobox"></div>')
 			// $('#' + jid ).append('<div class="playername"><img class="playericon" src="' + 
 			// player.icon.url +' "/>' + 
@@ -205,22 +221,121 @@ var xhunt = {
 			// '<div id="'+ jid +'_3" class="tickets"></div>' +
 			// '</div>');       
 		});
-		// console.log('xhunt.players:' );
-		// console.log(xhunt.players);
 
 		var info = $(iq).find('Info').text();
-		console.log('Info: '+ info );
+		xhunt.log('Info: '+ info );
 
 		return true;   
 	},
+
 	onUpdatePlayerResponse: function (iq) {
-		console.log('UpdatePlayerResponse: ' + $(iq).find('Info').text()); 
+		xhunt.log('UpdatePlayerResponse: ' + $(iq).find('Info').text()); 
 	},
 
+	onStartRoundRequest : function (iq) { // <StartRoundRequest xmlns="mobilisxhunt:iq:startround">
+
+		Mobilis.xhunt.respondStartRound(
+			//$(iq).attr('from'), // gameJID
+			localStorage.getItem('mobilis.xhunt.gamejid'), // gameJID			
+			iq.getAttribute('id'), // iqid
+			function (result){  // resultcallback
+				xhunt.log('respondStartRound result:'); xhunt.log(result);
+			},
+			function (error){ // errorcallback
+				xhunt.log('respondStartRound error:'); xhunt.log(error);
+				xhunt.log($(error).find('text').text());
+			}
+		);		
+
+		$('#waitingforplayers-tooltip').popup('close');
+
+		// $.mobile.changePage( "game.html", { transition: "flip"} );
+		xhunt.log('game has started');
+
+		xhunt.log('xhunt.gameinfo.name:'); xhunt.log(xhunt.gameinfo.name);
+
+	},
+
+	onLocationRequest : function(iq) { // <LocationRequest xmlns="mobilisxhunt:iq:location">
+		Mobilis.xhunt.respondLocation(
+
+			localStorage.getItem('mobilis.xhunt.gamejid'), // gameJID
+			Mobilis.connection.jid, // playerJid
+			iq.getAttribute('id'), // iqid
+			Math.round(xhunt.position.latitude  * 1000000), // latitude
+			Math.round(xhunt.position.longitude * 1000000), // longitude
+			function (result){  // resultcallback
+				xhunt.log('respondLocation result:'); xhunt.log(result);
+			},
+			function (error){ // errorcallback
+				xhunt.log('respondLocation error:'); xhunt.log(error);
+				xhunt.log($(error).find('text').text());
+			}
+		);
+
+		$(iq).find('LocationInfo').each(function(){
+			var jid = $(this).find('Jid').text(	);
+			var lat = $(this).find('Latitude').text();
+			var lon = $(this).find('Longitude').text();
+			xhunt.players[jid].lat = lat;
+			xhunt.players[jid].lon = lon;
+
+			xhunt.log('xhunt.players[jid]:');
+			xhunt.log(xhunt.players[jid]);
+			$('#map').gmap3({
+			  action:'clear',
+			  name:'marker',
+			  tag: jid, 
+			});
+			$('#map').gmap3(
+			   {
+				   action: 'addMarker',
+				   latLng: [lat, lon],
+				   options: { 
+					   icon: xhunt.players[jid].icon.markericon,
+				   },
+				   tag: jid
+			   }
+			);
+			// $('#' + jid + ' > .lat').html('Latitude: ' + lat + ', ');
+			// $('#' + jid + ' > .lon').html('Longitude: ' + lon);       
+		});
+
+	},
+/*	on_locationIQ: function (iq) {
+		$(iq).find('location').each(function(){
+			var jid = Strophe.getNodeFromJid($(this).find('jid').text());
+			var lat = xhunt.convert($(this).find('lat').text());
+			var lon = xhunt.convert($(this).find('lon').text());
+			xhunt.players[jid].lat = lat;
+			xhunt.players[jid].lon = lon;
+						
+			$('#map').gmap3({
+			  action:'clear',
+			  name:'marker',
+			  tag: jid, 
+			});
+			$('#map').gmap3(
+			   {
+				   action: 'addMarker',
+				   latLng: [lat, lon],
+				   options: { 
+					   icon: xhunt.players[jid].icon.markericon,
+				   },
+				   tag: jid
+			   }
+			);
+			$('#' + jid + ' > .lat').html('Latitude: ' + lat + ', ');
+			$('#' + jid + ' > .lon').html('Longitude: ' + lon);       
+		});
+		return true;   
+	},
+*/
+
 /*	on_gameOverIQ: function (iq) {
-		console.log('Game Over');
+		xhunt.log('Game Over');
 		//$.jGrowl('Game Over');
-		console.log($(iq).find('reason').text(), {sticky: true });   
+		xhunt.log($(iq).find('reason').text(), {sticky: true });   
 		//$.jGrowl($(iq).find('reason').text(), {sticky: true });   
 		return true;  
 	},
@@ -231,24 +346,11 @@ var xhunt = {
 			var ticket = $(this).find('ticketid').text();
 			$('#' + jid + '_' + ticket).append('+');
 		});
-		//console.log('usedTickets');
-		//console.log(iq);   
+		//xhunt.log('usedTickets');
+		//xhunt.log(iq);   
 		return true;
 	},
 */	
-	onStartRoundRequest : function (iq) { // <StartRoundRequest xmlns="mobilisxhunt:iq:startround">
-
-		Mobilis.xhunt.respondStartRound($(iq).attr('from'));		
-
-		$('#waitingforplayers-popup').popup('close');
-
-		// $.mobile.changePage( "game.html", { transition: "flip"} );
-		console.log('game has started');
-
-		console.log('xhunt.gameinfo.name:'); console.log(xhunt.gameinfo.name);
-
-	},
-
 /*	on_startRoundIQ: function (iq) {
 		var round = $(iq).find('gameround').text();
 		var nextround = parseInt( round, 10 ) + 1 ;
@@ -321,50 +423,7 @@ var xhunt = {
 		return true;   
 	}, 
 */
-	onLocationRequest : function(iq) {
-		Mobilis.xhunt.respondLocation(
-			localStorage.getItem('mobilis.xhunt.gamejid'), // gameJID
-			Mobilis.connection.jid, // playerJid
-			Math.round(xhunt.position.latitude  * 1000000), // latitude
-			Math.round(xhunt.position.longitude * 1000000), // longitude
-			function (iq){  // resultcallback
-				console.log('respondLocation result:'); console.log(iq);
-			},
-			function (iq){ // errorcallback
-				console.log('respondLocation error:'); console.log(iq);
-			}
-		);
-	},
 
-/*	on_locationIQ: function (iq) {
-		$(iq).find('location').each(function(){
-			var jid = Strophe.getNodeFromJid($(this).find('jid').text());
-			var lat = xhunt.convert($(this).find('lat').text());
-			var lon = xhunt.convert($(this).find('lon').text());
-			xhunt.players[jid].lat = lat;
-			xhunt.players[jid].lon = lon;
-						
-			$('#map').gmap3({
-			  action:'clear',
-			  name:'marker',
-			  tag: jid, 
-			});
-			$('#map').gmap3(
-			   {
-				   action: 'addMarker',
-				   latLng: [lat, lon],
-				   options: { 
-					   icon: xhunt.players[jid].icon.markericon,
-				   },
-				   tag: jid
-			   }
-			);
-			$('#' + jid + ' > .lat').html('Latitude: ' + lat + ', ');
-			$('#' + jid + ' > .lon').html('Longitude: ' + lon);       
-		});
-		return true;   
-	},
-*/
 /*	on_invitation: function (iq) {
 		var gameJid = $(iq).find('param').first().text();
 		var gameName = $(iq).find('param').next().text();
@@ -423,7 +482,7 @@ var xhunt = {
 		// if (Mobilis.core.Status.CONNECTED){
 		// 	Mobilis.core.disconnect('reconnect');
 		// };
-		console.log('connect: ' + xhunt.JID + ' '+ xhunt.PASSWORD);
+		xhunt.log('connect: ' + xhunt.JID + ' '+ xhunt.PASSWORD);
 		Mobilis.core.connect(
 			xhunt.JID,
 			xhunt.PASSWORD,
@@ -453,7 +512,11 @@ var xhunt = {
 							'jid': $(this).attr('jid'),
 							'servicename' : $(this).attr('serviceName')
 						};
-						$('#game-list').append('<li><a class="available-game" id="' + $(this).attr('jid') + '" href="lobby.html" data-transition="slide">' + $(this).attr('serviceName') + '</a></li>');
+						$('#game-list').append('<li><a class="available-game" id="'
+												 + $(this).attr('jid') 
+												 + '" href="lobby.html" data-transition="slide">' 
+												 + $(this).attr('serviceName') 
+												 + '</a></li>');
 					});
 				} else {
 					$('#game-list').append('<li>No games found</li>');
@@ -476,7 +539,7 @@ var xhunt = {
 	},
 
 	updatePlayer : function (updates) {
-		console.log('updates.ready: '); console.log(updates.ready);
+		xhunt.log('updates.ready: '); xhunt.log(updates.ready);
 		Mobilis.xhunt.updatePlayer(
 			localStorage.getItem('mobilis.xhunt.gamejid'), //gameJID
 			Mobilis.connection.jid, //playerJid
@@ -484,12 +547,13 @@ var xhunt = {
 			updates.ismod, //isModerator
 			updates.ismrx, //isMrX
 			updates.ready, //isReady
-			function (iq){  // resultcallback
-				console.log('updatePlayer result:'); console.log(iq);
+			function (result){  // resultcallback
+				xhunt.log('updatePlayer result:'); xhunt.log(result);
 
 			},
-			function (iq){ // errorcallback
-				console.log('updatePlayer error:'); console.log(iq);
+			function (error){ // errorcallback
+				xhunt.log('updatePlayer error:'); xhunt.log(error);
+				xhunt.log($(error).find('text').text());
 			}
 		);
 	},
@@ -498,11 +562,11 @@ var xhunt = {
 		Mobilis.xhunt.joinGame(
 			data.jid, //gameJID
 			xhunt.NAME, //playerName
-			function (iq){  // resultcallback: <JoinGameResponse xmlns="mobilisxhunt:iq:joingame">
+			function (result){  // resultcallback: <JoinGameResponse xmlns="mobilisxhunt:iq:joingame">
 
-				var room = $(iq).find('ChatRoom').text();
-				var pwd = $(iq).find('ChatPassword').text();
-				//console.log('xhunt.gameinfo.name:');console.log(xhunt.gameinfo.name);
+				var room = $(result).find('ChatRoom').text();
+				var pwd = $(result).find('ChatPassword').text();
+				//xhunt.log('xhunt.gameinfo.name:');xhunt.log(xhunt.gameinfo.name);
 				//$('title').append(xhunt.gameinfo.name + ' Lobby | Mobilis XHunt');
 				//$('#header').append(xhunt.gameinfo.name + ' Lobby');
 
@@ -521,7 +585,7 @@ var xhunt = {
 													'<strong>' + from + ': </strong>' +
 													$(message).text() +
 													'</div>';
-								console.log('message: ' + msgHtml);
+								xhunt.log('message: ' + msgHtml);
 								$('#chat-panel').append(msgHtml);
 							}
 							return true;
@@ -529,7 +593,7 @@ var xhunt = {
 						function (presence){       // pres_handler_cb: <presence ... />
 
 							if ( from = Strophe.getResourceFromJid($(presence).attr('from')) ){
-								console.log('presence: ' + from);
+								xhunt.log('presence: ' + from);
 							}
 							return true;
 						},
@@ -538,10 +602,9 @@ var xhunt = {
 					xhunt.gameinfo['joined'] = true;
 				}
 			},
-			function (iq){ // errorcallback
-				console.log('joinGame error:'); console.log(iq);
-				//xhunt.queryGames();
-				console.log($(iq).find('text').text());
+			function (error){ // errorcallback
+				xhunt.log('joinGame error:'); xhunt.log(error);
+				xhunt.log($(error).find('text').text());
 			}
 		);
 	},
@@ -552,12 +615,12 @@ var xhunt = {
 				Mobilis.xhunt.playerExit(
 					localStorage.getItem('mobilis.xhunt.gamejid'), //gameJID
 					Mobilis.connection.jid, //playerJid
-					function (iq){  // resultcallback
-						console.log('playerExit result:'); console.log(iq);
+					function (result){  // resultcallback
+						xhunt.log('playerExit result:'); xhunt.log(result);
 					}, 
-					function (iq){ // errorcallback
-						console.log('playerExit error:'); console.log(iq);
-						console.log($(iq).find('text').text());
+					function (error){ // errorcallback
+						xhunt.log('playerExit error:'); xhunt.log(error);
+						xhunt.log($(error).find('text').text());
 					}
 				);
 
@@ -581,112 +644,94 @@ var xhunt = {
 	},
 
 	initMap : function(data) {
-		if (navigator.geolocation) {
-			console.log('yes we have a geolocation');
-			navigator.geolocation.getCurrentPosition(
-				function (position) {
-					console.log('position object: ');console.log(position);
+		// if (navigator.geolocation) {
+		// 	xhunt.log('yes we have a geolocation');
+		navigator.geolocation.getCurrentPosition( function (position) {
 
-					var current_latitude = position.coords.latitude;
-					var current_longitude = position.coords.longitude;
+			// var current_latitude = position.coords.latitude;
+			// var current_longitude = position.coords.longitude;
+			var current_latitude = xhunt.position.latitude; xhunt.log('current_latitude: '+current_latitude);
+			var current_longitude = xhunt.position.longitude; xhunt.log('current_longitude: '+current_longitude);
 
-					$('#map').gmap3({
-						action: 'init',
-							options:{
-								center: [current_latitude, current_longitude],
-								zoom: 15,
-								mapTypeId: google.maps.MapTypeId.MAP,
-								mapTypeControl: false,
-								navigationControl: true,
-								scrollwheel: true,
-								streetViewControl: false
-							}
-						}
-					).height($(document).height()-42); // 42 = Header Height
-
-					$.ajax({
-						type: "GET",
-						url: data.xml,
-						dataType: "xml",
-						success: function(xml) {
-							$(xml).find('Station').each(function() {
-								xhunt.stations[$(this).attr('id')] = {
-									'abbrev': $(this).attr('abbrev'),
-									'name': $(this).attr('name'),
-									'lat': $(this).attr('latitude'),
-									'lon' : $(this).attr('longitude')
-								};
-								$('#map').gmap3({
-									action: 'addMarker',
-									latLng: [$(this).attr('latitude'), $(this).attr('longitude')],
-									marker: {
-										options: {
-											icon: xhunt.hlst,
-											title: $(this).attr('name')
-										}
-									},
-								},'autofit'
-								);
-							});
-
-							$(xml).find('Route').each(function() {
-								var stops = [];
-								var i = 0;
-								var colornummer = $(this).attr('type');
-								$(this).find('stop').each(function() {
-									$(xml).find("Station[id='" + $(this).text() + "']").each(function() {
-										var latitude = $(this).attr('latitude');
-										var longitude = $(this).attr('longitude');
-										stops[i] = [];
-										stops[i][0] = latitude;
-										stops[i][1] = longitude;
-										i++;
-									});
-								});
-								$('#map').gmap3({
-									action: 'addPolyline',
-									options: {
-										strokeColor: xhunt.colors[colornummer],
-										strokeOpacity: 1.0,
-										strokeWeight: 2
-									},
-									path: stops
-								});
-							});
-						}
-					});
-
-					$('#waitingforplayers-tooltip').popup('open', {
-						positionTo: 'window',
-						theme: 'a'
-					});
-
-				},
-				function (msg) {
-					console.log(typeof msg == 'string' ? 'Error: ' + msg : 'unknown GeoLocation Error');
+			$('#map').gmap3({
+				action: 'init',
+					options:{
+						center: [current_latitude, current_longitude],
+						zoom: 15,
+						mapTypeId: google.maps.MapTypeId.MAP,
+						mapTypeControl: false,
+						navigationControl: true,
+						scrollwheel: true,
+						streetViewControl: false
+					}
 				}
-			);
-		} else {
-			console.log('HTML5 GeoLocation not supported');
-		}
-	},
+			).height($(document).height()-42); // 42 = Header Height
 
-	createPlayer : function (jid) {
-		if (!xhunt.players[jid]) {
-			xhunt.players[jid] = {
-				'name'  : '',
-				'lat'   : '',
-				'lon'   : '',
-				'tlat'  : '',
-				'tlon'  : '',
-				'ismrx' : '',
-				'ismod' : '',
-				'icon'  : '',
-				'round' : '0'
-			};
-		}
-	},
+			$.ajax({
+				type: "GET",
+				url: data.xml,
+				dataType: "xml",
+				success: function(xml) {
+					$(xml).find('Station').each(function() {
+						xhunt.stations[$(this).attr('id')] = {
+							'abbrev': $(this).attr('abbrev'),
+							'name': $(this).attr('name'),
+							'lat': $(this).attr('latitude'),
+							'lon' : $(this).attr('longitude')
+						};
+						$('#map').gmap3({
+							action: 'addMarker',
+							latLng: [$(this).attr('latitude'), $(this).attr('longitude')],
+							marker: {
+								options: {
+									icon: xhunt.hlst,
+									title: $(this).attr('name')
+								}
+							},
+						}//,'autofit'
+						);
+					});
+					
+					$(xml).find('Route').each(function() {
+						var stops = [];
+						var i = 0;
+						var colornummer = $(this).attr('type');
+						$(this).find('stop').each(function() {
+							$(xml).find("Station[id='" + $(this).text() + "']").each(function() {
+								var latitude = $(this).attr('latitude');
+								var longitude = $(this).attr('longitude');
+								stops[i] = [];
+								stops[i][0] = latitude;
+								stops[i][1] = longitude;
+								i++;
+							});
+						});
+						$('#map').gmap3({
+							action: 'addPolyline',
+							options: {
+								strokeColor: xhunt.colors[colornummer],
+								strokeOpacity: 1.0,
+								strokeWeight: 2
+							},
+							path: stops
+						});
+					});
+				}
+			});
 
+			$('#waitingforplayers-tooltip').popup('open', {
+				positionTo: 'window',
+				theme: 'a'
+			});
+
+		},
+		function (msg) {
+			xhunt.log(typeof msg == 'string' ? 'Error: ' + msg : 'unknown GeoLocation Error');
+		});
+		// } else {
+		// 	xhunt.log('HTML5 GeoLocation not supported');
+		// }
+	},
 
 
 
@@ -717,6 +762,23 @@ var xhunt = {
 
 
 
+/*
+	createPlayer : function (jid) {
+		if (!xhunt.players[jid]) {
+			xhunt.players[jid] = {
+				'name'  : '',
+				'lat'   : '',
+				'lon'   : '',
+				'tlat'  : '',
+				'tlon'  : '',
+				'ismrx' : '',
+				'ismod' : '',
+				'icon'  : '',
+				'round' : '0'
+			};
+		}
+	},
+*/
 
 	convert : function (num) {
 		var num=num;
@@ -734,6 +796,17 @@ var xhunt = {
 		console.log(msg);
 		//$('#logwindow').append('<div class="message" ></div>').append(document.createTextNode(msg))
 	},
+
+	watchPosition: function () {
+		navigator.geolocation.watchPosition(function(position) {
+			xhunt.log(xhunt.position['latitude'] = position.coords.latitude);
+			xhunt.log(xhunt.position['longitude'] = position.coords.longitude);
+		});
+	},
+	randomizePosition: function () {
+		xhunt.log(xhunt.position['latitude'] = (510+Math.random())/10);
+		xhunt.log(xhunt.position['longitude'] = (137+Math.random())/10);
+	}
 };
 
 
@@ -770,17 +843,15 @@ var xhunt = {
 
 $(document).on('pageinit', '#games-page', function() {
 
-	if (navigator.geolocation) {
+	if ( (navigator.geolocation) && (localStorage.getItem('mobilis.xhunt.staticmode') == 'off') ) {
 
-		navigator.geolocation.watchPosition(function(position) {
-			console.log(xhunt.position['latitude'] = position.coords.latitude);
-			console.log(xhunt.position['longitude'] = position.coords.longitude);
-		});
-
+		xhunt.watchPosition();
 		xhunt.connect();
 
 	} else {
-		console.log('HTML5 GeoLocation not supported');
+		xhunt.log('Only Static Mode supported');
+		xhunt.randomizePosition();
+		xhunt.connect();
 	}
 
 });
@@ -851,9 +922,11 @@ $(document).on('click', '#settings-form #submit', function() {
 	localStorage.setItem('mobilis.xhunt.username', $('#settings-form #username').val());
 	localStorage.setItem('mobilis.xhunt.jid', $('#settings-form #jid').val());
 	localStorage.setItem('mobilis.xhunt.password', $('#settings-form #password').val());
-	console.log(localStorage.getItem('mobilis.xhunt.username'));
-	console.log(localStorage.getItem('mobilis.xhunt.jid'));
-	console.log(localStorage.getItem('mobilis.xhunt.password'));
+	localStorage.setItem('mobilis.xhunt.staticmode', $('#settings-form #staticmode').val());
+	xhunt.log(localStorage.getItem('mobilis.xhunt.username'));
+	xhunt.log(localStorage.getItem('mobilis.xhunt.jid'));
+	xhunt.log(localStorage.getItem('mobilis.xhunt.password'));
+	xhunt.log(localStorage.getItem('mobilis.xhunt.staticmode'));
 	return true;
 });
 

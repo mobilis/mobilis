@@ -54,3 +54,10 @@
 	height: inherit;
 
 }
+
+label.ui-slider {
+	display: inline-block;
+	vertical-align: top;
+	width: 35%;
+	margin: 0.5em 0;
+}

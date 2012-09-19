@@ -124,14 +124,44 @@
 
             Mobilis.core.sendIQ(customIq, resultcallback, errorcallback);
         }, 
-
-        respondLocation: function(gameJID, playerJid, latitude, longitude, resultcallback, errorcallback){
+        /** Response Functions
+        *  respond to request IQs
+        */
+        respondPlayer: function(gameJID, iqid, resultcallback, errorcallback){
             if (!resultcallback) 
                 resultcallback = Mobilis.core.defaultcallback; 
             if (!errorcallback) 
                 errorcallback = Mobilis.core.defaulterrorback;
 
-            console.log('latitude: ' + latitude +  ', longitude: ' + longitude);
+            var customIq = $iq({
+                to: gameJID,
+                id: iqid,
+                type: 'result'
+            })
+            .c('PlayersResponse', {xmlns : Mobilis.xhunt.NS.PLAYERS});
+            Mobilis.core.sendIQ(customIq);
+        },
+
+        respondStartRound: function(gameJID, iqid, resultcallback, errorcallback){
+            if (!resultcallback) 
+                resultcallback = Mobilis.core.defaultcallback; 
+            if (!errorcallback) 
+                errorcallback = Mobilis.core.defaulterrorback;
+
+            var customIq = $iq({
+                to: gameJID,
+                id: iqid,
+                type: 'result'
+            })
+            .c('StartRoundResponse', {xmlns : Mobilis.xhunt.NS.PLAYERS});
+            Mobilis.core.sendIQ(customIq);
+        },
+
+        respondLocation: function(gameJID, playerJid, iqid, latitude, longitude, resultcallback, errorcallback){
+            if (!resultcallback) 
+                resultcallback = Mobilis.core.defaultcallback; 
+            if (!errorcallback) 
+                errorcallback = Mobilis.core.defaulterrorback;
 
             if (gameJID) {
                 if (playerJid) {
@@ -139,6 +169,7 @@
 
                     var customIq = $iq({
                         to: gameJID,
+                        id: iqid,
                         type: 'result'
                     })
                     .c('LocationResponse', {xmlns : Mobilis.xhunt.NS.LOCATION})
@@ -153,7 +184,6 @@
                 errorcallback(null, 'gameJID not defined');
             }
 
-            console.log('LocationResponse: ' + customIq);
             Mobilis.core.sendIQ(customIq, resultcallback, errorcallback);
         },
 
@@ -344,7 +374,7 @@
                 Mobilis.xhunt.NS.JOINGAME
             );
         },
-       
+
         addUpdatePlayerHandler: function(handler) {
             Mobilis.connection.addHandler(
                 handler,
@@ -352,36 +382,6 @@
             );
         },
 
-        /** Response Functions
-        *  respond to request IQs
-        */
-        respondPlayer: function(gameJID, resultcallback, errorcallback){
-            if (!resultcallback) 
-                resultcallback = Mobilis.core.defaultcallback; 
-            if (!errorcallback) 
-                errorcallback = Mobilis.core.defaulterrorback;
-
-            var customIq = $iq({
-                to: gameJID,
-                type: 'result'
-            })
-            .c('PlayersResponse', {xmlns : Mobilis.xhunt.NS.PLAYERS});
-            Mobilis.core.sendIQ(customIq);
-        },
-
-        respondStartRound: function(gameJID, resultcallback, errorcallback){
-            if (!resultcallback) 
-                resultcallback = Mobilis.core.defaultcallback; 
-            if (!errorcallback) 
-                errorcallback = Mobilis.core.defaulterrorback;
-
-            var customIq = $iq({
-                to: gameJID,
-                type: 'result'
-            })
-            .c('StartRoundResponse', {xmlns : Mobilis.xhunt.NS.PLAYERS});
-            Mobilis.core.sendIQ(customIq);
-        },
 
     };
     Mobilis.extend("xhunt", xhunt);
