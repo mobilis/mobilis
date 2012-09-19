@@ -60,7 +60,8 @@
 	<!-- Compile java code -->
 	<target name="compile" depends="makedir">
 		<javac srcdir="${src.dir}:${src.dirs.extern}" destdir="${build.dir}" 
-			classpathref="build.classpath" debug="on" nowarn="on" failonerror="false">
+			classpathref="build.classpath" debug="on" nowarn="on" failonerror="false"
+			encoding="ISO-8859-1">
 		</javac>
 
 	</target>

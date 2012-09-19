@@ -217,10 +217,10 @@ public class GPSProxy {
 				if(mContext instanceof XHuntMapActivity)
 					allStations = ((XHuntMapActivity) mContext).getGame().getRouteManagement().getStationsAsList();
 				
-				if(allStations == null)
+				if((allStations != null) && (allStations.size() != 0))
+					mCurrentLocation = getRandomLocation(allStations);
+				else
 					setLocation(51033880, 13783272);
-				if(allStations != null)
-					mCurrentLocation = getRandomLocation(allStations);			
 			}
 			
 			else if(!staticMode) {
@@ -268,14 +268,24 @@ public class GPSProxy {
 	
 	
 	/**
-	 *  Calculates the bounds of the area by using a list of all stations and returns a random location
-	 *  inside of those bounds.
+	 * Returns the coordinates of a random station as a Location object.
+	 * Needed as a starting point when plaing in static mode.
 	 *  
 	 * @param allStations the list of all stations of the area
-	 * @return a random location object which lies inside of the area
+	 * @return a location object equating to a random station
 	 */
 	private Location getRandomLocation(List<Station> allStations) {
-		int lat_min = Integer.MAX_VALUE;
+		/*Random rndm = new Random();
+		Station rndmStation = allStations.get(rndm.nextInt(allStations.size()));
+		
+		Location result = new Location(LocationManager.GPS_PROVIDER);
+		result.setLatitude((double) rndmStation.getLatitude() /1E6);
+		result.setLongitude((double) rndmStation.getLongitude() /1E6);
+		
+		return result;*/
+		
+	//	For a random location inside of the bounds, not necessarily a station	
+	 	int lat_min = Integer.MAX_VALUE;
 		int long_min = Integer.MAX_VALUE;
 		int lat_max = Integer.MIN_VALUE;
 		int long_max = Integer.MIN_VALUE;
@@ -300,9 +310,10 @@ public class GPSProxy {
 		
 		Location result = new Location(LocationManager.GPS_PROVIDER);
 		result.setLatitude((double)lat_rndm/1E6);
-		result.setLongitude((double)long_rndm/1E6);
+		result.setLongitude((double)long_rndm/1E6);		
 		
 		return result;
+	
 	}
 	
 	

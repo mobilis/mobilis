@@ -94,40 +94,17 @@ public class PlayerIconOverlay extends ItemizedOverlay<OverlayItem> {
 		if(i >= overlayIcons.size())
 			return false;
 		
-		// Get the player on who we tapped on
-		XHuntPlayer player = mXhuntService.getCurrentGame().getPlayerByJID(overlayIcons.get(i).getTitle());
-
-		// For debugging we can tap only on the on players icon to set the current location equals to the targets location
-		if(player != null && player.getJid().equals(mXhuntService.getMXAProxy().getXmppJid())){
-			
-			if (mXhuntService.getMXAProxy().isStaticMode()) {
-				Station currentTarget = mXhuntService.getCurrentGame().getRouteManagement().getStationById(player.getCurrentTargetId());
-				
-				//System.out.println("isfinal:" + player.isCurrentTargetFinal() + " currenttarget:"  +currentTarget);
-				if(currentTarget == null || !player.isCurrentTargetFinal())
-					return true;
-				
-				//System.out.println("" + currentTarget.getLatitude() + " " + currentTarget.getLongitude());
-				mXhuntService.getGPSProxy().setLocation(currentTarget.getLatitude(), currentTarget.getLongitude());
-				
-				updatePlayers();
-				mapView.invalidate();
-			}
-		}
-		// Else get the station under the playericon
-		else{
-			Station s = mXhuntService.getCurrentGame().getRouteManagement().getStationByLocation(overlayIcons.get(i).getPoint());
-			
-			if (s != null){
-				if (s.isReachableFromCurrentStation()) {
-					mMapActivity.reachableStationTapped(s);
-				} else {
-					Toast.makeText(mMapActivity, s.getName(), Toast.LENGTH_SHORT).show();		
-				}
-			}
+		// Get the station under the playericon
+		Station s = mXhuntService.getCurrentGame().getRouteManagement().getStationByLocation(overlayIcons.get(i).getPoint());
+		
+		if(s != null) {
+			if(s.isReachableFromCurrentStation())
+				mMapActivity.reachableStationTapped(s);
+			else
+				Toast.makeText(mMapActivity, s.getName(), Toast.LENGTH_SHORT).show();		
 		}
 		
-		return(true);
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -235,5 +212,11 @@ public class PlayerIconOverlay extends ItemizedOverlay<OverlayItem> {
 			}
 		}
 	}
-
+	
+	/**
+	 * Invalidates the MapView
+	 */
+	public void invalidateMapView() {
+		mapView.invalidate();
+	}
 }
