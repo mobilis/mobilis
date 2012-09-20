@@ -368,6 +368,7 @@ public class GameStateRoundInitial extends GameState{
 	 * This will also update the locations on clientside of the players.
 	 */
 	private void startLocationPolling(long delay){
+		System.out.println("GameStateRoundInitial.startLocationPolling()");
 		// Define and start the polling timer
 		if (mPollingTimer!=null) {
 			mPollingTimer.cancel();
@@ -377,12 +378,13 @@ public class GameStateRoundInitial extends GameState{
 		mPollingTimer.schedule(
 			new TimerTask() {
 				public void run() {
+					System.out.println("GameStateRoundInitial Sending LocationRequests");
 					ArrayList<LocationInfo> infos = new ArrayList<LocationInfo>();
 					XHuntPlayer playerMrX = null;
 					
 					// Collect the locations of all agents
 					for(XHuntPlayer player : game.getPlayers().values()){
-						if(!player.isMrx()){
+						if(!player.isMrx() && player.getGeoLocation()!=null){
 							infos.add(new LocationInfo(player.getJid(),
 									player.getGeoLocation().getLatitudeE6(),
 									player.getGeoLocation().getLongitudeE6()));
@@ -402,17 +404,21 @@ public class GameStateRoundInitial extends GameState{
 					// Add the location of Mr.X to the list of locations of the agents 
 					// and send this list to Mr.X
 					if(playerMrX != null){
-						infos.add(new LocationInfo(playerMrX.getJid(),
-								playerMrX.getGeoLocation().getLatitudeE6(),
-								playerMrX.getGeoLocation().getLongitudeE6()));
+						if (playerMrX.getGeoLocation()!=null) {
+							infos.add(new LocationInfo(playerMrX.getJid(),
+									playerMrX.getGeoLocation().getLatitudeE6(),
+									playerMrX.getGeoLocation().getLongitudeE6()));
+						}
 						
 						control.getConnection().getProxy().Location( 
 								game.getMisterX().getJid(), 
 								infos, LocationCallback );
+						System.out.println("GameStateRoundInitial Sending LocationRequests done");
 					}
 		        }
 				// Timer will be start after 5000 ms
 		}, delay, control.getSettings().getLocationPollingIntervalMillis());
+		System.out.println("GameStateRoundInitial.startLocationPolling() end");
 	}
 	
 	/**
@@ -547,6 +553,7 @@ public class GameStateRoundInitial extends GameState{
 	
 	public void onStartRound( StartRoundResponse in ) {
 		// Confirm the start of the round
+		System.out.println("GameStateRoundInitial.onStartRound()");
 		/*for ( String toJid : game.getPlayers().keySet() ) {
 			control.getConnection().getProxy().Location( 
 					toJid, 
@@ -554,5 +561,6 @@ public class GameStateRoundInitial extends GameState{
 					LocationCallback);		
 		}*/
 		startLocationPolling(0);
+		System.out.println("GameStateRoundInitial.onStartRound() end");
 	}
 }
