@@ -46,6 +46,13 @@
 		android:text="@string/main_button_instructions_title"
 		android:layout_width="fill_parent"
 		android:layout_marginBottom="5dip" />
+	
+	<Button
+		android:layout_height="wrap_content"
+		android:id="@+id/main_btn_version"
+		android:text="@string/main_button_version_title"
+		android:layout_width="fill_parent"
+		android:layout_marginBottom="5dip" />
 		
 	<!-- <Button
 		android:layout_height="wrap_content"

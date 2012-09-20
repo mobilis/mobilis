@@ -37,6 +37,7 @@ import android.widget.Button;
 import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.xhunt.Const;
 import de.tudresden.inf.rn.mobilis.android.xhunt.R;
+import de.tudresden.inf.rn.mobilis.android.xhunt.VersionActivity;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.GameState;
 import de.tudresden.inf.rn.mobilis.android.xhunt.proxy.MXAProxy;
 import de.tudresden.inf.rn.mobilis.android.xhunt.service.ServiceConnector;
@@ -226,6 +227,16 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(MainActivity.this, GameInstructionActivity.class);
+				startActivity(i);
+			}
+		});
+    	
+    	Button btn_Version = (Button)findViewById(R.id.main_btn_version);
+    	btn_Version.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(MainActivity.this, VersionActivity.class);
 				startActivity(i);
 			}
 		});
