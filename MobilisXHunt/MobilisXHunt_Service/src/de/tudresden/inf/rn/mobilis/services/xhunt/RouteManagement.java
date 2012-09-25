@@ -21,7 +21,8 @@ package de.tudresden.inf.rn.mobilis.services.xhunt;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.GeoPoint;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.Route;
@@ -56,7 +57,8 @@ public class RouteManagement {
 	/** The tickets of the area (ticketId, Ticket). */
 	private HashMap<Integer, Ticket> mAreaTickets;
 	
-	private List<Station> assignedStartStations;
+	/** The start stations which were already assigned to a player. */
+	private Map<XHuntPlayer, Station> assignedStartStations;
 	
 	/** The m controller. */
 	private XHunt mController;
@@ -71,7 +73,7 @@ public class RouteManagement {
 		mAreaRoutes = new HashMap<Integer, Route>();
 		mAreaStations = new HashMap<Integer, Station>();
 		mAreaTickets = new HashMap<Integer, Ticket>();
-		assignedStartStations = new ArrayList<Station>();
+		assignedStartStations = new ConcurrentHashMap<XHuntPlayer, Station>();
 	}
 	
 	/**
@@ -126,28 +128,35 @@ public class RouteManagement {
 	}
 	
 	/**
-	 * Gets the nearest station of a GeoPoint, but only returns a specific station once.
+	 * Gets the nearest station of a Player, but only returns a specific station once.
 	 * In case a specific station was already returned, it returns the second nearest station instead.
 	 *
-	 * @param geoPoint the GeoPoint where to start searching
+	 * @param player the Player for which this method is called
 	 * @return the nearest station
 	 */
-	public Station getNearestStation(GeoPoint geoPoint) {
-		Station nearestStation = null;
-		double minDistance = Double.MAX_VALUE;
-		double computedDistance = Double.MAX_VALUE;
+	public Station getNearestStation(XHuntPlayer player) {
+		if(assignedStartStations.containsKey(player))
+			return assignedStartStations.get(player);
 		
-		for(Station station : mAreaStations.values()) {
-			computedDistance = computeDistance(geoPoint, station.getGeoPoint());
+		else {
+			Station nearestStation = null;
+			double minDistance = Double.MAX_VALUE;
+			double computedDistance = Double.MAX_VALUE;
 			
-			if((computedDistance < minDistance) && (!assignedStartStations.contains(station))) {
-				minDistance = computedDistance;
-				nearestStation = station;
+			for(Station station : mAreaStations.values()) {
+				computedDistance = computeDistance(player.getGeoLocation(), station.getGeoPoint());
+				
+				if(computedDistance < minDistance) {
+					if(!assignedStartStations.values().contains(station)) {
+						minDistance = computedDistance;
+						nearestStation = station;
+					}
+				}
 			}
+			
+			assignedStartStations.put(player, nearestStation);
+			return nearestStation;
 		}
-		
-		assignedStartStations.add(nearestStation);
-		return nearestStation;
 	}
 	
 	/**

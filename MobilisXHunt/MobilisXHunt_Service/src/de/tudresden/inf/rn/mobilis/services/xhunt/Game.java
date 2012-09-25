@@ -635,8 +635,8 @@ public class Game {
 	public boolean setInitialTarget(XHuntPlayer player){
 		if(player != null 
 				&& player.getGeoLocation() != null){			
-			control.log("initial target for " + player.getJid() + " is " + mRoutemanagement.getNearestStation(player.getGeoLocation()).getId());
-			player.setCurrentTarget(mRoutemanagement.getNearestStation(player.getGeoLocation()).getId());
+			control.log("initial target for " + player.getJid() + " is " + mRoutemanagement.getNearestStation(player).getId());
+			player.setCurrentTarget(mRoutemanagement.getNearestStation(player).getId());
 			player.setCurrentTargetFinal(true);
 			
 			return true;
