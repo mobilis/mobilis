@@ -1342,4 +1342,12 @@ public class XHuntMapActivity extends MapActivity {
 		}
     	
     }
+    
+    /**
+     * Returns the MXAProxy instance.
+     * @return
+     */
+    public MXAProxy getMxaProxy() {
+    	return mMxaProxy;
+    }
 }
