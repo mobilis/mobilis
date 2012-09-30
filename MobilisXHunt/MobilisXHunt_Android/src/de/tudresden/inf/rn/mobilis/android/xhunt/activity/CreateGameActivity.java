@@ -312,7 +312,7 @@ public class CreateGameActivity extends PreferenceActivity {
      * @return the edits the text preference
      */
     private SeekBarPreference createTicketPrefEntry(String ticketName, String role) {
-    	int defaultTicketCount = 30;
+    	int defaultTicketCount = 99;
     	SeekBarPreference seekbar = new SeekBarPreference(this, 0, 99, defaultTicketCount, "tickets");
 		
 		seekbar.setKey("key_newgame_" + role.toLowerCase() + ticketName.toLowerCase());

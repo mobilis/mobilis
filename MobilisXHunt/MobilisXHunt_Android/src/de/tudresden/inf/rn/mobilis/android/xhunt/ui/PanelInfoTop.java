@@ -23,40 +23,44 @@
  */
 package de.tudresden.inf.rn.mobilis.android.xhunt.ui;
 
-import java.util.HashMap;
-
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.Game;
-import de.tudresden.inf.rn.mobilis.android.xhunt.model.Ticket;
 
 /**
- * The Class PanelTickets.
+ * The Class PanelInfoTop.
  */
-public class PanelTickets extends PanelTransparent {
+public class PanelInfoTop extends PanelTransparent {
 	
 	/** The applications context. */
 	private Context mContext;
-	
-	/** The map with the tickets and its related icon and amount 
-	 * (ticketId, (icon, amount)). */
-	private HashMap<Integer, ImageTextViewPair> mImageTextViewPairs;
-	
+
+	/** The current Game. */
+	private Game mGame;
+
 	/** The TextView to display current round. */
 	private TextView mTextViewRound;
 	
-	/** The gap between the icons. */
-	private boolean mInnerViewGapUpdated;
+	/** The TextView to display whether it's Mr.X' or the Agents' turn. */
+	private TextView mTextViewTurn;
 	
-	/** The current Game. */
-	private Game mGame;
+	/** Whether the player is Mr.X or not */
+	private boolean isMrX;
+	
+	private int turnTextViewUpdateCounter;
+	
+	
+	/* The map with the tickets and its related icon and amount (ticketId, (icon, amount)). */
+	// Commented out due to the substitution of the ticket counts for round information
+	// (http://jira.inf.tu-dresden.de/browse/MO-124)
+	//private HashMap<Integer, ImageTextViewPair> mImageTextViewPairs;
+	
+	/* The gap between the icons. */
+	// Commented out due to the substitution of the ticket counts for round information
+	// (http://jira.inf.tu-dresden.de/browse/MO-124)
+	//private boolean mInnerViewGapUpdated;
 	
 
 	/**
@@ -64,9 +68,8 @@ public class PanelTickets extends PanelTransparent {
 	 *
 	 * @param context the context of the application
 	 */
-	public PanelTickets(Context context) {
+	public PanelInfoTop(Context context) {
 		super(context);
-		
 		initComponents(context);
 	}
 	
@@ -76,52 +79,58 @@ public class PanelTickets extends PanelTransparent {
 	 * @param context the context of the application
 	 * @param attrs the attributes
 	 */
-	public PanelTickets(Context context, AttributeSet attrs) {
+	public PanelInfoTop(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		
 		initComponents(context);
 	}
 	
 	/**
-	 * Creates the Panel and initiates the tickets, amounts and game round.
+	 * Creates the Panel and initiates the TextViews for turn and game round.
 	 *
 	 * @param game the current Game
 	 */
-	public void create(Game game){
+	public void create(Game game, boolean isMrX) {
 		this.mGame = game;
+		this.isMrX = isMrX;
+				
+		mTextViewTurn.setText("Wait at assigned station");
+		mTextViewTurn.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.LEFT));
+		this.addView(mTextViewTurn);
 		
-		Log.v("", "myTickets: " + mGame.getRouteManagement().getMyTickets().size());
+		mTextViewRound.setText("Round: " + mGame.getCurrentRound());
+		this.addView(mTextViewRound);
+				
+		this.invalidate();
 		
+		// Commented out due to the substitution of the ticket counts for round information
+		// (http://jira.inf.tu-dresden.de/browse/MO-124)
+		/*Log.v("", "myTickets: " + mGame.getRouteManagement().getMyTickets().size());
 		for(Ticket ticket : mGame.getRouteManagement().getAreaTickets().values()){
 			if(mGame.getRouteManagement().getMyTickets().containsKey(ticket.getId())){
 				ImageTextViewPair pair = new ImageTextViewPair(mContext);
 				pair.create(ticket.getIcon(getResources()),
 						"" + mGame.getRouteManagement().getMyTickets().get(ticket.getId()));
 				mImageTextViewPairs.put(ticket.getId(), pair);
-				
 				this.addView(pair);
 			}
 		}
-		
-		mTextViewRound.setText("R: " + mGame.getCurrentRound());
-		this.addView(mTextViewRound);
-		
-		mInnerViewGapUpdated = false;
-		
-		this.invalidate();
+		mInnerViewGapUpdated = false;*/
 	}
 	
     /* (non-Javadoc)
      * @see de.tudresden.inf.rn.mobilis.android.xhunt.ui.PanelTransparent#dispatchDraw(android.graphics.Canvas)
-     */
-    @Override
+     *
+	 * Commented out due to the substitution of the ticket counts for round information
+	 * (http://jira.inf.tu-dresden.de/browse/MO-124)
+	 */
+    /*@Override
     protected void dispatchDraw(Canvas canvas) {		
 		if(!mInnerViewGapUpdated){
 			updateInnerViewGap();
 		}
 		
 		super.dispatchDraw(canvas);
-    }
+    }*/
 	
 	/**
 	 * Inits the components.
@@ -131,29 +140,60 @@ public class PanelTickets extends PanelTransparent {
 	private void initComponents(Context context){
 		this.mContext = context;
 		
-		mImageTextViewPairs = new HashMap<Integer, PanelTickets.ImageTextViewPair>();
-		mTextViewRound = new TextView(mContext);		
-		mInnerViewGapUpdated = false;
+		mTextViewRound = new TextView(mContext);
+		mTextViewTurn = new TextView(mContext);
+		
+		turnTextViewUpdateCounter = 0;
+		
+		// Commented out due to the substitution of the ticket counts for round information
+		// (http://jira.inf.tu-dresden.de/browse/MO-124)
+		//mImageTextViewPairs = new HashMap<Integer, PanelTickets.ImageTextViewPair>();		
+		//mInnerViewGapUpdated = false;
 	}
-	
+
 	/**
-	 * Updates the Panel with actual data read from curren Game.
+	 * Updates the Panel with actual data read from current Game.
 	 */
-	public void update(){
-		for(Ticket ticket : mGame.getRouteManagement().getAreaTickets().values()){
+	public void update() {
+		String whoseTurn;
+		
+		if(turnTextViewUpdateCounter % 2 == 0) {
+			if(isMrX)
+				whoseTurn = "Mr.X chooses next target";
+			else
+				whoseTurn = "Agents decide next target";
+		}
+		
+		else {
+			if(isMrX)
+				whoseTurn = "Agents decide next target";
+			else
+				whoseTurn = "Mr.X chooses next target";
+		}
+		
+
+		mTextViewTurn.setText(whoseTurn);
+		mTextViewRound.setText("Round: " + mGame.getCurrentRound());
+		
+		turnTextViewUpdateCounter++;
+			
+		// Commented out due to the substitution of the ticket counts for round information
+		// (http://jira.inf.tu-dresden.de/browse/MO-124)
+		/*for(Ticket ticket : mGame.getRouteManagement().getAreaTickets().values()){
 			if(mGame.getRouteManagement().getMyTickets().containsKey(ticket.getId())){
 				mImageTextViewPairs.get(ticket.getId()).setText(
 						"" + mGame.getRouteManagement().getMyTickets().get(ticket.getId()));
 			}
-		}
-		
-		mTextViewRound.setText("R: " + mGame.getCurrentRound());
+		}*/
 	}
 	
-	/**
+	/*
 	 * Update gap between the panel elements.
+	 * 
+	 * Commented out due to the substitution of the ticket counts for round information
+	 * (http://jira.inf.tu-dresden.de/browse/MO-124)
 	 */
-	private void updateInnerViewGap(){
+	/*private void updateInnerViewGap(){
 		int padding = this.getWidth() / (mImageTextViewPairs.size() + 1);
 		Log.v("", "padding: " + padding);
 		
@@ -168,50 +208,45 @@ public class PanelTickets extends PanelTransparent {
 		}
 
 		mInnerViewGapUpdated = true;
-	}
+	}*/
 	
 
-	/**
+	/* 
 	 * The Class ImageTextViewPair.
+	 *
+	 * Commented out due to the substitution of the ticket counts for round information
+	 * (http://jira.inf.tu-dresden.de/browse/MO-124)
+	 *
 	 */
-	private class ImageTextViewPair extends LinearLayout {
+	/*private class ImageTextViewPair extends LinearLayout {
 		
-		/** The applications context. */
+		// The applications context.
 		private Context mContext;
 		
-		/** The ImageView for a ticket icon. */
+		// The ImageView for a ticket icon.
 		private ImageView mImageView;
 		
-		/** The TextView for the amount of ticket. */
+		// The TextView for the amount of ticket.
 		private TextView mTextView;
 
-		/**
-		 * Instantiates a new ImageTextViewPair.
-		 *
-		 * @param context the context
-		 */
+		// Instantiates a new ImageTextViewPair.
+		// @param context the context
 		public ImageTextViewPair(Context context) {
 			super(context);
 			this.mContext = context;
 		}
 		
-		/**
-		 * Instantiates a new ImageTextViewPair.
-		 *
-		 * @param context the context of the application
-		 * @param attrs the attributes
-		 */
+		// Instantiates a new ImageTextViewPair.
+		// @param context the context of the application
+		// @param attrs the attributes
 		public ImageTextViewPair(Context context, AttributeSet attrs) {
 			super(context, attrs);
 			this.mContext = context;
 		}
 		
-		/**
-		 * Creates the ImageTextViewPair.
-		 *
-		 * @param imagePath the path to the image of the ticket
-		 * @param text the amount of the ticket
-		 */
+		// Creates the ImageTextViewPair.
+		// @param imagePath the path to the image of the ticket
+		// @param text the amount of the ticket
 		public void create(Bitmap icon, String text){
 			this.mImageView = new ImageView(mContext);
 			this.mImageView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
@@ -225,14 +260,11 @@ public class PanelTickets extends PanelTransparent {
 			this.addView(mTextView);
 		}
 		
-		/**
-		 * Sets the amount of ticket.
-		 *
-		 * @param text the new amount
-		 */
+		// Sets the amount of ticket.
+		// @param text the new amount
 		public void setText(String text){
 			this.mTextView.setText(text);
 		}
 		
-	}
+	}*/
 }

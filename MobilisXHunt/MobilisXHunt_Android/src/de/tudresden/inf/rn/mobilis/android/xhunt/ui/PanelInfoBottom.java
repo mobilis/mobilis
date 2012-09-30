@@ -35,9 +35,9 @@ import android.widget.TextView;
 import de.tudresden.inf.rn.mobilis.android.xhunt.R;
 
 /**
- * The Class PanelInfo.
+ * The Class PanelInfoBottom.
  */
-public class PanelInfo extends LinearLayout {
+public class PanelInfoBottom extends LinearLayout {
 	
 	/** The inner paint. */
 	private Paint innerPaint;
@@ -57,7 +57,7 @@ public class PanelInfo extends LinearLayout {
 	 *
 	 * @param context the context
 	 */
-	public PanelInfo(Context context) {
+	public PanelInfoBottom(Context context) {
 		super(context);
 		
 		initComponents(context);
@@ -69,7 +69,7 @@ public class PanelInfo extends LinearLayout {
 	 * @param context the applications context
 	 * @param attrs the attributes
 	 */
-	public PanelInfo(Context context, AttributeSet attrs) {
+	public PanelInfoBottom(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
 		initComponents(context);
