@@ -821,9 +821,9 @@ public class XHuntMapActivity extends MapActivity {
 			menu.findItem(R.id.menu_context_map_target).setVisible(true);
 			
 			// Mr. X don't need the suggestion option, because he's playing alone
-			if(!getMyPlayer().isMrX()){
+			/*if(!getMyPlayer().isMrX()){
 				menu.findItem(R.id.menu_context_map_suggestion).setVisible(true);
-			}
+			}*/
 		}
 	}
 	
