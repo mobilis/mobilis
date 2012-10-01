@@ -470,7 +470,8 @@ public class XHuntMapActivity extends MapActivity {
 	        		mMxaProxy.getIQProxy().getGameServiceJid(),
 	        		beanId);
 	        
-	        mGpsProxy.restartGps(XHuntMapActivity.this);
+	        //mGpsProxy.restartGps(XHuntMapActivity.this);
+	        mGpsProxy.startGps();
 		}
 	};
 	

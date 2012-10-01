@@ -219,8 +219,6 @@ public class GPSProxy {
 				
 				if((allStations != null) && (allStations.size() != 0))
 					mCurrentLocation = getRandomLocation(allStations);
-				else
-					setLocation(51033880, 13783272);
 			}
 			
 			else if(!staticMode) {
