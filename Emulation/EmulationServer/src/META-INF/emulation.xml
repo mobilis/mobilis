@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<msdl:description targetNamespace="http://mobilis.inf.tu-dresden.de/Emulation"
+	xmlns:msdl="http://mobilis.inf.tu-dresden.de/msdl/" xmlns:xmpp="http://mobilis.inf.tu-dresden.de/xmpp/"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://mobilis.inf.tu-dresden.de/Emulation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<msdl:types>
+	    <xs:schema targetNamespace="http://mobilis.inf.tu-dresden.de/Emulation">
+	        <xs:element name="ConnectRequest"/>
+	        <xs:element name="ConnectAck"/>
+	        <xs:element name="ConnectError"/>
+	        <xs:element name="CommandRequest">
+	            <xs:complexType>
+	                <xs:sequence>
+	                    <xs:element name="method_name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+	                    <xs:element name="parameters" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+	                    <xs:element name="command_id" type="xs:int" minOccurs="1" maxOccurs="1"/>
+	                </xs:sequence>
+	            </xs:complexType>
+	        </xs:element>         
+	        <xs:element name="CommandAck"/>
+	        <xs:element name="ExecutionResultRequest">
+	            <xs:complexType>
+	                <xs:sequence>
+	                    <xs:element name="command_id" type="xs:int" minOccurs="1" maxOccurs="1"/>
+	                    <xs:element name="message" type="xs:string" minOccurs="0" maxOccurs="1"/>
+	                </xs:sequence>
+	            </xs:complexType>
+	        </xs:element>
+	        <xs:element name="ExecutionResultAck"/>
+	        <xs:element name="LogRequest"/>
+			<xs:element name="LogResponse"/>
+			<xs:element name="LogError"/>
+	    </xs:schema>
+	</msdl:types>
+</msdl:description>
