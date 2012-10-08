@@ -259,7 +259,7 @@ public class GameStatePlay extends GameState{
 					if(game.getPlayers().size() < control.getSettings().getMinPlayers()
 							|| game.getMisterX() == null){						
 						
-						setGameOver("Game over. Not enough players or mrx. not available.");
+						setGameOver("Game over. Not enough players or Mr.X not available.");
 						return;
 					}
 					
