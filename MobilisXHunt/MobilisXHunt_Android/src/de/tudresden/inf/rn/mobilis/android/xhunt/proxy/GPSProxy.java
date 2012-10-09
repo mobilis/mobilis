@@ -45,6 +45,7 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.Const;
 import de.tudresden.inf.rn.mobilis.android.xhunt.R;
 import de.tudresden.inf.rn.mobilis.android.xhunt.activity.XHuntMapActivity;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.Station;
+import de.tudresden.inf.rn.mobilis.android.xhunt.model.XHuntPlayer;
 import de.tudresden.inf.rn.mobilis.android.xhunt.service.XHuntService;
 
 /**
@@ -180,7 +181,7 @@ public class GPSProxy {
 	/**
 	 * Send location changed broadcast to inform all listening components.
 	 */
-	private void sendLocationChangedBroadcast(){
+	public void sendLocationChangedBroadcast(){
 		GeoPoint currentGeoPoint = parseLocation(mCurrentLocation);
 		
 		Intent i = new Intent(INTENT_LOCATION_CHANGED);
@@ -383,14 +384,33 @@ public class GPSProxy {
 		 */
 		@Override
 		public void onLocationChanged(Location location) {
+			XHuntPlayer myPlayer = (mContext instanceof XHuntService)
+					? ((XHuntService)mContext).getCurrentGame().getPlayerByJID(((XHuntService)mContext).getMXAProxy().getXmppJid())
+					: null;
 			
-			//use new location if it's from GPS or if current location is old/null
-			boolean update =
+			// use new location only if it's from GPS or if current location is old/null
+			boolean useNewLocation =
 					((mCurrentLocation == null)
 						|| (location.getProvider().equals(LocationManager.GPS_PROVIDER))
 						|| (System.currentTimeMillis() - mCurrentLocation.getTime() > locationExpireTime));
 			
-			if(update) {
+			// update location only if player hasn't reached his target yet
+			boolean hasReachedTarget = (myPlayer != null) ? myPlayer.getReachedTarget() : false;
+			
+			// if player has reached his target, set him onto the middle of the station icon
+			if(hasReachedTarget) {
+				Station target = ((XHuntService)mContext).getCurrentGame().getRouteManagement().getStationById(
+						myPlayer.getCurrentTargetId());
+
+				if((target != null) && (target.getLatitude() != myPlayer.getGeoLocation().getLatitudeE6())
+						&& (target.getLongitude() != myPlayer.getGeoLocation().getLongitudeE6())) {
+					setLocation(target.getLatitude(), target.getLongitude());
+					sendLocationChangedBroadcast();
+				}
+			}
+			
+			// else update real position
+			if(useNewLocation && !hasReachedTarget) {
 				mCurrentLocation = location;	
 				sendLocationChangedBroadcast();
 				if(mLogTracks)

@@ -993,8 +993,7 @@ public class XHuntMapActivity extends MapActivity {
 			
 			if((currentTarget != null) && (player.isCurrentTargetFinal())) {
 				mGpsProxy.setLocation(currentTarget.getLatitude(), currentTarget.getLongitude());
-				playerOverlay.updatePlayers();
-				playerOverlay.invalidateMapView();
+				mGpsProxy.sendLocationChangedBroadcast();
 				Log.v(TAG, "moved player because you are playing in static mode");
 			}
 		}
