@@ -219,7 +219,7 @@ public class GPSProxy {
 					allStations = ((XHuntMapActivity) mContext).getGame().getRouteManagement().getStationsAsList();
 				
 				if((allStations != null) && (allStations.size() != 0))
-					mCurrentLocation = getRandomLocation(allStations);
+					setRandomLocation(allStations);
 			}
 			
 			else if(!staticMode) {
@@ -273,7 +273,7 @@ public class GPSProxy {
 	 * @param allStations the list of all stations of the area
 	 * @return a location object equating to a random station
 	 */
-	private Location getRandomLocation(List<Station> allStations) {
+	private void setRandomLocation(List<Station> allStations) {
 		/*Random rndm = new Random();
 		Station rndmStation = allStations.get(rndm.nextInt(allStations.size()));
 		
@@ -307,12 +307,8 @@ public class GPSProxy {
 		int lat_rndm = rndm.nextInt(lat_max-lat_min +1) + lat_min;
 		int long_rndm = rndm.nextInt(long_max-long_min +1) + long_min;
 		
-		Location result = new Location(LocationManager.GPS_PROVIDER);
-		result.setLatitude((double)lat_rndm/1E6);
-		result.setLongitude((double)long_rndm/1E6);		
-		
-		return result;
-	
+		setLocation(lat_rndm, long_rndm);	
+		sendLocationChangedBroadcast();
 	}
 	
 	
