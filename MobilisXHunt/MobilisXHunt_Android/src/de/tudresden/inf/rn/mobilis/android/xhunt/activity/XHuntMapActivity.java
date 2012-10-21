@@ -286,12 +286,19 @@ public class XHuntMapActivity extends MapActivity {
     private Handler mRoundStatusHandler = new Handler(){
 	    @Override
 		public void handleMessage(Message msg) {
+	    	
+	    	// Update the top info panel
+    		mPanelInfoTop.updateText();
+    		
+    		// move Player if playing in Static Mode (wrong place - fast but not synchronous with top info panel)
+    		//movePlayerIfInStaticMode();
+	    	
 	    	// Get own player
 	    	XHuntPlayer player = getMyPlayer();
-	    	// Update the info panel about the new target reached status (toggle flag)
+	    	// Update the bottom info panel about the new target reached status (toggle flag)
     		mPanelInfoBottom.setTargetReached(player.getReachedTarget());
     		
-    		// Update the text at the info panel
+    		// Update the text at the bottom info panel
     		if(player.getReachedTarget())
     			mPanelInfoBottom.setInfoText("Some players are still on the move.");
     		else if(player.getCurrentTargetId() > 0)    			
@@ -345,10 +352,10 @@ public class XHuntMapActivity extends MapActivity {
     private Handler mStartRoundHandler = new Handler(){
 	    @Override
 		public void handleMessage(Message msg) {
-	    	// Update the ticket panel with the new amount of tickets
-	    	mPanelInfoTop.update();
+	    	// Update the top info panel
+	    	mPanelInfoTop.updateText();
 	    	
-	    	// Update the info panel
+	    	// Update the bottom info panel
 	    	mPanelInfoBottom.setInfoText("Choose your next target!");
 	    	mPanelInfoBottom.setTargetReached(false);
 	    	
@@ -397,11 +404,8 @@ public class XHuntMapActivity extends MapActivity {
 	    		Toast.makeText(XHuntMapActivity.this, 
 	    				"Failed to set target: " + msg.obj.toString(), Toast.LENGTH_LONG).show();
 	    	}
-	    	else{
-	    		// Update the ticket panel
-	    		mPanelInfoTop.update();
-	    		
-	    		// Update the info panel
+	    	else{	    		
+	    		// Update the bottom info panel
 	    		mPanelInfoBottom.setTargetReached(getMyPlayer().getReachedTarget());
 	    		mPanelInfoBottom.setInfoText("Follow the arrow to your target.");
 	    		
@@ -435,6 +439,9 @@ public class XHuntMapActivity extends MapActivity {
     private Handler mUpdateMapDataHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
+			// Update the top info panel
+    		mPanelInfoTop.updateText();
+			
 			// move to current target if in static mode
 			movePlayerIfInStaticMode();
 			
@@ -470,8 +477,7 @@ public class XHuntMapActivity extends MapActivity {
 	        		mMxaProxy.getIQProxy().getGameServiceJid(),
 	        		beanId);
 	        
-	        //mGpsProxy.restartGps(XHuntMapActivity.this);
-	        mGpsProxy.startGps();
+	        mGpsProxy.restartGps(XHuntMapActivity.this);
 		}
 	};
 	
@@ -991,7 +997,7 @@ public class XHuntMapActivity extends MapActivity {
 			XHuntPlayer player = mGame.getPlayerByJID(mMxaProxy.getXmppJid());
 			Station currentTarget = mGame.getRouteManagement().getStationById(player.getCurrentTargetId());
 			
-			if((currentTarget != null) && (player.isCurrentTargetFinal())) {
+			if((currentTarget != null) && (player.isCurrentTargetFinal()) && (!player.getReachedTarget())) {
 				mGpsProxy.setLocation(currentTarget.getLatitude(), currentTarget.getLongitude());
 				mGpsProxy.sendLocationChangedBroadcast();
 				Log.v(TAG, "moved player because you are playing in static mode");
@@ -1152,6 +1158,7 @@ public class XHuntMapActivity extends MapActivity {
 		 */
 		@Override
 		public void processPacket(XMPPBean inBean) {
+			
 			if(inBean.getType() == XMPPBean.TYPE_ERROR){
 				Log.e(TAG, "IQ Type ERROR: " + inBean.toXML());
 			}

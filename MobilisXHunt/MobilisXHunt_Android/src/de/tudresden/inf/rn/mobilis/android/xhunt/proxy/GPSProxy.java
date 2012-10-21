@@ -43,7 +43,6 @@ import com.google.android.maps.GeoPoint;
 
 import de.tudresden.inf.rn.mobilis.android.xhunt.Const;
 import de.tudresden.inf.rn.mobilis.android.xhunt.R;
-import de.tudresden.inf.rn.mobilis.android.xhunt.activity.XHuntMapActivity;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.Station;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.XHuntPlayer;
 import de.tudresden.inf.rn.mobilis.android.xhunt.service.XHuntService;
@@ -204,7 +203,6 @@ public class GPSProxy {
 	 * Start GPS.
 	 */
 	public void startGps() {
-
 		if(!mIsGpsRunning) {
 			SharedPreferences prefs = mContext.getSharedPreferences(Const.SHARED_PREF_KEY_FILE_NAME, Context.MODE_PRIVATE);
 			String key = mContext.getResources().getString(R.string.bundle_key_settings_staticmode);
@@ -213,13 +211,11 @@ public class GPSProxy {
 			if(staticMode) {
 				List<Station> allStations = null;
 				
-				if(mContext instanceof XHuntService)
+				if(mContext instanceof XHuntService) {
 					allStations = ((XHuntService) mContext).getCurrentGame().getRouteManagement().getStationsAsList();
-				if(mContext instanceof XHuntMapActivity)
-					allStations = ((XHuntMapActivity) mContext).getGame().getRouteManagement().getStationsAsList();
-				
-				if((allStations != null) && (allStations.size() != 0))
-					setRandomLocation(allStations);
+					if((allStations != null) && (allStations.size() != 0))
+						setRandomLocation(allStations);
+				}
 			}
 			
 			else if(!staticMode) {
@@ -267,23 +263,15 @@ public class GPSProxy {
 	
 	
 	/**
-	 * Returns the coordinates of a random station as a Location object.
-	 * Needed as a starting point when plaing in static mode.
+	 * Returns the coordinates of a random location as a Location object.
+	 * Uses a list of all stations to calculate the geographic bounds.
+	 * Needed as a starting point when playing in static mode.
 	 *  
 	 * @param allStations the list of all stations of the area
-	 * @return a location object equating to a random station
+	 * @return a location object representing a random location
 	 */
 	private void setRandomLocation(List<Station> allStations) {
-		/*Random rndm = new Random();
-		Station rndmStation = allStations.get(rndm.nextInt(allStations.size()));
-		
-		Location result = new Location(LocationManager.GPS_PROVIDER);
-		result.setLatitude((double) rndmStation.getLatitude() /1E6);
-		result.setLongitude((double) rndmStation.getLongitude() /1E6);
-		
-		return result;*/
-		
-	//	For a random location inside of the bounds, not necessarily a station	
+
 	 	int lat_min = Integer.MAX_VALUE;
 		int long_min = Integer.MAX_VALUE;
 		int lat_max = Integer.MIN_VALUE;
@@ -306,7 +294,7 @@ public class GPSProxy {
 		Random rndm = new Random();
 		int lat_rndm = rndm.nextInt(lat_max-lat_min +1) + lat_min;
 		int long_rndm = rndm.nextInt(long_max-long_min +1) + long_min;
-		
+
 		setLocation(lat_rndm, long_rndm);	
 		sendLocationChangedBroadcast();
 	}

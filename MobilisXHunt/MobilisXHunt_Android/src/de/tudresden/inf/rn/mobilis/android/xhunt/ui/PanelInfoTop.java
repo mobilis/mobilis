@@ -28,17 +28,12 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.TextView;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.Game;
+import de.tudresden.inf.rn.mobilis.android.xhunt.model.XHuntPlayer;
 
 /**
  * The Class PanelInfoTop.
  */
 public class PanelInfoTop extends PanelTransparent {
-	
-	/** The applications context. */
-	private Context mContext;
-
-	/** The current Game. */
-	private Game mGame;
 
 	/** The TextView to display current round. */
 	private TextView mTextViewRound;
@@ -46,10 +41,17 @@ public class PanelInfoTop extends PanelTransparent {
 	/** The TextView to display whether it's Mr.X' or the Agents' turn. */
 	private TextView mTextViewTurn;
 	
+	/** The applications context. */
+	private Context mContext;
+
+	/** The current Game. */
+	private Game mGame;
+	
 	/** Whether the player is Mr.X or not */
 	private boolean isMrX;
 	
-	private int turnTextViewUpdateCounter;
+	/** True if players are still distributing. */
+	private boolean beginning;
 	
 	
 	/* The map with the tickets and its related icon and amount (ticketId, (icon, amount)). */
@@ -93,7 +95,6 @@ public class PanelInfoTop extends PanelTransparent {
 		this.mGame = game;
 		this.isMrX = isMrX;
 				
-		mTextViewTurn.setText("Wait at assigned station");
 		mTextViewTurn.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.LEFT));
 		this.addView(mTextViewTurn);
 		
@@ -143,40 +144,107 @@ public class PanelInfoTop extends PanelTransparent {
 		mTextViewRound = new TextView(mContext);
 		mTextViewTurn = new TextView(mContext);
 		
-		turnTextViewUpdateCounter = 0;
+		beginning = true;
 		
 		// Commented out due to the substitution of the ticket counts for round information
 		// (http://jira.inf.tu-dresden.de/browse/MO-124)
 		//mImageTextViewPairs = new HashMap<Integer, PanelTickets.ImageTextViewPair>();		
 		//mInnerViewGapUpdated = false;
 	}
+	
 
 	/**
-	 * Updates the Panel with actual data read from current Game.
+	 * Updates the info text and the round number in the panel.
 	 */
-	public void update() {
-		String whoseTurn;
-		
-		if(turnTextViewUpdateCounter % 2 == 0) {
-			if(isMrX)
-				whoseTurn = "Mr.X chooses next target";
-			else
-				whoseTurn = "Agents decide next target";
-		}
-		
-		else {
-			if(isMrX)
-				whoseTurn = "Agents decide next target";
-			else
-				whoseTurn = "Mr.X chooses next target";
-		}
-		
+	public void updateText() {
 
-		mTextViewTurn.setText(whoseTurn);
+		String newText = "nearest station will be assigned";
+		
+		if(isMrX) {
+			if(mGame.getGamePlayers().values().size() == 1)
+				newText = "You are playing alone.";
+			
+			else {
+				if(mGame.getCurrentRound() > 0) {
+					newText = "";
+					
+					for(XHuntPlayer player : mGame.getGamePlayers().values()) {		
+						if(player.isMrX()) {
+							if(!player.getReachedTarget())
+								newText = "Go to marked station";
+							if(player.getReachedTarget()) {
+								if(mGame.getGamePlayers().values().size() == 2)
+									newText = "Wait till the agent made his move";
+								else
+									newText ="Wait till agents made their moves";
+							}
+							if(mGame.getRouteManagement().getStationById(player.getCurrentTargetId()) == null)
+								newText = "Decide where to go next";
+						}
+					}	
+				}
+			}
+		}
+		
+		else if(!isMrX) {
+		
+			if(mGame.getCurrentRound() == 0) {	
+				
+				int stillMovingCounter = 0;
+				for(XHuntPlayer player : mGame.getGamePlayers().values()) {		
+					if((!player.isMrX()) && (!player.getReachedTarget())) {
+						if(mGame.getRouteManagement().getStationById(player.getCurrentTargetId()) != null) {
+							stillMovingCounter++;
+							beginning = false;
+						}
+					}
+				}	
+				
+				if(!beginning) {
+					if(stillMovingCounter == 0)
+						newText = "Wait till Mr.X chose next target...";
+					else if(stillMovingCounter == 1)
+						newText = stillMovingCounter + " agent still on the move";
+					else
+						newText = stillMovingCounter + " agents still on the move";
+				}
+			}
+			
+			else if(mGame.getCurrentRound() > 0) {		
+				
+				int stillChoosingCounter = 0;
+				int stillMovingCounter = 0;		
+				for(XHuntPlayer player : mGame.getGamePlayers().values()) {
+					if(!player.isMrX())
+						if(mGame.getRouteManagement().getStationById(player.getCurrentTargetId()) == null)
+							stillChoosingCounter++;
+				}		
+				
+				for(XHuntPlayer player : mGame.getGamePlayers().values()) {
+					if((!player.isMrX()) && (!player.getReachedTarget()))
+						if(mGame.getRouteManagement().getStationById(player.getCurrentTargetId()) != null)
+							stillMovingCounter++;
+				}	
+				
+				
+				if(stillMovingCounter == 1)
+					newText = stillMovingCounter + " agent still on the move";
+				else
+					newText = stillMovingCounter + " agents still on the move";
+				
+				if(stillChoosingCounter == 1)
+					newText = stillChoosingCounter + " agent still choosing target";
+				else if(stillChoosingCounter > 1)
+					newText = stillChoosingCounter + " agents still choosing targets";
+				
+				if((stillMovingCounter == 0) && (stillChoosingCounter == 0))
+					newText = "Wait till Mr.X chose next target...";
+			}
+		}
+
+		mTextViewTurn.setText(newText);
 		mTextViewRound.setText("Round: " + mGame.getCurrentRound());
 		
-		turnTextViewUpdateCounter++;
-			
 		// Commented out due to the substitution of the ticket counts for round information
 		// (http://jira.inf.tu-dresden.de/browse/MO-124)
 		/*for(Ticket ticket : mGame.getRouteManagement().getAreaTickets().values()){

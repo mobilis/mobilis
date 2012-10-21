@@ -460,6 +460,7 @@ public class LobbyActivity extends Activity {
 			mGame.getRouteManagement().parseDataXML(reader);
 
 			registerXMPPCallbacks();
+			mServiceConnector.getXHuntService().getGPSProxy().startGps();
 			joinGame();
 		}
 	};
