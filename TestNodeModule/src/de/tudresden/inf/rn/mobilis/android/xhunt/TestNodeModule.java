@@ -8,9 +8,8 @@ public class TestNodeModule {
 
 	/**
 	 * @param args
-	 * 				args[0] is the path to the JAR file to be started including any
-	 * 				additional parameters for the started application (remember to put
-	 * 				" around the parameter if it contains parameters
+	 * 				args[0] is the path to the JAR file to be started. Any additional
+	 * 				parameters are put into subsequent elements of args
 	 */
 	public static void main(String[] args) {
 		System.out.println("Starting " + args[0]);
@@ -35,33 +34,7 @@ public class TestNodeModule {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-//		try {
-//			Process p = pb.start();
-////			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-////			String line = null;
-////			while ((line = reader.readLine()) != null) {
-////				System.out.println(line);
-////			}
-////			reader.close();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
-//		Process p;
-//		try {
-//			p = Runtime.getRuntime().exec("java -jar " + args[0]);
-//			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-//			String line = null;
-//			while ((line = reader.readLine()) != null) {
-//				System.out.println(line);
-//			}
-//			reader.close();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
 	}
 
 }
