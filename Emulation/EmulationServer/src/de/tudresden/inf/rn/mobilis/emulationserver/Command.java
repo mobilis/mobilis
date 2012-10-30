@@ -7,5 +7,5 @@ public abstract class Command {
 	public String receiver;
 	public String methodName;
 	public List<String> parameter;
-	
+	public List<String> parameterTypes;
 }
