@@ -1,6 +1,9 @@
-package de.tudresden.inf.rn.mobilis.emulationserver.serverstubs;
+package de.tudresden.inf.rn.mobilis.emulation.serverstubs;
 
-import java.util.List;import java.util.ArrayList;public class EmulationServerProxy {
+import java.util.List;
+
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+public class EmulationServerProxy {
 
 	private IEmulationServerOutgoing _bindingStub;
 
@@ -28,11 +31,11 @@ import java.util.List;import java.util.ArrayList;public class EmulationServerPro
 		return out;
 	}
 
-	public void Command( String toJid, String method_name, List< String > parameters, int command_id, IXMPPCallback< CommandAck > callback ) {
+	public void Command( String toJid, String method_name, List< String > parameters, List< String > parameter_types, int command_id, IXMPPCallback< CommandAck > callback ) {
 		if ( null == _bindingStub || null == callback )
 			return;
 
-		CommandRequest out = new CommandRequest( method_name, parameters, command_id );
+		CommandRequest out = new CommandRequest( method_name, parameters, parameter_types, command_id );
 		out.setTo( toJid );
 
 		_bindingStub.sendXMPPBean( out, callback );

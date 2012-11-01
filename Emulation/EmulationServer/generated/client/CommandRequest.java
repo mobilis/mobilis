@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.android.xhunt.emulation.clientstub;
+package de.tudresden.inf.rn.mobilis.emulation.clientstub;
 
 import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.ArrayList;
 
@@ -6,14 +6,18 @@ public class CommandRequest extends XMPPBean {
 
 	private String method_name = null;
 	private List< String > parameters = new ArrayList< String >();
+	private List< String > parameter_types = new ArrayList< String >();
 	private int command_id = Integer.MIN_VALUE;
 
 
-	public CommandRequest( String method_name, List< String > parameters, int command_id ) {
+	public CommandRequest( String method_name, List< String > parameters, List< String > parameter_types, int command_id ) {
 		super();
 		this.method_name = method_name;
 		for ( String entity : parameters ) {
 			this.parameters.add( entity );
+		}
+		for ( String entity : parameter_types ) {
+			this.parameter_types.add( entity );
 		}
 		this.command_id = command_id;
 
@@ -42,6 +46,9 @@ public class CommandRequest extends XMPPBean {
 				}
 				else if (tagName.equals( "parameters" ) ) {
 					parameters.add( parser.nextText() );
+				}
+				else if (tagName.equals( "parameter_types" ) ) {
+					parameter_types.add( parser.nextText() );
 				}
 				else if (tagName.equals( "command_id" ) ) {
 					this.command_id = Integer.parseInt( parser.nextText() );
@@ -83,7 +90,7 @@ public class CommandRequest extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		CommandRequest clone = new CommandRequest( method_name, parameters, command_id );
+		CommandRequest clone = new CommandRequest( method_name, parameters, parameter_types, command_id );
 		clone.cloneBasicAttributes( clone );
 
 		return clone;
@@ -101,6 +108,12 @@ public class CommandRequest extends XMPPBean {
 			sb.append( "<parameters>" );
 			sb.append( entry );
 			sb.append( "</parameters>" );
+		}
+
+		for( String entry : this.parameter_types ) {
+			sb.append( "<parameter_types>" );
+			sb.append( entry );
+			sb.append( "</parameter_types>" );
 		}
 
 		sb.append( "<command_id>" )
@@ -130,6 +143,14 @@ public class CommandRequest extends XMPPBean {
 
 	public void setParameters( List< String > parameters ) {
 		this.parameters = parameters;
+	}
+
+	public List< String > getParameter_types() {
+		return this.parameter_types;
+	}
+
+	public void setParameter_types( List< String > parameter_types ) {
+		this.parameter_types = parameter_types;
 	}
 
 	public int getCommand_id() {

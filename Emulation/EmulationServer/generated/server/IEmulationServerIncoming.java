@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.emulationserver.serverstubs;
+package de.tudresden.inf.rn.mobilis.emulation.serverstubs;
 
 public interface IEmulationServerIncoming {
 

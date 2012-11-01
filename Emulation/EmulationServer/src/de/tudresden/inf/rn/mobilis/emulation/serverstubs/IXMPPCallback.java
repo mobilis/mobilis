@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans;
+package de.tudresden.inf.rn.mobilis.emulation.serverstubs;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 

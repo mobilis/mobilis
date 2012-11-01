@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.emulationserver;
+package de.tudresden.inf.rn.mobilis.emulation.server;
 
 import java.util.List;
 

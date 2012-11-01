@@ -1,6 +1,8 @@
-package de.tudresden.inf.rn.mobilis.emulationserver.serverstubs;
+package de.tudresden.inf.rn.mobilis.emulation.serverstubs;
 
-import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.ArrayList;
+import org.xmlpull.v1.XmlPullParser;
+
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 public class LogResponse extends XMPPBean {
 

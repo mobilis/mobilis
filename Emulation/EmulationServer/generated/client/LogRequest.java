@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.android.xhunt.emulation.clientstub;
+package de.tudresden.inf.rn.mobilis.emulation.clientstub;
 
 import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.ArrayList;
 

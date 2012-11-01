@@ -1,18 +1,20 @@
-package de.tudresden.inf.rn.mobilis.emulationserver.serverstubs;
+package de.tudresden.inf.rn.mobilis.emulation.serverstubs;
 
-import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.ArrayList;
+import org.xmlpull.v1.XmlPullParser;
 
-public class ExecutionResultAck extends XMPPBean {
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
-	public ExecutionResultAck(){
-		this.setType( XMPPBean.TYPE_RESULT );
+public class ConnectRequest extends XMPPBean {
+
+	public ConnectRequest(){
+		this.setType( XMPPBean.TYPE_SET );
 	}
 
 
 	@Override
 	public void fromXML( XmlPullParser parser ) throws Exception {}
 
-	public static final String CHILD_ELEMENT = "ExecutionResultAck";
+	public static final String CHILD_ELEMENT = "ConnectRequest";
 
 	@Override
 	public String getChildElement() {
@@ -28,7 +30,7 @@ public class ExecutionResultAck extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		ExecutionResultAck clone = new ExecutionResultAck(  );
+		ConnectRequest clone = new ConnectRequest(  );
 		clone.cloneBasicAttributes( clone );
 
 		return clone;
@@ -36,6 +38,10 @@ public class ExecutionResultAck extends XMPPBean {
 
 	@Override
 	public String payloadToXML() { return ""; }
+
+
+
+
 
 
 }

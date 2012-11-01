@@ -1,10 +1,12 @@
-package de.tudresden.inf.rn.mobilis.emulationserver.serverstubs;
+package de.tudresden.inf.rn.mobilis.emulation.serverstubs;
 
-import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.ArrayList;
+import org.xmlpull.v1.XmlPullParser;
 
-public class ConnectAck extends XMPPBean {
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
-	public ConnectAck(){
+public class CommandAck extends XMPPBean {
+
+	public CommandAck(){
 		this.setType( XMPPBean.TYPE_RESULT );
 	}
 
@@ -12,14 +14,14 @@ public class ConnectAck extends XMPPBean {
 	@Override
 	public void fromXML( XmlPullParser parser ) throws Exception {}
 
-	public static final String CHILD_ELEMENT = "ConnectAck";
+	public static final String CHILD_ELEMENT = "CommandAck";
 
 	@Override
 	public String getChildElement() {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "emulation:iq:connect";
+	public static final String NAMESPACE = "emulation:iq:command";
 
 	@Override
 	public String getNamespace() {
@@ -28,7 +30,7 @@ public class ConnectAck extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		ConnectAck clone = new ConnectAck(  );
+		CommandAck clone = new CommandAck(  );
 		clone.cloneBasicAttributes( clone );
 
 		return clone;

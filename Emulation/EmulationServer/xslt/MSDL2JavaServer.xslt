@@ -7,10 +7,10 @@
 	<xsl:output method="text" version="1.0" encoding="UTF-8" indent="yes"/>
 	
 	<!-- the output folder where the classes will be created. this folder has to be create before -->
-	<xsl:variable name="outputFolder" select="'../../build/server/'"/>
+	<xsl:variable name="outputFolder" select="'../generated/server/'"/>
 	
 	<!-- set package namespace if required. default = '' -->
-	<xsl:variable name="packageNamespace" select="'de.tudresden.inf.rn.mobilis.emulationserver.serverstubs'" />
+	<xsl:variable name="packageNamespace" select="'de.tudresden.inf.rn.mobilis.emulation.serverstubs'" />
 	
 	<!-- path of the service name -->
 	<xsl:variable name="serviceName" select="/msdl:description/msdl:service/@name"/>

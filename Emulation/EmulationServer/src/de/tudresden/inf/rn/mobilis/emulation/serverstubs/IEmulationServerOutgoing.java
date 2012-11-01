@@ -1,4 +1,6 @@
-package de.tudresden.inf.rn.mobilis.emulationserver.serverstubs;
+package de.tudresden.inf.rn.mobilis.emulation.serverstubs;
+
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 public interface IEmulationServerOutgoing {
 

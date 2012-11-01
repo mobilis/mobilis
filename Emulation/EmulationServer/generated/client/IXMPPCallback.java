@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.android.xhunt.emulation.clientstub;
+package de.tudresden.inf.rn.mobilis.emulation.clientstub;
 
 public interface IXMPPCallback<B extends XMPPBean> {
 

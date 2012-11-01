@@ -13,6 +13,7 @@
 	                <xs:sequence>
 	                    <xs:element name="method_name" type="xs:string" minOccurs="1" maxOccurs="1"/>
 	                    <xs:element name="parameters" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+	                    <xs:element name="parameter_types" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 	                    <xs:element name="command_id" type="xs:int" minOccurs="1" maxOccurs="1"/>
 	                </xs:sequence>
 	            </xs:complexType>
