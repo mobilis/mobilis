@@ -22,11 +22,6 @@ public class TestNodeModule {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		System.setProperty("java.security.policy", "file:/Users/sven/Desktop/client.policy");
-		if (System.getSecurityManager() == null) {
-            System.setSecurityManager(new SecurityManager());
-        }
-		// TODO: http://docs.oracle.com/javase/tutorial/rmi/running.html
 		
 		System.out.println("Starting " + args[0] + " instances of " + args[1]);
 		final String[] cmd = new String[1 + args.length];
