@@ -1,9 +1,14 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -15,6 +20,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.view.client.ListDataProvider;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -23,26 +29,57 @@ public class GWTEmulationServer implements EntryPoint {
 	
 	private static final int REFRESH_INTERVAL = 2000;
 	
+	// UI-Stuff
+	private RootPanel rootPanel = RootPanel.get();
+	private FlowPanel mainPanel = new FlowPanel();
+	private FlowPanel titlePanel = new FlowPanel();
+	private FlowPanel connectStatusPanel = new FlowPanel();
+	private FlowPanel connectPanel = new FlowPanel();
+	private FlowPanel commandPanel = new FlowPanel();
+	private FlowPanel commandStatusPanel = new FlowPanel();
+	private FlowPanel devicePanel = new FlowPanel();
+	
+	private Label title = new Label("Emulation Server Webfrontend");
+	
+	private Label statusLabel = new Label();
 	private Button connectButton = new Button("Connect...");
 	private Button disconnectButton = new Button("Disconnect...");
-	private Button sendButton = new Button("Send Command");
-	private Label lblCommand = new Label("Command: ");
-	private Label lblSendStatus = new Label();
-	private Label lblIncommingCommand = new Label();
+	
 	private TextBox txtCommand = new TextBox();
-	private FlowPanel mainPanel = new FlowPanel();
-	private HorizontalPanel buttonPanel = new HorizontalPanel();
-	private HorizontalPanel commandPanel = new HorizontalPanel();
-	private Label statusLabel = new Label();
+	private Button sendButton = new Button("Send Command");
+	
+	private Label lblSendStatus = new Label();
+	
+	private Label lblIncommingCommand = new Label();
+	
+	private CellList<String> deviceList = new CellList<String>(new TextCell());
+	private ListDataProvider<String> deviceListDataProvider = new ListDataProvider<String>();
+	
+	// Service
 	private EmuServerConnectServiceAsync emuServerConnectSvc = GWT.create(EmuServerConnectService.class);
+	
+	// 
+	private String lastCommand;
 	private Boolean connectionStatus = false;
-	private String lastCommand = "";
 	private Timer refreshTimer;
+	private List<String> devices = new ArrayList<String>();
 	
 	public void onModuleLoad() {
 		
 		updateLabel();
 		checkServerConnection();
+		
+		mainPanel.setStyleName("mainPanel");
+		titlePanel.setStyleName("titlePanel");
+		connectStatusPanel.setStyleName("connectStatusPanel");
+		connectPanel.setStyleName("connectPanel");
+		commandPanel.setStyleName("commandPanel");
+		commandStatusPanel.setStyleName("commandStatusPanel");
+		devicePanel.setStyleName("devicePanel");
+		
+		connectButton.setStyleName("buttonStyle");
+		disconnectButton.setStyleName("buttonStyle");
+		sendButton.setStyleName("buttonStyle");
 		
 		connectButton.addClickHandler(new ClickHandler(){
 			@Override
@@ -62,33 +99,37 @@ public class GWTEmulationServer implements EntryPoint {
 				onSendClick();
 			}
 		});
-		connectButton.setWidth("150px");
-		disconnectButton.setWidth("150px");
-		sendButton.setWidth("150px");
-		txtCommand.setWidth("300px");
-		
-		mainPanel.setStyleName("center");
-		buttonPanel.setStyleName("centerButtons");
-		commandPanel.setStyleName("centerCommand");
-		
+				
 		statusLabel.setText("NOT CONNECTED");
-		buttonPanel.add(connectButton);
-		buttonPanel.add(disconnectButton);
 		
+		// create cellList
+		deviceListDataProvider.addDataDisplay(deviceList);
+		//deviceListDataProvider.getList().add("TEST");
+		
+		// add widgets to panels
+		titlePanel.add(title);
+		connectStatusPanel.add(statusLabel);
+		connectPanel.add(connectButton);
+		connectPanel.add(disconnectButton);
 		commandPanel.add(txtCommand);
 		commandPanel.add(sendButton);
+		commandStatusPanel.add(lblSendStatus);
+		devicePanel.add(deviceList);
 		
-		mainPanel.add(statusLabel);
-		mainPanel.add(buttonPanel);
+		// add panels to main panel
+		mainPanel.add(titlePanel);
+		mainPanel.add(connectStatusPanel);
+		mainPanel.add(connectPanel);
 		mainPanel.add(commandPanel);
-		mainPanel.add(lblSendStatus);
-		mainPanel.add(lblIncommingCommand);
-		RootPanel.get("ui").add(mainPanel);
+		mainPanel.add(commandStatusPanel);
+		mainPanel.add(devicePanel);
+		
+		rootPanel.add(mainPanel);
 		
 	    refreshTimer = new Timer() {
 	      @Override
 	      public void run() {
-	        incommingCommand();
+	        getDeviceList();
 	      }
 	    };
 		
@@ -138,6 +179,7 @@ public class GWTEmulationServer implements EntryPoint {
 			sendButton.setVisible(true);
 			lblSendStatus.setVisible(true);
 			lblIncommingCommand.setVisible(true);
+			deviceList.setVisible(true);
 		} else {
 			statusLabel.setText("NOT CONNECTED");
 			connectButton.setEnabled(true);
@@ -148,6 +190,9 @@ public class GWTEmulationServer implements EntryPoint {
 			lblIncommingCommand.setVisible(false);
 			lblSendStatus.setText("");
 			lblIncommingCommand.setText("");
+			devices.clear();
+			deviceListDataProvider.setList(devices);
+			deviceList.setVisible(false);
 		}
 	}
 	
@@ -157,9 +202,9 @@ public class GWTEmulationServer implements EntryPoint {
 		
 	}
 	
-	private void incommingCommand() {
+	private void getDeviceList() {
 		
-		emuServerConnectSvc.incommingCommand(new IncommingCommandCallback());
+		emuServerConnectSvc.getDeviceList(new GetDeviceCallback());
 		
 	}
 	
@@ -188,15 +233,17 @@ public class GWTEmulationServer implements EntryPoint {
 		}
 	}
 	
-	private class IncommingCommandCallback implements AsyncCallback<String> {
+	private class GetDeviceCallback implements AsyncCallback<List<String>> {
 		@Override
 		public void onFailure(Throwable caught) {
 			
 		}
 
 		@Override
-		public void onSuccess(String result) {
-			lblIncommingCommand.setText(result);
+		public void onSuccess(List<String> deviceListReturn) {
+			devices = deviceListReturn;
+			deviceListDataProvider.setList(devices);
+			deviceList.redraw();
 		}
 	}
 	

@@ -1,6 +1,7 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.server;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -14,23 +15,23 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.client.EmuServerConnectService;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.CommandRequest;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.ConnectRequest;
-import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.BeanFilterAdapter;
-import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.BeanIQAdapter;
-import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.BeanProviderAdapter;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanFilterAdapter;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
 
 public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements EmuServerConnectService {
 	
 	private Connection connection;
 	private Boolean connected = false;
-	private String lastCommand = "";
+	private List<String> devices = new ArrayList<String>();
 
 	@Override
 	public Boolean connectServer() {
 		
 		//connected = false;
 		
-		Connection.DEBUG_ENABLED = true;
+		//Connection.DEBUG_ENABLED = true;
 		
 		if((connection != null) && (connection.isConnected())) {
 			
@@ -74,7 +75,23 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 							if (b instanceof ConnectRequest) {
 								System.out.println("connectRequest");
 								ConnectRequest bean = (ConnectRequest) b;
-								lastCommand = "ConnectRequest from " + bean.getFrom();
+								Calendar cal = Calendar.getInstance();
+								StringBuilder time = new StringBuilder();
+								time.append(cal.get(Calendar.HOUR_OF_DAY));
+								time.append(":");
+								time.append(cal.get(Calendar.MINUTE));
+								time.append(":");
+								time.append(cal.get(Calendar.SECOND));
+								time.append(":");
+								time.append(cal.get(Calendar.MILLISECOND));
+								time.append(" > ");
+								if(devices.contains(bean.getFrom())) {
+									devices.remove(bean.getFrom());
+									System.out.println(time.toString() + bean.getFrom() + " removed");
+								} else {
+									devices.add(bean.getFrom());
+									System.out.println(time.toString() + bean.getFrom() + " added");
+								}
 						   }
 						}
 					}
@@ -100,8 +117,8 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 		if((connection != null) && (connection.isConnected())) {
 			connection.disconnect();
 			connected = false;
+			devices.clear();
 			System.out.println("disconnected");
-			lastCommand = "";
 		}
 		
 		return connected;
@@ -122,8 +139,13 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 			List<String> params = new ArrayList<String>();
 			params.add("testParam1");
 			params.add("testParam2");
+			
+			List<String> types = new ArrayList<String>();
+			types.add("testType1");
+			types.add("testType2");
+			
 			int methodID = 1234;
-			CommandRequest commReq = new CommandRequest("startAutomaticTest",params,methodID);
+			CommandRequest commReq = new CommandRequest("startAutomaticTest",params,types,methodID);
 			
 			commReq.setTo("walther02@mobilis.inf.tu-dresden.de/MXA");
 			commReq.setFrom(connection.getUser());
@@ -137,9 +159,10 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public String incommingCommand() {
+	public List<String> getDeviceList() {
 		
-		return lastCommand;
+		return devices;
+		
 	}
 
 }

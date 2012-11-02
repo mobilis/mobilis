@@ -1,5 +1,7 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.client;
 
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -10,6 +12,6 @@ public interface EmuServerConnectService extends RemoteService {
 	public Boolean connectServer();
 	public Boolean disconnectServer();
 	public Boolean sendCommand(String cmd);
-	public String incommingCommand();
+	public List<String> getDeviceList();
 
 }
