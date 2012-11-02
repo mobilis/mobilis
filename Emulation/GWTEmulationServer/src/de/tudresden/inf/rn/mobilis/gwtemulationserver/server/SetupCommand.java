@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.emulation.server;
+package de.tudresden.inf.rn.mobilis.gwtemulationserver.server;
 
 /**
  * SetupCommand are sent to the test node module. E.g. start 

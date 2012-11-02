@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.emulation.server;
+package de.tudresden.inf.rn.mobilis.gwtemulationserver.server;
 
 /**
  * Application commands are directly sent to the application under test.
