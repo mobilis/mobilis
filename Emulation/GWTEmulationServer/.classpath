@@ -2,11 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Android Dev/Eclipse/eclipse/plugins/com.google.appengine.eclipse.sdkbundle_1.7.2.1/appengine-java-sdk-1.7.2.1/lib/shared/servlet-api.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/Android%20Dev/Eclipse/eclipse/plugins/com.google.appengine.eclipse.sdkbundle_1.7.2.1/appengine-java-sdk-1.7.2.1/docs/javadoc/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>

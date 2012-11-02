@@ -1,3 +1,2 @@
 # Module gwtemulationserver
 # RPC service class, partial path of RPC policy file
-de.tudresden.inf.rn.mobilis.gwtemulationserver.client.EmuServerConnectService, 4C161CFC148041B8D5D84B6293261DFF.gwt.rpc
