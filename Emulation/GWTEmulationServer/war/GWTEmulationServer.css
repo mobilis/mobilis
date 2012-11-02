@@ -1,62 +1,45 @@
-/** Add css rules here for your application. */
-
-
-/** Example rules used by the template application (remove for your app) */
-h1 {
-  font-size: 2em;
-  font-weight: bold;
-  color: #777777;
-  margin: 40px 0px 70px;
-  text-align: center;
-}
-
 body {
 	margin:0;
 	padding:0;
 	text-align:center;
 }
 
-.sendButton {
-  display: block;
-  font-size: 16pt;
-}
-
-/** Most GWT widgets already have a style name defined */
-.gwt-DialogBox {
-  width: 400px;
-}
-
-.dialogVPanel {
+.buttonStyle {
+  font-size: 15px;
+  width: 150px;
+  height: 35px;
+  padding: 2px;
   margin: 5px;
+  border-style: groove;
 }
 
-.serverResponseLabelError {
-  color: red;
-}
-
-.center{
-	margin: auto;
-	width: 600px;
+.mainPanel {
 	text-align: center;
 }
 
-.centerButtons{
-	margin-top: 20px;
-	margin-left: auto;
-	margin-right: auto;
-	width: 320px;
-	text-align: center;
+.titlePanel {
+	font-size: 2em;
+	font-weight: bold;
+	color: #777777;
+	margin: 40px 0px 70px;
 }
 
-.centerCommand{
-	margin-top: 80px;
-	margin-left: auto;
-	margin-right: auto;
-	width: 470px;
-	text-align: center;
+.connectStatusPanel {
+	
 }
 
-/** Set ids using widget.getElement().setId("idOfElement") */
-#closeButton {
-  margin: 15px 6px 6px;
+.connectPanel {
+	padding: 5px;
+}
+
+.commandPanel {
+	
+}
+
+.commandStatusPanel {
+	
+}
+
+.devicePanel {
+	
 }
