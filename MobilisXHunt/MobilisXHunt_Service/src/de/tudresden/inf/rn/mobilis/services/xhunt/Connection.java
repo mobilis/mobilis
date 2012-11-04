@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
@@ -112,6 +113,9 @@ public class Connection {
 	
 	/** True if a FileTransfer is active. */
 	private boolean mIsFiletransferActive = false;
+	
+	/** The class specific Logger object. */
+	private final static Logger LOGGER = Logger.getLogger(Connection.class.getCanonicalName());
 	
 	/** The prototypes of registered XMPPBeans used for this service. */
 	// namespace, childelement, xmppbean
@@ -202,7 +206,7 @@ public class Connection {
 		
 		// get the current timestamp in milliseconds
 		long currentTime = System.currentTimeMillis();
-		mController.log("check WaitingBeans; size: " + mWatingForResultBeans.size());
+		LOGGER.info("check WaitingBeans; size: " + mWatingForResultBeans.size());
 		
 		// if we are waiting for result-XMPPBeans, print out information of the mWatingForResultBeans
 		if(mWatingForResultBeans.size() > 0){
@@ -238,7 +242,7 @@ public class Connection {
 					else
 						sendDelayedBean(entry.getValue());*/
 					
-					mController.log(entry.getValue().DelayedPeriods + ". delay of " + entry.getKey());
+					LOGGER.info(entry.getValue().DelayedPeriods + ". delay of " + entry.getKey());
 				}
 				// else if the result-XMPPBean has not replayed in mLimitForDelayedPeriods
 				else{
@@ -306,7 +310,7 @@ public class Connection {
 				? this.beanPrototypes.get(namespace).values().iterator().next() : null;
 		}
 		catch(NullPointerException e){
-			mController.log("ERROR: Cannot find namespace '" + namespace + "' in list of bean prototypes!");
+			LOGGER.severe("ERROR: Cannot find namespace '" + namespace + "' in list of bean prototypes!");
 			return null;
 		}
 	}
@@ -328,7 +332,7 @@ public class Connection {
 	 * @param playerJid the jid of the player
 	 */
 	public void handlePlayerNotReplies(String playerJid){
-		mController.log("Buddy doesn't reply: " + playerJid);
+		LOGGER.warning("Buddy doesn't reply: " + playerJid);
 		
 		// store the player in the list of unavailable players
 		mUnavailablePlayers.add(playerJid);
@@ -349,7 +353,7 @@ public class Connection {
 	 * @param playerJid the jid of the player
 	 */
 	private void handlePlayerUnavailable(String playerJid){
-		mController.log("Buddy unavailable: " + playerJid);
+		LOGGER.warning("Buddy unavailable: " + playerJid);
 		
 		// try to send at least an PlayerExitBean to the unavailable player, but 
 		// do not wait for result
@@ -374,7 +378,7 @@ public class Connection {
 			
 			// Switch to GameStateGameOver
 			mController.getActGame().setGameState(new GameStateGameOver(mController, mController.getActGame()));
-			mController.log("Status changed to GameStateGameOver");
+			LOGGER.info("Status changed to GameStateGameOver");
 			
 			// send GameOverBean to all agents
 			sendXMPPBean(
@@ -416,10 +420,10 @@ public class Connection {
 	 * Prints detailed information about the  waiting XMPPBeans.
 	 */
 	public void printWaitingBeanMap(){
-		mController.log("            WaitingBeans: " + mWatingForResultBeans.size());
+		LOGGER.info("            WaitingBeans: " + mWatingForResultBeans.size());
 		
 		for(Map.Entry<String, BeanTimePair> entry : mWatingForResultBeans.entrySet()){
-			mController.log("WaitingBean: [" 
+			LOGGER.info("WaitingBean: [" 
 					+ " id=" + entry.getKey()
 					+ " timestamp=" + entry.getValue().TimeStamp
 					+ " delayedPeriod=" + entry.getValue().DelayedPeriods
@@ -542,7 +546,7 @@ public class Connection {
 					clone.setTo(jid);
 					clone.setId(bean.getId() + "_" + counter);
 					
-					mController.log(clone.toXML());
+					LOGGER.info(clone.toXML());
 					mMobilisAgent.getConnection().sendPacket(new BeanIQAdapter(clone));
 				}
 			}
@@ -572,7 +576,7 @@ public class Connection {
 		snapshotBean.setTo(toJid);
 		snapshotBean.setType(XMPPBean.TYPE_SET);
 		
-		mController.log("Snapshot: " + beanToString(snapshotBean));
+		LOGGER.info("Snapshot: " + beanToString(snapshotBean));
 		
 		sendXMPPBean(snapshotBean);
 	}
@@ -589,7 +593,7 @@ public class Connection {
 	private boolean sendXMPPBean(XMPPBean bean){
 		bean.setFrom(mMobilisAgent.getFullJid());
 		
-		mController.log("sendIQ: " + beanToString(bean));
+		LOGGER.info("sendIQ: " + beanToString(bean));
 		
 		// if the player is not available, do not send any XMPPBEan beside a SnapshotBEan
 		if(!mUnavailablePlayers.contains(bean.getTo())
@@ -730,7 +734,7 @@ public class Connection {
         
 		// check if file exists
 		if(file.exists()) {
-			mController.log("Start transmitting file: " + file.getAbsolutePath()
+			LOGGER.info("Start transmitting file: " + file.getAbsolutePath()
 					+ " to: " + toJid);
 	        try {
 	        	// counter for sending tries
@@ -743,7 +747,7 @@ public class Connection {
 	        	while(!transfer.isDone()) {
 	        		// if counter of maximum tries has reached, cancel transmission
 	        		if(counter == mFiletransferTimeout){
-	        			mController.log("ERROR: Filetransfer canceled. No Response!");
+	        			LOGGER.warning("ERROR: Filetransfer canceled. No Response!");
 	        			break;
 	        		}
 	        		// increase try counter of sending tries
@@ -753,18 +757,17 @@ public class Connection {
 	        		try {
 	        			Thread.sleep(1000);
 	        		} catch (InterruptedException e1) {
-	        			mController.log("ERROR: Thread interrupted while transmitting file: " + file.getName());
+	        			LOGGER.warning("ERROR: Thread interrupted while transmitting file: " + file.getName());
 	        		}
 	        	}
 	        	
 	        	transferSuccessful = transfer.isDone();
 	        } catch (XMPPException e) {
-	        	mController.log("FileTransfer throws XMPPException:");
-	        	e.printStackTrace();
+	        	LOGGER.severe("FileTransfer throws XMPPException: " + e.getMessage().toString());
 	        }
 		}
 		mIsFiletransferActive = false;
-		mController.log("FileTransfer successful?: " + transferSuccessful);
+		LOGGER.info("FileTransfer successful?: " + transferSuccessful);
 		
 		return transferSuccessful;
 	}
@@ -792,7 +795,7 @@ public class Connection {
 	public boolean verifyIncomingBean(XMPPBean inBean){
 		boolean isBeanAccepted = false;
 		
-		mController.log("incomingIQ: " + beanToString(inBean));
+		LOGGER.info("incomingIQ: " + beanToString(inBean));
 		
 		// just handle the XMPPBeans of type result, each other XMPPBeans automatically accepted 
 		// so that the current GameState can handle this XMPPBean

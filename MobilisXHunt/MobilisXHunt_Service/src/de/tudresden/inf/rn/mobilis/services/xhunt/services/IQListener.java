@@ -19,6 +19,8 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.services.xhunt.services;
 
+import java.util.logging.Logger;
+
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.packet.Packet;
 
@@ -46,6 +48,9 @@ public class IQListener implements PacketListener{
 		
 	/** The service controller. */
 	private XHunt control;
+	
+	/** The class specific Logger object. */
+	private final static Logger LOGGER = Logger.getLogger(IQListener.class.getCanonicalName());
 
 	/**
 	 * Instantiates a new IQListener.
@@ -62,7 +67,7 @@ public class IQListener implements PacketListener{
 	 */
 	@Override
 	public void processPacket(Packet packet) {
-		control.log("incoming packet: " + packet.toXML());
+		LOGGER.info("incoming packet: " + packet.toXML());
 		
 		// Check if the incoming Packet is of type IQ (BeanIQAdapter is just a wrapper)
 		if (packet instanceof BeanIQAdapter) {
@@ -70,14 +75,14 @@ public class IQListener implements PacketListener{
 			XMPPBean xmppBean = control.getConnection().unpackBeanIQAdapter( (BeanIQAdapter)packet );
 	    		
     		// Check if the incoming packet is a JoinGameBean for a new spectator
-    		control.log("checking spectator: ");
+    		LOGGER.info("checking spectator: ");
     		if( xmppBean instanceof JoinGameRequest
     				&& xmppBean.getType()==XMPPBean.TYPE_SET
     				&& ((JoinGameRequest) xmppBean).getIsSpectator()) {
     			
     			// Save spectator in spectator list of service
     			control.addSpectator(xmppBean.getFrom());
-    			control.log("is spectator:");
+    			LOGGER.info("is spectator:");
     			
     			// Send the result
     			control.getConnection().getProxy().getBindingStub().sendXMPPBean( 
@@ -104,7 +109,7 @@ public class IQListener implements PacketListener{
 
     			// Verify Bean
 	    		if(!control.getConnection().verifyIncomingBean(xmppBean)){
-	    			control.log("!!!Bean not verified: " + xmppBean.getId());
+	    			LOGGER.warning("!!!Bean not verified: " + xmppBean.getId());
 	    			
 	    		// If Bean was verified and is not of type ERROR, handle Bean in current 
 	    		// @see GameState
@@ -113,7 +118,7 @@ public class IQListener implements PacketListener{
 	    		}
 	    		// If Bean is of type ERROR it will be logged
 	    		else {
-	    			control.log("ERROR: Bean of Type ERROR received: " 
+	    			LOGGER.severe("ERROR: Bean of Type ERROR received: " 
 	    					+ "type: " + xmppBean.errorType  
 	    					+ " condition:" + xmppBean.errorCondition
 	    					+ " text: " + xmppBean.errorText

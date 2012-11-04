@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.GeoPoint;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.Route;
@@ -60,16 +61,13 @@ public class RouteManagement {
 	/** The start stations which were already assigned to a player. */
 	private Map<XHuntPlayer, Station> assignedStartStations;
 	
-	/** The m controller. */
-	private XHunt mController;
+	/** The class specific Logger object. */
+	private final static Logger LOGGER = Logger.getLogger(RouteManagement.class.getCanonicalName());
 	
 	/**
 	 * Instantiates a new RouteManagement.
-	 *
-	 * @param controller the controller of the application
 	 */
-	public RouteManagement(XHunt controller) {
-		mController = controller;
+	public RouteManagement() {
 		mAreaRoutes = new HashMap<Integer, Route>();
 		mAreaStations = new HashMap<Integer, Station>();
 		mAreaTickets = new HashMap<Integer, Ticket>();
@@ -253,11 +251,11 @@ public class RouteManagement {
 	 * @return True, if the target is reachable by the player, else false.
 	 */
 	public boolean isTargetReachable(int stationId, XHuntPlayer player){
-		mController.log("current station: " + player.getLastStationId());
-		for(Route route : getRoutesForStation(stationId)){mController.log("route: " + route.getId() + " target: " + stationId);
+		LOGGER.info("current station: " + player.getLastStationId());
+		for(Route route : getRoutesForStation(stationId)){LOGGER.info("route: " + route.getId() + " target: " + stationId);
 			if(route.containsStation(player.getLastStationId())){
-				mController.log("route: " + route.getId() + " contains target " + " nextStations: " + route.getNextStationIds(stationId).toString());
-				for(int nextStationId : route.getNextStationIds(stationId)){mController.log("nextStation: " + nextStationId);
+				LOGGER.info("route: " + route.getId() + " contains target " + " nextStations: " + route.getNextStationIds(stationId).toString());
+				for(int nextStationId : route.getNextStationIds(stationId)){LOGGER.info("nextStation: " + nextStationId);
 					if(nextStationId == player.getLastStationId())
 						return true;
 				}

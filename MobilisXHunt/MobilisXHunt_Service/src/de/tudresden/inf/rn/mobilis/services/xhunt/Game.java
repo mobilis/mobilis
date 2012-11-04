@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
@@ -80,6 +81,9 @@ public class Game {
     
 	/** The round. */
 	private int round;
+	
+	/** The class specific Logger object. */
+	private final static Logger LOGGER = Logger.getLogger(Game.class.getCanonicalName());
 
 	/**
 	 * Initilizes the Game Component. All private members are initialized. The Statemachine gets
@@ -100,7 +104,7 @@ public class Game {
 		
 		gamePlayers = new HashMap<String, XHuntPlayer>();
 		mTickets = new HashMap<Integer, Ticket>();
-		mRoutemanagement = new RouteManagement(control);
+		mRoutemanagement = new RouteManagement();
         
         openMultiUserChat();
 		
@@ -635,7 +639,7 @@ public class Game {
 	public boolean setInitialTarget(XHuntPlayer player){
 		if(player != null 
 				&& player.getGeoLocation() != null){			
-			control.log("initial target for " + player.getJid() + " is " + mRoutemanagement.getNearestStation(player).getId());
+			LOGGER.info("initial target for " + player.getJid() + " is " + mRoutemanagement.getNearestStation(player).getId());
 			player.setCurrentTarget(mRoutemanagement.getNearestStation(player).getId());
 			player.setCurrentTargetFinal(true);
 			

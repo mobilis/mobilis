@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universit�t Dresden
+ * Copyright (C) 2010 Technische Universität Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,9 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.services.xhunt;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
@@ -35,6 +30,7 @@ import org.jivesoftware.smack.packet.Message;
 
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
 import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
+import de.tudresden.inf.rn.mobilis.services.xhunt.helper.LogClass;
 import de.tudresden.inf.rn.mobilis.services.xhunt.helper.SqlHelper;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.IXMPPCallback;
@@ -53,11 +49,8 @@ public class XHunt extends MobilisService {
 	/** The actual game instance. */
 	private Game mGame;
 	
-	/** The Settings which contains game specifig confoguration. */
+	/** The Settings which contains game specific confoguration. */
 	private Settings mSettings;
-	
-	/** The date formatter to format the timestamps of the log. */
-	private DateFormat mDateFormatter;
 	
 	/** The SqlHelper to use the database. */
 	private SqlHelper mSqlHelper;
@@ -65,45 +58,22 @@ public class XHunt extends MobilisService {
 	/** The list of participants, who do not play, but spectate at the game. */
 	private Set<String> spectators = new HashSet<String>();
 	
+	/** The Class responsible for creating and writing a log file for this XHuntService instance.
+	 *  Instantiates a top level Logger, all class specific Loggers inherit configuration and FileHandler. */
+	private LogClass mLogClass;
 	
+	/** The class specific Logger object. */
+	private final static Logger LOGGER = Logger.getLogger(XHunt.class.getCanonicalName());
+	
+	
+	/**
+	 * Creates a new XHunt instance.
+	 */
 	public XHunt() {
-		mDateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
-		log("XHunt()");
+		// Instantiate new parent Logger which defines rules for all inheriting Loggers
+		mLogClass = new LogClass();
 	}
 	
-	
-	/**
-	 * Log a string to console. The string to log will be expanded by a timestamp.
-	 *
-	 * @param str the string to log
-	 */
-	public void log(String str){		 
-		System.out.println("[" + mDateFormatter.format(System.currentTimeMillis()) + "] " + str);
-	}
-	
-	/**
-	 * Log a string to file.
-	 *
-	 * @param str the string to log
-	 */
-	private void logToFile(String str){
-		FileWriter fw;
-		File file = new File("xhunt.log");
-		
-		try {
-			fw = new FileWriter(file, true);
-			
-			BufferedWriter bw = new BufferedWriter(fw); 
-			
-			bw.write(str); 
-			bw.newLine();
-			
-			bw.close(); 
-		} catch (IOException e) {
-			System.err.println("ERROR while writing to logfile: " + file.getAbsolutePath());
-			e.printStackTrace();
-		} 
-	}
 	
 	/* (non-Javadoc)
 	 * @see de.tudresden.inf.rn.mobilis.server.services.MobilisService#startup(de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent)
@@ -112,12 +82,11 @@ public class XHunt extends MobilisService {
 		super.startup(agent);
 		
 		mConnection = new Connection(this);
-		log("XHunt#startUp: Start new XHunt service (connection = " 
-				+ mConnection.toString() + ")");
+		LOGGER.info("XHunt#startUp: Start new XHunt service (connection = " + mConnection.toString() + ")");
 		
 		mSettings = new Settings(getAgent());
 		
-		mSqlHelper = new SqlHelper(this);
+		mSqlHelper = new SqlHelper();
 		
 		//TODO: read data from hibernate.xml
 		mSqlHelper.setSqlConnectionData(Settings.DB_SERVER_ADDRESS,
@@ -134,7 +103,7 @@ public class XHunt extends MobilisService {
 	 * Starts/Restarts the game.
 	 */
 	public void startGame(){
-		log("XHunt#startGame: Start a new XHunt Game");
+		LOGGER.info("XHunt#startGame: Start a new XHunt Game");
 		if(mConnection.isConnected()){
 			try {
 				mGame = new Game(this);
@@ -142,18 +111,19 @@ public class XHunt extends MobilisService {
 				if(e.getXMPPError() != null){
 					int errorcode = e.getXMPPError().getCode();
 					String errormessage = e.getXMPPError().getMessage();
-					log(errorcode + " - " + errormessage);
+					LOGGER.severe(errorcode + " - " + errormessage);
 				}else{
-					log("XHunt#start: Unknown Error while connecting to the XMPP-Server");
+					LOGGER.severe("XHunt#start: Unknown Error while connecting to the XMPP-Server");
 				}
 			} catch (Exception e) {
-				log("XHunt#start: " + e.getMessage());
+				LOGGER.severe("XHunt#start: " + e.getMessage());
 			}			
 		}else{
 			try {
+				LOGGER.warning("not connected; XHunt instance shutting down");
 				this.shutdown();
 			} catch (Exception e) {
-				e.printStackTrace();
+				LOGGER.warning(e.getMessage().toString());
 			}
 		}
 	}
@@ -191,15 +161,17 @@ public class XHunt extends MobilisService {
 				if(e.getXMPPError() != null){
 					int errorcode = e.getXMPPError().getCode();
 					String errormessage = e.getXMPPError().getMessage();
-					log(errorcode + " - " + errormessage);
+					LOGGER.severe(errorcode + " - " + errormessage);
 				} else {
-					log("XHunt#shutdown: Unknown Error while shut down XHunt Service: " 
+					LOGGER.severe("XHunt#shutdown: Unknown Error while shut down XHunt Service: " 
 							+ getAgent().getFullJid());
 				}
 			}
 		}
 		
-		log(getAgent().getFullJid() + " is shutting down.");
+
+		LOGGER.info(getAgent().getFullJid() + " is shutting down.");
+		mLogClass.closeLogFile();
 		super.shutdown();
 	}
 
@@ -292,7 +264,7 @@ public class XHunt extends MobilisService {
 	 */
 	@Override
 	protected void registerPacketListener() {
-		MessageService mesServ = new MessageService(this);
+		MessageService mesServ = new MessageService();
 		PacketTypeFilter mesFil = new PacketTypeFilter(Message.class);		
 		getAgent().getConnection().addPacketListener(mesServ, mesFil);		
 		
@@ -300,7 +272,7 @@ public class XHunt extends MobilisService {
 		PacketTypeFilter locFil = new PacketTypeFilter(IQ.class);		
 		getAgent().getConnection().addPacketListener(iqServ, locFil);	
 		
-		log("XHunt#registerPacketListener successfully registered "
+		LOGGER.info("XHunt#registerPacketListener successfully registered "
 				+ "IQListener and MessageListener");
 	}
 }
