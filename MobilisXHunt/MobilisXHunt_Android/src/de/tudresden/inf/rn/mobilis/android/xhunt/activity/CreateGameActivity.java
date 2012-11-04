@@ -300,7 +300,10 @@ public class CreateGameActivity extends PreferenceActivity {
 			}
 		});
     	
-    	inDialog.show();
+    	AlertDialog gameNameDialog = inDialog.create();
+    	gameNameDialog.setCancelable(false);
+    	gameNameDialog.setCanceledOnTouchOutside(false);
+    	gameNameDialog.show();
 
     }
     
@@ -541,6 +544,8 @@ public class CreateGameActivity extends PreferenceActivity {
 	
 	    	});
 	    	AlertDialog alert = builder.create();
+	    	alert.setCancelable(false);
+	    	alert.setCanceledOnTouchOutside(false);
 	    	alert.show();
     	}
     	else{

@@ -123,4 +123,12 @@ public class DialogInput {
 		mAlertBuilder.show();
 	}
 	
+	/**
+	 * Creates the dialog without showing it, for further modification.
+	 * @return the created AlertDialog object
+	 */
+	public AlertDialog create() {
+		return mAlertBuilder.create();
+	}
+	
 }
