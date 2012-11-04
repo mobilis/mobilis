@@ -1,2 +1,0 @@
-serviceClass: de.tudresden.inf.rn.mobilis.gwtemulationserver.client.EmuServerConnectService
-path: 4C161CFC148041B8D5D84B6293261DFF.gwt.rpc
