@@ -15,6 +15,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.client.EmuServerConnectService;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.CommandRequest;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.ConnectRequest;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.SessionManager;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanFilterAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
@@ -25,6 +26,7 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 	private Connection connection;
 	private Boolean connected = false;
 	private List<String> devices = new ArrayList<String>();
+	private SessionManager sessionManager = new SessionManager();;
 
 	@Override
 	public Boolean connectServer() {
@@ -32,6 +34,14 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 		//connected = false;
 		
 		//Connection.DEBUG_ENABLED = true;
+		
+		// testing SessionManager
+		sessionManager.getSession("");
+		sessionManager.getSession("");
+		sessionManager.getSession("");
+		sessionManager.getSession("1");
+		sessionManager.getSession("abcd");
+		sessionManager.getSession("");
 		
 		if((connection != null) && (connection.isConnected())) {
 			
@@ -56,7 +66,7 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 			}
 			// Log into the server
 			try {
-				connection.login("walther05", "54321#pca", "EmulationServer");
+				connection.login("emulationserver", "emulationserver", "EmulationServer");
 				connected = true;
 				System.out.println("logged in");
 				

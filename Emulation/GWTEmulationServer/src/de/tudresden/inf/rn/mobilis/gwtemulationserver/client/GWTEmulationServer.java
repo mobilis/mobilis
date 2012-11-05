@@ -38,6 +38,7 @@ public class GWTEmulationServer implements EntryPoint {
 	private FlowPanel commandPanel = new FlowPanel();
 	private FlowPanel commandStatusPanel = new FlowPanel();
 	private FlowPanel devicePanel = new FlowPanel();
+	private FlowPanel footerPanel = new FlowPanel();
 	
 	private Label title = new Label("Emulation Server Webfrontend");
 	
@@ -70,12 +71,13 @@ public class GWTEmulationServer implements EntryPoint {
 		checkServerConnection();
 		
 		mainPanel.setStyleName("mainPanel");
-		titlePanel.setStyleName("titlePanel");
-		connectStatusPanel.setStyleName("connectStatusPanel");
-		connectPanel.setStyleName("connectPanel");
-		commandPanel.setStyleName("commandPanel");
-		commandStatusPanel.setStyleName("commandStatusPanel");
-		devicePanel.setStyleName("devicePanel");
+		titlePanel.setStyleName("outerPanel");
+		connectStatusPanel.setStyleName("innerPanel");
+		connectPanel.setStyleName("innerPanel");
+		commandPanel.setStyleName("innerPanel");
+		commandStatusPanel.setStyleName("innerPanel");
+		devicePanel.setStyleName("innerPanel");
+		footerPanel.setStyleName("outerPanel");
 		
 		connectButton.setStyleName("buttonStyle");
 		disconnectButton.setStyleName("buttonStyle");
@@ -123,6 +125,7 @@ public class GWTEmulationServer implements EntryPoint {
 		mainPanel.add(commandPanel);
 		mainPanel.add(commandStatusPanel);
 		mainPanel.add(devicePanel);
+		mainPanel.add(footerPanel);
 		
 		rootPanel.add(mainPanel);
 		
