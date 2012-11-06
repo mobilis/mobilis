@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universit�t Dresden
+ * Copyright (C) 2010 Technische Universität Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,12 +42,12 @@ import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceExc
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.StartNewServiceInstanceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.UpdateServiceException;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.DoubleKeyMap;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.JarClassLoader;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.MSDLReader;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.MSDLReader.ServiceDependency;
 import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
 
 /**
  * The Class ServiceContainer handles the life cycle of a service and its

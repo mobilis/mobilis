@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universit�t Dresden
+ * Copyright (C) 2010 Technische Universität Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ package de.tudresden.inf.rn.mobilis.xmpp.server;
 
 import org.jivesoftware.smack.packet.IQ;
 
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.ProxyBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 public class BeanIQAdapter extends IQ {

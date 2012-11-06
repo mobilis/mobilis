@@ -6,7 +6,7 @@ body {
 
 .buttonStyle {
   font-size: 15px;
-  width: 150px;
+  width: 250px;
   height: 35px;
   padding: 2px;
   margin: 5px;
@@ -17,29 +17,56 @@ body {
 	text-align: center;
 }
 
-.titlePanel {
+.outerPanel {
 	font-size: 2em;
 	font-weight: bold;
 	color: #777777;
-	margin: 40px 0px 70px;
+	background-color: silver;
+	width: 100%;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border-top-color: black;
+	border-top-style: solid;
+	border-top-width: 1px;
+	border-bottom-color: black;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
 }
 
-.connectStatusPanel {
-	
+.innerPanel {
+	border-left-color: black;
+	border-left-style: solid;
+	border-left-width: 1px;
+	border-right-color: black;
+	border-right-style: solid;
+	border-right-width: 1px;
+	width: 90%;
+	margin-left: 5%;
+	margin-right: 5%;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
-.connectPanel {
-	padding: 5px;
+.separator {
+	background-color: silver;
+	width: 100%;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	border-top-color: black;
+	border-top-style: solid;
+	border-top-width: 1px;
+	border-bottom-color: black;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
 }
 
-.commandPanel {
-	
-}
-
-.commandStatusPanel {
-	
-}
-
-.devicePanel {
-	
+.error {
+	font-size: 1em;
+	font-weight: bold;
+	color: red;
+	width: 90%;
+	margin-left: 5%;
+	margin-right: 5%;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
