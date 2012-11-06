@@ -19,7 +19,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
 
 /**
  * 
- * Class Session represents an Emulation Session that is managed in the SessionManager.
+ * Class EmulationSession represents an Emulation Session that is managed in the SessionManager.
  * 
  * @author Thomas Walther
  *
