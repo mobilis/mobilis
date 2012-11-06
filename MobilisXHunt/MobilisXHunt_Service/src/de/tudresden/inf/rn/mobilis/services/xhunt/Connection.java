@@ -37,7 +37,6 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.ProxyBean;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.XHuntPlayer;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.AreasRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.AreasResponse;
@@ -79,6 +78,7 @@ import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdateTicketsResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UsedTicketsRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UsedTicketsResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.state.GameStateGameOver;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
