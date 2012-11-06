@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.server.deployment.helper;
+package de.tudresden.inf.rn.mobilis.xmpp.beans;
 
 import java.io.StringReader;
 import java.util.logging.Level;
@@ -6,7 +6,6 @@ import java.util.logging.Level;
 import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
 
-import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 /**
@@ -77,10 +76,7 @@ public class ProxyBean extends XMPPBean {
 				evtType = parser.next();
 			}
 		} catch ( Exception e ) {
-			MobilisManager.getLogger().log(
-					Level.SEVERE,
-					String.format( "Error while parsing ProxyBean of type: ns=%s ce=%s; Error=%s",
-							this.namespace, this.childElement, e.getMessage() ) );
+			e.printStackTrace();
 		}
 
 		this.payload = str.toString();
@@ -175,10 +171,6 @@ public class ProxyBean extends XMPPBean {
 			parser.setInput( new StringReader( this.payload ) );
 			toBean.fromXML( parser );
 		} catch ( Exception e ) {
-			MobilisManager.getLogger().log(
-					Level.SEVERE,
-					String.format( "Exception while parsing ProxyBean to: %s. Message=%s",
-							toBean.toString(), e.getMessage() ) );
 			e.printStackTrace();
 		}
 
