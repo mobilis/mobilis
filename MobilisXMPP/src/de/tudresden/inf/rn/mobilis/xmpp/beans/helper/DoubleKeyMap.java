@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.server.deployment.helper;
+package de.tudresden.inf.rn.mobilis.xmpp.beans.helper;
 
 import java.util.ArrayList;
 import java.util.Collection;
