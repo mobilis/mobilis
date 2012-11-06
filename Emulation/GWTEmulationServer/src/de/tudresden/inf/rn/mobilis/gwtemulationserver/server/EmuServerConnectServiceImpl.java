@@ -71,7 +71,7 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public SessionInfo openSession(String id) {
 		
-		Connection.DEBUG_ENABLED = true;
+		//Connection.DEBUG_ENABLED = true;
 		
 		EmulationSession session = sessionManager.getSession(id);
 		SessionInfo info;
