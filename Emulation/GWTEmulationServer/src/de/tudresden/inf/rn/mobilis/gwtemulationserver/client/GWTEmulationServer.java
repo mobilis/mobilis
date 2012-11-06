@@ -22,29 +22,37 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.ListDataProvider;
 
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.SessionInfo;
+
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class GWTEmulationServer implements EntryPoint {
 	
 	private static final int REFRESH_INTERVAL = 2000;
+	private static final String SESSION_LABEL = "Enter Session-ID to open existing Emulation Session or leave blank to create a new Session";
 	
 	// UI-Stuff
 	private RootPanel rootPanel = RootPanel.get();
 	private FlowPanel mainPanel = new FlowPanel();
 	private FlowPanel titlePanel = new FlowPanel();
-	private FlowPanel connectStatusPanel = new FlowPanel();
-	private FlowPanel connectPanel = new FlowPanel();
+	private FlowPanel sessionInfoPanel = new FlowPanel();
+	private FlowPanel sessionIDInputPanel = new FlowPanel();
+	private FlowPanel sessionStartPanel = new FlowPanel();
 	private FlowPanel commandPanel = new FlowPanel();
 	private FlowPanel commandStatusPanel = new FlowPanel();
 	private FlowPanel devicePanel = new FlowPanel();
 	private FlowPanel footerPanel = new FlowPanel();
+	private FlowPanel separator = new FlowPanel();
+	private FlowPanel errorPanel = new FlowPanel();
 	
 	private Label title = new Label("Emulation Server Webfrontend");
+	private Label errorLabel = new Label();
 	
-	private Label statusLabel = new Label();
-	private Button connectButton = new Button("Connect...");
-	private Button disconnectButton = new Button("Disconnect...");
+	private Label sessionLabel = new Label();
+	private TextBox sessionIDTextBox = new TextBox();
+	private Button sessionOpenButton = new Button("Open Emulation Session");
+	private Button sessionCloseButton = new Button("Close Emulation Session");
 	
 	private TextBox txtCommand = new TextBox();
 	private Button sendButton = new Button("Send Command");
@@ -64,70 +72,9 @@ public class GWTEmulationServer implements EntryPoint {
 	private Boolean connectionStatus = false;
 	private Timer refreshTimer;
 	private List<String> devices = new ArrayList<String>();
+	private String currentSessionID = "";
 	
 	public void onModuleLoad() {
-		
-		updateLabel();
-		checkServerConnection();
-		
-		mainPanel.setStyleName("mainPanel");
-		titlePanel.setStyleName("outerPanel");
-		connectStatusPanel.setStyleName("innerPanel");
-		connectPanel.setStyleName("innerPanel");
-		commandPanel.setStyleName("innerPanel");
-		commandStatusPanel.setStyleName("innerPanel");
-		devicePanel.setStyleName("innerPanel");
-		footerPanel.setStyleName("outerPanel");
-		
-		connectButton.setStyleName("buttonStyle");
-		disconnectButton.setStyleName("buttonStyle");
-		sendButton.setStyleName("buttonStyle");
-		
-		connectButton.addClickHandler(new ClickHandler(){
-			@Override
-			public void onClick(ClickEvent event) {
-				onConnectClick();
-			}
-		});
-		disconnectButton.addClickHandler(new ClickHandler(){
-			@Override
-			public void onClick(ClickEvent event) {
-				onDisconnectClick();
-			}
-		});
-		sendButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				onSendClick();
-			}
-		});
-				
-		statusLabel.setText("NOT CONNECTED");
-		
-		// create cellList
-		deviceListDataProvider.addDataDisplay(deviceList);
-		//deviceListDataProvider.getList().add("TEST");
-		
-		// add widgets to panels
-		titlePanel.add(title);
-		connectStatusPanel.add(statusLabel);
-		connectPanel.add(connectButton);
-		connectPanel.add(disconnectButton);
-		commandPanel.add(txtCommand);
-		commandPanel.add(sendButton);
-		commandStatusPanel.add(lblSendStatus);
-		devicePanel.add(deviceList);
-		
-		// add panels to main panel
-		mainPanel.add(titlePanel);
-		mainPanel.add(connectStatusPanel);
-		mainPanel.add(connectPanel);
-		mainPanel.add(commandPanel);
-		mainPanel.add(commandStatusPanel);
-		mainPanel.add(devicePanel);
-		mainPanel.add(footerPanel);
-		
-		rootPanel.add(mainPanel);
 		
 	    refreshTimer = new Timer() {
 	      @Override
@@ -135,29 +82,22 @@ public class GWTEmulationServer implements EntryPoint {
 	        getDeviceList();
 	      }
 	    };
+	    
+	    initLayout();
 		
 	}
 	
-	private void checkServerConnection() {
+	private void onSessionOpenClick() {
 
-	    // Make the call to the connection service.
-	    emuServerConnectSvc.isConnected(new ConnectionCallback());
+		String inputID = sessionIDTextBox.getText();
+		emuServerConnectSvc.openSession(inputID, new SessionOpenCallback());
 		
 	}
 	
-	private void onConnectClick() {
+	private void onSessionCloseClick() {
 
-	    // Make the call to the connection service.
-	    emuServerConnectSvc.connectServer(new ConnectionCallback());
-	    refreshTimer.scheduleRepeating(REFRESH_INTERVAL);
-		
-	}
-	
-	private void onDisconnectClick() {
-
-	    // Make the call to the connection service.
-	    emuServerConnectSvc.disconnectServer(new ConnectionCallback());
-	    refreshTimer.cancel();
+		refreshTimer.cancel();
+		emuServerConnectSvc.closeSession(currentSessionID, new SessionCloseCallback());
 		
 	}
 	
@@ -172,56 +112,17 @@ public class GWTEmulationServer implements EntryPoint {
 		
 	}
 	
-	private void updateLabel() {
-		if(connectionStatus) {
-			statusLabel.setText("CONNECTED");
-			connectButton.setEnabled(false);
-			disconnectButton.setEnabled(true);
-			txtCommand.setText("");
-			txtCommand.setVisible(true);
-			sendButton.setVisible(true);
-			lblSendStatus.setVisible(true);
-			lblIncommingCommand.setVisible(true);
-			deviceList.setVisible(true);
-		} else {
-			statusLabel.setText("NOT CONNECTED");
-			connectButton.setEnabled(true);
-			disconnectButton.setEnabled(false);
-			txtCommand.setVisible(false);
-			sendButton.setVisible(false);
-			lblSendStatus.setVisible(false);
-			lblIncommingCommand.setVisible(false);
-			lblSendStatus.setText("");
-			lblIncommingCommand.setText("");
-			devices.clear();
-			deviceListDataProvider.setList(devices);
-			deviceList.setVisible(false);
-		}
-	}
-	
-	private void errorLabel() {
+	private void setErrorLabel(String error) {
 		
-		statusLabel.setText("ERROR");
+		errorLabel.setText(error);
+		errorPanel.setVisible(true);
 		
 	}
 	
 	private void getDeviceList() {
 		
-		emuServerConnectSvc.getDeviceList(new GetDeviceCallback());
+		emuServerConnectSvc.getDeviceList(currentSessionID, new GetDeviceCallback());
 		
-	}
-	
-	private class ConnectionCallback implements AsyncCallback<Boolean> {
-		@Override
-		public void onFailure(Throwable caught) {
-			errorLabel();
-		}
-
-		@Override
-		public void onSuccess(Boolean result) {
-			connectionStatus = result;
-			updateLabel();
-		}
 	}
 	
 	private class SendCommandCallback implements AsyncCallback<Boolean> {
@@ -239,15 +140,165 @@ public class GWTEmulationServer implements EntryPoint {
 	private class GetDeviceCallback implements AsyncCallback<List<String>> {
 		@Override
 		public void onFailure(Throwable caught) {
-			
+			setErrorLabel("Error getting device list!");
 		}
 
 		@Override
 		public void onSuccess(List<String> deviceListReturn) {
-			devices = deviceListReturn;
-			deviceListDataProvider.setList(devices);
-			deviceList.redraw();
+			if(deviceListReturn != null) {
+				devices = deviceListReturn;
+				deviceListDataProvider.setList(devices);
+				deviceList.redraw();
+			} else {
+				refreshTimer.cancel();
+				String id = currentSessionID;
+				initClosed();
+				setErrorLabel("Session with ID " + id + " was closed!");
+			}
 		}
+	}
+	
+	private class SessionOpenCallback implements AsyncCallback<SessionInfo> {
+
+		@Override
+		public void onFailure(Throwable caught) {
+			setErrorLabel("Error opening session: Can't connect to Emulation Server!");
+		}
+
+		@Override
+		public void onSuccess(SessionInfo result) {
+			currentSessionID = result.getSessionID();
+			connectionStatus = result.getConnected();
+			if(connectionStatus) {
+				refreshTimer.scheduleRepeating(REFRESH_INTERVAL);
+				initOpened();
+			} else {
+				setErrorLabel(result.getErrorMessage());
+			}
+		}
+		
+	}
+	
+	private class SessionCloseCallback implements AsyncCallback<Boolean> {
+
+		@Override
+		public void onFailure(Throwable caught) {
+			setErrorLabel("Error closing session: Can't connect to Emulation Server!");
+		}
+
+		@Override
+		public void onSuccess(Boolean result) {
+			if(result) {
+				initClosed();
+			}
+		}
+		
+	}
+	
+	private void initLayout() {
+		
+		mainPanel.setStyleName("mainPanel");
+		titlePanel.setStyleName("outerPanel");
+		sessionInfoPanel.setStyleName("innerPanel");
+		sessionIDInputPanel.setStyleName("innerPanel");
+		sessionStartPanel.setStyleName("innerPanel");
+		commandPanel.setStyleName("innerPanel");
+		commandStatusPanel.setStyleName("innerPanel");
+		devicePanel.setStyleName("innerPanel");
+		footerPanel.setStyleName("outerPanel");
+		separator.setStyleName("separator");
+		errorPanel.setStyleName("error");
+		
+		sessionOpenButton.setStyleName("buttonStyle");
+		sessionCloseButton.setStyleName("buttonStyle");
+		sendButton.setStyleName("buttonStyle");
+		
+		sessionOpenButton.addClickHandler(new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {
+				onSessionOpenClick();
+			}
+		});
+		sessionCloseButton.addClickHandler(new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {
+				onSessionCloseClick();
+			}
+		});
+		sendButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				onSendClick();
+			}
+		});
+		
+		// create cellList
+		deviceListDataProvider.addDataDisplay(deviceList);
+		//deviceListDataProvider.getList().add("TEST");
+		
+		// add widgets to panels
+		titlePanel.add(title);
+		sessionInfoPanel.add(sessionLabel);
+		sessionIDInputPanel.add(sessionIDTextBox);
+		sessionStartPanel.add(sessionOpenButton);
+		sessionStartPanel.add(sessionCloseButton);
+		commandPanel.add(txtCommand);
+		commandPanel.add(sendButton);
+		commandStatusPanel.add(lblSendStatus);
+		devicePanel.add(deviceList);
+		errorPanel.add(errorLabel);
+		
+		// add panels to main panel
+		mainPanel.add(titlePanel);
+		mainPanel.add(sessionInfoPanel);
+		mainPanel.add(sessionIDInputPanel);
+		mainPanel.add(sessionStartPanel);
+		mainPanel.add(errorPanel);
+		mainPanel.add(separator);
+		mainPanel.add(commandPanel);
+		mainPanel.add(commandStatusPanel);
+		mainPanel.add(devicePanel);
+		mainPanel.add(footerPanel);
+		
+		rootPanel.add(mainPanel);
+		
+		initClosed();
+		
+	}
+	
+	private void initOpened() {
+		
+		sessionIDTextBox.setEnabled(false);
+		sessionOpenButton.setEnabled(false);
+		sessionCloseButton.setEnabled(true);
+		commandPanel.setVisible(true);
+		commandStatusPanel.setVisible(true);
+		devicePanel.setVisible(true);
+		separator.setVisible(true);
+		errorPanel.setVisible(false);
+		
+		sessionLabel.setText("Session with ID " + currentSessionID + " open");
+		
+	}
+	
+	private void initClosed() {
+		
+		currentSessionID = "";
+		
+		devices.clear();
+		deviceListDataProvider.setList(devices);
+		
+		sessionIDTextBox.setEnabled(true);
+		sessionOpenButton.setEnabled(true);
+		sessionCloseButton.setEnabled(false);
+		commandPanel.setVisible(false);
+		commandStatusPanel.setVisible(false);
+		devicePanel.setVisible(false);
+		separator.setVisible(false);
+		errorPanel.setVisible(false);
+		
+		sessionLabel.setText(SESSION_LABEL);
+		
 	}
 	
 }

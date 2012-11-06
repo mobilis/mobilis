@@ -13,28 +13,40 @@ import java.util.List;
  */
 public class SessionManager {
 	
-	private HashMap<String,Session> sessionList;
+	private HashMap<String,EmulationSession> sessionList;
 	
 	public SessionManager() {
-		sessionList = new HashMap<String,Session>();
+		sessionList = new HashMap<String,EmulationSession>();
 	}
 	
-	public Session getSession(String id) {
-		Session s = null;
+	public EmulationSession getSession(String id) {
+		
+		EmulationSession s = null;
+		
 		if(sessionList.containsKey(id)) {
 			s = sessionList.get(id);
 			System.out.println("Session with id " + id + " exist!");
 		} else {
 			if(id.equals("")) {
 				Integer num = sessionList.size();
-				s = new Session(num.toString());
+				s = new EmulationSession(num.toString());
 				sessionList.put(num.toString(), s);
 				System.out.println("Session with id " + num.toString() + " created!");
 			} else {
 				System.out.println("Session with id " + id + " unknown!");
 			}
 		}
+		
 		return s;
+		
+	}
+	
+	public void deleteSession(String id) {
+		
+		if(sessionList.containsKey(id)) {
+			sessionList.remove(id);
+		}
+		
 	}
 
 }
