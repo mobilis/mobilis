@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 /**
- * The LogClass is responsible for creating a log file in 'C:/XHuntServiceLogs' and for writing into this log file.
+ * The LogClass is responsible for creating a log file in '[E:/|C:/|/var/]XHuntServiceLogs' and for writing into this log file.
  * It also takes care of the deletion of older log files, to save disk space. All Loggers instantiated in other classes
  * inherit Handlers and configuration from the Logger of this class, as long as their namespace is correctly set.
  * All log output is not only written into a file, but also to the console.
@@ -54,19 +54,30 @@ public class LogClass {
 	 * Creates a new LogClass instance with its own FileHandler.
 	 */
 	public LogClass() {
-		//Name = leerer String: RootLogger, loggt auch Nachrichten vom MobilisServer mit
-		//sollte nur in der XHuntService-Loggerhierarchie ganz oben stehen
+		//name = empty String: RootLogger, also logs messages from MobilisServer
+		//should only be on top of the XHuntService Logger hierarchy
 		mLogger = Logger.getLogger("de.tudresden.inf.rn.mobilis.services.xhunt");
 		mLogger.setLevel(Level.INFO);
 		mLogger.setUseParentHandlers(false);
-	
-		if(new File("E:/").exists())
-			logFolder = new File("E:/XHuntServiceLogs");
-		else
-			logFolder = new File("C:/XHuntServiceLogs");
 		
-		if(!logFolder.isDirectory())
-			logFolder.mkdir();
+		String os = System.getProperty("os.name").toLowerCase();
+	
+		if(os.contains("win")) {
+			if(new File("E:/").exists())
+				logFolder = new File("E:/XHuntServiceLogs");
+			else
+				logFolder = new File("C:/XHuntServiceLogs");
+		}
+		
+		else {
+			logFolder = new File("/var/XHuntServiceLogs");
+		}
+
+		if(!logFolder.isDirectory()) {
+			try {
+				logFolder.mkdir();
+			} catch (SecurityException e) { e.printStackTrace(); }
+		}
 		
 		deleteOlderLogs(14);
 		initializeHandler(200);
@@ -79,33 +90,30 @@ public class LogClass {
 	 * @param maxFilesizeMB the maximum size allowed for the log file (in MB).
 	 */
 	private void initializeHandler(int maxFilesizeMB) {
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SSS");	
-		File logFile = new File(logFolder, formatter.format(new Date()) + ".txt");
 		
-		try {
-			mFHandler = new FileHandler(logFile.getAbsolutePath(), 1024*1024*maxFilesizeMB, 1, true);
-			mFHandler.setFormatter(new SimpleFormatter() {
-				@Override
-				public String format(LogRecord record) {
-					return super.format(record) + "\r\n";
-				}
-			});
-			mFHandler.setLevel(Level.ALL);
-			mLogger.addHandler(mFHandler);
+		if(logFolder.isDirectory()) {
 			
-			mCHandler = new ConsoleHandler();
-			mCHandler.setFormatter(new SimpleFormatter());
-			mCHandler.setLevel(Level.ALL);
-			mLogger.addHandler(mCHandler);
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SSS");	
+			File logFile = new File(logFolder, formatter.format(new Date()) + ".txt");
 			
-		} catch (Exception e) {
-			mCHandler = new ConsoleHandler();
-			mCHandler.setFormatter(new SimpleFormatter());
-			mCHandler.setLevel(Level.ALL);
-			mLogger.addHandler(mCHandler);
-			
-			mLogger.warning(e.getMessage().toString());
+			try {
+				mFHandler = new FileHandler(logFile.getAbsolutePath(), 1024*1024*maxFilesizeMB, 1, true);
+				mFHandler.setFormatter(new SimpleFormatter() {
+					@Override
+					public String format(LogRecord record) {
+						return super.format(record) + "\r\n";
+					}
+				});
+				mFHandler.setLevel(Level.ALL);
+				mLogger.addHandler(mFHandler);
+				
+			} catch (Exception e) { e.printStackTrace(); }
 		}
+
+		mCHandler = new ConsoleHandler();
+		mCHandler.setFormatter(new SimpleFormatter());
+		mCHandler.setLevel(Level.ALL);
+		mLogger.addHandler(mCHandler);
 	}
 	
 	/**
