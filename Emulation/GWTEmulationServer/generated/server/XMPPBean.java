@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.emulation.serverstubs;
+package de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans;
 
 
 			

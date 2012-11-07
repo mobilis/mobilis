@@ -13,9 +13,10 @@ public class CommandRequest extends XMPPBean {
 	private List< String > parameters = new ArrayList< String >();
 	private List< String > parameter_types = new ArrayList< String >();
 	private int command_id = Integer.MIN_VALUE;
+	private String instance_id = null;
 
 
-	public CommandRequest( String method_name, List< String > parameters, List< String > parameter_types, int command_id ) {
+	public CommandRequest( String method_name, List< String > parameters, List< String > parameter_types, int command_id, String instance_id ) {
 		super();
 		this.method_name = method_name;
 		for ( String entity : parameters ) {
@@ -25,6 +26,7 @@ public class CommandRequest extends XMPPBean {
 			this.parameter_types.add( entity );
 		}
 		this.command_id = command_id;
+		this.instance_id = instance_id;
 
 		this.setType( XMPPBean.TYPE_SET );
 	}
@@ -57,6 +59,9 @@ public class CommandRequest extends XMPPBean {
 				}
 				else if (tagName.equals( "command_id" ) ) {
 					this.command_id = Integer.parseInt( parser.nextText() );
+				}
+				else if (tagName.equals( "instance_id" ) ) {
+					this.instance_id = parser.nextText();
 				}
 				else if (tagName.equals("error")) {
 					parser = parseErrorAttributes(parser);
@@ -95,7 +100,7 @@ public class CommandRequest extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		CommandRequest clone = new CommandRequest( method_name, parameters, parameter_types, command_id );
+		CommandRequest clone = new CommandRequest( method_name, parameters, parameter_types, command_id, instance_id );
 		clone.cloneBasicAttributes( clone );
 
 		return clone;
@@ -124,6 +129,10 @@ public class CommandRequest extends XMPPBean {
 		sb.append( "<command_id>" )
 			.append( this.command_id )
 			.append( "</command_id>" );
+
+		sb.append( "<instance_id>" )
+			.append( this.instance_id )
+			.append( "</instance_id>" );
 
 		sb = appendErrorPayload(sb);
 
@@ -161,6 +170,14 @@ public class CommandRequest extends XMPPBean {
 
 	public void setCommand_id( int command_id ) {
 		this.command_id = command_id;
+	}
+
+	public String getInstance_id() {
+		return this.instance_id;
+	}
+
+	public void setInstance_id( String instance_id ) {
+		this.instance_id = instance_id;
 	}
 
 }

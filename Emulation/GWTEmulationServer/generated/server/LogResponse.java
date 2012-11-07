@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.emulation.serverstubs;
+package de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans;
 
 import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.ArrayList;
 
