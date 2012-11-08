@@ -19,7 +19,7 @@ import de.tudresden.inf.rn.mobsda.performance.client.exception.NonSerializableEx
 import de.tudresden.inf.rn.mobsda.performance.client.exception.ParameterTypeException;
 import de.tudresden.inf.rn.mobsda.performance.client.exception.RunMethodException;
 
-public abstract class TestNodeClient implements RunMethod {
+public abstract class TestNodeClient implements RMITestNodeClient {
 	
 	private String workingDir = "";
 	
@@ -35,19 +35,19 @@ public abstract class TestNodeClient implements RunMethod {
 		workingDir = splitWorkingDir[splitWorkingDir.length - 1];
 		
 		// config file
-		try {
-			File logFile = getLogFile();
-			if (logFile != null) {
-				File configFile = new File(workingDir + "testNodeClient.conf");
-				configFile.createNewFile();
-				Files.write(configFile.toPath(), ("log=" + logFile.getPath().toString()).getBytes(Charset.defaultCharset()), StandardOpenOption.WRITE);
-			} else {
-				System.out.println("No log!");
-			}
-		} catch (IOException e) {
-			System.out.println("Couldn't create or write to config file!");
-			e.printStackTrace();
-		}
+//		try {
+//			File logFile = getLogFile();
+//			if (logFile != null) {
+//				File configFile = new File(workingDir + "testNodeClient.conf");
+//				configFile.createNewFile();
+//				Files.write(configFile.toPath(), ("log=" + logFile.getPath().toString()).getBytes(Charset.defaultCharset()), StandardOpenOption.WRITE);
+//			} else {
+//				System.out.println("No log!");
+//			}
+//		} catch (IOException e) {
+//			System.out.println("Couldn't create or write to config file!");
+//			e.printStackTrace();
+//		}
 		
 		// RMI initialization
 		// TODO: put server codebase into initTestNodeClient parameter to make the class more generic
@@ -60,7 +60,7 @@ public abstract class TestNodeClient implements RunMethod {
 			try {
 				String name = "TestNodeClient_" + workingDir;
 				
-				RunMethod stub = (RunMethod) UnicastRemoteObject.exportObject(this, 0);
+				RMITestNodeClient stub = (RMITestNodeClient) UnicastRemoteObject.exportObject(this, 0);
 				Registry registry = LocateRegistry.getRegistry();
 				registry.rebind(name, stub);
 				System.out.println("TestNodeClient bound on " + name);
@@ -129,6 +129,7 @@ public abstract class TestNodeClient implements RunMethod {
 		}
 	}
 	
+	@Override
 	public abstract File getLogFile();
 	
 	/**

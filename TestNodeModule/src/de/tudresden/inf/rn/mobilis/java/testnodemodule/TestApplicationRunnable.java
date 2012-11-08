@@ -13,14 +13,14 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import de.tudresden.inf.rn.mobsda.performance.client.RunMethod;
+import de.tudresden.inf.rn.mobsda.performance.client.RMITestNodeClient;
 import de.tudresden.inf.rn.mobsda.performance.client.exception.RunMethodException;
 
 public class TestApplicationRunnable implements Runnable {
 
 	private int instanceNumber;
 	private String[] cmd;
-	private RunMethod run;
+	private RMITestNodeClient run;
 	private Object monitor = new Object();
 	private ConcurrentLinkedQueue<Command> commands = new ConcurrentLinkedQueue<Command>();
 	private boolean shallExecute = true;
@@ -95,7 +95,7 @@ public class TestApplicationRunnable implements Runnable {
         Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry();
-			run = (RunMethod) registry.lookup(stubName);
+			run = (RMITestNodeClient) registry.lookup(stubName);
 		} catch (RemoteException e) {
 			System.out.println("Couldn't obtain RMI registry!");
 			e.printStackTrace();
@@ -155,6 +155,10 @@ public class TestApplicationRunnable implements Runnable {
 		synchronized(monitor) {
 			monitor.notify();
 		}
+	}
+	
+	public File getLogFile() {
+		return run.getLogFile();
 	}
 	
 	public void stop() {
