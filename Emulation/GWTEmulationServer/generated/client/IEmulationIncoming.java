@@ -12,4 +12,6 @@ public interface IEmulationIncoming {
 
 	void onExecutionResultError( ExecutionResultRequest in);
 
+	void onLog( LogRequest in );
+
 }

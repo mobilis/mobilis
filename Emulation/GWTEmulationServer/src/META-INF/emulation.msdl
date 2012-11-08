@@ -52,7 +52,7 @@
 	        <msdl:input element="tns:ExecutionResultRequest" />
 			<msdl:output element="tns:ExecutionResultAck" />
 	    </msdl:operation>
-	    <msdl:operation name="Log" pattern="http://www.w3.org/ns/wsdl/out">
+	    <msdl:operation name="Log" pattern="http://www.w3.org/ns/wsdl/out-only">
 	       	<msdl:output element="tns:LogRequest" />
 	    </msdl:operation>
 	</msdl:interface>

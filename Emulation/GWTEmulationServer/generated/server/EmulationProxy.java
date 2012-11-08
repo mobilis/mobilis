@@ -51,4 +51,14 @@ import java.util.List;import java.util.ArrayList;public class EmulationProxy {
 		return out;
 	}
 
+	public void Log( String toJid, String instanceId ) {
+		if ( null == _bindingStub )
+			return;
+
+		LogRequest out = new LogRequest( instanceId );
+		out.setTo( toJid );
+
+		_bindingStub.sendXMPPBean( out );
+	}
+
 }
