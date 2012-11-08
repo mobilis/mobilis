@@ -11,22 +11,22 @@ public class CommandRequest extends XMPPBean {
 
 	private String method_name = null;
 	private List< String > parameters = new ArrayList< String >();
-	private List< String > parameter_types = new ArrayList< String >();
-	private int command_id = Integer.MIN_VALUE;
-	private String instance_id = null;
+	private List< String > parameterTypes = new ArrayList< String >();
+	private int commandId = Integer.MIN_VALUE;
+	private String instanceId = null;
 
 
-	public CommandRequest( String method_name, List< String > parameters, List< String > parameter_types, int command_id, String instance_id ) {
+	public CommandRequest( String method_name, List< String > parameters, List< String > parameterTypes, int commandId, String instanceId ) {
 		super();
 		this.method_name = method_name;
 		for ( String entity : parameters ) {
 			this.parameters.add( entity );
 		}
-		for ( String entity : parameter_types ) {
-			this.parameter_types.add( entity );
+		for ( String entity : parameterTypes ) {
+			this.parameterTypes.add( entity );
 		}
-		this.command_id = command_id;
-		this.instance_id = instance_id;
+		this.commandId = commandId;
+		this.instanceId = instanceId;
 
 		this.setType( XMPPBean.TYPE_SET );
 	}
@@ -54,14 +54,14 @@ public class CommandRequest extends XMPPBean {
 				else if (tagName.equals( "parameters" ) ) {
 					parameters.add( parser.nextText() );
 				}
-				else if (tagName.equals( "parameter_types" ) ) {
-					parameter_types.add( parser.nextText() );
+				else if (tagName.equals( "parameterTypes" ) ) {
+					parameterTypes.add( parser.nextText() );
 				}
-				else if (tagName.equals( "command_id" ) ) {
-					this.command_id = Integer.parseInt( parser.nextText() );
+				else if (tagName.equals( "commandId" ) ) {
+					this.commandId = Integer.parseInt( parser.nextText() );
 				}
-				else if (tagName.equals( "instance_id" ) ) {
-					this.instance_id = parser.nextText();
+				else if (tagName.equals( "instanceId" ) ) {
+					this.instanceId = parser.nextText();
 				}
 				else if (tagName.equals("error")) {
 					parser = parseErrorAttributes(parser);
@@ -100,7 +100,7 @@ public class CommandRequest extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		CommandRequest clone = new CommandRequest( method_name, parameters, parameter_types, command_id, instance_id );
+		CommandRequest clone = new CommandRequest( method_name, parameters, parameterTypes, commandId, instanceId );
 		clone.cloneBasicAttributes( clone );
 
 		return clone;
@@ -120,19 +120,19 @@ public class CommandRequest extends XMPPBean {
 			sb.append( "</parameters>" );
 		}
 
-		for( String entry : parameter_types ) {
-			sb.append( "<parameter_types>" );
+		for( String entry : parameterTypes ) {
+			sb.append( "<parameterTypes>" );
 			sb.append( entry );
-			sb.append( "</parameter_types>" );
+			sb.append( "</parameterTypes>" );
 		}
 
-		sb.append( "<command_id>" )
-			.append( this.command_id )
-			.append( "</command_id>" );
+		sb.append( "<commandId>" )
+			.append( this.commandId )
+			.append( "</commandId>" );
 
-		sb.append( "<instance_id>" )
-			.append( this.instance_id )
-			.append( "</instance_id>" );
+		sb.append( "<instanceId>" )
+			.append( this.instanceId )
+			.append( "</instanceId>" );
 
 		sb = appendErrorPayload(sb);
 
@@ -156,28 +156,28 @@ public class CommandRequest extends XMPPBean {
 		this.parameters = parameters;
 	}
 
-	public List< String > getParameter_types() {
-		return this.parameter_types;
+	public List< String > getParameterTypes() {
+		return this.parameterTypes;
 	}
 
-	public void setParameter_types( List< String > parameter_types ) {
-		this.parameter_types = parameter_types;
+	public void setParameterTypes( List< String > parameterTypes ) {
+		this.parameterTypes = parameterTypes;
 	}
 
-	public int getCommand_id() {
-		return this.command_id;
+	public int getCommandId() {
+		return this.commandId;
 	}
 
-	public void setCommand_id( int command_id ) {
-		this.command_id = command_id;
+	public void setCommandId( int commandId ) {
+		this.commandId = commandId;
 	}
 
-	public String getInstance_id() {
-		return this.instance_id;
+	public String getInstanceId() {
+		return this.instanceId;
 	}
 
-	public void setInstance_id( String instance_id ) {
-		this.instance_id = instance_id;
+	public void setInstanceId( String instanceId ) {
+		this.instanceId = instanceId;
 	}
 
 }
