@@ -1,8 +1,6 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans;
 
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-
-public interface IEmulationServerIncoming {
+public interface IEmulationIncoming {
 
 	XMPPBean onConnect( ConnectRequest in );
 
@@ -11,9 +9,5 @@ public interface IEmulationServerIncoming {
 	void onCommandError( CommandRequest in);
 
 	XMPPBean onExecutionResult( ExecutionResultRequest in );
-
-	void onLog( LogResponse in );
-
-	void onLogError( LogRequest in);
 
 }

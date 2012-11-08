@@ -1,6 +1,8 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans;
 
-public interface IEmulationServerOutgoing {
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+
+public interface IEmulationOutgoing {
 
 	void sendXMPPBean( XMPPBean out, IXMPPCallback< ? extends XMPPBean > callback );
 

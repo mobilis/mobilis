@@ -69,7 +69,7 @@ public class ExecutionResultRequest extends XMPPBean {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "emulation:iq:connect";
+	public static final String NAMESPACE = "emulation:iq:executionresult";
 
 	@Override
 	public String getNamespace() {

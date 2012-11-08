@@ -1,16 +1,16 @@
 package de.tudresden.inf.rn.mobilis.emulation.clientstub;
 
-import java.util.List;import java.util.ArrayList;public class EmulationServerProxy {
+import java.util.List;import java.util.ArrayList;public class EmulationProxy {
 
-	private IEmulationServerOutgoing _bindingStub;
+	private IEmulationOutgoing _bindingStub;
 
 
-	public EmulationServerProxy( IEmulationServerOutgoing bindingStub) {
+	public EmulationProxy( IEmulationOutgoing bindingStub) {
 		_bindingStub = bindingStub;
 	}
 
 
-	public IEmulationServerOutgoing getBindingStub(){
+	public IEmulationOutgoing getBindingStub(){
 		return _bindingStub;
 	}
 
@@ -48,17 +48,6 @@ import java.util.List;import java.util.ArrayList;public class EmulationServerPro
 		_bindingStub.sendXMPPBean( out, callback );
 
 		return out;
-	}
-
-	public void Log( String toJid, String packetId ) {
-		if ( null == _bindingStub )
-			return;
-
-		LogResponse out = new LogResponse(  );
-		out.setTo( toJid );
-		out.setId( packetId );
-
-		_bindingStub.sendXMPPBean( out );
 	}
 
 }

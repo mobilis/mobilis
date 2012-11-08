@@ -19,7 +19,7 @@ public class ExecutionResultAck extends XMPPBean {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "emulation:iq:connect";
+	public static final String NAMESPACE = "emulation:iq:executionresult";
 
 	@Override
 	public String getNamespace() {

@@ -36,8 +36,6 @@
 	        		</xs:sequence>
 	        	</xs:complexType>
 	        </xs:element>
-			<xs:element name="LogResponse"/>
-			<xs:element name="LogError"/>
 	    </xs:schema>
 	</msdl:types>
 	<msdl:interface name="EmuInterface">
@@ -54,10 +52,8 @@
 	        <msdl:input element="tns:ExecutionResultRequest" />
 			<msdl:output element="tns:ExecutionResultAck" />
 	    </msdl:operation>
-	    <msdl:operation name="Log" pattern="http://www.w3.org/ns/wsdl/out-in">
-	        <msdl:input element="tns:LogResponse" />
-			<msdl:output element="tns:LogRequest" />
-			<msdl:infault ref="tns:LogError" />
+	    <msdl:operation name="Log" pattern="http://www.w3.org/ns/wsdl/out">
+	       	<msdl:output element="tns:LogRequest" />
 	    </msdl:operation>
 	</msdl:interface>
 	<msdl:binding name="EmuBinding" interface="tns:EmuInterface" type="http://mobilis.inf.tu-dresden.de/xmpp/">
@@ -70,17 +66,15 @@
 			<msdl:input xmpp:type="result" />
 			<msdl:output xmpp:type="set" />
 		</msdl:operation>
-		<msdl:operation ref="tns:ExecutionResult" xmpp:ident="emulation:iq:connect">
+		<msdl:operation ref="tns:ExecutionResult" xmpp:ident="emulation:iq:executionresult">
 			<msdl:input xmpp:type="set" />
 			<msdl:output xmpp:type="result" />
 		</msdl:operation>
-		<msdl:operation ref="tns:Log" xmpp:ident="emulation:iq:connect">
-			<msdl:input xmpp:type="result" />
-			<msdl:output xmpp:type="get" />
-			<msdl:outfault ref="tns:LogError" />
+		<msdl:operation ref="tns:Log" xmpp:ident="emulation:iq:log">
+			<msdl:output xmpp:type="chat" />
 		</msdl:operation>
 	</msdl:binding>
-	<msdl:service name="EmulationServer" interface="tns:EmuInterface"
+	<msdl:service name="Emulation" interface="tns:EmuInterface"
 		ident="http://mobilis.inf.tu-dresden.de#services/Emulation"
 		version="1">
 		<msdl:endpoint name="EmuEndpoint" binding="tns:EmuBinding" />

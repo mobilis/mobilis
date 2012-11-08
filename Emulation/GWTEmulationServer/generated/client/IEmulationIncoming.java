@@ -1,6 +1,6 @@
 package de.tudresden.inf.rn.mobilis.emulation.clientstub;
 
-public interface IEmulationServerIncoming {
+public interface IEmulationIncoming {
 
 	void onConnect( ConnectAck in );
 
@@ -11,7 +11,5 @@ public interface IEmulationServerIncoming {
 	void onExecutionResult( ExecutionResultAck in );
 
 	void onExecutionResultError( ExecutionResultRequest in);
-
-	XMPPBean onLog( LogRequest in );
 
 }

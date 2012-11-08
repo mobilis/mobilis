@@ -1,16 +1,19 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans;
 
-import java.util.List;import java.util.ArrayList;public class EmulationServerProxy {
+import java.util.List;
 
-	private IEmulationServerOutgoing _bindingStub;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+public class EmulationProxy {
+
+	private IEmulationOutgoing _bindingStub;
 
 
-	public EmulationServerProxy( IEmulationServerOutgoing bindingStub) {
+	public EmulationProxy( IEmulationOutgoing bindingStub) {
 		_bindingStub = bindingStub;
 	}
 
 
-	public IEmulationServerOutgoing getBindingStub(){
+	public IEmulationOutgoing getBindingStub(){
 		return _bindingStub;
 	}
 
@@ -49,16 +52,6 @@ import java.util.List;import java.util.ArrayList;public class EmulationServerPro
 		_bindingStub.sendXMPPBean( out );
 
 		return out;
-	}
-
-	public void Log( String toJid, String instanceId, IXMPPCallback< LogResponse > callback ) {
-		if ( null == _bindingStub || null == callback )
-			return;
-
-		LogRequest out = new LogRequest( instanceId );
-		out.setTo( toJid );
-
-		_bindingStub.sendXMPPBean( out, callback );
 	}
 
 }

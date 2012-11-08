@@ -62,7 +62,7 @@ public class LogRequest extends XMPPBean {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "emulation:iq:connect";
+	public static final String NAMESPACE = "emulation:iq:log";
 
 	@Override
 	public String getNamespace() {
