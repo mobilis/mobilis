@@ -38,11 +38,11 @@ import java.util.List;import java.util.ArrayList;public class EmulationServerPro
 		_bindingStub.sendXMPPBean( out );
 	}
 
-	public XMPPBean ExecutionResult( String toJid, int command_id, String message, IXMPPCallback< ExecutionResultAck > callback ) {
+	public XMPPBean ExecutionResult( String toJid, int commandId, String message, IXMPPCallback< ExecutionResultAck > callback ) {
 		if ( null == _bindingStub || null == callback )
 			return null;
 
-		ExecutionResultRequest out = new ExecutionResultRequest( command_id, message );
+		ExecutionResultRequest out = new ExecutionResultRequest( commandId, message );
 		out.setTo( toJid );
 
 		_bindingStub.sendXMPPBean( out, callback );

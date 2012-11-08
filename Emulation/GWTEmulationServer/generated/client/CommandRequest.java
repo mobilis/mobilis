@@ -4,16 +4,16 @@ import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.Array
 
 public class CommandRequest extends XMPPBean {
 
-	private String method_name = null;
+	private String methodName = null;
 	private List< String > parameters = new ArrayList< String >();
 	private List< String > parameterTypes = new ArrayList< String >();
 	private int commandId = Integer.MIN_VALUE;
 	private String instanceId = null;
 
 
-	public CommandRequest( String method_name, List< String > parameters, List< String > parameterTypes, int commandId, String instanceId ) {
+	public CommandRequest( String methodName, List< String > parameters, List< String > parameterTypes, int commandId, String instanceId ) {
 		super();
-		this.method_name = method_name;
+		this.methodName = methodName;
 		for ( String entity : parameters ) {
 			this.parameters.add( entity );
 		}
@@ -43,8 +43,8 @@ public class CommandRequest extends XMPPBean {
 				if (tagName.equals(getChildElement())) {
 					parser.next();
 				}
-				else if (tagName.equals( "method_name" ) ) {
-					this.method_name = parser.nextText();
+				else if (tagName.equals( "methodName" ) ) {
+					this.methodName = parser.nextText();
 				}
 				else if (tagName.equals( "parameters" ) ) {
 					parameters.add( parser.nextText() );
@@ -95,7 +95,7 @@ public class CommandRequest extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		CommandRequest clone = new CommandRequest( method_name, parameters, parameterTypes, commandId, instanceId );
+		CommandRequest clone = new CommandRequest( methodName, parameters, parameterTypes, commandId, instanceId );
 		clone.cloneBasicAttributes( clone );
 
 		return clone;
@@ -105,9 +105,9 @@ public class CommandRequest extends XMPPBean {
 	public String payloadToXML() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "<method_name>" )
-			.append( this.method_name )
-			.append( "</method_name>" );
+		sb.append( "<methodName>" )
+			.append( this.methodName )
+			.append( "</methodName>" );
 
 		for( String entry : this.parameters ) {
 			sb.append( "<parameters>" );
@@ -138,12 +138,12 @@ public class CommandRequest extends XMPPBean {
 
 
 
-	public String getMethod_name() {
-		return this.method_name;
+	public String getMethodName() {
+		return this.methodName;
 	}
 
-	public void setMethod_name( String method_name ) {
-		this.method_name = method_name;
+	public void setMethodName( String methodName ) {
+		this.methodName = methodName;
 	}
 
 	public List< String > getParameters() {

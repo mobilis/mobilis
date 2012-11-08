@@ -4,13 +4,13 @@ import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.Array
 
 public class ExecutionResultRequest extends XMPPBean {
 
-	private int command_id = Integer.MIN_VALUE;
+	private int commandId = Integer.MIN_VALUE;
 	private String message = null;
 
 
-	public ExecutionResultRequest( int command_id, String message ) {
+	public ExecutionResultRequest( int commandId, String message ) {
 		super();
-		this.command_id = command_id;
+		this.commandId = commandId;
 		this.message = message;
 
 		this.setType( XMPPBean.TYPE_SET );
@@ -33,8 +33,8 @@ public class ExecutionResultRequest extends XMPPBean {
 				if (tagName.equals(getChildElement())) {
 					parser.next();
 				}
-				else if (tagName.equals( "command_id" ) ) {
-					this.command_id = Integer.parseInt( parser.nextText() );
+				else if (tagName.equals( "commandId" ) ) {
+					this.commandId = Integer.parseInt( parser.nextText() );
 				}
 				else if (tagName.equals( "message" ) ) {
 					this.message = parser.nextText();
@@ -76,7 +76,7 @@ public class ExecutionResultRequest extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		ExecutionResultRequest clone = new ExecutionResultRequest( command_id, message );
+		ExecutionResultRequest clone = new ExecutionResultRequest( commandId, message );
 		clone.cloneBasicAttributes( clone );
 
 		return clone;
@@ -86,9 +86,9 @@ public class ExecutionResultRequest extends XMPPBean {
 	public String payloadToXML() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "<command_id>" )
-			.append( this.command_id )
-			.append( "</command_id>" );
+		sb.append( "<commandId>" )
+			.append( this.commandId )
+			.append( "</commandId>" );
 
 		sb.append( "<message>" )
 			.append( this.message )
@@ -103,12 +103,12 @@ public class ExecutionResultRequest extends XMPPBean {
 
 
 
-	public int getCommand_id() {
-		return this.command_id;
+	public int getCommandId() {
+		return this.commandId;
 	}
 
-	public void setCommand_id( int command_id ) {
-		this.command_id = command_id;
+	public void setCommandId( int commandId ) {
+		this.commandId = commandId;
 	}
 
 	public String getMessage() {
