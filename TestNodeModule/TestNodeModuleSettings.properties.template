@@ -1,0 +1,5 @@
+# make a copy of this template, remove the ".template" suffix and edit appropriately
+xmppserver=mobilis.inf.tu-dresden.de
+xmpplogin=yourloginwithoutserverandresource
+xmppresource=optionalresource
+xmpppass=yourpass

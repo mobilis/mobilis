@@ -1,10 +1,14 @@
 package de.tudresden.inf.rn.mobilis.java.testnodemodule;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -33,9 +37,12 @@ import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
 
 public class TestNodeModule {
 	
-	private static String XMPP_SERVER = "mobilis.inf.tu-dresden.de";
-	private static String XMPP_LOGIN = "testnodemodule";
-	private static String XMPP_PASS = "testnodemodule";
+	private static String xmppServer = "mobilis.inf.tu-dresden.de";
+	private static String xmppLogin = "testnodemodule";
+	private static String xmppPass = "testnodemodule";
+	private static String xmppResource = "";
+	
+	private static String xmppJid = "";
 	
 	private static XMPPConnection con;
 	private static TestNodeModuleIncomingHandler xmppIncomingHandler;
@@ -53,6 +60,9 @@ public class TestNodeModule {
 	 * 				application instance number at runtime.
 	 */
 	public static void main(String[] args) {
+		
+		fetchSettings();
+		
 		connectToXMPP();
 		registerPacketListener();
 		
@@ -109,8 +119,26 @@ public class TestNodeModule {
 
 	}
 	
+	private static void fetchSettings() {
+		Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream("TestNodeModuleSettings.properties"));
+		} catch (FileNotFoundException e) {
+			System.out.println("Couldn\'t find settings file. Using default settings.");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("Couldn\'t read settings file. Using default settings.");
+			e.printStackTrace();
+		}
+		
+		xmppServer = properties.getProperty("xmppserver").trim();
+		xmppLogin = properties.getProperty("xmpplogin").trim();
+		xmppResource = properties.getProperty("xmppresource").trim();
+		xmppPass = properties.getProperty("xmpppass").trim();
+	}
+
 	private static void connectToXMPP() {
-		con = new XMPPConnection(XMPP_SERVER);
+		con = new XMPPConnection(xmppServer);
 		try {
 			con.connect();
 		} catch (XMPPException e) {
@@ -120,12 +148,20 @@ public class TestNodeModule {
 		}
 		
 		try {
-			con.login(XMPP_LOGIN, XMPP_PASS);
+			if (xmppResource == null || xmppResource.equals("")) {
+				con.login(xmppLogin, xmppPass);
+				xmppJid = xmppLogin + "@" + xmppServer;
+			} else {
+				con.login(xmppLogin, xmppPass, xmppResource);
+				xmppJid = xmppLogin + "@" + xmppServer + "/" + xmppResource;
+			}
 		} catch (XMPPException e) {
 			System.out.println("Couldn't login to Openfire.");
 			e.printStackTrace();
 			System.exit(1);
 		}
+		
+		System.out.println("Successfully logged in to XMPP server " + xmppServer + " .");
 	}
 	
 	private static void registerPacketListener() {
@@ -231,7 +267,7 @@ public class TestNodeModule {
 
 		@Override
 		public void sendXMPPBean(XMPPBean out) {
-			out.setFrom(XMPP_LOGIN + "@" + XMPP_SERVER);
+			out.setFrom(xmppJid);
 			con.sendPacket(new BeanIQAdapter(out));
 		}
 		
