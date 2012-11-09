@@ -12,5 +12,5 @@ public interface RMITestNodeClient extends Remote {
 
 	public Serializable runMethod(String methodName, String[] parameterClassNames, String[] parameterValues) throws RemoteException, RunMethodException, IllegalAccessException, InvocationTargetException, NoSuchMethodException;
 	
-	public File getLogFile();
+	public File getLogFile() throws RemoteException;
 }

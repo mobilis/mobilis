@@ -84,7 +84,7 @@ public class TestApplicationRunnable implements Runnable {
 		
 		// wait for the application to start
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -158,7 +158,13 @@ public class TestApplicationRunnable implements Runnable {
 	}
 	
 	public File getLogFile() {
-		return run.getLogFile();
+		try {
+			return run.getLogFile();
+		} catch (RemoteException e) {
+			System.out.println("RemoteException during access of getLogFile() method.");
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public void stop() {
