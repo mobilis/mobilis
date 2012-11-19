@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<msdl:description targetNamespace="http://mobilis.inf.tu-dresden.de/Emulation"
+	xmlns:msdl="http://mobilis.inf.tu-dresden.de/msdl/" xmlns:xmpp="http://mobilis.inf.tu-dresden.de/xmpp/"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://mobilis.inf.tu-dresden.de/Emulation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<msdl:types>
+	    <xs:schema targetNamespace="http://mobilis.inf.tu-dresden.de/Emulation">
+	        <xs:element name="ConnectRequest"/>
+	        <xs:element name="ConnectAck"/>
+	        <xs:element name="ConnectError"/>
+	        <xs:element name="CommandRequest">
+	            <xs:complexType>
+	                <xs:sequence>
+	                    <xs:element name="methodName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+	                    <xs:element name="parameters" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+	                    <xs:element name="parameterTypes" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+	                    <xs:element name="commandId" type="xs:int" minOccurs="1" maxOccurs="1"/>
+	                    <xs:element name="instanceId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+	                </xs:sequence>
+	            </xs:complexType>
+	        </xs:element>         
+	        <xs:element name="CommandAck"/>
+	        <xs:element name="ExecutionResultRequest">
+	            <xs:complexType>
+	                <xs:sequence>
+	                    <xs:element name="commandId" type="xs:int" minOccurs="1" maxOccurs="1"/>
+	                    <xs:element name="message" type="xs:string" minOccurs="0" maxOccurs="1"/>
+	                </xs:sequence>
+	            </xs:complexType>
+	        </xs:element>
+	        <xs:element name="ExecutionResultAck"/>
+	        <xs:element name="LogRequest">
+	        	<xs:complexType>
+	        		<xs:sequence>
+	        			<xs:element name="instanceId" type="xs:string" minOccurs="1" maxOccurs="1"></xs:element>
+	        		</xs:sequence>
+	        	</xs:complexType>
+	        </xs:element>
+	    </xs:schema>
+	</msdl:types>
+	<msdl:interface name="EmuInterface">
+	    <msdl:operation name="Connect" pattern="http://www.w3.org/ns/wsdl/in-out">
+	        <msdl:input element="tns:ConnectRequest" />
+			<msdl:output element="tns:ConnectAck" />
+			<msdl:outfault ref="tns:ConnectError" />
+	    </msdl:operation>
+	    <msdl:operation name="Command" pattern="http://www.w3.org/ns/wsdl/out-in">
+			<msdl:input element="tns:CommandAck" />
+			<msdl:output element="tns:CommandRequest" />
+		</msdl:operation>
+		<msdl:operation name="ExecutionResult" pattern="http://www.w3.org/ns/wsdl/in-out">
+	        <msdl:input element="tns:ExecutionResultRequest" />
+			<msdl:output element="tns:ExecutionResultAck" />
+	    </msdl:operation>
+	    <msdl:operation name="Log" pattern="http://www.w3.org/ns/wsdl/out-only">
+	       	<msdl:output element="tns:LogRequest" />
+	    </msdl:operation>
+	</msdl:interface>
+	<msdl:binding name="EmuBinding" interface="tns:EmuInterface" type="http://mobilis.inf.tu-dresden.de/xmpp/">
+	    <msdl:operation ref="tns:Connect" xmpp:ident="emulation:iq:connect">
+			<msdl:input xmpp:type="set" />
+			<msdl:output xmpp:type="result" />
+			<msdl:outfault ref="tns:ConnectError" />
+		</msdl:operation>
+		<msdl:operation ref="tns:Command" xmpp:ident="emulation:iq:command">
+			<msdl:input xmpp:type="result" />
+			<msdl:output xmpp:type="set" />
+		</msdl:operation>
+		<msdl:operation ref="tns:ExecutionResult" xmpp:ident="emulation:iq:executionresult">
+			<msdl:input xmpp:type="set" />
+			<msdl:output xmpp:type="result" />
+		</msdl:operation>
+		<msdl:operation ref="tns:Log" xmpp:ident="emulation:iq:log">
+			<msdl:output xmpp:type="chat" />
+		</msdl:operation>
+	</msdl:binding>
+	<msdl:service name="Emulation" interface="tns:EmuInterface"
+		ident="http://mobilis.inf.tu-dresden.de#services/Emulation"
+		version="1">
+		<msdl:endpoint name="EmuEndpoint" binding="tns:EmuBinding" />
+		<msdl:dependencies />
+	</msdl:service>
+</msdl:description>

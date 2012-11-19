@@ -5,7 +5,7 @@ import java.io.File;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.UpdateServiceException;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.DoubleKeyMap;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
 
 /**
  * The Interface IServiceContainerTransitions which is used by ServiceContainer.

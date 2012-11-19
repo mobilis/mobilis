@@ -49,8 +49,8 @@
 		android:paddingTop="2px"
 		android:paddingRight="2px" >
 
-		<de.tudresden.inf.rn.mobilis.android.xhunt.ui.PanelTickets
-			android:id="@+id/ticket_panel" 
+		<de.tudresden.inf.rn.mobilis.android.xhunt.ui.PanelInfoTop
+			android:id="@+id/info_panel_top" 
     	    android:layout_width="fill_parent"
         	android:layout_height="wrap_content"
         	android:gravity="center"
@@ -69,8 +69,8 @@
 
 	</LinearLayout>
 	
-	<de.tudresden.inf.rn.mobilis.android.xhunt.ui.PanelInfo
-		android:id="@+id/info_panel" 
+	<de.tudresden.inf.rn.mobilis.android.xhunt.ui.PanelInfoBottom
+		android:id="@+id/info_panel_bottom" 
    	    android:layout_width="fill_parent"
        	android:layout_height="wrap_content"
        	android:layout_gravity="bottom"

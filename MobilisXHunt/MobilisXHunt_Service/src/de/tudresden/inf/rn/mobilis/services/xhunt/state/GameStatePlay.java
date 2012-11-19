@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universit�t Dresden
+ * Copyright (C) 2010 Technische Universität Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,40 +24,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Logger;
 
 import de.tudresden.inf.rn.mobilis.services.xhunt.Connection;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Game;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Settings;
 import de.tudresden.inf.rn.mobilis.services.xhunt.XHunt;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.XHuntPlayer;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.AreasRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.CancelTimerRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.CreateGameRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.DepartureDataRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.DepartureDataResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.IXMPPCallback;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.JoinGameRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationInfo;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayerExitRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayersRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayersResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.RoundStatusRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.RoundStatusResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.SnapshotRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.SnapshotResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.StartRoundRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.StartRoundResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TargetRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TicketAmount;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TransferTicketRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdatePlayerRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdateTicketsRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdateTicketsResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UsedTicketsInfo;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UsedTicketsRequest;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
@@ -77,6 +63,9 @@ public class GameStatePlay extends GameState{
 	/** The timer which polls the location of all players if ticks. */
 	private Timer mPollingTimer;
 	
+	/** The class specific Logger object. */
+	private final static Logger LOGGER = Logger.getLogger(GameStatePlay.class.getCanonicalName());
+	
 	/**
 	 * Instantiates a new GameStatePlay.
 	 *
@@ -87,7 +76,7 @@ public class GameStatePlay extends GameState{
 		this.control = control;
 		this.game = game;
 		
-		control.log("statePlay");
+		LOGGER.info("GameState = GameStatePlay");
 		
 		// Start GameStateRoundMrX
 		mSubState = new GameStateRoundMrX();
@@ -107,7 +96,7 @@ public class GameStatePlay extends GameState{
 			mPollingTimer.cancel();
 		
 		game.setGameState(state);
-		control.log("Status changed to " + state.getClass().toString());
+		LOGGER.info("Status changed to " + state.getClass().toString());
 	}
 
 	/* (non-Javadoc)
@@ -259,7 +248,7 @@ public class GameStatePlay extends GameState{
 					if(game.getPlayers().size() < control.getSettings().getMinPlayers()
 							|| game.getMisterX() == null){						
 						
-						setGameOver("Game over. Not enough players or mrx. not available.");
+						setGameOver("Game over. Not enough players or Mr.X not available.");
 						return;
 					}
 					
@@ -321,7 +310,7 @@ public class GameStatePlay extends GameState{
 		 * Instantiates a new GameStateRoundMrX.
 		 */
 		public GameStateRoundMrX(){
-			control.log("SubGameState: GameStateRoundMrX");
+			LOGGER.info("SubGameState: GameStateRoundMrX");
 			
 			// Reset the last target of Mr.X
 			game.clearMisterXTarget();
@@ -394,7 +383,7 @@ public class GameStatePlay extends GameState{
 					// If Mr.X has enough tickets available to use this route
 					if(playerMrX.getTicketsAmount().get(inBean.getTicketId()) != null
 							&& playerMrX.getTicketsAmount().get(inBean.getTicketId()) > 0){			
-						control.log("TargetId: " + inBean.getStationId());
+						LOGGER.info("TargetId: " + inBean.getStationId());
 						
 						// If Mr.X can reach his target from his current station
 						if(game.getRouteManagement().isTargetReachable(inBean.getStationId(), playerMrX)){
@@ -487,7 +476,7 @@ public class GameStatePlay extends GameState{
 		 * Instantiates a new GameStateRoundAgents.
 		 */
 		public GameStateRoundAgents(){
-			control.log("SubGameState: GameStateRoundAgents");
+			LOGGER.info("SubGameState: GameStateRoundAgents");
 			
 			// Reset targets of the agents
 			game.clearAgentTargets();

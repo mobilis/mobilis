@@ -23,23 +23,15 @@ import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 
-import de.tudresden.inf.rn.mobilis.services.xhunt.XHunt;
-
 /**
  * The Class MessageService is used to receive messages for this service.
  */
 public class MessageService implements PacketListener{
 
-	/** The service controller. */
-	private XHunt control;
-	
 	/**
 	 * Instantieates a new MessageService.
-	 *
-	 * @param control service controller, who administrates the whole life cycle
 	 */
-	public MessageService(XHunt control){
-		this.control = control;
+	public MessageService(){
 	}
 	
 	/* (non-Javadoc)

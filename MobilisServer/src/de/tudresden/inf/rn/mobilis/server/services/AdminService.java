@@ -17,7 +17,6 @@ import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainerS
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.UpdateServiceException;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.DoubleKeyMap;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.ConfigureServiceBean;
@@ -26,6 +25,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.RegisterServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UninstallServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UnregisterServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UpdateServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanHelper;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;

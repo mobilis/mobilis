@@ -19,6 +19,8 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.services.xhunt.state;
 
+import java.util.logging.Logger;
+
 import de.tudresden.inf.rn.mobilis.services.xhunt.Game;
 import de.tudresden.inf.rn.mobilis.services.xhunt.XHunt;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsRequest;
@@ -30,6 +32,9 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
  * After all players confirms the game over the server will shutdown.
  */
 public class GameStateGameOver extends GameState{
+	
+	/** The class specific Logger object. */
+	private final static Logger LOGGER = Logger.getLogger(GameStateGameOver.class.getCanonicalName());
 
 	/**
 	 * Instantiates a new GameStateGameOver.
@@ -55,7 +60,7 @@ public class GameStateGameOver extends GameState{
 	 * available.
 	 */
 	private void checkShutdownCondition(){
-		control.log("GameStateGameOver#checkShutdownCondition: "
+		LOGGER.info("GameStateGameOver#checkShutdownCondition: "
 				+ "shutdown in gameOverState?: " + (game.getPlayers().size() == 0));
 		
 		if(game.getPlayers().size() == 0){

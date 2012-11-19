@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Logger;
 
 import de.tudresden.inf.rn.mobilis.services.xhunt.Connection;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Game;
@@ -71,6 +72,9 @@ public class GameStateRoundInitial extends GameState{
 	
 	/** True, if start round timer for the agents is running. */
 	private boolean mIsStartTimerAgentsRunning;
+	
+	/** The class specific Logger object. */
+	private final static Logger LOGGER = Logger.getLogger(GameStateRoundInitial.class.getCanonicalName());
 
 	/**
 	 * Instantiates a new GameStateRoundInitial.
@@ -206,7 +210,7 @@ public class GameStateRoundInitial extends GameState{
 		public void invoke( LocationResponse inBean ) {
 			XHuntPlayer updatePlayer = null;
 			
-			control.log("Location received: player: " + inBean.getFrom() 
+			LOGGER.info("Location received: player: " + inBean.getFrom() 
 					+ " loc: " + inBean.getLocationInfo().getLatitude() + ";" + inBean.getLocationInfo().getLongitude()
 					+ " time: " + System.currentTimeMillis());
 			

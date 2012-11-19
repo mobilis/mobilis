@@ -22,38 +22,22 @@ package de.tudresden.inf.rn.mobilis.services.xhunt.state;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Game;
 import de.tudresden.inf.rn.mobilis.services.xhunt.XHunt;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.Ticket;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.XHuntPlayer;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.AreasRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.CancelTimerRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.CreateGameRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.DepartureDataRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.JoinGameRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayerExitRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayersRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayersResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.RoundStatusRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.RoundStatusResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.SnapshotRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.SnapshotResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.StartRoundRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.StartRoundResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TargetRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TransferTicketRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdatePlayerRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdateTicketsRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdateTicketsResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UsedTicketsRequest;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 /**
@@ -64,6 +48,9 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 	/** The File which contains the game data like stations, routes and tickets. */
 	private File mGameDataFile = null;
 	private String _tmpFolderPath = "tmp" + File.separator + "xhunt";
+	
+	/** The class specific Logger object. */
+	private final static Logger LOGGER = Logger.getLogger(GameStateLobby.class.getCanonicalName());
 	
 	/**
 	 * Instantiates a new GameStateLobby.
@@ -201,7 +188,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 	//@Override
 	public XMPPBean onJoinGame( JoinGameRequest inBean ) {
 		XMPPBean out = null;
-		control.log("game is open: " + game.isGameOpen());
+		LOGGER.info("game is open: " + game.isGameOpen());
 		
 		// The game can only be joined if it is open(configured by the creator) or has not reached its
 		// maximum of game players
@@ -323,7 +310,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 					
 					// Switch to GameOver
 					game.setGameState(new GameStateGameOver(control, game));
-					control.log("Status changed to GameStateGameOver");
+					LOGGER.info("Status changed to GameStateGameOver");
 					
 					IXMPPCallback< GameOverResponse > callback = new IXMPPCallback< GameOverResponse >() {
 						
@@ -355,7 +342,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 						else{
 							// Switch to GameOver
 							game.setGameState(new GameStateGameOver(control, game));
-							control.log("Status changed to GameStateGameOver");
+							LOGGER.info("Status changed to GameStateGameOver");
 							
 							IXMPPCallback< GameOverResponse > callback = new IXMPPCallback< GameOverResponse >() {
 								
@@ -401,7 +388,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 					if(game.areAllPlayersReady()
 							&& game.getPlayers().size() >= control.getSettings().getMinPlayers()) {
 						game.setGameState(new GameStateRoundInitial(control, game));
-						control.log("Status changed to GameStateRoundInitial");
+						LOGGER.info("Status changed to GameStateRoundInitial");
 					}
 				}
 			}
@@ -532,7 +519,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 							
 							// If everthing is valid, change to GameStateInitial
 							game.setGameState(new GameStateRoundInitial(control, game));
-							control.log("Status changed to GameStateRoundInitial");
+							LOGGER.info("Status changed to GameStateRoundInitial");
 						}
 						else{
 							info = "Please set Mr.X again.";

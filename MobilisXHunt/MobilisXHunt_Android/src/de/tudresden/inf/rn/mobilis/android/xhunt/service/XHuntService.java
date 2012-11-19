@@ -84,7 +84,7 @@ public class XHuntService extends Service{
 	 */
 	public Game createNewGame(){
 		this.mGame = new Game();
-		this.mGpsProxy.startGps();
+		//this.mGpsProxy.startGps();
 		
 		return getCurrentGame();
 	}

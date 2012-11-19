@@ -43,8 +43,8 @@ import com.google.android.maps.GeoPoint;
 
 import de.tudresden.inf.rn.mobilis.android.xhunt.Const;
 import de.tudresden.inf.rn.mobilis.android.xhunt.R;
-import de.tudresden.inf.rn.mobilis.android.xhunt.activity.XHuntMapActivity;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.Station;
+import de.tudresden.inf.rn.mobilis.android.xhunt.model.XHuntPlayer;
 import de.tudresden.inf.rn.mobilis.android.xhunt.service.XHuntService;
 
 /**
@@ -180,7 +180,7 @@ public class GPSProxy {
 	/**
 	 * Send location changed broadcast to inform all listening components.
 	 */
-	private void sendLocationChangedBroadcast(){
+	public void sendLocationChangedBroadcast(){
 		GeoPoint currentGeoPoint = parseLocation(mCurrentLocation);
 		
 		Intent i = new Intent(INTENT_LOCATION_CHANGED);
@@ -203,7 +203,6 @@ public class GPSProxy {
 	 * Start GPS.
 	 */
 	public void startGps() {
-
 		if(!mIsGpsRunning) {
 			SharedPreferences prefs = mContext.getSharedPreferences(Const.SHARED_PREF_KEY_FILE_NAME, Context.MODE_PRIVATE);
 			String key = mContext.getResources().getString(R.string.bundle_key_settings_staticmode);
@@ -212,15 +211,11 @@ public class GPSProxy {
 			if(staticMode) {
 				List<Station> allStations = null;
 				
-				if(mContext instanceof XHuntService)
+				if(mContext instanceof XHuntService) {
 					allStations = ((XHuntService) mContext).getCurrentGame().getRouteManagement().getStationsAsList();
-				if(mContext instanceof XHuntMapActivity)
-					allStations = ((XHuntMapActivity) mContext).getGame().getRouteManagement().getStationsAsList();
-				
-				if((allStations != null) && (allStations.size() != 0))
-					mCurrentLocation = getRandomLocation(allStations);
-				else
-					setLocation(51033880, 13783272);
+					if((allStations != null) && (allStations.size() != 0))
+						setRandomLocation(allStations);
+				}
 			}
 			
 			else if(!staticMode) {
@@ -268,23 +263,15 @@ public class GPSProxy {
 	
 	
 	/**
-	 * Returns the coordinates of a random station as a Location object.
-	 * Needed as a starting point when plaing in static mode.
+	 * Returns the coordinates of a random location as a Location object.
+	 * Uses a list of all stations to calculate the geographic bounds.
+	 * Needed as a starting point when playing in static mode.
 	 *  
 	 * @param allStations the list of all stations of the area
-	 * @return a location object equating to a random station
+	 * @return a location object representing a random location
 	 */
-	private Location getRandomLocation(List<Station> allStations) {
-		/*Random rndm = new Random();
-		Station rndmStation = allStations.get(rndm.nextInt(allStations.size()));
-		
-		Location result = new Location(LocationManager.GPS_PROVIDER);
-		result.setLatitude((double) rndmStation.getLatitude() /1E6);
-		result.setLongitude((double) rndmStation.getLongitude() /1E6);
-		
-		return result;*/
-		
-	//	For a random location inside of the bounds, not necessarily a station	
+	private void setRandomLocation(List<Station> allStations) {
+
 	 	int lat_min = Integer.MAX_VALUE;
 		int long_min = Integer.MAX_VALUE;
 		int lat_max = Integer.MIN_VALUE;
@@ -307,13 +294,9 @@ public class GPSProxy {
 		Random rndm = new Random();
 		int lat_rndm = rndm.nextInt(lat_max-lat_min +1) + lat_min;
 		int long_rndm = rndm.nextInt(long_max-long_min +1) + long_min;
-		
-		Location result = new Location(LocationManager.GPS_PROVIDER);
-		result.setLatitude((double)lat_rndm/1E6);
-		result.setLongitude((double)long_rndm/1E6);		
-		
-		return result;
-	
+
+		setLocation(lat_rndm, long_rndm);	
+		sendLocationChangedBroadcast();
 	}
 	
 	
@@ -385,14 +368,33 @@ public class GPSProxy {
 		 */
 		@Override
 		public void onLocationChanged(Location location) {
+			XHuntPlayer myPlayer = (mContext instanceof XHuntService)
+					? ((XHuntService)mContext).getCurrentGame().getPlayerByJID(((XHuntService)mContext).getMXAProxy().getXmppJid())
+					: null;
 			
-			//use new location if it's from GPS or if current location is old/null
-			boolean update =
+			// use new location only if it's from GPS or if current location is old/null
+			boolean useNewLocation =
 					((mCurrentLocation == null)
 						|| (location.getProvider().equals(LocationManager.GPS_PROVIDER))
 						|| (System.currentTimeMillis() - mCurrentLocation.getTime() > locationExpireTime));
 			
-			if(update) {
+			// update location only if player hasn't reached his target yet
+			boolean hasReachedTarget = (myPlayer != null) ? myPlayer.getReachedTarget() : false;
+			
+			// if player has reached his target, set him onto the middle of the station icon
+			if(hasReachedTarget) {
+				Station target = ((XHuntService)mContext).getCurrentGame().getRouteManagement().getStationById(
+						myPlayer.getCurrentTargetId());
+
+				if((target != null) && (target.getLatitude() != myPlayer.getGeoLocation().getLatitudeE6())
+						&& (target.getLongitude() != myPlayer.getGeoLocation().getLongitudeE6())) {
+					setLocation(target.getLatitude(), target.getLongitude());
+					sendLocationChangedBroadcast();
+				}
+			}
+			
+			// else update real position
+			if(useNewLocation && !hasReachedTarget) {
 				mCurrentLocation = location;	
 				sendLocationChangedBroadcast();
 				if(mLogTracks)

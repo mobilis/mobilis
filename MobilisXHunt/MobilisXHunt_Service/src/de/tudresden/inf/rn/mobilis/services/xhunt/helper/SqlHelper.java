@@ -34,8 +34,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
-import de.tudresden.inf.rn.mobilis.services.xhunt.XHunt;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.Route;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.Station;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.Ticket;
@@ -225,17 +225,14 @@ public class SqlHelper {
 	/** The name of the XML_ATTR_ISSUPERIOR. */
 	private static final String XML_ATTR_ISSUPERIOR = "issuperior";
 	
-	/** The XHunt service. */
-	private XHunt mController;
+	/** The class specific Logger object. */
+	private final static Logger LOGGER = Logger.getLogger(SqlHelper.class.getCanonicalName());
 	
 
 	/**
 	 * Instantiates a new SqlHelper.
-	 *
-	 * @param control the control
 	 */
-	public SqlHelper(XHunt control) {
-		this.mController = control;
+	public SqlHelper() {
 		loadDbDriver();
 	}
 	
@@ -279,7 +276,7 @@ public class SqlHelper {
 			
 			isStructureOk = true;			
 		} catch (SQLException e) {
-			mController.log("!EXCEPTION: " + e.getMessage());
+			LOGGER.severe("!EXCEPTION: " + e.getMessage());
 			isStructureOk = false;
 		}
 		
@@ -295,7 +292,7 @@ public class SqlHelper {
 				mMysqlConnection.close();
 			}
 		} catch (SQLException e) {
-			mController.log("!EXCEPTION: " + e.getMessage());
+			LOGGER.severe("!EXCEPTION: " + e.getMessage());
 		}
 	}
 	
@@ -433,7 +430,7 @@ public class SqlHelper {
 			
 			isStructureCreated = true;
 		} catch (SQLException e) {
-			mController.log("!EXCEPTION: " + e.getMessage());
+			LOGGER.severe("!EXCEPTION: " + e.getMessage());
 			isStructureCreated = false;
 		}
 		
@@ -487,9 +484,9 @@ public class SqlHelper {
 					routes, stations, tickets, folderPath);
 			
 		} catch (SQLException e) {
-			mController.log("!EXCEPTION: " + e.getMessage());
+			LOGGER.severe("!EXCEPTION: " + e.getMessage());
 		} catch (IOException e) {
-			mController.log("!EXCEPTION: " + e.getMessage());
+			LOGGER.severe("!EXCEPTION: " + e.getMessage());
 		}
 		
 		// release statement and result set objects
@@ -505,7 +502,7 @@ public class SqlHelper {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
-			mController.log("!EXCEPTION: " + e.getMessage());
+			LOGGER.severe("!EXCEPTION: " + e.getMessage());
 		}
 	}
 	
@@ -525,7 +522,7 @@ public class SqlHelper {
 				routes.put(route.getId(), route);
 			}
 		} catch (SQLException e) {
-			mController.log("!EXCEPTION: " + e.getMessage());
+			LOGGER.severe("!EXCEPTION: " + e.getMessage());
 		}
 		
 		return routes;
@@ -588,7 +585,7 @@ public class SqlHelper {
 				route.addStation(mResultSet.getInt(COLUMN_POSITION), mResultSet.getInt(COLUMN_STATION_ID));
 			}
 			
-			mController.log("Read from DB: " + route.toString());
+			LOGGER.info("Read from DB: " + route.toString());
 		}
 		
 		return routes;
@@ -609,7 +606,7 @@ public class SqlHelper {
 				stations.put(station.getId(), station);
 			}
 		} catch (SQLException e) {
-			mController.log("!EXCEPTION: " + e.getMessage());
+			LOGGER.severe("!EXCEPTION: " + e.getMessage());
 		}
 		
 		return stations;
@@ -655,7 +652,7 @@ public class SqlHelper {
 			station.setGeoPoint(mResultSet.getInt(COLUMN_LATITUDE), mResultSet.getInt(COLUMN_LONGITUDE));
 			
 			stations.add(station);
-			mController.log("Read from DB: " + station.toString());
+			LOGGER.info("Read from DB: " + station.toString());
 		}
 		
 		return stations;
@@ -676,7 +673,7 @@ public class SqlHelper {
 				tickets.put(ticket.getId(), ticket);
 			}
 		} catch (SQLException e) {
-			mController.log("!EXCEPTION: " + e.getMessage());
+			LOGGER.severe("!EXCEPTION: " + e.getMessage());
 		}
 		
 		return tickets;
@@ -719,7 +716,7 @@ public class SqlHelper {
 			ticket.setSuperior(mResultSet.getInt(COLUMN_ISSUPERIOR) == 1);
 			
 			tickets.add(ticket);
-			mController.log("Read from DB: " + ticket.toString());
+			LOGGER.info("Read from DB: " + ticket.toString());
 		}
 		
 		return tickets;
@@ -768,7 +765,7 @@ public class SqlHelper {
 			}
 			
 		} catch (SQLException e) {
-			mController.log("!EXCEPTION: " + e.getMessage());
+			LOGGER.severe("!EXCEPTION: " + e.getMessage());
 		}
 		
 		flush();
@@ -790,7 +787,7 @@ public class SqlHelper {
 			
 			connected = true;
 		} catch (SQLException e) {
-			mController.log("!EXCEPTION: " + e.getMessage());
+			LOGGER.severe("!EXCEPTION: " + e.getMessage());
 		}
 
 		return connected;
@@ -860,7 +857,7 @@ public class SqlHelper {
 					+ XML_ATTR_ISSUPERIOR + "=\"" + ticket.isSuperior() + "\" " 
 					+ "></" + XML_TAG_TICKET + ">");
 			bufferedWriter.newLine();
-			mController.log("Wrote to file: " + ticket.toString());
+			LOGGER.fine("Wrote to file: " + ticket.toString());
 		}
 		
 		bufferedWriter.write("</" + XML_TAG_TICKETS + ">");
@@ -881,7 +878,7 @@ public class SqlHelper {
 					+ XML_ATTR_LONGITUDE + "=\"" + station.getLongitude() + "\" " 
 					+ "></" + XML_TAG_STATION + ">");
 			bufferedWriter.newLine();
-			mController.log("Wrote to file: " + station.toString());
+			LOGGER.fine("Wrote to file: " + station.toString());
 		}
 		
 		bufferedWriter.write("</" + XML_TAG_STATIONS + ">");
@@ -913,7 +910,7 @@ public class SqlHelper {
 			bufferedWriter.write("</" + XML_TAG_ROUTE + ">");
 			
 			bufferedWriter.newLine();
-			mController.log("Wrote to file: " + route.toString());
+			LOGGER.fine("Wrote to file: " + route.toString());
 		}
 		
 		bufferedWriter.write("</" + XML_TAG_ROUTES + ">");

@@ -23,14 +23,20 @@
  */
 package de.tudresden.inf.rn.mobilis.android.xhunt.activity;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,7 +44,6 @@ import android.os.Message;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -86,7 +91,7 @@ public class CreateGameActivity extends PreferenceActivity {
 	private DialogRemoteLoading mRemoteLoadingDialog;
 	
 	/** The list of areas known by server. */
-	private List<AreaInfo> mAreas = new ArrayList<AreaInfo>();
+	private List<AreaInfo> mAreas;
 	
 	/** The selected area for this game. */
 	private AreaInfo mSelectedArea;
@@ -114,16 +119,18 @@ public class CreateGameActivity extends PreferenceActivity {
 		= new HashMap<Integer, SeekBarPreference>();
 	
 	
-    /** The handler for the AreasBean shows a dialog to choose an area. */
+    /* The handler for the AreasBean shows a dialog to choose an area.
+     * App doesn't need an Area Request any more, but the Server still expect it.
+     */
     private Handler mAreasHandler = new Handler() {
-		@Override
+		/*@Override
 		public void handleMessage(Message msg) {
 			if(mRemoteLoadingDialog != null){
 				mRemoteLoadingDialog.cancel();
 			}
 			
 			showAreasDialog();
-		}
+		}*/
 	};
 	
     /** The handler for the CreateGameBean switch to the LobbyActivity, 
@@ -131,6 +138,7 @@ public class CreateGameActivity extends PreferenceActivity {
     private Handler mCreateGameHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
+			
 			if(mRemoteLoadingDialog != null){
 				mRemoteLoadingDialog.cancel();
 			}
@@ -147,11 +155,12 @@ public class CreateGameActivity extends PreferenceActivity {
 		}
 	};
 	
-    /** The handler for the CreateNewServiceInstanceBean to load all areas if the new 
+    /** The handler for the CreateNewServiceInstanceBean to create a new Game instance if the new 
      * service instance was created. */
     private Handler mCreateNewInstanceHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
+			
 			if(mRemoteLoadingDialog != null){
 				mRemoteLoadingDialog.cancel();
 			}
@@ -164,13 +173,15 @@ public class CreateGameActivity extends PreferenceActivity {
     private Handler mXHuntServiceBoundHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
+			
 			mServiceConnector.getXHuntService().setGameState(new GameStateCreateGame());
 			mMxaProxy = mServiceConnector.getXHuntService().getMXAProxy();
 			mSharedPrefHelper = mServiceConnector.getXHuntService().getSharedPrefHelper();
 			
 			initValues();
 			initComponents();
-			createNewServiceInstance();
+			parseAreasXml();
+			showGameNameDialog();
 		}
 	};
 	
@@ -184,11 +195,23 @@ public class CreateGameActivity extends PreferenceActivity {
 	}
 	
 	/**
+	 * Creates a new service instance on the server.
+	 */
+	private void createService() {
+		mRemoteLoadingDialog.setLoadingText("Creating new game instance.\n\n     Please wait...");
+		mRemoteLoadingDialog.run();
+		
+		// Create new service instance with the given name
+		mMxaProxy.getIQProxy().sendCreateNewServiceInstanceIQ("http://mobilis.inf.tu-dresden.de#services/MobilisXHuntService",
+				mSharedPrefHelper.getValue(getKeyGameName()), null);
+	}
+	
+	/**
 	 * Creates the new game and validate the inputs.
 	 */
-	private void createGame(){
+	private void createGame() {
 		mRemoteLoadingDialog.setLoadingText("Creating game.\n\n     Please wait...");
-		mRemoteLoadingDialog.run();
+		//mRemoteLoadingDialog.run();
 		
 		//FIXME: should be optimized
 		int rounds = 10;
@@ -203,7 +226,7 @@ public class CreateGameActivity extends PreferenceActivity {
 			minplayers = Integer.valueOf(mSharedPrefHelper.getValue(getKeyMinPlayers()));
 			maxplayers = Integer.valueOf(mSharedPrefHelper.getValue(getKeyMaxPlayers()));
 		}
-		catch(NumberFormatException e){}
+		catch(Exception e) { System.out.println(e.getMessage()); }
 		
 		List<TicketAmount> ticketsMrX = new ArrayList<TicketAmount>();
 		List<TicketAmount> ticketsAgents = new ArrayList<TicketAmount>();
@@ -215,7 +238,7 @@ public class CreateGameActivity extends PreferenceActivity {
 				//amount = Integer.valueOf(mSharedPrefHelper.getValue(entry.getValue().getKey()));
 				amount = mSharedPrefHelper.getValueAsInt(entry.getValue().getKey());
 			}
-			catch(NumberFormatException e){}
+			catch(Exception e) { System.out.println(e.getMessage()); }
 
 			if(amount > 0)
 				ticketsMrX.add(new TicketAmount(entry.getKey(), amount));
@@ -227,7 +250,7 @@ public class CreateGameActivity extends PreferenceActivity {
 			try{
 				amount = mSharedPrefHelper.getValueAsInt(entry.getValue().getKey());
 			}
-			catch(NumberFormatException e){}
+			catch(NumberFormatException e){ System.out.println(e.getMessage()); }
 			
 			if(amount > 0)
 				ticketsAgents.add( new TicketAmount(entry.getKey(), amount));
@@ -252,6 +275,7 @@ public class CreateGameActivity extends PreferenceActivity {
 		
 		@Override
 		public void invoke( CreateGameResponse bean ) {
+			
 			if(bean.getType() == XMPPIQ.TYPE_ERROR
 					&& bean.errorText != null){
 				Message msg = new Message();
@@ -259,6 +283,7 @@ public class CreateGameActivity extends PreferenceActivity {
 				msg.obj = bean.errorText;
 				mCreateGameHandler.sendMessage(msg);
 			}
+			
 			else if( bean != null && bean.getType() != XMPPBean.TYPE_ERROR ){
 				mCreateGameHandler.sendEmptyMessage(0);
 			}
@@ -268,7 +293,8 @@ public class CreateGameActivity extends PreferenceActivity {
     /**
      * Creates a new Service instance of the XHunt-Service on the Mobilis-Server.
      */
-    private void createNewServiceInstance(){
+    private void showGameNameDialog() {
+    	
     	// User can type in a name for the service
     	final DialogInput inDialog = new DialogInput(this, "Type in Game Name:");
     	inDialog.setInputText(mSharedPrefHelper.getValue(getKeyGameName()));
@@ -277,16 +303,11 @@ public class CreateGameActivity extends PreferenceActivity {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				if(inDialog.getInputText().length() > 0){
-					mRemoteLoadingDialog.setLoadingText("Creating new game instance.\n\n     Please wait...");
-					mRemoteLoadingDialog.run();
-					
 					mSharedPrefHelper.setValue(getKeyGameName(), inDialog.getInputText());			
 					mSharedPrefHelper.save();
-			    	
-					// Create new service instance with the given name
-			    	mMxaProxy.getIQProxy().sendCreateNewServiceInstanceIQ("http://mobilis.inf.tu-dresden.de#services/MobilisXHuntService", 
-			    			inDialog.getInputText(), null);
 				}
+				
+				showAreasDialog();
 			}
 		});
     	
@@ -300,7 +321,16 @@ public class CreateGameActivity extends PreferenceActivity {
 			}
 		});
     	
-    	inDialog.show();
+    	AlertDialog gameNameDialog = inDialog.create();
+    	//gameNameDialog.setCancelable(false);
+    	gameNameDialog.setCanceledOnTouchOutside(false);
+    	gameNameDialog.setOnCancelListener(new OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				CreateGameActivity.this.finish();
+			}
+		});
+    	gameNameDialog.show();
 
     }
     
@@ -312,7 +342,8 @@ public class CreateGameActivity extends PreferenceActivity {
      * @return the edits the text preference
      */
     private SeekBarPreference createTicketPrefEntry(String ticketName, String role) {
-    	int defaultTicketCount = 30;
+
+    	int defaultTicketCount = 99;
     	SeekBarPreference seekbar = new SeekBarPreference(this, 0, 99, defaultTicketCount, "tickets");
 		
 		seekbar.setKey("key_newgame_" + role.toLowerCase() + ticketName.toLowerCase());
@@ -382,7 +413,8 @@ public class CreateGameActivity extends PreferenceActivity {
 	/**
 	 * Initialize all UI elements from resources.
 	 */
-	private void initComponents(){
+	private void initComponents() {
+		
 		mRemoteLoadingDialog = new DialogRemoteLoading(this, Const.CONNECTION_TIMEOUT_DELAY);
 		
 		mEditRounds = (EditTextPreference)getPreferenceScreen().findPreference(
@@ -396,12 +428,16 @@ public class CreateGameActivity extends PreferenceActivity {
 		
 		updateSummaries();
 
+		
 		Button btn_Create = (Button)findViewById(R.id.creategame_btn_create);
-		btn_Create.setOnClickListener(new OnClickListener() {
+		btn_Create.setOnClickListener(new OnClickListener() {	
 			
 			@Override
 			public void onClick(View v) {
-				createGame();
+				if(v instanceof Button)
+					((Button) v).setEnabled(false);
+				
+				createService();
 			}
 		});
 	}
@@ -411,7 +447,8 @@ public class CreateGameActivity extends PreferenceActivity {
 	 * set a configuration before, this values will be used again, else default 
 	 * values will be used.
 	 */
-	private void initValues(){		
+	private void initValues(){
+		
 		if(mSharedPrefHelper.getValue(getResources()
 				.getString(R.string.bundle_key_newgame_name)) == null){
 			mSharedPrefHelper.setValue(
@@ -457,11 +494,14 @@ public class CreateGameActivity extends PreferenceActivity {
 		mServiceConnector.getXHuntService().getSharedPrefHelper().save();
 	}
 	
-	/**
+	/*
 	 * Load area information.
+	 * Not really needed anymore, because now using parseAreasXml(), but Server still expects an Area Request.
 	 */
-	private void loadAreaInformation(){
-		mRemoteLoadingDialog.setLoadingText("Requesting Area information.\n\n     Please wait...");
+	private void loadAreaInformation() {
+
+		//mRemoteLoadingDialog.setLoadingText("Requesting Area information.\n\n     Please wait...");
+		mRemoteLoadingDialog.setLoadingText("Going to Lobby...");
 		mRemoteLoadingDialog.run();
 		
 		mMxaProxy.getIQProxy().getProxy().Areas( mMxaProxy.getIQProxy().getGameServiceJid(), _areaCallback );
@@ -481,21 +521,6 @@ public class CreateGameActivity extends PreferenceActivity {
 		
 		bindXHuntService();
 	}
-	
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onKeyDown(int, android.view.KeyEvent)
-	 */
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-	    if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-	    	destroyCreatedServiceInstance();
-	    }
-	    return super.onKeyDown(keyCode, event);	    
-	}
-	
-	private void destroyCreatedServiceInstance() {
-		// TODO The service instance on the Mobilis-Server has to be destroyed.		
-	}
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onWindowFocusChanged(boolean)
@@ -510,6 +535,7 @@ public class CreateGameActivity extends PreferenceActivity {
      * Shows a dialog which contains all areas known by the Mobilis-Server.
      */
     private void showAreasDialog(){
+    	
     	if(mAreas.size() > 0){
 	    	List<String> areaList = new ArrayList<String>();
 	    	
@@ -540,10 +566,20 @@ public class CreateGameActivity extends PreferenceActivity {
 	    	    }
 	
 	    	});
+	    	
 	    	AlertDialog alert = builder.create();
+	    	//alert.setCancelable(false);
+	    	alert.setCanceledOnTouchOutside(false);
+	    	alert.setOnCancelListener(new OnCancelListener() {
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					CreateGameActivity.this.finish();
+				}
+			});
 	    	alert.show();
     	}
-    	else{
+    	
+    	else {
     		AlertDialog.Builder alert = new AlertDialog.Builder(this);
     		alert.setMessage("You can not create a new game, because there are no Maps available!");
     		
@@ -552,14 +588,12 @@ public class CreateGameActivity extends PreferenceActivity {
     		
     		alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
         		public void onClick(DialogInterface dialog, int whichButton) {
-        			destroyCreatedServiceInstance();
         			CreateGameActivity.this.finish();
         		}
     		});
 
     		alert.show();
     	}
-    	
     }
     
 	/**
@@ -587,12 +621,14 @@ public class CreateGameActivity extends PreferenceActivity {
 		}	
 	}
 	
-	
+	/*
+	 * Functionality not needed anymore, now using parseAreasXml().
+	 */
 	private IXMPPCallback< AreasResponse > _areaCallback = new IXMPPCallback< AreasResponse >() {
 		
 		@Override
-		public void invoke( AreasResponse bean ) {			
-			if( bean != null && bean.getType() != XMPPBean.TYPE_ERROR ){
+		public void invoke( AreasResponse bean ) {
+			/*if( bean != null && bean.getType() != XMPPBean.TYPE_ERROR ){
 				mAreas = new ArrayList<AreaInfo>();
 				for (AreaInfo area : bean.getAreas()) {
 					boolean alreadyExist = false;
@@ -610,8 +646,10 @@ public class CreateGameActivity extends PreferenceActivity {
 				}
 				
 				Log.v( TAG, "area size = " + bean.getAreas().size() );
+				*/
 				mAreasHandler.sendEmptyMessage(0);
-			}
+				createGame();
+			//}
 		}
 	};
     
@@ -626,6 +664,7 @@ public class CreateGameActivity extends PreferenceActivity {
 		 */
 		@Override
 		public void processPacket(XMPPBean inBean) {
+			
 			if(inBean.getType() == XMPPBean.TYPE_ERROR){
 				Log.e(TAG, "IQ Type ERROR: " + inBean.toXML());
 				
@@ -639,9 +678,9 @@ public class CreateGameActivity extends PreferenceActivity {
 				
 				if( bean != null && bean.getType() != XMPPBean.TYPE_ERROR ){
 					mMxaProxy.getIQProxy().setGameServiceJid(bean.jidOfNewService);
-					mMxaProxy.getIQProxy().setServiceVersion( bean.serviceVersion );
-					
+					mMxaProxy.getIQProxy().setServiceVersion( bean.serviceVersion );		
 					mCreateNewInstanceHandler.sendEmptyMessage(0);
+					//createGame();
 				}
 			}
 			// Other Beans of type get or set will be responded with an ERROR
@@ -655,5 +694,97 @@ public class CreateGameActivity extends PreferenceActivity {
 			}			
 		}
     	
+    }
+    
+    
+    /**
+     * Fill mAreas-List with Data from xml file
+     */
+    private void parseAreasXml() {
+    	mAreas = new ArrayList<AreaInfo>();
+    	
+    	Reader reader = new InputStreamReader(getResources().openRawResource(R.raw.area_1_v1));
+    	XmlPullParser parser;
+    	
+    	try {
+			parser = XmlPullParserFactory.newInstance().newPullParser();
+	    	parser.setInput(reader);
+	    	
+	    	boolean done = false;
+	    	
+	    	int areaID = -1;
+	    	int version = -1;
+	    	String areaName = "";
+	    	String areaDescr = "";
+	    	List<Ticket> areaTickets = new ArrayList<Ticket>();
+	    	
+	    	do {
+	    		switch(parser.getEventType()) {
+	    		
+	    			case XmlPullParser.START_TAG:
+	    				String tagName = parser.getName();
+	    				
+	    				if(tagName.equals("area"))
+	    					parser.next();
+	    				
+	    				else if(tagName.equals("id"))
+	    					areaID = Integer.valueOf(parser.nextText()).intValue();
+	    				
+	    				else if(tagName.equals("name"))
+	    					areaName = parser.nextText();
+	    				
+	    				else if(tagName.equals("desc"))
+	    					areaDescr = parser.nextText();
+	    				
+	    				else if(tagName.equals("version"))
+	    					version = Integer.valueOf(parser.nextText()).intValue();
+	    				
+	    				else if(tagName.equals("Ticket")) {
+	    					Ticket ticket = new Ticket();
+	    					for(int i=0; i<parser.getAttributeCount(); i++){
+	    						if(parser.getAttributeName(i).equals("id"))
+	    							ticket.setID(Integer.valueOf(parser.getAttributeValue(i)));
+	    						else if(parser.getAttributeName(i).equals("name"))
+	    							ticket.setName(parser.getAttributeValue(i));
+	    					}
+	    					
+	    					areaTickets.add(ticket);
+	    					parser.next();
+	    				}
+	    				
+	    				else
+	    					parser.next();
+	    				
+	    				break;
+	    				
+	    			case XmlPullParser.END_TAG:
+	    				if(parser.getName().equals("area"))
+	    					done = true;
+	    				else
+	    					parser.next();
+	    				break;
+	    				
+	    			case XmlPullParser.END_DOCUMENT:
+	    				done = true;
+	    				break;
+	    				
+	    			default:
+	    				parser.next();			
+	    		}
+	    		
+	    	} while(!done);
+	    	
+	    	AreaInfo areaInfo = new AreaInfo();
+	    	areaInfo.setAreaId(areaID);
+	    	areaInfo.setAreaName(areaName);
+	    	areaInfo.setAreaDescription(areaDescr);
+	    	areaInfo.setVersion(version);
+	    	areaInfo.setTickets(areaTickets);
+	    	
+	    	mAreas.add(areaInfo);
+	    	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
     }
 }

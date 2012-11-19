@@ -20,6 +20,7 @@
 package de.tudresden.inf.rn.mobilis.services.xhunt.state;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import de.tudresden.inf.rn.mobilis.services.xhunt.Game;
 import de.tudresden.inf.rn.mobilis.services.xhunt.XHunt;
@@ -27,35 +28,17 @@ import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.AreaInfo;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.AreasRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.CancelTimerRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.CreateGameRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.DepartureDataRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.JoinGameRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayerExitRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayersRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayersResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.RoundStatusRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.RoundStatusResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.SnapshotRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.SnapshotResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.StartRoundRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.StartRoundResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TargetRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TicketAmount;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TransferTicketRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdatePlayerRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdateTicketsRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdateTicketsResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UsedTicketsRequest;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 /**
  * The Class GameStateUninitialized is the first state when this service starts.
  */
 public class GameStateUninitialized extends GameState {
+	
+	/** The class specific Logger object. */
+	private final static Logger LOGGER = Logger.getLogger(GameStateUninitialized.class.getCanonicalName());
 	
 	/**
 	 * Instantiates a new GameStateUninitialized.
@@ -172,7 +155,7 @@ public class GameStateUninitialized extends GameState {
 			
 			// Switch GameState to GameStateLobby
 			game.setGameState(new GameStateLobby(control, game));
-			control.log("Status changed to GameStateLobby");			
+			LOGGER.info("Status changed to GameStateLobby");			
 			
 			// Confirm that the game was configured successfully and is open
 			return control.getConnection().getProxy().CreateGame( inBean.getFrom(), inBean.getId() );

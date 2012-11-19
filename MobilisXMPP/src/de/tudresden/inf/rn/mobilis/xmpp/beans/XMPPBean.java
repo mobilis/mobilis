@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2010 Technische Universität Dresden
+ * Copyright (C) 2010 Technische UniversitÃ¤t Dresden
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 /**
- * @author Benjamin Söllner, Robert Lübke
+ * @author Benjamin SÃ¶llner, Robert LÃ¼bke
  */
 public abstract class XMPPBean implements Cloneable, XMPPInfo {
 	
@@ -38,6 +38,35 @@ public abstract class XMPPBean implements Cloneable, XMPPInfo {
 	public static final int TYPE_RESULT = 2;
 	public static final int TYPE_ERROR  = 3;
 	
+	public static final String ERROR_TYPE_AUTH = "auth";
+	public static final String ERROR_TYPE_CANCEL = "cancel";
+	public static final String ERROR_TYPE_CONTINUE = "continue";
+	public static final String ERROR_TYPE_MODIFY = "modify";
+	public static final String ERROR_TYPE_WAIT = "wait";
+	
+	public static final String ERROR_CONDITION_BAD_REQUEST = "bad-request";
+	public static final String ERROR_CONDITION_CONFLICT = "conflict";
+	public static final String ERROR_CONDITION_FEATURE_NOT_IMPLEMENTED = "feature-not-implemented";
+	public static final String ERROR_CONDITION_FORBIDDEN = "forbidden";
+	public static final String ERROR_CONDITION_GONE = "gone";
+	public static final String ERROR_CONDITION_INTERNAL_SERVER_ERROR = "internal-server-error";
+	public static final String ERROR_CONDITION_ITEM_NOT_FOUND = "item-not-found";
+	public static final String ERROR_CONDITION_JID_MALFORMED = "jid-malformed";
+	public static final String ERROR_CONDITION_NOT_ACCEPTABLE = "not-acceptable";
+	public static final String ERROR_CONDITION_NOT_ALLOWED = "not-allowed";
+	public static final String ERROR_CONDITION_NOT_AUTHORIZED = "not-authorized";
+	public static final String ERROR_CONDITION_POLICY_VIOLATION = "policy-violation";
+	public static final String ERROR_CONDITION_RECIPIENT_UNAVAILABLE = "recipient-unavailable";
+	public static final String ERROR_CONDITION_REDIRECT = "redirect";
+	public static final String ERROR_CONDITION_REGISTRATION_REQUIRED = "registration-required";
+	public static final String ERROR_CONDITION_REMOTE_SERVER_NOT_FOUND = "remote-server-not-found";
+	public static final String ERROR_CONDITION_REMOTE_SERVER_TIMEOUT = "remote-server-timeout";
+	public static final String ERROR_CONDITION_RESOURCE_CONSTRAINT = "resource-constraint";
+	public static final String ERROR_CONDITION_SERVICE_UNAVAILABLE = "service-unavailable";
+	public static final String ERROR_CONDITION_SUBSCRIPTION_REQUIRED = "subscription-required";
+	public static final String ERROR_CONDITION_UNDEFINED_CONDITION = "undefined-condition";
+	public static final String ERROR_CONDITION_UNEXPECTED_REQUEST = "unexpected-request";
+	
 	public static int currentId = 0;
 	
 	protected int type;
@@ -45,7 +74,20 @@ public abstract class XMPPBean implements Cloneable, XMPPInfo {
 	protected String from;
 	protected String to;
 	
-	public String errorType, errorCondition, errorText;
+	/**
+	 * MUST be one of ERROR_TYPE_*. For a description see 
+	 * <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error">RFC 6120</a>.
+	 */
+	public String errorType;
+	/**
+	 * Typically one of ERROR_CONDITION_*. For a description see 
+	 * <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error">RFC 6120</a>.
+	 */
+	public String errorCondition;
+	/**
+	 * A descriptive explanation of the error.
+	 */
+	public String errorText;
 	
 	public void setType(int type) { this.type = type; }
 	public void setId(String id) { this.id = id; }
@@ -162,4 +204,5 @@ public abstract class XMPPBean implements Cloneable, XMPPInfo {
 		}		
 		return "packetID:"+id+" type:"+type+ "childelement:"+this.getChildElement();
 	}
+	
 }

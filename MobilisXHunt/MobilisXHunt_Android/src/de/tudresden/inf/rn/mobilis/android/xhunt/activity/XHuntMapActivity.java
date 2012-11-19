@@ -86,8 +86,8 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.service.ServiceConnector;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogDepartures;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogRemoteLoading;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogUsedTickets;
-import de.tudresden.inf.rn.mobilis.android.xhunt.ui.PanelInfo;
-import de.tudresden.inf.rn.mobilis.android.xhunt.ui.PanelTickets;
+import de.tudresden.inf.rn.mobilis.android.xhunt.ui.PanelInfoBottom;
+import de.tudresden.inf.rn.mobilis.android.xhunt.ui.PanelInfoTop;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.PanelTimer;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.overlay.PlayerIconOverlay;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.overlay.RoutesOverlay;
@@ -138,14 +138,14 @@ public class XHuntMapActivity extends MapActivity {
 	private Game mGame;
 	
 	/** The info panel to display several information at the bottom of the display. */
-	private PanelInfo mPanelInfo;
+	private PanelInfoBottom mPanelInfoBottom;
 	
 	/** The timer panel to display the start timer if it is active. */
 	private PanelTimer mPanelTimer;
 	
 	/** The tickets panel to display the current tickets and round number of the own 
 	 * player. */
-	private PanelTickets mPanelTickets;
+	private PanelInfoTop mPanelInfoTop;
 	
 	/** The ServiceConnector to connect to XHuntService. */
 	private ServiceConnector mServiceConnector;
@@ -186,7 +186,7 @@ public class XHuntMapActivity extends MapActivity {
 		public void handleMessage(Message msg) {
 			if(mPanelTimer != null){
 				mPanelTimer.cancelTimer();
-				mPanelInfo.setInfoText("Timer canceled. Please wait for location fix from server!");
+				mPanelInfoBottom.setInfoText("Timer canceled. Please wait for location fix from server!");
 			}
 		}
 	};
@@ -286,16 +286,23 @@ public class XHuntMapActivity extends MapActivity {
     private Handler mRoundStatusHandler = new Handler(){
 	    @Override
 		public void handleMessage(Message msg) {
+	    	
+	    	// Update the top info panel
+    		mPanelInfoTop.updateText();
+    		
+    		// move Player if playing in Static Mode (wrong place - fast but not synchronous with top info panel)
+    		//movePlayerIfInStaticMode();
+	    	
 	    	// Get own player
 	    	XHuntPlayer player = getMyPlayer();
-	    	// Update the info panel about the new target reached status (toggle flag)
-    		mPanelInfo.setTargetReached(player.getReachedTarget());
+	    	// Update the bottom info panel about the new target reached status (toggle flag)
+    		mPanelInfoBottom.setTargetReached(player.getReachedTarget());
     		
-    		// Update the text at the info panel
+    		// Update the text at the bottom info panel
     		if(player.getReachedTarget())
-    			mPanelInfo.setInfoText("Some players are still on the move.");
+    			mPanelInfoBottom.setInfoText("Some players are still on the move.");
     		else if(player.getCurrentTargetId() > 0)    			
-    			mPanelInfo.setInfoText("Follow the arrow to your target.");
+    			mPanelInfoBottom.setInfoText("Follow the arrow to your target.");
     		
     		// Redraw the map data
 	    	updateMapData();
@@ -345,12 +352,12 @@ public class XHuntMapActivity extends MapActivity {
     private Handler mStartRoundHandler = new Handler(){
 	    @Override
 		public void handleMessage(Message msg) {
-	    	// Update the ticket panel with the new amount of tickets
-	    	mPanelTickets.update();
+	    	// Update the top info panel
+	    	mPanelInfoTop.updateText();
 	    	
-	    	// Update the info panel
-	    	mPanelInfo.setInfoText("Choose your next target!");
-	    	mPanelInfo.setTargetReached(false);
+	    	// Update the bottom info panel
+	    	mPanelInfoBottom.setInfoText("Choose your next target!");
+	    	mPanelInfoBottom.setTargetReached(false);
 	    	
 	    	Log.v(TAG, "what: " + msg.what + " lastStaion: " 
 	    			+ mGame.getPlayerByJID(mMxaProxy.getXmppJid()).getLastStationId());
@@ -397,13 +404,10 @@ public class XHuntMapActivity extends MapActivity {
 	    		Toast.makeText(XHuntMapActivity.this, 
 	    				"Failed to set target: " + msg.obj.toString(), Toast.LENGTH_LONG).show();
 	    	}
-	    	else{
-	    		// Update the ticket panel
-	    		mPanelTickets.update();
-	    		
-	    		// Update the info panel
-	    		mPanelInfo.setTargetReached(getMyPlayer().getReachedTarget());
-	    		mPanelInfo.setInfoText("Follow the arrow to your target.");
+	    	else{	    		
+	    		// Update the bottom info panel
+	    		mPanelInfoBottom.setTargetReached(getMyPlayer().getReachedTarget());
+	    		mPanelInfoBottom.setInfoText("Follow the arrow to your target.");
 	    		
 	    		// Update the map data
 	    		updateMapData();
@@ -435,6 +439,9 @@ public class XHuntMapActivity extends MapActivity {
     private Handler mUpdateMapDataHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
+			// Update the top info panel
+    		mPanelInfoTop.updateText();
+			
 			// move to current target if in static mode
 			movePlayerIfInStaticMode();
 			
@@ -579,12 +586,13 @@ public class XHuntMapActivity extends MapActivity {
 	 */
 	private void initComponents() {
 		// Init information panel on bottom
-		mPanelInfo = (PanelInfo)findViewById(R.id.info_panel);
-		mPanelInfo.setInfoText("Distribute while Timer is running!");
+		mPanelInfoBottom = (PanelInfoBottom)findViewById(R.id.info_panel_bottom);
+		mPanelInfoBottom.setInfoText("Distribute while Timer is running!");
 		
 		// Init the ticket and round panel on top
-		mPanelTickets = (PanelTickets) findViewById(R.id.ticket_panel);
-		mPanelTickets.create(mGame);
+		boolean isMrX = mMxaProxy.getXmppJid().equals(mGame.getMrX().getJid());
+		mPanelInfoTop = (PanelInfoTop) findViewById(R.id.info_panel_top);
+		mPanelInfoTop.create(mGame, isMrX);
 		
 		// Init the timer panel for start timer and enable timer for Mr.X or not
 		// Just Mr.X can cancel the timer.
@@ -820,9 +828,9 @@ public class XHuntMapActivity extends MapActivity {
 			menu.findItem(R.id.menu_context_map_target).setVisible(true);
 			
 			// Mr. X don't need the suggestion option, because he's playing alone
-			if(!getMyPlayer().isMrX()){
+			/*if(!getMyPlayer().isMrX()){
 				menu.findItem(R.id.menu_context_map_suggestion).setVisible(true);
-			}
+			}*/
 		}
 	}
 	
@@ -989,10 +997,9 @@ public class XHuntMapActivity extends MapActivity {
 			XHuntPlayer player = mGame.getPlayerByJID(mMxaProxy.getXmppJid());
 			Station currentTarget = mGame.getRouteManagement().getStationById(player.getCurrentTargetId());
 			
-			if((currentTarget != null) && (player.isCurrentTargetFinal())) {
+			if((currentTarget != null) && (player.isCurrentTargetFinal()) && (!player.getReachedTarget())) {
 				mGpsProxy.setLocation(currentTarget.getLatitude(), currentTarget.getLongitude());
-				playerOverlay.updatePlayers();
-				playerOverlay.invalidateMapView();
+				mGpsProxy.sendLocationChangedBroadcast();
 				Log.v(TAG, "moved player because you are playing in static mode");
 			}
 		}
@@ -1151,6 +1158,7 @@ public class XHuntMapActivity extends MapActivity {
 		 */
 		@Override
 		public void processPacket(XMPPBean inBean) {
+			
 			if(inBean.getType() == XMPPBean.TYPE_ERROR){
 				Log.e(TAG, "IQ Type ERROR: " + inBean.toXML());
 			}
@@ -1340,5 +1348,13 @@ public class XHuntMapActivity extends MapActivity {
 			}
 		}
     	
+    }
+    
+    /**
+     * Returns the MXAProxy instance.
+     * @return
+     */
+    public MXAProxy getMxaProxy() {
+    	return mMxaProxy;
     }
 }
