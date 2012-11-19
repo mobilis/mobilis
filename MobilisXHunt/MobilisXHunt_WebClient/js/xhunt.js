@@ -132,12 +132,9 @@ var xhunt = {
 
 	onPlayersRequest: function (iq) { //  <PlayersRequest xmlns="mobilisxhunt:iq:players">
 
-		// xhunt.log('PlayersRequest: '); xhunt.log(iq); 
-
 		Mobilis.xhunt.respondPlayer(
-			//$(iq).attr('from'), // gameJID
-			localStorage.getItem('mobilis.xhunt.gamejid'), // gameJID			
-			iq.getAttribute('id'), // iqid
+			$(iq).attr('from'), // gameJID
+			$(iq).attr('id'), // iqid
 			function (result){  // resultcallback
 				xhunt.log('respondPlayer result:'); xhunt.log(result);
 			},
@@ -145,16 +142,13 @@ var xhunt = {
 				xhunt.log('respondPlayer error:'); xhunt.log(error);
 				xhunt.log($(error).find('text').text());
 			}
-		);		
+		);
 
-		$('#user-list').empty();
+		$('#player-list').empty();
 
 		$(iq).find('PlayerInfo').each(function(){ 
-			// var flag_ready = '';
-			var jid = $(this).find('Jid').text(	);
-			// xhunt.log('PlayerInfo Jid: '+jid);
 
-			//xhunt.createPlayer(jid);
+			var jid = $(this).find('Jid').text();
 
 			if (!xhunt.players[jid]) {
 				xhunt.players[jid] = {
@@ -196,7 +190,7 @@ var xhunt = {
 			var modHtml = (player.ismod) ? '<span class="ui-li-count">M</span>' : '';
 			var rdyHtml = (isready) ? '  &#10003;' : '';
 
-			$('#user-list').append('<li><img src="' 
+			$('#player-list').append('<li><img src="' 
 									+ player.icon.url 
 									+ ' "/>' 
 									+ player.name 
@@ -205,158 +199,80 @@ var xhunt = {
 									+ mrxHtml 
 									+ '</li>')
 			.listview('refresh');
-			xhunt.log('player: ');
-			xhunt.log(player);
-			// $('#players').append('<div id="' + jid + '" class="playerinfobox"></div>')
-			// $('#' + jid ).append('<div class="playername"><img class="playericon" src="' + 
-			// player.icon.url +' "/>' + 
-			// player.name + flag_ready + '</div>' +
-			// '</div><span class="lat">' + 
-			// '</span><span class="lon">' + 
-			// '</span><div class="playertarget">' + 
-			// '</div><div class="playertickets" style="font-size:small;">' + 
-			// '<div id="'+ jid +'_4" class="tickets"></div>' +
-			// '<div id="'+ jid +'_1" class="tickets"></div>' +
-			// '<div id="'+ jid +'_2" class="tickets"></div>' +
-			// '<div id="'+ jid +'_3" class="tickets"></div>' +
-			// '</div>');       
 		});
 
 		var info = $(iq).find('Info').text();
-		xhunt.log('Info: '+ info );
+		xhunt.log('PlayersRequest Info: '+ info );
 
 		return true;   
 	},
 
-	onUpdatePlayerResponse: function (iq) {
-		xhunt.log('UpdatePlayerResponse: ' + $(iq).find('Info').text()); 
-	},
+
+
+
+
+
+
+
+
 
 	onStartRoundRequest : function (iq) { // <StartRoundRequest xmlns="mobilisxhunt:iq:startround">
 
 		Mobilis.xhunt.respondStartRound(
-			//$(iq).attr('from'), // gameJID
 			localStorage.getItem('mobilis.xhunt.gamejid'), // gameJID			
 			iq.getAttribute('id'), // iqid
 			function (result){  // resultcallback
 				xhunt.log('respondStartRound result:'); xhunt.log(result);
+				xhunt.log($(result).find('text').text());
 			},
 			function (error){ // errorcallback
 				xhunt.log('respondStartRound error:'); xhunt.log(error);
 				xhunt.log($(error).find('text').text());
 			}
-		);		
-
-		$('#waitingforplayers-tooltip').popup('close');
-
-		// $.mobile.changePage( "game.html", { transition: "flip"} );
-		xhunt.log('game has started');
-
-		xhunt.log('xhunt.gameinfo.name:'); xhunt.log(xhunt.gameinfo.name);
-
-	},
-
-	onLocationRequest : function(iq) { // <LocationRequest xmlns="mobilisxhunt:iq:location">
-		Mobilis.xhunt.respondLocation(
-
-			localStorage.getItem('mobilis.xhunt.gamejid'), // gameJID
-			Mobilis.connection.jid, // playerJid
-			iq.getAttribute('id'), // iqid
-			Math.round(xhunt.position.latitude  * 1000000), // latitude
-			Math.round(xhunt.position.longitude * 1000000), // longitude
-			function (result){  // resultcallback
-				xhunt.log('respondLocation result:'); xhunt.log(result);
-			},
-			function (error){ // errorcallback
-				xhunt.log('respondLocation error:'); xhunt.log(error);
-				xhunt.log($(error).find('text').text());
-			}
 		);
 
-		$(iq).find('LocationInfo').each(function(){
-			var jid = $(this).find('Jid').text(	);
-			var lat = $(this).find('Latitude').text();
-			var lon = $(this).find('Longitude').text();
-			xhunt.players[jid].lat = lat;
-			xhunt.players[jid].lon = lon;
+		//$('#waitingforplayers-tooltip').popup('close');
 
-			xhunt.log('xhunt.players[jid]:');
-			xhunt.log(xhunt.players[jid]);
-			$('#map').gmap3({
-			  action:'clear',
-			  name:'marker',
-			  tag: jid, 
-			});
-			$('#map').gmap3(
-			   {
-				   action: 'addMarker',
-				   latLng: [lat, lon],
-				   options: { 
-					   icon: xhunt.players[jid].icon.markericon,
-				   },
-				   tag: jid
-			   }
-			);
-			// $('#' + jid + ' > .lat').html('Latitude: ' + lat + ', ');
-			// $('#' + jid + ' > .lon').html('Longitude: ' + lon);       
-		});
+		xhunt.log('Game started: xhunt.gameinfo.name:'); xhunt.log(xhunt.gameinfo.name);
 
-	},
-/*	on_locationIQ: function (iq) {
-		$(iq).find('location').each(function(){
-			var jid = Strophe.getNodeFromJid($(this).find('jid').text());
-			var lat = xhunt.convert($(this).find('lat').text());
-			var lon = xhunt.convert($(this).find('lon').text());
-			xhunt.players[jid].lat = lat;
-			xhunt.players[jid].lon = lon;
-						
-			$('#map').gmap3({
-			  action:'clear',
-			  name:'marker',
-			  tag: jid, 
-			});
-			$('#map').gmap3(
-			   {
-				   action: 'addMarker',
-				   latLng: [lat, lon],
-				   options: { 
-					   icon: xhunt.players[jid].icon.markericon,
-				   },
-				   tag: jid
-			   }
-			);
-			$('#' + jid + ' > .lat').html('Latitude: ' + lat + ', ');
-			$('#' + jid + ' > .lon').html('Longitude: ' + lon);       
-		});
-		return true;   
-	},
-*/
+		var round = $(iq).find('Round').text();
+		var nextround = parseInt( round, 10 ) + 1 ;
+		var showmrx = Boolean($(this).find('ShowMrX').text().match(/^true$/i));
 
-/*	on_gameOverIQ: function (iq) {
-		xhunt.log('Game Over');
-		//$.jGrowl('Game Over');
-		xhunt.log($(iq).find('reason').text(), {sticky: true });   
-		//$.jGrowl($(iq).find('reason').text(), {sticky: true });   
-		return true;  
-	},
-*/	
-/*	on_usedTicketsIQ: function (iq) {
-		$(iq).find('player').each(function(){
-			var jid = Strophe.getNodeFromJid($(this).find('playername').text());
-			var ticket = $(this).find('ticketid').text();
-			$('#' + jid + '_' + ticket).append('+');
+		xhunt.log('xhunt.players:');xhunt.log(xhunt.players);
+
+		$.each(xhunt.players, function(index, player) { 
+			xhunt.log(player.round);
+			xhunt.log('index: ' + index + ', player.round: ' + player.round);
+			if (parseInt( player.round , 10 )=== parseInt( round, 10 )){
+				player.round = nextround;
+				// $(iq).find('TicketAmount').each(function(){
+				// 	var ticketid = $(this).find('ID').text();
+				// 	var ticketamount =$(this).find('Amount').text();
+				// 	//$('#' + index + '_' + ticketid).html('<img class="ticketicon" src="'+ xhunt.tickets[ticketid].url +'"/> ' + ticketamount);
+				// })
+				//return false;
+			} 
+			xhunt.log('player.round after:' + player.round);
 		});
-		//xhunt.log('usedTickets');
-		//xhunt.log(iq);   
 		return true;
 	},
-*/	
+
+
+
+
+
+
+
+
+
+
 /*	on_startRoundIQ: function (iq) {
 		var round = $(iq).find('gameround').text();
 		var nextround = parseInt( round, 10 ) + 1 ;
 		$('#roundinfo').html('<div id="roundinfo_content">Round : ' + 
 			round + '   Show MrX: <span id="showmrx"></span></div>');
-		var showmrx = $(iq).find('showmrx').text();
+		var showmrx = $(iq).find('ShowMrX').text();
 		if (showmrx === 'true')
 			$('#showmrx').html('YES');
 		else {
@@ -377,6 +293,115 @@ var xhunt = {
 		return true;   
 	},
 */
+
+	onLocationRequest : function(iq) { // <LocationRequest xmlns="mobilisxhunt:iq:location">
+		Mobilis.xhunt.respondLocation(
+
+			localStorage.getItem('mobilis.xhunt.gamejid'), // gameJID
+			Mobilis.connection.jid, // playerJid
+			iq.getAttribute('id'), // iqid
+			Math.round(xhunt.position.latitude  * 1000000), // latitude
+			Math.round(xhunt.position.longitude * 1000000), // longitude
+			function (result){  // resultcallback
+				xhunt.log('respondLocation result:'); xhunt.log(result);
+				xhunt.log($(result).find('Text').text());
+			},
+			function (error){ // errorcallback
+				xhunt.log('respondLocation error:'); xhunt.log(error);
+				//xhunt.log($(error).find('Text').text());
+			}
+		);
+
+		$(iq).find('LocationInfo').each(function(){
+			var jid = $(this).find('Jid').text(	);
+			var lat = parseInt( $(this).find('Latitude').text(), 10 )/ 1000000;
+			var lon = parseInt( $(this).find('Longitude').text(), 10 )/ 1000000;
+			xhunt.players[jid].lat = lat;
+			xhunt.players[jid].lon = lon;
+
+			xhunt.log(xhunt.players[jid]);
+
+			$('#map').gmap3({
+			  action:'clear',
+			  name:'marker',
+			  tag: jid, 
+			});
+			$('#map').gmap3(
+			   {
+				action: 'addMarker',
+				latLng: [lat, lon],
+				options: { 
+					icon: xhunt.players[jid].icon.markericon,
+				},
+				tag: jid
+			   }
+			);
+		});
+
+		return true;
+	},
+
+
+	onGameOverRequest : function (iq) {
+		Mobilis.xhunt.respondGameOver(
+			$(iq).attr('from'), // gameJID
+			$(iq).attr('id'), // iqid
+			function (result){  // resultcallback
+				xhunt.log('respondGameOver result:'); xhunt.log(result);
+			},
+			function (error){ // errorcallback
+				xhunt.log('respondGameOver error:'); xhunt.log(error);
+				xhunt.log($(error).find('text').text());
+			}
+		);
+		$.each(xhunt.players, function(index, player) { 
+			$('#map').gmap3({
+				action:'clear',
+				name:'marker',
+				tag: player, 
+			});
+		});
+		xhunt.log('This Game is over!');xhunt.log(iq);
+		return true;
+	},
+
+/*	on_gameOverIQ: function (iq) {
+		xhunt.log('Game Over');
+		//$.jGrowl('Game Over');
+		xhunt.log($(iq).find('reason').text(), {sticky: true });   
+		//$.jGrowl($(iq).find('reason').text(), {sticky: true });   
+		return true;  
+	},
+*/	
+	onUpdateTicketsRequest : function (iq) {
+		//todo
+	},
+/*	on_usedTicketsIQ: function (iq) {
+		$(iq).find('player').each(function(){
+			var jid = Strophe.getNodeFromJid($(this).find('playername').text());
+			var ticket = $(this).find('ticketid').text();
+			$('#' + jid + '_' + ticket).append('+');
+		});
+		//xhunt.log('usedTickets');
+		//xhunt.log(iq);   
+		return true;
+	},
+*/	
+
+	onRoundStatusRequest : function (iq) {
+		Mobilis.xhunt.respondRoundStatus(
+			$(iq).attr('from'), // gameJID
+			$(iq).attr('id'), // iqid
+			function (result){  // resultcallback
+				xhunt.log('respondRoundStatus result:'); xhunt.log(result);
+			},
+			function (error){ // errorcallback
+				xhunt.log('respondRoundStatus error:'); xhunt.log(error);
+				xhunt.log($(error).find('text').text());
+			}
+		);		
+		return true;
+	},
 /*	on_roundStatusIQ: function (iq) {
 		
 		$(iq).find('player').each(function(){
@@ -466,19 +491,14 @@ var xhunt = {
 
 
 	addHandlers : function () {
+		Mobilis.xhunt.addGameOverHandler(xhunt.onGameOverRequest);
 		Mobilis.xhunt.addLocationHandler(xhunt.onLocationRequest);
 		Mobilis.xhunt.addPlayersHandler(xhunt.onPlayersRequest);
-		Mobilis.xhunt.addUpdatePlayerHandler(xhunt.onUpdatePlayerResponse);
+		Mobilis.xhunt.addRoundStatusHandler(xhunt.onRoundStatusRequest);
 		Mobilis.xhunt.addStartRoundHandler(xhunt.onStartRoundRequest);
-		//Mobilis.xhunt.addRoundStatusHandler(xhunt.on_roundStatusIQ);
-		// Mobilis.xhunt.addJoinGameHandler(xhunt.onJoinGameResponse);
-
-/*		
-		Mobilis.connection.addHandler(xhunt.on_gameOverIQ, 'mobilisxhunt:iq:gameover', 'iq', 'set');
-*/
 	},
 
-	connect : function() {
+	connectServer : function() {
 		// if (Mobilis.core.Status.CONNECTED){
 		// 	Mobilis.core.disconnect('reconnect');
 		// };
@@ -497,15 +517,14 @@ var xhunt = {
 		);
 	},
 
-
 	queryGames : function() {
 
 		Mobilis.core.mobilisServiceDiscovery(
 			[Mobilis.core.NS.XHUNT],
 			function (iq) {
 				$('#game-list').empty().listview();
-
-				if ($(iq).find("mobilisService").length){
+				xhunt.log('querying...');
+				if ($(iq).find('mobilisService').length){
 					$(iq).find('mobilisService').each( function() {
 						Mobilis.core.SERVICES[$(this).attr('namespace')] = {
 							'version': $(this).attr('version'),
@@ -526,8 +545,7 @@ var xhunt = {
 		);
 	},
 
-
-	sendChat : function (message) {
+	sendMessage : function (message) {
 
 		if (xhunt.gameinfo['room']) {
 			Mobilis.connection.muc.message(
@@ -536,10 +554,10 @@ var xhunt = {
 				message, 
 				'groupchat');
 		}
+		return true;
 	},
 
 	updatePlayer : function (updates) {
-		xhunt.log('updates.ready: '); xhunt.log(updates.ready);
 		Mobilis.xhunt.updatePlayer(
 			localStorage.getItem('mobilis.xhunt.gamejid'), //gameJID
 			Mobilis.connection.jid, //playerJid
@@ -548,14 +566,14 @@ var xhunt = {
 			updates.ismrx, //isMrX
 			updates.ready, //isReady
 			function (result){  // resultcallback
-				xhunt.log('updatePlayer result:'); xhunt.log(result);
-
+				xhunt.log('updatePlayer Info:' + $(result).find('Info').text());
 			},
 			function (error){ // errorcallback
-				xhunt.log('updatePlayer error:'); xhunt.log(error);
-				xhunt.log($(error).find('text').text());
+				xhunt.log('updatePlayer Error:'); xhunt.log(error);
+				//xhunt.log($(error).find('text').text());
 			}
 		);
+		return true;
 	},
 
 	joinGame : function (data) {
@@ -579,14 +597,8 @@ var xhunt = {
 						xhunt.gameinfo['room'], // room
 						xhunt.gameinfo['nick'], // nick
 						function(message) {     // msg_handler_cb: <message .../>
-
 							if ( from = Strophe.getResourceFromJid($(message).attr('from')) ){
-								var msgHtml =  '<div class="message">' +
-													'<strong>' + from + ': </strong>' +
-													$(message).text() +
-													'</div>';
-								xhunt.log('message: ' + msgHtml);
-								$('#chat-panel').append(msgHtml);
+								xhunt.log(from + ' says: ' + $(message).find('body').text() );
 							}
 							return true;
 						}, 						
@@ -640,7 +652,10 @@ var xhunt = {
 
 			}
 		}
+	},
 
+	requestTarget : function(data) {
+		//todo
 	},
 
 	initMap : function(data) {
@@ -688,7 +703,7 @@ var xhunt = {
 									title: $(this).attr('name')
 								}
 							},
-						}//,'autofit'
+						},'autofit'
 						);
 					});
 					
@@ -705,6 +720,10 @@ var xhunt = {
 								stops[i][1] = longitude;
 								i++;
 							});
+
+							// key-value hashmap mit jeder haltestelle die in der route davor und oder danach ist
+							// key ist n int, value ist liste von ints der jeweiligen stationen
+							
 						});
 						$('#map').gmap3({
 							action: 'addPolyline',
@@ -719,10 +738,10 @@ var xhunt = {
 				}
 			});
 
-			$('#waitingforplayers-tooltip').popup('open', {
-				positionTo: 'window',
-				theme: 'a'
-			});
+			// $('#waitingforplayers-tooltip').popup('open', {
+			// 	positionTo: 'window',
+			// 	theme: 'a'
+			// });
 
 		},
 		function (msg) {
@@ -846,12 +865,12 @@ $(document).on('pageinit', '#games-page', function() {
 	if ( (navigator.geolocation) && (localStorage.getItem('mobilis.xhunt.staticmode') == 'off') ) {
 
 		xhunt.watchPosition();
-		xhunt.connect();
+		xhunt.connectServer();
 
 	} else {
 		xhunt.log('Only Static Mode supported');
 		xhunt.randomizePosition();
-		xhunt.connect();
+		xhunt.connectServer();
 	}
 
 });
@@ -887,6 +906,10 @@ $(document).on('click', '#exitgame-button', function() {
 	xhunt.exitGame();
 });
 
+$(document).on('click', '#refresh-button', function() {
+	xhunt.queryGames();
+});
+
 
 $(document).on('click', '#ingamemenu-button', function() {
 	$('#ingamemenu-container').popup('open', {
@@ -895,6 +918,24 @@ $(document).on('click', '#ingamemenu-button', function() {
 		corners: true
 	});
 });
+$(document).on('click', '#message-button', function() {
+	$('#message-container').popup('open', {
+		positionTo: 'window',
+		theme: 'b',
+		corners: true
+	});
+});
+
+$(document).on('click', '#message-form #submit', function() {
+	var message = $('#message-form #message').val();
+	if (message) {
+		xhunt.log(message);
+		xhunt.sendMessage(message);
+	}
+	$('#message-container').popup('close');
+	return false;
+});
+
 
 
 $(document).on('pageinit', '#game-page', function() {
@@ -906,15 +947,14 @@ $(document).on('pageinit', '#game-page', function() {
 
 
 $(document).on('pageinit', '#settings-page', function() {
-	$('#settings-form #username').val( function() {
-		return localStorage.getItem('mobilis.xhunt.username');
-	});
-	$('#settings-form #jid').val( function() {
-		return localStorage.getItem('mobilis.xhunt.jid');
-	});
-	$('#settings-form #password').val( function() {
-		return localStorage.getItem('mobilis.xhunt.password');
-	});
+	$('#settings-form #username').val(localStorage.getItem('mobilis.xhunt.username'));
+	$('#settings-form #jid').val(localStorage.getItem('mobilis.xhunt.jid'));
+	$('#settings-form #password').val(localStorage.getItem('mobilis.xhunt.password'));
+	if (localStorage.getItem('mobilis.xhunt.staticmode') == 'on') {
+		var staticmode = $('#settings-form #staticmode');
+		staticmode[0].selectedIndex = 1;
+		staticmode.slider('refresh');
+	}
 });
 
 
@@ -927,6 +967,15 @@ $(document).on('click', '#settings-form #submit', function() {
 	xhunt.log(localStorage.getItem('mobilis.xhunt.jid'));
 	xhunt.log(localStorage.getItem('mobilis.xhunt.password'));
 	xhunt.log(localStorage.getItem('mobilis.xhunt.staticmode'));
+	$('#settings-form #username').val(localStorage.getItem('mobilis.xhunt.username'));
+	$('#settings-form #jid').val(localStorage.getItem('mobilis.xhunt.jid'));
+	$('#settings-form #password').val(localStorage.getItem('mobilis.xhunt.password'));
+	if (localStorage.getItem('mobilis.xhunt.staticmode') == 'on') {
+		var staticmode = $('#settings-form #staticmode');
+		staticmode[0].selectedIndex = 1;
+		staticmode.slider('refresh');
+	}
+
 	return true;
 });
 

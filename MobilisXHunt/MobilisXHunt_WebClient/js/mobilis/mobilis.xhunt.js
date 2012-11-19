@@ -6,21 +6,31 @@
     var xhunt = {
         
         NS: {
-            JOINGAME: 'mobilisxhunt:iq:joingame',
-            UPDATEPLAYER: 'mobilisxhunt:iq:updateplayer',
             GAMEDETAILS: 'mobilisxhunt:iq:gamedetails',
-            USEDTICKETS: 'mobilisxhunt:iq:usedtickets',
-            SNAPSHOT: 'mobilisxhunt:iq:snapshot',
-            PLAYEREXIT: 'mobilisxhunt:iq:playerexit',
+            GAMEOVER: 'mobilisxhunt:iq:gameover',
+            JOINGAME: 'mobilisxhunt:iq:joingame',
             LOCATION: 'mobilisxhunt:iq:location',
+            PLAYEREXIT: 'mobilisxhunt:iq:playerexit',
             PLAYERS: 'mobilisxhunt:iq:players',
+            ROUNDSTATUS: 'mobilisxhunt:iq:roundstatus',
+            SNAPSHOT: 'mobilisxhunt:iq:snapshot',
             STARTROUND: 'mobilisxhunt:iq:startround',
-            ROUNDSTATUS: 'mobilisxhunt:iq:roundstatus'      
+            UPDATEPLAYER: 'mobilisxhunt:iq:updateplayer',
+            USEDTICKETS: 'mobilisxhunt:iq:usedtickets',
         },
 
         settings: {},
         
         handlers: {},
+
+
+
+
+
+
+
+
+
 
         /** Function:  setXhuntServer
         *  Sets the URL to the mobilis Server
@@ -50,6 +60,15 @@
                 }
             );
         },
+
+
+
+
+
+
+
+
+
 
         /** Function:  joinGame
         *  Sends joinGameIQ of type 'set' to join Game.
@@ -124,68 +143,6 @@
 
             Mobilis.core.sendIQ(customIq, resultcallback, errorcallback);
         }, 
-        /** Response Functions
-        *  respond to request IQs
-        */
-        respondPlayer: function(gameJID, iqid, resultcallback, errorcallback){
-            if (!resultcallback) 
-                resultcallback = Mobilis.core.defaultcallback; 
-            if (!errorcallback) 
-                errorcallback = Mobilis.core.defaulterrorback;
-
-            var customIq = $iq({
-                to: gameJID,
-                id: iqid,
-                type: 'result'
-            })
-            .c('PlayersResponse', {xmlns : Mobilis.xhunt.NS.PLAYERS});
-            Mobilis.core.sendIQ(customIq);
-        },
-
-        respondStartRound: function(gameJID, iqid, resultcallback, errorcallback){
-            if (!resultcallback) 
-                resultcallback = Mobilis.core.defaultcallback; 
-            if (!errorcallback) 
-                errorcallback = Mobilis.core.defaulterrorback;
-
-            var customIq = $iq({
-                to: gameJID,
-                id: iqid,
-                type: 'result'
-            })
-            .c('StartRoundResponse', {xmlns : Mobilis.xhunt.NS.PLAYERS});
-            Mobilis.core.sendIQ(customIq);
-        },
-
-        respondLocation: function(gameJID, playerJid, iqid, latitude, longitude, resultcallback, errorcallback){
-            if (!resultcallback) 
-                resultcallback = Mobilis.core.defaultcallback; 
-            if (!errorcallback) 
-                errorcallback = Mobilis.core.defaulterrorback;
-
-            if (gameJID) {
-                if (playerJid) {
-                    Mobilis.xhunt.gameJID = gameJID;
-
-                    var customIq = $iq({
-                        to: gameJID,
-                        id: iqid,
-                        type: 'result'
-                    })
-                    .c('LocationResponse', {xmlns : Mobilis.xhunt.NS.LOCATION})
-                    .c('LocationInfo')
-                    .c('Jid').t(playerJid).up()
-                    .c('Latitude').t(latitude.toString()).up()
-                    .c('Longitude').t(longitude.toString()).up();
-                } else {
-                    errorcallback(null, 'playerJid not defined');
-                }
-            } else {
-                errorcallback(null, 'gameJID not defined');
-            }
-
-            Mobilis.core.sendIQ(customIq, resultcallback, errorcallback);
-        },
 
         /** Function:  gameDetails
         *  Sends gameDetailsIQ of type 'get'.
@@ -297,6 +254,117 @@
             Mobilis.core.sendIQ(customiq, resultcallback, errorcallback);
         },
 
+
+
+
+
+
+
+
+
+
+        /** Response Functions
+        *  respond to request IQs
+        */
+        respondPlayer: function(gameJID, iqid, resultcallback, errorcallback){
+            if (!resultcallback) 
+                resultcallback = Mobilis.core.defaultcallback; 
+            if (!errorcallback) 
+                errorcallback = Mobilis.core.defaulterrorback;
+
+            var customIq = $iq({
+                to: gameJID,
+                id: iqid,
+                type: 'result'
+            })
+            .c('PlayersResponse', {xmlns : Mobilis.xhunt.NS.PLAYERS});
+            Mobilis.core.sendIQ(customIq);
+        },
+
+        respondStartRound: function(gameJID, iqid, resultcallback, errorcallback){
+            if (!resultcallback) 
+                resultcallback = Mobilis.core.defaultcallback; 
+            if (!errorcallback) 
+                errorcallback = Mobilis.core.defaulterrorback;
+
+            var customIq = $iq({
+                to: gameJID,
+                id: iqid,
+                type: 'result'
+            })
+            .c('StartRoundResponse', {xmlns : Mobilis.xhunt.NS.STARTROUND});
+            Mobilis.core.sendIQ(customIq);
+        },
+
+        respondGameOver: function(gameJID, iqid, resultcallback, errorcallback){
+            if (!resultcallback) 
+                resultcallback = Mobilis.core.defaultcallback; 
+            if (!errorcallback) 
+                errorcallback = Mobilis.core.defaulterrorback;
+
+            var customIq = $iq({
+                to: gameJID,
+                id: iqid,
+                type: 'result'
+            })
+            .c('GameOverResponse', {xmlns : Mobilis.xhunt.NS.GAMEOVER});
+            Mobilis.core.sendIQ(customIq);
+        },
+
+        respondRoundStatus: function(gameJID, iqid, resultcallback, errorcallback){
+            if (!resultcallback) 
+                resultcallback = Mobilis.core.defaultcallback; 
+            if (!errorcallback) 
+                errorcallback = Mobilis.core.defaulterrorback;
+
+            var customIq = $iq({
+                to: gameJID,
+                id: iqid,
+                type: 'result'
+            })
+            .c('RoundStatusResponse', {xmlns : Mobilis.xhunt.NS.ROUNDSTATUS});
+            Mobilis.core.sendIQ(customIq);
+        },
+
+        respondLocation: function(gameJID, playerJid, iqid, latitude, longitude, resultcallback, errorcallback){
+            if (!resultcallback) 
+                resultcallback = Mobilis.core.defaultcallback; 
+            if (!errorcallback) 
+                errorcallback = Mobilis.core.defaulterrorback;
+
+            if (gameJID) {
+                if (playerJid) {
+                    Mobilis.xhunt.gameJID = gameJID;
+
+                    var customIq = $iq({
+                        to: gameJID,
+                        id: iqid,
+                        type: 'result'
+                    })
+                    .c('LocationResponse', {xmlns : Mobilis.xhunt.NS.LOCATION})
+                    .c('LocationInfo')
+                    .c('Jid').t(playerJid).up()
+                    .c('Latitude').t(latitude.toString()).up()
+                    .c('Longitude').t(longitude.toString()).up();
+                } else {
+                    errorcallback(null, 'playerJid not defined');
+                }
+            } else {
+                errorcallback(null, 'gameJID not defined');
+            }
+
+            Mobilis.core.sendIQ(customIq, resultcallback, errorcallback);
+        },
+
+
+
+
+
+
+
+
+
+
         /** Function:  addLocationHandler
         *  Adds handler function for incoming LocationIQ
         *
@@ -382,7 +450,15 @@
             );
         },
 
+        addGameOverHandler: function(handler) {
+            Mobilis.connection.addHandler(
+                handler,
+                Mobilis.xhunt.NS.GAMEOVER
+            );
+        },
+
 
     };
     Mobilis.extend("xhunt", xhunt);
+
 })();

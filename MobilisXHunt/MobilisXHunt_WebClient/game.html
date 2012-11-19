@@ -28,28 +28,36 @@
 		<script type="text/javascript" src="js/lib/jquery.mobile.full-height-content-area.js"></script>
 
 		<header id="header" data-role="header" data-position="inline">
+			<a href="games.html" class="ui-btn-left" id="exitgame-button" data-icon="arrow-l" data-transition="slide" data-direction="reverse">leave</a>
 			<h1 id="game-name"></h1>
-			<a href="#" class="ui-btn-right" id="ingamemenu-button" data-rel="popup" data-icon="grid">Menu</a>
+			<a href="#" class="ui-btn-right" id="message-button" data-rel="popup" data-icon="info">Message</a>
 		</header><!-- /header -->
 
 		<div id="content" data-role="content">
 			<div id="map"></div>
 		</div><!-- /content -->
 
-		<div id="user-list-panel" data-role="popup" data-corners="true" data-theme="none">
-			<ul data-role="listview" data-theme="a" id="user-list">
-				<!-- List of present Users -->
-			</ul>
-		</div>
-
 		<div id="waitingforplayers-tooltip" data-role="popup">
 			<p>Waiting for all players to get ready...<p>
 		</div>
-		<div id="ingamemenu-container" data-role="popup">
+		<div id="ingamemenu-container" data-role="popup" data-theme="a" class="ui-corner-all">
 			<ul data-role="listview" data-theme="a" id="ingamemenu">
-				<li><a href="#" id="sendmessage-button" >Send Message</a></li>
 				<li><a href="games.html" id="exitgame-button" >Exit Game</a></li>
 			</ul>
+		</div>
+		<div id="player-list-container" data-role="popup" data-theme="a" class="ui-corner-all">
+			<ul data-role="listview" data-theme="g" id="player-list">
+				<!-- List of joined Players -->
+			</ul>
+		</div>
+		<div id="message-container" data-role="popup" data-theme="a" class="ui-corner-all">
+			<form id="message-form">
+				<div class="ui-hide-label">
+					<label for="message">Message:</label>
+					<input type="text" name="message" id="message" value="" placeholder="Message" required="required"/>
+					<button type="submit" name="submit" id="submit" value="submit" data-theme="b">Send</button>
+				</div>
+			</form>
 		</div>
 
 	</div><!-- /page -->

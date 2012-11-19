@@ -24,23 +24,33 @@
 </head>
 <body>
 
-<div id="lobby-page" data-role="page">
+	<div id="lobby-page" data-role="page">
 
-	<div id="header" data-role="header">
-		<a href="games.html" class="ui-btn-left" id="exitgame-button" data-icon="arrow-l" data-transition="slide" data-direction="reverse">leave</a>
-		<h1 id="game-name"></h1>
-		<a href="game.html" class="ui-btn-right" id="getready-button" data-icon="check">Ready</a>
-	</div><!-- /header -->
+		<div id="header" data-role="header">
+			<a href="games.html" class="ui-btn-left" id="exitgame-button" data-icon="arrow-l" data-transition="slide" data-direction="reverse">leave</a>
+			<h1 id="game-name"></h1>
+			<a href="#" class="ui-btn-right" id="message-button" data-rel="popup" data-icon="info">Message</a>
+		</div><!-- /header -->
 
-	<div id="content" data-role="content">
+		<div id="content" data-role="content">
 
-		<ul data-role="listview" data-theme="g" id="user-list">
-			<!-- List of joined Users -->
-		</ul>
+			<ul data-role="listview" data-theme="g" id="player-list">
+				<!-- List of joined Players -->
+			</ul>
+			<a href="game.html" id="getready-button" data-role="button" data-theme="b">Get Ready</a>
+		</div><!-- /content -->
 
-	</div><!-- /content -->
+		<div data-role="popup" id="message-container" data-theme="a" class="ui-corner-all">
+			<form id="message-form">
+				<div class="ui-hide-label">
+					<label for="message">Message:</label>
+					<input type="text" name="message" id="message" value="" placeholder="Message" required="required"/>
+					<button type="submit" name="submit" id="submit" value="submit" data-theme="b">Send</button>
+				</div>
+			</form>
+		</div>
 
-</div><!-- /page -->
+	</div><!-- /page -->
 
 </body>
 </html>

@@ -61,3 +61,11 @@ label.ui-slider {
 	width: 35%;
 	margin: 0.5em 0;
 }
+
+#message-form > div {
+	padding: 10px;
+}
+
+#getready-button {
+	margin: 20px 0;
+}
