@@ -9,9 +9,10 @@ public class CommandRequest extends XMPPBean {
 	private List< String > parameterTypes = new ArrayList< String >();
 	private int commandId = Integer.MIN_VALUE;
 	private String instanceId = null;
+	private String appNamespace = null;
 
 
-	public CommandRequest( String methodName, List< String > parameters, List< String > parameterTypes, int commandId, String instanceId ) {
+	public CommandRequest( String methodName, List< String > parameters, List< String > parameterTypes, int commandId, String instanceId, String appNamespace ) {
 		super();
 		this.methodName = methodName;
 		for ( String entity : parameters ) {
@@ -22,6 +23,7 @@ public class CommandRequest extends XMPPBean {
 		}
 		this.commandId = commandId;
 		this.instanceId = instanceId;
+		this.appNamespace = appNamespace;
 
 		this.setType( XMPPBean.TYPE_SET );
 	}
@@ -57,6 +59,9 @@ public class CommandRequest extends XMPPBean {
 				}
 				else if (tagName.equals( "instanceId" ) ) {
 					this.instanceId = parser.nextText();
+				}
+				else if (tagName.equals( "appNamespace" ) ) {
+					this.appNamespace = parser.nextText();
 				}
 				else if (tagName.equals("error")) {
 					parser = parseErrorAttributes(parser);
@@ -95,7 +100,7 @@ public class CommandRequest extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		CommandRequest clone = new CommandRequest( methodName, parameters, parameterTypes, commandId, instanceId );
+		CommandRequest clone = new CommandRequest( methodName, parameters, parameterTypes, commandId, instanceId, appNamespace );
 		clone.cloneBasicAttributes( clone );
 
 		return clone;
@@ -128,6 +133,10 @@ public class CommandRequest extends XMPPBean {
 		sb.append( "<instanceId>" )
 			.append( this.instanceId )
 			.append( "</instanceId>" );
+
+		sb.append( "<appNamespace>" )
+			.append( this.appNamespace )
+			.append( "</appNamespace>" );
 
 		sb = appendErrorPayload(sb);
 
@@ -176,6 +185,14 @@ public class CommandRequest extends XMPPBean {
 
 	public void setInstanceId( String instanceId ) {
 		this.instanceId = instanceId;
+	}
+
+	public String getAppNamespace() {
+		return this.appNamespace;
+	}
+
+	public void setAppNamespace( String appNamespace ) {
+		this.appNamespace = appNamespace;
 	}
 
 }

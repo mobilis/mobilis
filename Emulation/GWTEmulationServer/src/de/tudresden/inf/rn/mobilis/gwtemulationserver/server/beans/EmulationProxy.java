@@ -2,6 +2,7 @@ package de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans;
 
 import java.util.List;
 
+import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 public class EmulationProxy {
 
@@ -31,11 +32,11 @@ public class EmulationProxy {
 		return out;
 	}
 
-	public void Command( String toJid, String methodName, List< String > parameters, List< String > parameterTypes, int commandId, String instanceId, IXMPPCallback< CommandAck > callback ) {
+	public void Command( String toJid, String methodName, List< String > parameters, List< String > parameterTypes, int commandId, String instanceId, String appNamespace, IXMPPCallback< CommandAck > callback ) {
 		if ( null == _bindingStub || null == callback )
 			return;
 
-		CommandRequest out = new CommandRequest( methodName, parameters, parameterTypes, commandId, instanceId );
+		CommandRequest out = new CommandRequest( methodName, parameters, parameterTypes, commandId, instanceId, appNamespace );
 		out.setTo( toJid );
 
 		_bindingStub.sendXMPPBean( out, callback );

@@ -1,5 +1,6 @@
 package de.tudresden.inf.rn.mobilis.emulation.clientstub;
 
+import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 public class EmulationProxy {
 
