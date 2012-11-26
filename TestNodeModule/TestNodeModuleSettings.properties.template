@@ -3,3 +3,6 @@ xmppserver=mobilis.inf.tu-dresden.de
 xmpplogin=yourloginwithoutserverandresource
 xmppresource=optionalresource
 xmpppass=yourpass
+
+# list application namespace <-> path mappings here
+com.my.app=/users/xyz/bin/myApp/app.jar
