@@ -44,6 +44,8 @@ public class TestNodeModule {
 	private static String xmppPass = "testnodemodule";
 	private static String xmppResource = "";
 	
+	private static boolean serverless = false;
+	
 	private static String xmppJid = "";
 	
 	private static XMPPConnection con;
@@ -55,6 +57,8 @@ public class TestNodeModule {
 	
 	/**
 	 * @param args
+	 * 				Only used if running in serverless mode (set serverless=true) in
+	 * 				settings file.
 	 * 				args[0] is the count of the application instances which shall be started,
 	 * 				args[1] is the path to the actual JAR file. Any additional
 	 * 				parameters are put into subsequent elements of args.
@@ -81,35 +85,37 @@ public class TestNodeModule {
 			System.exit(1);
 		}
 		
-		System.out.println("Starting " + args[0] + " instances of " + args[1]);
-		final String[] cmd = new String[1 + args.length];
-		cmd[0] = System.getProperty("java.home") + "/bin/java";
-		cmd[1] = "-jar";
-		for (int i = 1; i < args.length; i++) {
-			cmd[i+1] = args[i];
-		}
-		
-		int instanceCount = 0;
-		try {
-			instanceCount = Integer.parseInt(args[0]);
-		} catch (NumberFormatException e) {
-			System.out.println("Couldn't parse instance count! Assuming 1.");
-			e.printStackTrace();
-			instanceCount = 1;
-		}
-		for (int i = 1; i <= instanceCount; i++) {
-			
-			String[] cmd2 = cmd.clone();
-			for (int j = 3; j < cmd.length; j++) {
-				cmd2[j] = cmd[j].replace("%in%", String.valueOf(i));
+		// testing code for serverless mode
+		if (serverless) {
+			System.out.println("Starting " + args[0] + " instances of " + args[1]);
+			final String[] cmd = new String[1 + args.length];
+			cmd[0] = System.getProperty("java.home") + "/bin/java";
+			cmd[1] = "-jar";
+			for (int i = 1; i < args.length; i++) {
+				cmd[i+1] = args[i];
 			}
 			
-			TestApplicationRunnable testApplicationRunnable = new TestApplicationRunnable(i, cmd2);
-			appInstances.put("app"+i, testApplicationRunnable);
-			
-			new Thread(testApplicationRunnable).start();
-			
-			// TODO: remove this test code
+			int instanceCount = 0;
+			try {
+				instanceCount = Integer.parseInt(args[0]);
+			} catch (NumberFormatException e) {
+				System.out.println("Couldn't parse instance count! Assuming 1.");
+				e.printStackTrace();
+				instanceCount = 1;
+			}
+			for (int i = 1; i <= instanceCount; i++) {
+				
+				String[] cmd2 = cmd.clone();
+				for (int j = 3; j < cmd.length; j++) {
+					cmd2[j] = cmd[j].replace("%in%", String.valueOf(i));
+				}
+				
+				TestApplicationRunnable testApplicationRunnable = new TestApplicationRunnable(String.valueOf(i), cmd2);
+				appInstances.put("app"+i, testApplicationRunnable);
+				
+				new Thread(testApplicationRunnable).start();
+				
+				// TODO: remove this test code
 //			try {
 //				Thread.sleep(3000);
 //			} catch (InterruptedException e) {
@@ -117,6 +123,7 @@ public class TestNodeModule {
 //				e.printStackTrace();
 //			}
 //			testApplicationRunnable.stop();
+			}
 		}
 
 	}
@@ -133,10 +140,15 @@ public class TestNodeModule {
 			e.printStackTrace();
 		}
 		
-		xmppServer = properties.getProperty("xmppserver").trim();
-		xmppLogin = properties.getProperty("xmpplogin").trim();
-		xmppResource = properties.getProperty("xmppresource").trim();
-		xmppPass = properties.getProperty("xmpppass").trim();
+		// TODO: only set values if getProperty() != null
+		serverless = Boolean.parseBoolean(properties.getProperty("serverless").trim());
+		
+		if (!serverless) {
+			xmppServer = properties.getProperty("xmppserver").trim();
+			xmppLogin = properties.getProperty("xmpplogin").trim();
+			xmppResource = properties.getProperty("xmppresource").trim();
+			xmppPass = properties.getProperty("xmpppass").trim();
+		}
 	}
 
 	private static void connectToXMPP() {
@@ -231,7 +243,7 @@ public class TestNodeModule {
 			command.methodName = in.getMethodName();
 			command.parameters = (String[]) in.getParameters().toArray();
 			command.parameterTypes = (String[]) in.getParameterTypes().toArray();
-			appInstances.get(in.getInstanceId()).postCommand(command);
+			appInstances.get(in.getAppNamespace() + "_" + in.getInstanceId()).postCommand(command);
 			return new CommandAck();
 		}
 
@@ -249,7 +261,7 @@ public class TestNodeModule {
 
 		@Override
 		public void onLog(LogRequest in) {
-			File log = appInstances.get(in.getInstanceId()).getLogFile();
+			File log = appInstances.get(in.getAppNamespace() + "_" + in.getInstanceId()).getLogFile();
 			
 			if (log != null && log.canRead() && log.exists()) {
 				// initiate file transfer

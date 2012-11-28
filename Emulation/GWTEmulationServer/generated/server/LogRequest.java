@@ -4,11 +4,13 @@ import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.Array
 
 public class LogRequest extends XMPPBean {
 
+	private String appNamespace = null;
 	private String instanceId = null;
 
 
-	public LogRequest( String instanceId ) {
+	public LogRequest( String appNamespace, String instanceId ) {
 		super();
+		this.appNamespace = appNamespace;
 		this.instanceId = instanceId;
 
 		this.setType( XMPPBean.TYPE_GET );
@@ -30,6 +32,9 @@ public class LogRequest extends XMPPBean {
 				
 				if (tagName.equals(getChildElement())) {
 					parser.next();
+				}
+				else if (tagName.equals( "appNamespace" ) ) {
+					this.appNamespace = parser.nextText();
 				}
 				else if (tagName.equals( "instanceId" ) ) {
 					this.instanceId = parser.nextText();
@@ -71,7 +76,7 @@ public class LogRequest extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		LogRequest clone = new LogRequest( instanceId );
+		LogRequest clone = new LogRequest( appNamespace, instanceId );
 		clone.cloneBasicAttributes( clone );
 
 		return clone;
@@ -80,6 +85,10 @@ public class LogRequest extends XMPPBean {
 	@Override
 	public String payloadToXML() {
 		StringBuilder sb = new StringBuilder();
+
+		sb.append( "<appNamespace>" )
+			.append( this.appNamespace )
+			.append( "</appNamespace>" );
 
 		sb.append( "<instanceId>" )
 			.append( this.instanceId )
@@ -90,6 +99,14 @@ public class LogRequest extends XMPPBean {
 		return sb.toString();
 	}
 
+
+	public String getAppNamespace() {
+		return this.appNamespace;
+	}
+
+	public void setAppNamespace( String appNamespace ) {
+		this.appNamespace = appNamespace;
+	}
 
 	public String getInstanceId() {
 		return this.instanceId;

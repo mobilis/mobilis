@@ -18,31 +18,31 @@ import de.tudresden.inf.rn.mobsda.performance.client.exception.RunMethodExceptio
 
 public class TestApplicationRunnable implements Runnable {
 
-	private int instanceNumber;
+	private String appName;
 	private String[] cmd;
 	private RMITestNodeClient run;
 	private Object monitor = new Object();
 	private ConcurrentLinkedQueue<Command> commands = new ConcurrentLinkedQueue<Command>();
 	private boolean shallExecute = true;
 	
-	public TestApplicationRunnable(int instanceNumber, String[] cmd) {
-		this.instanceNumber = instanceNumber;
+	public TestApplicationRunnable(String appName, String[] cmd) {
+		this.appName = appName;
 		this.cmd = cmd;
 	}
 	
 	@Override
 	public void run() {
 		// create working directory
-		File workingDir = new File("app" + instanceNumber);
+		File workingDir = new File("app" + appName);
 		workingDir.mkdir();
 
 		// create application command file
-		File commandFile = new File("app" + instanceNumber + "/app" + instanceNumber + ".command");
+		File commandFile = new File("app" + appName + "/app" + appName + ".command");
 		commandFile.delete();
 		try {
 			commandFile.createNewFile();
 		} catch (IOException e1) {
-			System.out.println("Couldn't create new command file for instance " + instanceNumber);
+			System.out.println("Couldn't create new command file for instance " + appName);
 			e1.printStackTrace();
 			return;
 		}
@@ -56,7 +56,7 @@ public class TestApplicationRunnable implements Runnable {
 					Files.write(commandFile.toPath(), (s + " ").getBytes(Charset.defaultCharset()), StandardOpenOption.APPEND, StandardOpenOption.WRITE);
 			}
 		} catch (IOException e) {
-			System.out.println("Couldn't write to command file for instance " + instanceNumber);
+			System.out.println("Couldn't write to command file for instance " + appName);
 			e.printStackTrace();
 			return;
 		}
@@ -73,11 +73,11 @@ public class TestApplicationRunnable implements Runnable {
 //		}
 		
 		// run application command file
-		System.out.println("Starting instance " + instanceNumber);
+		System.out.println("Starting instance " + appName);
 		try {
 			Desktop.getDesktop().open(commandFile);
 		} catch (IOException e1) {
-			System.out.println("Couldn't open command file for instance " + instanceNumber + "!");
+			System.out.println("Couldn't open command file for instance " + appName + "!");
 			e1.printStackTrace();
 			return;
 		}
@@ -91,7 +91,7 @@ public class TestApplicationRunnable implements Runnable {
 		}	
 		
 		// set up RMI
-        String stubName = "TestNodeClient_app" + instanceNumber;
+        String stubName = "TestNodeClient_app" + appName;
         Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry();
