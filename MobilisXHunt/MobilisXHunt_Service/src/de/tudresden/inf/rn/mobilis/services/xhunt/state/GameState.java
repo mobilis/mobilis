@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universit�t Dresden
+ * Copyright (C) 2010 Technische Universität Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,10 @@ import de.tudresden.inf.rn.mobilis.services.xhunt.XHunt;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.XHuntPlayer;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayersResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.RoundStatusInfo;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.RoundStatusResponse;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 /**

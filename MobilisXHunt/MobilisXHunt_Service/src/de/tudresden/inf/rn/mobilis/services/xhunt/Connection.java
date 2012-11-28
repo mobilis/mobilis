@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universit�t Dresden
+ * Copyright (C) 2010 Technische Universität Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,6 @@ import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.IMobilisXHuntOutgoing;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.JoinGameRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.JoinGameResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationRequest;
@@ -78,6 +77,7 @@ import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdateTicketsResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UsedTicketsRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UsedTicketsResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.state.GameStateGameOver;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;

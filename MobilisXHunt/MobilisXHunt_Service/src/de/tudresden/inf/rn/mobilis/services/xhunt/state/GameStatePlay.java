@@ -35,7 +35,6 @@ import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.DepartureDataRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.DepartureDataResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationInfo;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayerExitRequest;
@@ -46,6 +45,7 @@ import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TargetRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TicketAmount;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UsedTicketsInfo;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UsedTicketsRequest;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 /**

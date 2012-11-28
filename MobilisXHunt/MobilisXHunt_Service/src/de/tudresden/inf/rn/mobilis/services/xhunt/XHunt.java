@@ -33,9 +33,9 @@ import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
 import de.tudresden.inf.rn.mobilis.services.xhunt.helper.LogClass;
 import de.tudresden.inf.rn.mobilis.services.xhunt.helper.SqlHelper;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.services.xhunt.services.IQListener;
 import de.tudresden.inf.rn.mobilis.services.xhunt.services.MessageService;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 
 
 /**

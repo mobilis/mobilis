@@ -2,6 +2,7 @@ package de.tudresden.inf.rn.mobilis.services.xhunt.proxy;
 
 import java.util.List;
 
+import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 public class MobilisXHuntProxy {
 
