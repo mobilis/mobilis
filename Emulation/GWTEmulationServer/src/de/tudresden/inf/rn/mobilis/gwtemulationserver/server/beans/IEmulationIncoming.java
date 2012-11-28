@@ -4,6 +4,14 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 public interface IEmulationIncoming {
 
+	void onStart( StartAck in );
+
+	void onStartError( StartRequest in);
+
+	void onStop( StopAck in );
+
+	void onStopError( StopRequest in);
+
 	XMPPBean onConnect( ConnectRequest in );
 
 	void onCommand( CommandAck in );
