@@ -17,6 +17,28 @@ public class EmulationProxy {
 	}
 
 
+	public void Start( String toJid, String packetId ) {
+		if ( null == _bindingStub )
+			return;
+
+		StartAck out = new StartAck(  );
+		out.setTo( toJid );
+		out.setId( packetId );
+
+		_bindingStub.sendXMPPBean( out );
+	}
+
+	public void Stop( String toJid, String packetId ) {
+		if ( null == _bindingStub )
+			return;
+
+		StopAck out = new StopAck(  );
+		out.setTo( toJid );
+		out.setId( packetId );
+
+		_bindingStub.sendXMPPBean( out );
+	}
+
 	public XMPPBean Connect( String toJid, IXMPPCallback< ConnectAck > callback ) {
 		if ( null == _bindingStub || null == callback )
 			return null;

@@ -15,6 +15,7 @@
 	    		</xs:complexType>
 	    	</xs:element>
 	    	<xs:element name="StartAck"/>
+	    	<xs:element name="StartError"/>
 	    	<xs:element name="StopRequest">
 	    		<xs:complexType>
 	    			<xs:sequence>
@@ -24,6 +25,7 @@
 	    		</xs:complexType>
 	    	</xs:element>
 	    	<xs:element name="StopAck"/>
+	    	<xs:element name="StopError"/>
 	        <xs:element name="ConnectRequest"/>
 	        <xs:element name="ConnectAck"/>
 	        <xs:element name="ConnectError"/>
@@ -59,6 +61,16 @@
 	    </xs:schema>
 	</msdl:types>
 	<msdl:interface name="EmuInterface">
+		<msdl:operation name="Start" pattern="http://www.w3.org/ns/wsdl/out-in">
+			<msdl:input element="tns:StartAck"/>
+			<msdl:output element="tns:StartRequest"/>
+			<msdl:infault ref="tns:StartError"/>
+		</msdl:operation>
+		<msdl:operation name="Stop" pattern="http://www.w3.org/ns/wsdl/out-in">
+			<msdl:input element="tns:StopAck"/>
+			<msdl:output element="tns:StopRequest"/>
+			<msdl:infault ref="tns:StopError"/>
+		</msdl:operation>
 	    <msdl:operation name="Connect" pattern="http://www.w3.org/ns/wsdl/in-out">
 	        <msdl:input element="tns:ConnectRequest" />
 			<msdl:output element="tns:ConnectAck" />
@@ -77,6 +89,16 @@
 	    </msdl:operation>
 	</msdl:interface>
 	<msdl:binding name="EmuBinding" interface="tns:EmuInterface" type="http://mobilis.inf.tu-dresden.de/xmpp/">
+	    <msdl:operation ref="tns:Start" xmpp:ident="emulation:iq:start">
+	    	<msdl:input xmpp:type="result"/>
+	    	<msdl:output xmpp:type="set"/>
+	    	<msdl:infault ref="tns:StartError"/>
+	    </msdl:operation>
+	    <msdl:operation ref="tns:Stop" xmpp:ident="emulation:iq:stop">
+	    	<msdl:input xmpp:type="result"/>
+	    	<msdl:output xmpp:type="set"/>
+	    	<msdl:infault ref="tns:StopError"/>
+	    </msdl:operation>
 	    <msdl:operation ref="tns:Connect" xmpp:ident="emulation:iq:connect">
 			<msdl:input xmpp:type="set" />
 			<msdl:output xmpp:type="result" />

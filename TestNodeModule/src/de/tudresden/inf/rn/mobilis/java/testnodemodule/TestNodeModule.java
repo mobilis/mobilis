@@ -28,6 +28,8 @@ import de.tudresden.inf.rn.mobilis.emulation.clientstub.ExecutionResultRequest;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.IEmulationIncoming;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.IEmulationOutgoing;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.LogRequest;
+import de.tudresden.inf.rn.mobilis.emulation.clientstub.StartRequest;
+import de.tudresden.inf.rn.mobilis.emulation.clientstub.StopRequest;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
@@ -191,6 +193,10 @@ public class TestNodeModule {
 						outBean = xmppIncomingHandler.onCommand((CommandRequest) proxy.parsePayload(new CommandRequest()));
 					} else if (proxy.isTypeOf(LogRequest.NAMESPACE, LogRequest.CHILD_ELEMENT)) {
 						xmppIncomingHandler.onLog((LogRequest) proxy.parsePayload(new LogRequest()));
+					} else if (proxy.isTypeOf(StartRequest.NAMESPACE, StartRequest.CHILD_ELEMENT)) {
+						xmppIncomingHandler.onStart((StartRequest) proxy.parsePayload(new StartRequest()));
+					} else if (proxy.isTypeOf(StopRequest.NAMESPACE, StopRequest.CHILD_ELEMENT)) {
+						xmppIncomingHandler.onStop((StopRequest) proxy.parsePayload(new StopRequest()));
 					}
 					
 					if (outBean != null) {
@@ -259,6 +265,18 @@ public class TestNodeModule {
 				System.out.println("Log file for application instance " + in.getInstanceId() + " couldn't be read!");
 			}
 			
+		}
+
+		@Override
+		public XMPPBean onStart(StartRequest in) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public XMPPBean onStop(StopRequest in) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 		
 	}

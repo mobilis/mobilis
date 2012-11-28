@@ -15,6 +15,26 @@ import java.util.List;import java.util.ArrayList;public class EmulationProxy {
 	}
 
 
+	public void Start( String toJid, String appNamespace, int instanceId, IXMPPCallback< StartAck > callback ) {
+		if ( null == _bindingStub || null == callback )
+			return;
+
+		StartRequest out = new StartRequest( appNamespace, instanceId );
+		out.setTo( toJid );
+
+		_bindingStub.sendXMPPBean( out, callback );
+	}
+
+	public void Stop( String toJid, String appNamespace, int instanceId, IXMPPCallback< StopAck > callback ) {
+		if ( null == _bindingStub || null == callback )
+			return;
+
+		StopRequest out = new StopRequest( appNamespace, instanceId );
+		out.setTo( toJid );
+
+		_bindingStub.sendXMPPBean( out, callback );
+	}
+
 	public XMPPBean Connect( String toJid, String packetId ) {
 		if ( null == _bindingStub )
 			return null;
