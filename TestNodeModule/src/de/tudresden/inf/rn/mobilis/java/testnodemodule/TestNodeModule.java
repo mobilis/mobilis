@@ -28,7 +28,9 @@ import de.tudresden.inf.rn.mobilis.emulation.clientstub.ExecutionResultRequest;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.IEmulationIncoming;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.IEmulationOutgoing;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.LogRequest;
+import de.tudresden.inf.rn.mobilis.emulation.clientstub.StartAck;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.StartRequest;
+import de.tudresden.inf.rn.mobilis.emulation.clientstub.StopAck;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.StopRequest;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
@@ -53,6 +55,7 @@ public class TestNodeModule {
 	private static TestNodeModuleSender xmppSender;
 	private static DoubleKeyMap<String, String, XMPPBean> beanPrototypes = new DoubleKeyMap<String, String, XMPPBean>(false);
 
+	private static Map<String, String> appPaths = new HashMap<String, String>();
 	private static Map<String, TestApplicationRunnable> appInstances = new HashMap<String, TestApplicationRunnable>();
 	
 	/**
@@ -148,7 +151,28 @@ public class TestNodeModule {
 			xmppLogin = properties.getProperty("xmpplogin").trim();
 			xmppResource = properties.getProperty("xmppresource").trim();
 			xmppPass = properties.getProperty("xmpppass").trim();
+			
+			// read application NS <-> path mappings
+			while (properties.propertyNames().hasMoreElements()) {
+				String propertyName = ((String) properties.propertyNames().nextElement()).trim();
+				
+				if (!propertyName.equals("serverless") &&
+						!propertyName.equals("xmppserver") &&
+						!propertyName.equals("xmpplogin") &&
+						!propertyName.equals("xmppresource") &&
+						!propertyName.equals("xmpppass")) {
+					
+					String jarPath = properties.getProperty(propertyName);
+					if (jarPath != null && jarPath != "" && new File(jarPath).exists()) {
+						appPaths.put(propertyName, jarPath);
+					} else {
+						System.out.println("Jar path " + jarPath + " specified for namespace " + propertyName +
+								" doesn/'t exist. Check the TestNodeModuleSettings.properties file. Ommiting entry...");
+					}
+				}
+			}
 		}
+		
 	}
 
 	private static void connectToXMPP() {
@@ -281,14 +305,61 @@ public class TestNodeModule {
 
 		@Override
 		public XMPPBean onStart(StartRequest in) {
-			// TODO Auto-generated method stub
-			return null;
+			String appNS = in.getAppNamespace();
+			int instanceID = in.getInstanceId();
+			String parameters = in.getParameters();
+
+			String appPath = appPaths.get(appNS);
+			
+			if (appPath == null) {
+				String errorText = "This TestNodeModule does not know the application namespace " + appNS + "!";
+				System.out.println(errorText);
+				StartRequest error = in.buildStartError(errorText);
+				return error;
+			}
+			
+			if (appInstances.containsKey(appNS + "_" + instanceID)) {
+				String errorText = "Instance " + instanceID + " of application " + appNS + " is already running!";
+				System.out.println(errorText);
+				StartRequest error = in.buildStartError(errorText);
+				return error;
+			}
+			
+			String[] cmd = (appPath + " " + parameters).trim().split(" ");
+			
+			TestApplicationRunnable runnable = new TestApplicationRunnable(appNS, cmd);
+			appInstances.put(appNS + "_" + instanceID, runnable);
+			
+			new Thread(runnable).start();
+			
+			StartAck ack = new StartAck();
+			ack.setId(in.getId());
+			ack.setTo(in.getFrom());
+			
+			return ack;
 		}
 
 		@Override
 		public XMPPBean onStop(StopRequest in) {
-			// TODO Auto-generated method stub
-			return null;
+			String appNS = in.getAppNamespace();
+			int instanceID = in.getInstanceId();
+			
+			TestApplicationRunnable app = appInstances.get(appNS + "_" + instanceID);
+			
+			if (app == null) {
+				String errorText = "Instance " + instanceID + " of application " + appNS + " is not running on this TestNodeModule!";
+				System.out.println(errorText);
+				StopRequest error = in.buildStopError(errorText);
+				return error;
+			}
+			
+			app.stop();
+			
+			StopAck ack = new StopAck();
+			ack.setId(in.getId());
+			ack.setTo(in.getFrom());
+			
+			return ack;
 		}
 		
 	}

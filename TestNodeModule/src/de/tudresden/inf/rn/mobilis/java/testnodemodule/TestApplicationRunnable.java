@@ -167,6 +167,9 @@ public class TestApplicationRunnable implements Runnable {
 		return null;
 	}
 	
+	/**
+	 * Tries to stop this application as soon as possible.
+	 */
 	public void stop() {
 		shallExecute = false;
 		synchronized(monitor) {
