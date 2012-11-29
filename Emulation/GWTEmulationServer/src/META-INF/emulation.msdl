@@ -90,6 +90,10 @@
 	    </msdl:operation>
 	</msdl:interface>
 	<msdl:binding name="EmuBinding" interface="tns:EmuInterface" type="http://mobilis.inf.tu-dresden.de/xmpp/">
+	    <msdl:fault ref="tns:StartError" xmpp:errortype="modify" xmpp:errorcondition="not-acceptable"
+	    	xmpp:errortext="Couldn't start application instance! Either the application namespace isn't known by the TestNodeModule or the instance is already running."/>
+	    <msdl:fault ref="tns:StopError" xmpp:errortype="modify" xmpp:errorcondition="not-acceptable"
+	    	xmpp:errortext="Couldn't stop application instance! Either the application namespace isn't known by the TestNodeModule or the instance was already stopped."/>
 	    <msdl:operation ref="tns:Start" xmpp:ident="emulation:iq:start">
 	    	<msdl:input xmpp:type="result"/>
 	    	<msdl:output xmpp:type="set"/>

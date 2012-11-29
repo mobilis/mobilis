@@ -102,6 +102,22 @@ public class StartRequest extends XMPPBean {
 	}
 
 
+	public StartRequest buildStartError(String detailedErrorText){
+		StartRequest fault = ( StartRequest )this.clone();
+
+		fault.setTo( this.getFrom() );
+    	fault.setId(this.getId());
+		fault.setType( XMPPBean.TYPE_ERROR );
+		fault.errorType = "modify";
+		fault.errorCondition = "not-acceptable";
+		fault.errorText = "Couldn't start application instance! Either the application namespace isn't known by the TestNodeModule or the instance is already running.";
+
+		if(null != detailedErrorText && detailedErrorText.length() > 0)
+			fault.errorText += " Detail: " + detailedErrorText;
+		
+		return fault;
+	}
+
 
 
 

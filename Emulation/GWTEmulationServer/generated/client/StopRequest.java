@@ -100,6 +100,22 @@ public class StopRequest extends XMPPBean {
 	}
 
 
+	public StopRequest buildStopError(String detailedErrorText){
+		StopRequest fault = ( StopRequest )this.clone();
+
+		fault.setTo( this.getFrom() );
+    	fault.setId(this.getId());
+		fault.setType( XMPPBean.TYPE_ERROR );
+		fault.errorType = "modify";
+		fault.errorCondition = "not-acceptable";
+		fault.errorText = "Couldn't stop application instance! Either the application namespace isn't known by the TestNodeModule or the instance was already stopped.";
+
+		if(null != detailedErrorText && detailedErrorText.length() > 0)
+			fault.errorText += " Detail: " + detailedErrorText;
+		
+		return fault;
+	}
+
 
 
 
