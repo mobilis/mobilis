@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/XMLEmulationScript" xmlns:tns="http://www.example.org/XMLEmulationScript" elementFormDefault="qualified">
+	
+	<complexType name="parameter">
+		<choice>
+			<element name="int" type="int"/>
+			<element name="string" type="string"/>
+			<element name="boolean" type="boolean"/>
+			<element name="double" type="double"/>
+		</choice>
+	</complexType>
+	
+	<complexType name="instance">
+		<sequence>
+			<element name="varName" type="string"/>
+			<element name="appNS" type="string"/>
+			<element name="instanceId" type="int"/>
+		</sequence>
+	</complexType>
+	
+	<complexType name="for">
+		<sequence>
+			<element name="times" type="int"/>
+		</sequence>
+	</complexType>
+	
+	<!-- issues code to be sent to the client in one block-->
+	<simpleType name="block">
+	</simpleType>
+	
+	<complexType name="structure">
+		<sequence>
+			<choice>
+				<element name="for" type="tns:for"/>
+				<!-- other loop types? -->
+				<element name="block" type="tns:block"/>
+			</choice>
+			<element name="command" type="tns:command" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+	
+	<complexType name="testCommand">
+		<sequence>
+            <element name="instance" type="tns:instance"/>
+            <element name="methodName" type="string"/>
+			<element name="parameter" type="tns:parameter" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+	
+	<complexType name="setupMethods">
+		<choice>
+			<element name="start"/>
+			<element name="stop"/>
+		</choice>
+	</complexType>
+	
+	<complexType name="setupCommand">
+		<sequence>
+			<element name="instance" type="tns:instance"/>
+			<element name="methodName" type="tns:setupMethods"/>
+		</sequence>
+	</complexType>
+	
+	<complexType name="atomicCommand">
+		<choice>
+			<element name="testCommand" type="tns:testCommand"/>
+			<element name="setupCommand" type="tns:setupCommand"/>
+		</choice>
+	</complexType>
+	
+	<complexType name="command">
+		<choice>
+			<sequence>
+				<element name="atomicCommand" type="tns:atomicCommand"/>
+			</sequence>
+			<element name="structure" type="tns:structure"/>
+		</choice>
+	</complexType>
+
+    <element name="script">
+    	<complexType>
+    		<sequence>
+    			<element name="command" type="tns:command" minOccurs="0" maxOccurs="unbounded"/>
+    		</sequence>
+    	</complexType>
+    </element>
+</schema>
