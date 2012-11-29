@@ -6,12 +6,14 @@ public class StartRequest extends XMPPBean {
 
 	private String appNamespace = null;
 	private int instanceId = Integer.MIN_VALUE;
+	private String parameters = null;
 
 
-	public StartRequest( String appNamespace, int instanceId ) {
+	public StartRequest( String appNamespace, int instanceId, String parameters ) {
 		super();
 		this.appNamespace = appNamespace;
 		this.instanceId = instanceId;
+		this.parameters = parameters;
 
 		this.setType( XMPPBean.TYPE_SET );
 	}
@@ -38,6 +40,9 @@ public class StartRequest extends XMPPBean {
 				}
 				else if (tagName.equals( "instanceId" ) ) {
 					this.instanceId = Integer.parseInt( parser.nextText() );
+				}
+				else if (tagName.equals( "parameters" ) ) {
+					this.parameters = parser.nextText();
 				}
 				else if (tagName.equals("error")) {
 					parser = parseErrorAttributes(parser);
@@ -76,7 +81,7 @@ public class StartRequest extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		StartRequest clone = new StartRequest( appNamespace, instanceId );
+		StartRequest clone = new StartRequest( appNamespace, instanceId, parameters );
 		clone.cloneBasicAttributes( clone );
 
 		return clone;
@@ -93,6 +98,10 @@ public class StartRequest extends XMPPBean {
 		sb.append( "<instanceId>" )
 			.append( this.instanceId )
 			.append( "</instanceId>" );
+
+		sb.append( "<parameters>" )
+			.append( this.parameters )
+			.append( "</parameters>" );
 
 		sb = appendErrorPayload(sb);
 
@@ -134,6 +143,14 @@ public class StartRequest extends XMPPBean {
 
 	public void setInstanceId( int instanceId ) {
 		this.instanceId = instanceId;
+	}
+
+	public String getParameters() {
+		return this.parameters;
+	}
+
+	public void setParameters( String parameters ) {
+		this.parameters = parameters;
 	}
 
 }

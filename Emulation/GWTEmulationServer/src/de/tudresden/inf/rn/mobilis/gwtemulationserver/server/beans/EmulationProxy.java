@@ -19,11 +19,11 @@ public class EmulationProxy {
 	}
 
 
-	public void Start( String toJid, String appNamespace, int instanceId, IXMPPCallback< StartAck > callback ) {
+	public void Start( String toJid, String appNamespace, int instanceId, String parameters, IXMPPCallback< StartAck > callback ) {
 		if ( null == _bindingStub || null == callback )
 			return;
 
-		StartRequest out = new StartRequest( appNamespace, instanceId );
+		StartRequest out = new StartRequest( appNamespace, instanceId, parameters );
 		out.setTo( toJid );
 
 		_bindingStub.sendXMPPBean( out, callback );
