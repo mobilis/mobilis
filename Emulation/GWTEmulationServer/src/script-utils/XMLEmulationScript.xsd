@@ -24,16 +24,14 @@
 		</sequence>
 	</complexType>
 	
-	<!-- issues code to be sent to the client in one block-->
-	<simpleType name="block">
-	</simpleType>
 	
 	<complexType name="structure">
 		<sequence>
 			<choice>
 				<element name="for" type="tns:for"/>
 				<!-- other loop types? -->
-				<element name="block" type="tns:block"/>
+				<!-- a block issues code to be sent to the client in one block-->
+				<element name="block"/>
 			</choice>
 			<element name="command" type="tns:command" minOccurs="0" maxOccurs="unbounded"/>
 		</sequence>
