@@ -20,70 +20,100 @@
 		</sequence>
 	</complexType>
 	
-	<complexType name="for">
-		<sequence>
-			<element name="times" type="int"/>
-		</sequence>
+	<element name="for" substitutionGroup="tns:structure" type="tns:forType"/>
+	
+	<complexType name="forType">
+		<complexContent>
+			<extension base="tns:structureType">
+				<attribute name="times" type="int"/>
+			</extension>		
+		</complexContent>
 	</complexType>
 	
+	<element name="structure" abstract="true" substitutionGroup="tns:command" type="tns:structureType"/>
 	
-	<complexType name="structure">
-		<sequence>
-			<choice>
-				<element name="for" type="tns:for"/>
-				<!-- other loop types? -->
-				<!-- a block issues code to be sent to the client in one block-->
-				<element name="block"/>
-			</choice>
-			<element name="command" type="tns:command" minOccurs="0" maxOccurs="unbounded"/>
-		</sequence>
+	<complexType name="structureType">
+		<complexContent>
+			<extension base="tns:commandType">
+				<sequence>
+					<choice>
+						<element ref="tns:for"/>
+						<!-- other loop types? -->
+						<!-- a block issues code to be sent to the client in one block-->
+						<element name="block"/>
+					</choice>
+					<element ref="tns:command" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
 	</complexType>
 	
-	<complexType name="testCommand">
-		<sequence>
-            <element name="instance" type="string"/>
-            <element name="methodName" type="string"/>
-			<element name="parameter" type="tns:parameter" minOccurs="0" maxOccurs="unbounded"/>
-		</sequence>
+	<element name="testCommand" substitutionGroup="tns:atomicCommand" type="tns:testCommandType"/>
+	
+	<complexType name="testCommandType">
+		<complexContent>
+			<extension base="tns:atomicCommandType">
+				<sequence>
+		            <element name="instance" type="string"/>
+		            <element name="methodName" type="string"/>
+					<element name="parameter" type="tns:parameter" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
 	</complexType>
 	
-	<complexType name="setupMethods">
-		<choice>
-			<element name="start"/>
-			<element name="stop"/>
-		</choice>
+	<element name="setupMethods" abstract="true" type="tns:setupMethodsType"/>
+		
+	<complexType name="setupMethodsType"/>
+	
+	<element name="start" substitutionGroup="tns:setupMethods" type="tns:startType"/>
+	
+	<complexType name="startType">
+		<complexContent>
+			<extension base="tns:setupMethodsType"/>
+		</complexContent>
 	</complexType>
 	
-	<complexType name="setupCommand">
-		<choice>
-			<element name="var" type="tns:instance"/>
-			<sequence>
-				<element name="instance" type="string"/>
-				<element name="methodName" type="tns:setupMethods"/>
-			</sequence>
-		</choice>
+	<element name="stop" substitutionGroup="tns:setupMethods" type="tns:stopType"/>
+	
+	<complexType name="stopType">
+		<complexContent>
+			<extension base="tns:setupMethodsType"/>
+		</complexContent>
 	</complexType>
 	
-	<complexType name="atomicCommand">
-		<choice>
-			<element name="testCommand" type="tns:testCommand"/>
-			<element name="setupCommand" type="tns:setupCommand"/>
-		</choice>
+	<element name="setupCommand" substitutionGroup="tns:atomicCommand" type="tns:setupCommandType"/>
+	
+	<complexType name="setupCommandType">
+		<complexContent>
+			<extension base="tns:atomicCommandType">
+				<choice>
+					<element name="var" type="tns:instance"/>
+					<sequence>
+						<element name="instance" type="string"/>
+						<element ref="tns:setupMethods"/>
+					</sequence>
+				</choice>
+			</extension>
+		</complexContent>
 	</complexType>
 	
-	<complexType name="command">
-		<choice>
-			<sequence>
-				<element name="atomicCommand" type="tns:atomicCommand"/>
-			</sequence>
-			<element name="structure" type="tns:structure"/>
-		</choice>
+	<element name="atomicCommand" abstract="true" substitutionGroup="tns:command" type="tns:atomicCommandType"/>
+	
+	<complexType name="atomicCommandType">
+		<complexContent>
+			<extension base="tns:commandType"/>	
+		</complexContent>
 	</complexType>
+	
+	<element name="command" abstract="true" type="tns:commandType"/>
+	
+	<complexType name="commandType"/>
 
     <element name="script">
     	<complexType>
     		<sequence>
-    			<element name="command" type="tns:command" minOccurs="0" maxOccurs="unbounded"/>
+    			<element ref="tns:command" minOccurs="0" maxOccurs="unbounded"/>
     		</sequence>
     	</complexType>
     </element>
