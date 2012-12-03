@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/XMLEmulationScript" xmlns:tns="http://www.example.org/XMLEmulationScript" elementFormDefault="qualified">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://mobilis.inf.tu-dresden.de/XMLEmulationScript" xmlns:tns="http://mobilis.inf.tu-dresden.de/XMLEmulationScript" elementFormDefault="qualified">
 	
 	<complexType name="parameter">
-		<choice>
-			<element name="int" type="int"/>
-			<element name="string" type="string"/>
-			<element name="boolean" type="boolean"/>
-			<element name="double" type="double"/>
-		</choice>
+		<sequence>
+			<choice maxOccurs="unbounded">
+				<element name="int" type="int"/>
+				<element name="string" type="string"/>
+				<element name="boolean" type="boolean"/>
+				<element name="double" type="double"/>
+			</choice>
+		</sequence>
 	</complexType>
 	
 	<complexType name="instance">
@@ -39,7 +41,7 @@
 	
 	<complexType name="testCommand">
 		<sequence>
-            <element name="instance" type="tns:instance"/>
+            <element name="instance" type="string"/>
             <element name="methodName" type="string"/>
 			<element name="parameter" type="tns:parameter" minOccurs="0" maxOccurs="unbounded"/>
 		</sequence>
@@ -53,10 +55,13 @@
 	</complexType>
 	
 	<complexType name="setupCommand">
-		<sequence>
-			<element name="instance" type="tns:instance"/>
-			<element name="methodName" type="tns:setupMethods"/>
-		</sequence>
+		<choice>
+			<element name="var" type="tns:instance"/>
+			<sequence>
+				<element name="instance" type="string"/>
+				<element name="methodName" type="tns:setupMethods"/>
+			</sequence>
+		</choice>
 	</complexType>
 	
 	<complexType name="atomicCommand">
