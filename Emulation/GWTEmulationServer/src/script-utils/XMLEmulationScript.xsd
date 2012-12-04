@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://mobilis.inf.tu-dresden.de/XMLEmulationScript" xmlns:tns="http://mobilis.inf.tu-dresden.de/XMLEmulationScript" elementFormDefault="qualified">
 	
-	<complexType name="parameter">
+	<complexType name="parameterType">
 		<sequence>
 			<choice maxOccurs="unbounded">
 				<element name="int" type="int"/>
@@ -12,12 +12,10 @@
 		</sequence>
 	</complexType>
 	
-	<complexType name="instance">
-		<sequence>
-			<element name="varName" type="string"/>
-			<element name="appNS" type="string"/>
-			<element name="instanceId" type="int"/>
-		</sequence>
+	<complexType name="instanceType">
+		<attribute name="varName" type="string"/>
+		<attribute name="appNS" type="string"/>
+		<attribute name="instanceId" type="int"/>
 	</complexType>
 	
 	<element name="for" substitutionGroup="tns:structure" type="tns:forType"/>
@@ -56,7 +54,7 @@
 				<sequence>
 		            <element name="instance" type="string"/>
 		            <element name="methodName" type="string"/>
-					<element name="parameter" type="tns:parameter" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="parameter" type="tns:parameterType" minOccurs="0" maxOccurs="unbounded"/>
 				</sequence>
 			</extension>
 		</complexContent>
@@ -88,7 +86,7 @@
 		<complexContent>
 			<extension base="tns:atomicCommandType">
 				<choice>
-					<element name="var" type="tns:instance"/>
+					<element name="instanceVarDeclaration" type="tns:instanceType"/>
 					<sequence>
 						<element name="instance" type="string"/>
 						<element ref="tns:setupMethods"/>

@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <script xmlns="http://mobilis.inf.tu-dresden.de/XMLEmulationScript" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://mobilis.inf.tu-dresden.de/XMLEmulationScript XMLEmulationScript.xsd">
    <setupCommand>
-       <var>
-           <varName>PALatency1</varName>
-           <appNS>de.tudresden.inf.rn.mobsda.performance.latency</appNS>
-           <instanceId>1</instanceId>
-       </var>
+       <instanceVarDeclaration varName="PALatency1" appNS="de.tudresden.inf.rn.mobsda.performance.latency" instanceId="1"/>
    </setupCommand>
    <setupCommand>
        <instance>PALatency1</instance>
