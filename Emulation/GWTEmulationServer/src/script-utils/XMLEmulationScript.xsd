@@ -46,9 +46,9 @@
 		</complexContent>
 	</complexType>
 	
-	<element name="testCommand" substitutionGroup="tns:atomicCommand" type="tns:testCommandType"/>
+	<element name="appCommand" substitutionGroup="tns:atomicCommand" type="tns:appCommandType"/>
 	
-	<complexType name="testCommandType">
+	<complexType name="appCommandType">
 		<complexContent>
 			<extension base="tns:atomicCommandType">
 				<sequence>
