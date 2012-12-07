@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universit�t Dresden
+ * Copyright (C) 2010 Technische Universität Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,9 +144,9 @@ public class CommandInterpreter {
 		bean.setType( XMPPBean.TYPE_SET );
 		
 		BeanSenderReceiver<PrepareServiceUploadBean, PrepareServiceUploadBean> bsr = new BeanSenderReceiver<PrepareServiceUploadBean, PrepareServiceUploadBean>(_controller.getConnection().getXMPPConnection());
-		PrepareServiceUploadBean result = bsr.exchange(bean, new PrepareServiceUploadBean(), 0);
-		if (result != null) {
-			return result.AcceptServiceUpload;
+		XMPPBean result = bsr.exchange(bean, new PrepareServiceUploadBean(), 0);
+		if (result != null && result.getType() != XMPPBean.TYPE_ERROR) {
+			return ((PrepareServiceUploadBean) result).AcceptServiceUpload;
 		} else {
 			return false;
 		}
@@ -164,6 +164,13 @@ public class CommandInterpreter {
 		
 		_controller.getConnection()
 			.sendXMPPBean( bean );
+	}
+	
+
+	public void printXMPPBeanErrorInformation(XMPPBean resultBean) {
+		System.err.println("\tError type: " + resultBean.errorType);
+		System.err.println("\tError condition: " + resultBean.errorCondition);
+		System.err.println("\tError message: " + resultBean.errorText);
 	}
 
 }
