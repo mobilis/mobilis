@@ -21,6 +21,7 @@ package de.tudresden.inf.rn.mobilis.xmpp.mxj;
 
 import org.jivesoftware.smack.PacketCollector;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.filter.OrFilter;
 import org.jivesoftware.smack.provider.ProviderManager;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
@@ -40,6 +41,7 @@ public class BeanSenderReceiver<B extends XMPPBean, ResultBeanType extends XMPPB
 	private XMPPConnection connection;
 	private B beanOut;
 	private PacketCollector beanCollector;
+	private ResultBeanType resultBeanPrototype;
 	private int retryCount = 0;
 	private int maxRetries = 0;
 
@@ -51,10 +53,11 @@ public class BeanSenderReceiver<B extends XMPPBean, ResultBeanType extends XMPPB
 		this.timeout = timeout;
 	}
 	
-	public ResultBeanType exchange(B bean, ResultBeanType resultBeanPrototype, int retries) {
+	public XMPPBean exchange(B bean, ResultBeanType resultBeanPrototype, int retries) {
 		synchronized (this) {
 			this.maxRetries = retries;
 			this.beanOut = bean;
+			this.resultBeanPrototype = resultBeanPrototype;
 			try {
 				// add IQ provider if necessary
 				if (ProviderManager.getInstance().getIQProvider(resultBeanPrototype.getChildElement(), resultBeanPrototype.getNamespace()) == null) {
@@ -68,22 +71,27 @@ public class BeanSenderReceiver<B extends XMPPBean, ResultBeanType extends XMPPB
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			// catch response bean and error bean
 			this.beanCollector = connection.createPacketCollector(
-					new BeanFilterAdapter(resultBeanPrototype));
+					new OrFilter(new BeanFilterAdapter(resultBeanPrototype), new BeanFilterAdapter(bean)));
 			return sendAndWaitForResult(bean);
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	private ResultBeanType sendAndWaitForResult(B bean) {
+	private XMPPBean sendAndWaitForResult(B bean) {
 		if (bean != null) {
 			this.connection.sendPacket(new BeanIQAdapter(bean));
 		}
 		while(true) {
 			BeanIQAdapter adapter = (BeanIQAdapter)(beanCollector.nextResult(timeout));
-			ResultBeanType resultBean = null;
+			XMPPBean resultBean = null;
 			if (adapter != null) {
-				resultBean = (ResultBeanType)(adapter.getBean());
+				if (adapter.getBean().getNamespace().equals(resultBeanPrototype.getNamespace())) {
+					resultBean = (ResultBeanType)(adapter.getBean());
+				} else {
+					resultBean = (B)(adapter.getBean());
+				}
 			}
 			if (adapter == null || resultBean == null) {
 				if (retryCount >= maxRetries) {
