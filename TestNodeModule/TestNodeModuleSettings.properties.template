@@ -4,6 +4,8 @@ xmpplogin=yourloginwithoutserverandresource
 xmppresource=optionalresource
 xmpppass=yourpass
 
+emulationserverjid=emulation@mobilis.inf.tu-dresden.de
+
 serverless=false
 
 # list application namespace <-> path mappings here

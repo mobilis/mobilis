@@ -38,6 +38,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanSenderReceiver;
 
 public class TestNodeModule {
 	
@@ -45,6 +46,7 @@ public class TestNodeModule {
 	private static String xmppLogin = "testnodemodule";
 	private static String xmppPass = "testnodemodule";
 	private static String xmppResource = "";
+	private static String emulationServerJid = "emulation@mobilis.inf.tu-dresden.de";
 	
 	private static boolean serverless = false;
 	
@@ -74,6 +76,8 @@ public class TestNodeModule {
 		
 		connectToXMPP();
 		registerPacketListener();
+		
+		connectToEmulationServer();
 		
 		xmppIncomingHandler = new TestNodeModuleIncomingHandler();
 		xmppSender = new TestNodeModuleSender();
@@ -151,6 +155,7 @@ public class TestNodeModule {
 			xmppLogin = properties.getProperty("xmpplogin").trim();
 			xmppResource = properties.getProperty("xmppresource").trim();
 			xmppPass = properties.getProperty("xmpppass").trim();
+			emulationServerJid = properties.getProperty("emulationServer").trim();
 			
 			// read application NS <-> path mappings
 			while (properties.propertyNames().hasMoreElements()) {
@@ -200,6 +205,28 @@ public class TestNodeModule {
 		}
 		
 		System.out.println("Successfully logged in to XMPP server " + xmppServer + " .");
+	}
+	
+	private static void connectToEmulationServer() {
+		ConnectRequest request = new ConnectRequest();
+		request.setTo(emulationServerJid);
+		BeanSenderReceiver<ConnectRequest, ConnectAck> bsr = new BeanSenderReceiver<>(con);
+		XMPPBean resultBean = bsr.exchange(request, new ConnectAck(), 3);
+		
+		if (resultBean != null) {
+			if (resultBean.getType() == XMPPBean.TYPE_ERROR) {
+				System.err.println("Couldn't connect to Emulation Server! Error details as follows: ");
+				System.err.println("\tError type: " + resultBean.errorType);
+				System.err.println("\tError condition: " + resultBean.errorCondition);
+				System.err.println("\tError message: " + resultBean.errorText);
+				System.exit(1);
+			} else {
+				System.out.println("Successfully connected to Emulation Server.");
+			}
+		} else {
+			System.err.println("Couldn't connect to Emulation Server! Exiting...");
+			System.exit(1);
+		}
 	}
 	
 	private static void registerPacketListener() {
