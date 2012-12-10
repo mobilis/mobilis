@@ -15,15 +15,15 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for forType complex type.
+ * <p>Java class for waitType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="forType">
+ * &lt;complexType name="waitType">
  *   &lt;complexContent>
- *     &lt;extension base="{http://mobilis.inf.tu-dresden.de/XMLEmulationScript}structureType">
- *       &lt;attribute name="times" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *     &lt;extension base="{http://mobilis.inf.tu-dresden.de/XMLEmulationScript}controlCommandType">
+ *       &lt;attribute name="time" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -32,36 +32,36 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "forType")
-public class ForType
-    extends StructureType
+@XmlType(name = "waitType")
+public class WaitType
+    extends ControlCommandType
 {
 
     @XmlAttribute
-    protected Integer times;
+    protected Integer time;
 
     /**
-     * Gets the value of the times property.
+     * Gets the value of the time property.
      * 
      * @return
      *     possible object is
      *     {@link Integer }
      *     
      */
-    public Integer getTimes() {
-        return times;
+    public Integer getTime() {
+        return time;
     }
 
     /**
-     * Sets the value of the times property.
+     * Sets the value of the time property.
      * 
      * @param value
      *     allowed object is
      *     {@link Integer }
      *     
      */
-    public void setTimes(Integer value) {
-        this.times = value;
+    public void setTime(Integer value) {
+        this.time = value;
     }
 
 }

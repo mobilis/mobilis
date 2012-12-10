@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <script xmlns="http://mobilis.inf.tu-dresden.de/XMLEmulationScript" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://mobilis.inf.tu-dresden.de/XMLEmulationScript XMLEmulationScript.xsd">
 	<instance varName="myAppInstance" appNS="my.app" instanceId="1"/>
-	<instance varName="mySecondAppInstance" appNS="my.second.app" instanceId="1"/>
-	<start instance="mySecondInstance"/>
+	<instanceGroup varName="mySecondAppInstanceGroup" appNS="my.second.app" firstInstanceId="1" instanceCount="20"/>
+	<start instance="mySecondAppInstanceGroup"/>
 	<appCommand>
-			<instance>mySecondAppInstance</instance>
+			<instance>mySecondAppInstanceGroup</instance>
 			<methodName>doSomething</methodName>
 	</appCommand>
-	<start instance="myAppInstance"/>
+	<start instance="mySecondAppInstanceGroup"/>
 	<appCommand>
 	    <instance>myAppInstance</instance>
 	    <methodName>doSomethingElse</methodName>
@@ -18,7 +18,7 @@
 	    </parameter>
 	</appCommand>
 	<appCommand>
-	    <instance>mySecondAppInstance</instance>
+	    <instance>mySecondAppInstanceGroup</instance>
 	    <methodName>doSomethingEntirelyElse</methodName>
 	    <parameter>
 	        <double>42.00</double>
@@ -26,5 +26,5 @@
 	</appCommand>
 	<wait time="10000"/>
 	<stop instance="myAppInstance"/>
-	<stop instance="mySecondAppInstance"/>
+	<stop instance="mySecondAppInstanceGroup"/>
 </script>

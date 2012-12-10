@@ -12,14 +12,34 @@
 		</sequence>
 	</complexType>
 	
-	<element name="instance" substitutionGroup="tns:setupCommand" type="tns:instanceType"/>
+	<element name="abstractInstance" abstract="true" substitutionGroup="tns:setupCommand" type="tns:abstractInstanceType"/>
+	
+	<complexType name="abstractInstanceType">
+		<complexContent>
+			<extension base="tns:setupCommandType">
+				<attribute name="varName" type="NCName"/>
+				<attribute name="appNS" type="string"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<element name="instance" substitutionGroup="tns:abstractInstance" type="tns:instanceType"/>
 	
 	<complexType name="instanceType">
 		<complexContent>
-			<extension base="tns:setupCommandType">
-				<attribute name="varName" type="string"/>
-				<attribute name="appNS" type="string"/>
+			<extension base="tns:abstractInstanceType">
 				<attribute name="instanceId" type="int"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<element name="instanceGroup" substitutionGroup="tns:abstractInstance" type="tns:instanceGroupType"/>
+	
+	<complexType name="instanceGroupType">
+		<complexContent>
+			<extension base="tns:abstractInstanceType">
+				<attribute name="instanceCount" type="int"/>
+				<attribute name="firstInstanceId" type="int"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -58,7 +78,7 @@
 		<complexContent>
 			<extension base="tns:atomicCommandType">
 				<sequence>
-		            <element name="instance" type="string"/>
+		            <element name="instance" type="NCName"/>
 		            <element name="methodName" type="string"/>
 					<element name="parameter" type="tns:parameterType" minOccurs="0" maxOccurs="unbounded"/>
 				</sequence>
@@ -67,11 +87,11 @@
 	</complexType>
 	
 	<element name="setupMethods" abstract="true" substitutionGroup="tns:setupCommand" type="tns:setupMethodsType"/>
-		
+	
 	<complexType name="setupMethodsType">
 		<complexContent>
 			<extension base="tns:setupCommandType">
-				<attribute name="instance" type="string"/>
+				<attribute name="instance" type="NCName"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -136,5 +156,13 @@
     			<element ref="tns:command" minOccurs="0" maxOccurs="unbounded"/>
     		</sequence>
     	</complexType>
+    	<keyref name="instanceVarKeyRef" refer="tns:instanceKey">
+			<selector xpath="./*"/>
+			<field xpath="@instance"/>
+		</keyref>
+		<unique name="instanceKey">
+			<selector xpath="./tns:instance|tns:instanceGroup"/>
+			<field xpath="@varName"/>
+		</unique>
     </element>
 </schema>

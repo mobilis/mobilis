@@ -19,15 +19,16 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
- * <p>Java class for setupMethodsType complex type.
+ * <p>Java class for abstractInstanceType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="setupMethodsType">
+ * &lt;complexType name="abstractInstanceType">
  *   &lt;complexContent>
  *     &lt;extension base="{http://mobilis.inf.tu-dresden.de/XMLEmulationScript}setupCommandType">
- *       &lt;attribute name="instance" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       &lt;attribute name="varName" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       &lt;attribute name="appNS" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -36,42 +37,68 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "setupMethodsType")
+@XmlType(name = "abstractInstanceType")
 @XmlSeeAlso({
-    StopType.class,
-    StartType.class
+    InstanceGroupType.class,
+    InstanceType.class
 })
-public class SetupMethodsType
+public class AbstractInstanceType
     extends SetupCommandType
 {
 
     @XmlAttribute
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
-    protected String instance;
+    protected String varName;
+    @XmlAttribute
+    protected String appNS;
 
     /**
-     * Gets the value of the instance property.
+     * Gets the value of the varName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getInstance() {
-        return instance;
+    public String getVarName() {
+        return varName;
     }
 
     /**
-     * Sets the value of the instance property.
+     * Sets the value of the varName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setInstance(String value) {
-        this.instance = value;
+    public void setVarName(String value) {
+        this.varName = value;
+    }
+
+    /**
+     * Gets the value of the appNS property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAppNS() {
+        return appNS;
+    }
+
+    /**
+     * Sets the value of the appNS property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAppNS(String value) {
+        this.appNS = value;
     }
 
 }
