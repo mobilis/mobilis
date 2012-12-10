@@ -96,6 +96,24 @@
 		</complexContent>
 	</complexType>
 	
+	<element name="wait" substitutionGroup="tns:controlCommand" type="tns:waitType"/>
+	
+	<complexType name="waitType">
+		<complexContent>
+			<extension base="tns:controlCommandType">
+				<attribute name="time" type="int"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<element name="controlCommand" substitutionGroup="tns:atomicCommand" type="tns:controlCommandType" abstract="true"/>
+	
+	<complexType name="controlCommandType">
+		<complexContent>
+			<extension base="tns:atomicCommandType"/>
+		</complexContent>
+	</complexType>
+	
 	<element name="atomicCommand" abstract="true" substitutionGroup="tns:command" type="tns:atomicCommandType"/>
 	
 	<complexType name="atomicCommandType">

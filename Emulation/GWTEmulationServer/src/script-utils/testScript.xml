@@ -34,6 +34,7 @@
            <double>42.00</double>
        </parameter>
    </appCommand>
+   <wait time="10000"/>
    <setupCommand>
    	   <instance>myAppInstance</instance>
    	   <stop/>
