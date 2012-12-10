@@ -12,10 +12,16 @@
 		</sequence>
 	</complexType>
 	
+	<element name="instance" substitutionGroup="tns:setupCommand" type="tns:instanceType"/>
+	
 	<complexType name="instanceType">
-		<attribute name="varName" type="string"/>
-		<attribute name="appNS" type="string"/>
-		<attribute name="instanceId" type="int"/>
+		<complexContent>
+			<extension base="tns:setupCommandType">
+				<attribute name="varName" type="string"/>
+				<attribute name="appNS" type="string"/>
+				<attribute name="instanceId" type="int"/>
+			</extension>
+		</complexContent>
 	</complexType>
 	
 	<element name="for" substitutionGroup="tns:structure" type="tns:forType"/>
@@ -60,9 +66,15 @@
 		</complexContent>
 	</complexType>
 	
-	<element name="setupMethods" abstract="true" type="tns:setupMethodsType"/>
+	<element name="setupMethods" abstract="true" substitutionGroup="tns:setupCommand" type="tns:setupMethodsType"/>
 		
-	<complexType name="setupMethodsType"/>
+	<complexType name="setupMethodsType">
+		<complexContent>
+			<extension base="tns:setupCommandType">
+				<attribute name="instance" type="string"/>
+			</extension>
+		</complexContent>
+	</complexType>
 	
 	<element name="start" substitutionGroup="tns:setupMethods" type="tns:startType"/>
 	
@@ -80,19 +92,11 @@
 		</complexContent>
 	</complexType>
 	
-	<element name="setupCommand" substitutionGroup="tns:atomicCommand" type="tns:setupCommandType"/>
+	<element name="setupCommand" abstract="true" substitutionGroup="tns:atomicCommand" type="tns:setupCommandType"/>
 	
 	<complexType name="setupCommandType">
 		<complexContent>
-			<extension base="tns:atomicCommandType">
-				<choice>
-					<element name="instanceVarDeclaration" type="tns:instanceType"/>
-					<sequence>
-						<element name="instance" type="string"/>
-						<element ref="tns:setupMethods"/>
-					</sequence>
-				</choice>
-			</extension>
+			<extension base="tns:atomicCommandType"/>
 		</complexContent>
 	</complexType>
 	

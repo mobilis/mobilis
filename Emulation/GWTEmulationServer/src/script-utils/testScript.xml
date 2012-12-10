@@ -1,46 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <script xmlns="http://mobilis.inf.tu-dresden.de/XMLEmulationScript" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://mobilis.inf.tu-dresden.de/XMLEmulationScript XMLEmulationScript.xsd">
-   <setupCommand>
-       <instanceVarDeclaration varName="myAppInstance" appNS="my.app" instanceId="1"/>
-   </setupCommand>
-   <setupCommand>
-   		<instanceVarDeclaration varName="mySecondAppInstance" appNS="my.second.app" instanceId="1"/>
-   </setupCommand>
-   <setupCommand>
-   	   <instance>mySecondInstance</instance>
-   	   <start/>
-   </setupCommand>
-   <appCommand>
-   		<instance>mySecondAppInstance</instance>
-   		<methodName>doSomething</methodName>
-   </appCommand>
-   <setupCommand>
-       <instance>myAppInstance</instance>
-       <start/>
-   </setupCommand>
-   <appCommand>
-       <instance>myAppInstance</instance>
-       <methodName>doSomethingElse</methodName>
-       <parameter>
-           <string>hello</string>
-           <boolean>true</boolean>
-           <int>15</int>
-       </parameter>
-   </appCommand>
-   <appCommand>
-       <instance>mySecondAppInstance</instance>
-       <methodName>doSomethingEntirelyElse</methodName>
-       <parameter>
-           <double>42.00</double>
-       </parameter>
-   </appCommand>
-   <wait time="10000"/>
-   <setupCommand>
-   	   <instance>myAppInstance</instance>
-   	   <stop/>
-   </setupCommand>
-   <setupCommand>
-   	   <instance>mySecondAppInstance</instance>
-   	   <stop/>
-   </setupCommand>
+	<instance varName="myAppInstance" appNS="my.app" instanceId="1"/>
+	<instance varName="mySecondAppInstance" appNS="my.second.app" instanceId="1"/>
+	<start instance="mySecondInstance"/>
+	<appCommand>
+			<instance>mySecondAppInstance</instance>
+			<methodName>doSomething</methodName>
+	</appCommand>
+	<start instance="myAppInstance"/>
+	<appCommand>
+	    <instance>myAppInstance</instance>
+	    <methodName>doSomethingElse</methodName>
+	    <parameter>
+	        <string>hello</string>
+	        <boolean>true</boolean>
+	        <int>15</int>
+	    </parameter>
+	</appCommand>
+	<appCommand>
+	    <instance>mySecondAppInstance</instance>
+	    <methodName>doSomethingEntirelyElse</methodName>
+	    <parameter>
+	        <double>42.00</double>
+	    </parameter>
+	</appCommand>
+	<wait time="10000"/>
+	<stop instance="myAppInstance"/>
+	<stop instance="mySecondAppInstance"/>
 </script>
