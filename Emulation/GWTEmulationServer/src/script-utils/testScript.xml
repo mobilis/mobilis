@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- XMLEmulationScript.xsd can also be found on http://mobilis.inf.tu-dresden.de/XMLEmulationScript/XMLEmulationScript.xsd -->
 <script xmlns="http://mobilis.inf.tu-dresden.de/XMLEmulationScript" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://mobilis.inf.tu-dresden.de/XMLEmulationScript XMLEmulationScript.xsd">
 	<!-- define application instances -->
 	<instance varName="doctor" appNS="time.lord" instanceId="1"/>
