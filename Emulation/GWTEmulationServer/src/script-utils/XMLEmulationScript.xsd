@@ -78,10 +78,10 @@
 		<complexContent>
 			<extension base="tns:atomicCommandType">
 				<sequence>
-		            <element name="instance" type="NCName"/>
-		            <element name="methodName" type="string"/>
 					<element name="parameter" type="tns:parameterType" minOccurs="0" maxOccurs="unbounded"/>
 				</sequence>
+	            <attribute name="instance" type="NCName" use="required"/>
+	            <attribute name="methodName" type="string" use="required"/>
 			</extension>
 		</complexContent>
 	</complexType>

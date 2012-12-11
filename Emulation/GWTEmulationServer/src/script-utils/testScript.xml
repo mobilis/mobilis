@@ -3,23 +3,16 @@
 	<instance varName="myAppInstance" appNS="my.app" instanceId="1"/>
 	<instanceGroup varName="mySecondAppInstanceGroup" appNS="my.second.app" firstInstanceId="1" instanceCount="20"/>
 	<start instance="mySecondAppInstanceGroup"/>
-	<appCommand>
-			<instance>mySecondAppInstanceGroup</instance>
-			<methodName>doSomething</methodName>
-	</appCommand>
+	<appCommand instance="mySecondAppInstanceGroup" methodName="doSomething"/>
 	<start instance="mySecondAppInstanceGroup"/>
-	<appCommand>
-	    <instance>myAppInstance</instance>
-	    <methodName>doSomethingElse</methodName>
+	<appCommand instance="myAppInstance" methodName="doSomethingElse">
 	    <parameter>
 	        <string>hello</string>
 	        <boolean>true</boolean>
 	        <int>15</int>
 	    </parameter>
 	</appCommand>
-	<appCommand>
-	    <instance>mySecondAppInstanceGroup</instance>
-	    <methodName>doSomethingEntirelyElse</methodName>
+	<appCommand instance="mySecondAppInstanceGroup" methodName="doSomethingEntirelyElse">
 	    <parameter>
 	        <double>42.00</double>
 	    </parameter>
