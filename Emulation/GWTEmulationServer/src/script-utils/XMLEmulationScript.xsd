@@ -17,8 +17,8 @@
 	<complexType name="abstractInstanceType">
 		<complexContent>
 			<extension base="tns:setupCommandType">
-				<attribute name="varName" type="NCName"/>
-				<attribute name="appNS" type="string"/>
+				<attribute name="varName" type="NCName" use="required"/>
+				<attribute name="appNS" type="string" use="required"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -28,7 +28,7 @@
 	<complexType name="instanceType">
 		<complexContent>
 			<extension base="tns:abstractInstanceType">
-				<attribute name="instanceId" type="int"/>
+				<attribute name="instanceId" type="int" use="required"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -38,8 +38,8 @@
 	<complexType name="instanceGroupType">
 		<complexContent>
 			<extension base="tns:abstractInstanceType">
-				<attribute name="instanceCount" type="int"/>
-				<attribute name="firstInstanceId" type="int"/>
+				<attribute name="instanceCount" type="int" use="required"/>
+				<attribute name="firstInstanceId" type="int" use="required"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -49,7 +49,7 @@
 	<complexType name="forType">
 		<complexContent>
 			<extension base="tns:structureType">
-				<attribute name="times" type="int"/>
+				<attribute name="times" type="int" use="required"/>
 			</extension>		
 		</complexContent>
 	</complexType>
@@ -91,7 +91,7 @@
 	<complexType name="setupMethodsType">
 		<complexContent>
 			<extension base="tns:setupCommandType">
-				<attribute name="instance" type="NCName"/>
+				<attribute name="instance" type="NCName" use="required"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -125,7 +125,7 @@
 	<complexType name="waitType">
 		<complexContent>
 			<extension base="tns:controlCommandType">
-				<attribute name="time" type="int"/>
+				<attribute name="time" type="int" use="required"/>
 			</extension>
 		</complexContent>
 	</complexType>
