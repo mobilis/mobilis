@@ -1,23 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <script xmlns="http://mobilis.inf.tu-dresden.de/XMLEmulationScript" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://mobilis.inf.tu-dresden.de/XMLEmulationScript XMLEmulationScript.xsd">
-	<instance varName="myAppInstance" appNS="my.app" instanceId="1"/>
-	<instanceGroup varName="mySecondAppInstanceGroup" appNS="my.second.app" firstInstanceId="1" instanceCount="20"/>
-	<start instance="mySecondAppInstanceGroup"/>
-	<appCommand instance="mySecondAppInstanceGroup" methodName="doSomething"/>
-	<start instance="mySecondAppInstanceGroup"/>
-	<appCommand instance="myAppInstance" methodName="doSomethingElse">
+	<!-- define application instances -->
+	<instance varName="doctor" appNS="time.lord" instanceId="1"/>
+	<instanceGroup varName="daleks" appNS="evil.race" firstInstanceId="1" instanceCount="20"/>
+	
+	<!-- start instances -->
+	<start instance="daleks"/>
+	<start instance="doctor"/>
+	
+	<!-- run commands -->
+	<appCommand instance="daleks" methodName="exterminate"/>
+	<for times="20">
+		<appCommand instance="doctor" methodName="useScrewdriver"/>
+	</for>
+	
+	<!-- wait 10 seconds -->
+	<wait time="10000"/>
+	
+	<!-- run some more commands -->
+	<appCommand instance="doctor" methodName="rescueWorld">
 	    <parameter>
-	        <string>hello</string>
+	        <string>tardis</string>
 	        <boolean>true</boolean>
-	        <int>15</int>
+	        <int>42</int>
 	    </parameter>
 	</appCommand>
-	<appCommand instance="mySecondAppInstanceGroup" methodName="doSomethingEntirelyElse">
+	<appCommand instance="daleks" methodName="roll">
 	    <parameter>
 	        <double>42.00</double>
 	    </parameter>
 	</appCommand>
-	<wait time="10000"/>
-	<stop instance="myAppInstance"/>
-	<stop instance="mySecondAppInstanceGroup"/>
+	
+	<!-- stop instances -->
+	<stop instance="daleks"/>
+	<stop instance="doctor"/>
 </script>
