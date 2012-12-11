@@ -80,7 +80,7 @@
 		<complexContent>
 			<extension base="tns:atomicCommandType">
 				<sequence>
-					<element name="parameter" type="tns:parameterType" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="parameter" type="tns:parameterType" minOccurs="0" maxOccurs="1"/>
 				</sequence>
 	            <attribute name="instance" type="NCName" use="required"/>
 	            <attribute name="methodName" type="string" use="required"/>
