@@ -10,20 +10,18 @@ package de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for instanceType complex type.
+ * <p>Java class for blockType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="instanceType">
+ * &lt;complexType name="blockType">
  *   &lt;complexContent>
- *     &lt;extension base="{http://mobilis.inf.tu-dresden.de/XMLEmulationScript}abstractInstanceType">
- *       &lt;attribute name="instanceId" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *     &lt;extension base="{http://mobilis.inf.tu-dresden.de/XMLEmulationScript}structureType">
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -32,28 +30,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "instanceType")
-public class InstanceType
-    extends AbstractInstanceType
+@XmlType(name = "blockType")
+public class BlockType
+    extends StructureType
 {
 
-    @XmlAttribute(required = true)
-    protected int instanceId;
-
-    /**
-     * Gets the value of the instanceId property.
-     * 
-     */
-    public int getInstanceId() {
-        return instanceId;
-    }
-
-    /**
-     * Sets the value of the instanceId property.
-     * 
-     */
-    public void setInstanceId(int value) {
-        this.instanceId = value;
-    }
 
 }

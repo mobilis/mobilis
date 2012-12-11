@@ -54,18 +54,20 @@
 		</complexContent>
 	</complexType>
 	
+	<element name="block" substitutionGroup="tns:structure" type="tns:blockType"/>
+	
+	<complexType name="blockType">
+		<complexContent>
+			<extension base="tns:structureType"/>
+		</complexContent>
+	</complexType>
+	
 	<element name="structure" abstract="true" substitutionGroup="tns:command" type="tns:structureType"/>
 	
 	<complexType name="structureType">
 		<complexContent>
 			<extension base="tns:commandType">
 				<sequence>
-					<choice>
-						<element ref="tns:for"/>
-						<!-- other loop types? -->
-						<!-- a block issues code to be sent to the client in one block-->
-						<element name="block"/>
-					</choice>
 					<element ref="tns:command" minOccurs="0" maxOccurs="unbounded"/>
 				</sequence>
 			</extension>
