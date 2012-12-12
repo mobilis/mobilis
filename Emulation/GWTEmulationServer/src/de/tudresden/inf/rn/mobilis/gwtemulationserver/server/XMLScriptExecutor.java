@@ -108,9 +108,20 @@ public abstract class XMLScriptExecutor {
 				System.err.println("Ingoring command as instance type is unknown!");
 			}
 		} else if (command instanceof WaitType) {
-			// TODO: implement sleep routine
+			try {
+				Thread.sleep(((WaitType) command).getTime());
+			} catch (InterruptedException e) {
+				System.err.println("Sleep timer has been interrupted!");
+				e.printStackTrace();
+			}
 		} else if (command instanceof ForType) {
-			// TODO: implement iteration
+			ForType forStructure = (ForType) command;
+			for (int i = 0; i < forStructure.getTimes(); i++) {
+				for (int j = 0; j < forStructure.getCommand().size(); j++) {
+					CommandType innerCommand = forStructure.getCommand().get(j).getValue();
+					executeCommand(innerCommand);
+				}
+			}
 		} else if (command instanceof BlockType) {
 			// TODO: send all commands for block execution - implementation details not completely defined atm
 		}
