@@ -127,7 +127,7 @@
 	<complexType name="waitType">
 		<complexContent>
 			<extension base="tns:controlCommandType">
-				<attribute name="time" type="int" use="required"/>
+				<attribute name="time" type="long" use="required"/>
 			</extension>
 		</complexContent>
 	</complexType>
