@@ -48,7 +48,7 @@ import java.util.List;import java.util.ArrayList;public class EmulationProxy {
 		return out;
 	}
 
-	public void Command( String toJid, String methodName, List< String > parameters, List< String > parameterTypes, int commandId, String instanceId, String appNamespace, IXMPPCallback< CommandAck > callback ) {
+	public void Command( String toJid, String methodName, List< String > parameters, List< String > parameterTypes, int commandId, int instanceId, String appNamespace, IXMPPCallback< CommandAck > callback ) {
 		if ( null == _bindingStub || null == callback )
 			return;
 
@@ -71,7 +71,7 @@ import java.util.List;import java.util.ArrayList;public class EmulationProxy {
 		return out;
 	}
 
-	public void Log( String toJid, String appNamespace, String instanceId ) {
+	public void Log( String toJid, String appNamespace, int instanceId ) {
 		if ( null == _bindingStub )
 			return;
 

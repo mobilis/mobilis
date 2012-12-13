@@ -38,12 +38,13 @@
 	                    <xs:element name="parameters" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 	                    <xs:element name="parameterTypes" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 	                    <xs:element name="commandId" type="xs:int" minOccurs="1" maxOccurs="1"/>
-	                    <xs:element name="instanceId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+	                    <xs:element name="instanceId" type="xs:int" minOccurs="1" maxOccurs="1"/>
 	                    <xs:element name="appNamespace" type="xs:string" minOccurs="1" maxOccurs="1"/>
 	                </xs:sequence>
 	            </xs:complexType>
 	        </xs:element>         
 	        <xs:element name="CommandAck"/>
+	        <xs:element name="CommandError"/>
 	        <xs:element name="ExecutionResultRequest">
 	            <xs:complexType>
 	                <xs:sequence>
@@ -57,7 +58,7 @@
 	        	<xs:complexType>
 	        		<xs:sequence>
 	        			<xs:element name="appNamespace" type="xs:string" minOccurs="1" maxOccurs="1"/>
-	        			<xs:element name="instanceId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+	        			<xs:element name="instanceId" type="xs:int" minOccurs="1" maxOccurs="1"/>
 	        		</xs:sequence>
 	        	</xs:complexType>
 	        </xs:element>
@@ -82,6 +83,7 @@
 	    <msdl:operation name="Command" pattern="http://www.w3.org/ns/wsdl/out-in">
 			<msdl:input element="tns:CommandAck" />
 			<msdl:output element="tns:CommandRequest" />
+			<msdl:infault ref="tns:CommandError"/>
 		</msdl:operation>
 		<msdl:operation name="ExecutionResult" pattern="http://www.w3.org/ns/wsdl/in-out">
 	        <msdl:input element="tns:ExecutionResultRequest" />
@@ -96,6 +98,8 @@
 	    	xmpp:errortext="Couldn't start application instance! Either the application namespace isn't known by the TestNodeModule or the instance is already running."/>
 	    <msdl:fault ref="tns:StopError" xmpp:errortype="modify" xmpp:errorcondition="not-acceptable"
 	    	xmpp:errortext="Couldn't stop application instance! Either the application namespace isn't known by the TestNodeModule or the instance was already stopped."/>
+	    <msdl:fault ref="tns:CommandError" xmpp:errortype="modify" xmpp:errorcondition="not-acceptable"
+	    	xmpp:errortext="Error during execution of application command! This is most commonly because the application namespace isn't known by the TestNodeModule."/>
 	    <msdl:operation ref="tns:Start" xmpp:ident="emulation:iq:start">
 	    	<msdl:input xmpp:type="result"/>
 	    	<msdl:output xmpp:type="set"/>
@@ -114,6 +118,7 @@
 		<msdl:operation ref="tns:Command" xmpp:ident="emulation:iq:command">
 			<msdl:input xmpp:type="result" />
 			<msdl:output xmpp:type="set" />
+			<msdl:infault ref="tns:CommandError"/>
 		</msdl:operation>
 		<msdl:operation ref="tns:ExecutionResult" xmpp:ident="emulation:iq:executionresult">
 			<msdl:input xmpp:type="set" />

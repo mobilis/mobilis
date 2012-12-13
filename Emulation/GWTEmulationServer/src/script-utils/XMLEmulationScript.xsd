@@ -102,7 +102,11 @@
 	
 	<complexType name="startType">
 		<complexContent>
-			<extension base="tns:setupMethodsType"/>
+			<extension base="tns:setupMethodsType">
+				<sequence>
+					<element name="parameters" type="tns:parameterType" minOccurs="0" maxOccurs="1"/>
+				</sequence>
+			</extension>
 		</complexContent>
 	</complexType>
 	

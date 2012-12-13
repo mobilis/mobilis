@@ -4,9 +4,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
+import java.rmi.AccessException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -32,6 +37,12 @@ import de.tudresden.inf.rn.mobilis.emulation.clientstub.StartAck;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.StartRequest;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.StopAck;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.StopRequest;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.XMLScriptExecutor;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.AppCommandType;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.InstanceType;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.ParameterType;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.StartType;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.StopType;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
@@ -69,68 +80,83 @@ public class TestNodeModule {
 	 * 				parameters are put into subsequent elements of args.
 	 * 				args[1]...args[args.length] may use %in% which will be replaced by the
 	 * 				application instance number at runtime.
+	 *				Alternatively args[0] is the script file (ending by .xml!) to be executed
+	 *				with this module. This also only works in serverless mode.
 	 */
 	public static void main(String[] args) {
 		
 		fetchSettings();
-		
-		connectToXMPP();
-		registerPacketListener();
-		
-		connectToEmulationServer();
-		
-		xmppIncomingHandler = new TestNodeModuleIncomingHandler();
-		xmppSender = new TestNodeModuleSender();
+		if (!serverless) {
+			connectToXMPP();
+			registerPacketListener();
+			
+			connectToEmulationServer();
+			
+			xmppIncomingHandler = new TestNodeModuleIncomingHandler();
+			xmppSender = new TestNodeModuleSender();
+		}
 		
 		// set up RMI
 		try {
 			LocateRegistry.createRegistry(1099);
 		} catch (RemoteException e1) {
 			// TODO Auto-generated catch block
-			System.out.println("Couldn't create RMI registry!");
+			System.err.println("Couldn't create RMI registry!");
 			e1.printStackTrace();
 			System.exit(1);
 		}
 		
 		// testing code for serverless mode
 		if (serverless) {
-			System.out.println("Starting " + args[0] + " instances of " + args[1]);
-			final String[] cmd = new String[1 + args.length];
-			cmd[0] = System.getProperty("java.home") + "/bin/java";
-			cmd[1] = "-jar";
-			for (int i = 1; i < args.length; i++) {
-				cmd[i+1] = args[i];
-			}
-			
-			int instanceCount = 0;
-			try {
-				instanceCount = Integer.parseInt(args[0]);
-			} catch (NumberFormatException e) {
-				System.out.println("Couldn't parse instance count! Assuming 1.");
-				e.printStackTrace();
-				instanceCount = 1;
-			}
-			for (int i = 1; i <= instanceCount; i++) {
+			if (args[0].trim().toLowerCase().endsWith(".xml")) {
+				File scriptFile = new File(args[0].trim());
 				
-				String[] cmd2 = cmd.clone();
-				for (int j = 3; j < cmd.length; j++) {
-					cmd2[j] = cmd[j].replace("%in%", String.valueOf(i));
+				if (new TestNodeModuleScriptExecutor().execute(scriptFile)) {
+					System.out.println("Finished running script!");
+				} else {
+					System.err.println("Cannot read script!");
 				}
 				
-				TestApplicationRunnable testApplicationRunnable = new TestApplicationRunnable(String.valueOf(i), cmd2);
-				appInstances.put("app"+i, testApplicationRunnable);
+			} else {
+				System.out.println("Starting " + args[0] + " instances of " + args[1]);
+				final String[] cmd = new String[1 + args.length];
+				cmd[0] = System.getProperty("java.home") + "/bin/java";
+				cmd[1] = "-jar";
+				for (int i = 1; i < args.length; i++) {
+					cmd[i+1] = args[i];
+				}
 				
-				new Thread(testApplicationRunnable).start();
-				
-				// TODO: remove this test code
-//			try {
-//				Thread.sleep(3000);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			testApplicationRunnable.stop();
+				int instanceCount = 0;
+				try {
+					instanceCount = Integer.parseInt(args[0]);
+				} catch (NumberFormatException e) {
+					System.err.println("Couldn't parse instance count! Assuming 1.");
+					e.printStackTrace();
+					instanceCount = 1;
+				}
+				for (int i = 1; i <= instanceCount; i++) {
+					
+					String[] cmd2 = cmd.clone();
+					for (int j = 3; j < cmd.length; j++) {
+						cmd2[j] = cmd[j].replace("%in%", String.valueOf(i));
+					}
+					
+					TestApplicationRunnable testApplicationRunnable = new TestApplicationRunnable(String.valueOf(i), cmd2);
+					appInstances.put("app"+i, testApplicationRunnable);
+					
+					new Thread(testApplicationRunnable).start();
+					
+					// TODO: remove this test code
+		//			try {
+		//				Thread.sleep(3000);
+		//			} catch (InterruptedException e) {
+		//				// TODO Auto-generated catch block
+		//				e.printStackTrace();
+		//			}
+		//			testApplicationRunnable.stop();
+				}
 			}
+			
 		}
 
 	}
@@ -139,33 +165,29 @@ public class TestNodeModule {
 		Properties properties = new Properties();
 		try {
 			properties.load(new FileInputStream("TestNodeModuleSettings.properties"));
-		} catch (FileNotFoundException e) {
-			System.out.println("Couldn\'t find settings file. Using default settings.");
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.out.println("Couldn\'t read settings file. Using default settings.");
-			e.printStackTrace();
-		}
 		
-		// TODO: only set values if getProperty() != null
-		serverless = Boolean.parseBoolean(properties.getProperty("serverless").trim());
-		
-		if (!serverless) {
-			xmppServer = properties.getProperty("xmppserver").trim();
-			xmppLogin = properties.getProperty("xmpplogin").trim();
-			xmppResource = properties.getProperty("xmppresource").trim();
-			xmppPass = properties.getProperty("xmpppass").trim();
-			emulationServerJid = properties.getProperty("emulationServer").trim();
+			// TODO: only set values if getProperty() != null
+			serverless = Boolean.parseBoolean(properties.getProperty("serverless").trim());
+			
+			if (!serverless) {
+				xmppServer = properties.getProperty("xmppserver").trim();
+				xmppLogin = properties.getProperty("xmpplogin").trim();
+				xmppResource = properties.getProperty("xmppresource").trim();
+				xmppPass = properties.getProperty("xmpppass").trim();
+				emulationServerJid = properties.getProperty("emulationserverjid").trim();
+				
+			}
 			
 			// read application NS <-> path mappings
-			while (properties.propertyNames().hasMoreElements()) {
-				String propertyName = ((String) properties.propertyNames().nextElement()).trim();
+			for (Enumeration<?> e = properties.propertyNames(); e.hasMoreElements();) {
+				String propertyName = ((String) e.nextElement()).trim();
 				
 				if (!propertyName.equals("serverless") &&
 						!propertyName.equals("xmppserver") &&
 						!propertyName.equals("xmpplogin") &&
 						!propertyName.equals("xmppresource") &&
-						!propertyName.equals("xmpppass")) {
+						!propertyName.equals("xmpppass") &&
+						!propertyName.equals("emulationserverjid")) {
 					
 					String jarPath = properties.getProperty(propertyName);
 					if (jarPath != null && jarPath != "" && new File(jarPath).exists()) {
@@ -176,8 +198,13 @@ public class TestNodeModule {
 					}
 				}
 			}
+		} catch (FileNotFoundException e) {
+			System.out.println("Couldn\'t find settings file. Using default settings.");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("Couldn\'t read settings file. Using default settings.");
+			e.printStackTrace();
 		}
-		
 	}
 
 	private static void connectToXMPP() {
@@ -241,6 +268,109 @@ public class TestNodeModule {
 		con.addPacketListener(iqListener, filter);
 	}
 	
+	private static XMPPBean startApp(StartRequest in, String appNS,
+			int instanceID, String parameters) {
+		String appPath = appPaths.get(appNS);
+		
+		if (appPath == null) {
+			String errorText = "This TestNodeModule does not know the application namespace " + appNS + "!";
+			System.out.println(errorText);
+			if (in != null) {
+				StartRequest error = in.buildStartError(errorText);
+				return error;
+			} else {
+				return null;
+			}
+		}
+		
+		if (appInstances.containsKey(appNS + "_" + instanceID)) {
+			String errorText = "Instance " + instanceID + " of application " + appNS + " is already running!";
+			System.out.println(errorText);
+			if (in != null) {
+				StartRequest error = in.buildStartError(errorText);
+				return error;
+			} else {
+				return null;
+			}
+		}
+		
+		String[] cmd = (System.getProperty("java.home") + "/bin/java -jar " + appPath + " " + parameters).trim().split(" ");
+		
+		TestApplicationRunnable runnable = new TestApplicationRunnable(appNS + "_" + instanceID, cmd);
+		appInstances.put(appNS + "_" + instanceID, runnable);
+		
+		new Thread(runnable).start();
+		
+		if (in != null) {
+			StartAck ack = new StartAck();
+			ack.setId(in.getId());
+			ack.setTo(in.getFrom());
+			
+			return ack;
+		} else {
+			return null;
+		}
+	}
+
+	private static XMPPBean stopApp(StopRequest in, String appNS, int instanceID) {
+		TestApplicationRunnable app = appInstances.get(appNS + "_" + instanceID);
+		
+		if (app == null) {
+			String errorText = "Instance " + instanceID + " of application " + appNS + " is not running on this TestNodeModule!";
+			System.err.println(errorText);
+			if (in != null) {
+				StopRequest error = in.buildStopError(errorText);
+				return error;
+			} else {
+				return null;
+			}
+		}
+		
+		app.stop();
+		
+		if (in != null) {
+			StopAck ack = new StopAck();
+			ack.setId(in.getId());
+			ack.setTo(in.getFrom());
+			
+			return ack;
+		} else {
+			return null;
+		}
+	}
+
+	private static XMPPBean executeCommand(CommandRequest in, Command command, String appNamespace, int instanceId) {
+		try {
+			System.out.println("Registry entries: " + Arrays.toString(LocateRegistry.getRegistry().list()));
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		TestApplicationRunnable instance = appInstances.get(appNamespace + "_" + instanceId);
+		if (instance != null) {
+			instance.postCommand(command);
+		} else {
+			String errorText = "Instance " + instanceId + " of application " + appNamespace + " is not running on this TestNodeModule!";
+			System.err.println(errorText);
+			if (in != null) {
+				CommandRequest error = in.buildCommandError("errorText");
+				return error;
+			} else {
+				return null;
+			}
+		}
+		
+		if (in != null) {
+			CommandAck commandAck = new CommandAck();
+			commandAck.setId(in.getId());
+			commandAck.setTo(in.getFrom());
+			return commandAck;
+		} else {
+			return null;
+		}
+	}
+
 	private static class IQListener implements PacketListener {
 
 		@Override
@@ -294,8 +424,7 @@ public class TestNodeModule {
 			command.methodName = in.getMethodName();
 			command.parameters = (String[]) in.getParameters().toArray();
 			command.parameterTypes = (String[]) in.getParameterTypes().toArray();
-			appInstances.get(in.getAppNamespace() + "_" + in.getInstanceId()).postCommand(command);
-			return new CommandAck();
+			return executeCommand(in, command, in.getAppNamespace(), in.getInstanceId());
 		}
 
 		@Override
@@ -336,34 +465,7 @@ public class TestNodeModule {
 			int instanceID = in.getInstanceId();
 			String parameters = in.getParameters();
 
-			String appPath = appPaths.get(appNS);
-			
-			if (appPath == null) {
-				String errorText = "This TestNodeModule does not know the application namespace " + appNS + "!";
-				System.out.println(errorText);
-				StartRequest error = in.buildStartError(errorText);
-				return error;
-			}
-			
-			if (appInstances.containsKey(appNS + "_" + instanceID)) {
-				String errorText = "Instance " + instanceID + " of application " + appNS + " is already running!";
-				System.out.println(errorText);
-				StartRequest error = in.buildStartError(errorText);
-				return error;
-			}
-			
-			String[] cmd = (appPath + " " + parameters).trim().split(" ");
-			
-			TestApplicationRunnable runnable = new TestApplicationRunnable(appNS, cmd);
-			appInstances.put(appNS + "_" + instanceID, runnable);
-			
-			new Thread(runnable).start();
-			
-			StartAck ack = new StartAck();
-			ack.setId(in.getId());
-			ack.setTo(in.getFrom());
-			
-			return ack;
+			return startApp(in, appNS, instanceID, parameters);
 		}
 
 		@Override
@@ -371,22 +473,7 @@ public class TestNodeModule {
 			String appNS = in.getAppNamespace();
 			int instanceID = in.getInstanceId();
 			
-			TestApplicationRunnable app = appInstances.get(appNS + "_" + instanceID);
-			
-			if (app == null) {
-				String errorText = "Instance " + instanceID + " of application " + appNS + " is not running on this TestNodeModule!";
-				System.out.println(errorText);
-				StopRequest error = in.buildStopError(errorText);
-				return error;
-			}
-			
-			app.stop();
-			
-			StopAck ack = new StopAck();
-			ack.setId(in.getId());
-			ack.setTo(in.getFrom());
-			
-			return ack;
+			return stopApp(in, appNS, instanceID);
 		}
 		
 	}
@@ -404,6 +491,65 @@ public class TestNodeModule {
 				IXMPPCallback<? extends XMPPBean> callback) {
 //			waitingCallbacks.put(out.getId(), callback);
 			con.sendPacket(new BeanIQAdapter(out));
+		}
+		
+	}
+	
+	private static class TestNodeModuleScriptExecutor extends XMLScriptExecutor {
+
+		@Override
+		public void executeStartCommand(InstanceType instance,
+				StartType startCommand) {
+			if (instance != null) {
+				ParameterType jaxbParameters = startCommand.getParameters();
+				String parameterString = "";
+				if (jaxbParameters != null) {
+					List<Serializable> parameters = jaxbParameters.getIntOrStringOrBoolean();
+					for (int i = 0; i < parameters.size(); i++) {
+						parameterString += parameters.get(i).toString();
+					}
+					parameterString.trim();
+				}
+				startApp(null, instance.getAppNS(), instance.getInstanceId(), parameterString);
+			}
+		}
+
+		@Override
+		public void executeStopCommand(InstanceType instance,
+				StopType stopCommand) {
+			if (instance != null) {
+				stopApp(null, instance.getAppNS(), instance.getInstanceId());
+			}
+		}
+
+		@Override
+		public void executeAppCommand(InstanceType instance,
+				AppCommandType appCommand) {
+			if (instance != null) {
+				Command command = new Command();
+				command.methodName = appCommand.getMethodName();
+				
+				
+				ParameterType jaxbParameters = appCommand.getParameter();
+				if (jaxbParameters != null) {
+					List<Serializable> parameters = jaxbParameters.getIntOrStringOrBoolean();
+					String[] parameterStringArray = new String[parameters.size()];
+					String[] parameterTypesStringArray = new String[parameters.size()];
+					
+					for (int i = 0; i < parameters.size(); i++) {
+						Serializable parameter = parameters.get(i);
+						
+						parameterStringArray[i] = parameter.toString();
+						parameterTypesStringArray[i] = parameter.getClass().getName();
+					}
+					command.parameters = parameterStringArray;
+					command.parameterTypes = parameterTypesStringArray;
+				} else {
+					command.parameters = new String[0];
+					command.parameterTypes = new String[0];
+				}
+				executeCommand(null, command, instance.getAppNS(), instance.getInstanceId());
+			}
 		}
 		
 	}

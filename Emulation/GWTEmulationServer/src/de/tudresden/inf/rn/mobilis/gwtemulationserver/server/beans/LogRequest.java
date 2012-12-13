@@ -7,10 +7,10 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 public class LogRequest extends XMPPBean {
 
 	private String appNamespace = null;
-	private String instanceId = null;
+	private int instanceId = Integer.MIN_VALUE;
 
 
-	public LogRequest( String appNamespace, String instanceId ) {
+	public LogRequest( String appNamespace, int instanceId ) {
 		super();
 		this.appNamespace = appNamespace;
 		this.instanceId = instanceId;
@@ -39,7 +39,7 @@ public class LogRequest extends XMPPBean {
 					this.appNamespace = parser.nextText();
 				}
 				else if (tagName.equals( "instanceId" ) ) {
-					this.instanceId = parser.nextText();
+					this.instanceId = Integer.parseInt( parser.nextText() );
 				}
 				else if (tagName.equals("error")) {
 					parser = parseErrorAttributes(parser);
@@ -110,11 +110,11 @@ public class LogRequest extends XMPPBean {
 		this.appNamespace = appNamespace;
 	}
 
-	public String getInstanceId() {
+	public int getInstanceId() {
 		return this.instanceId;
 	}
 
-	public void setInstanceId( String instanceId ) {
+	public void setInstanceId( int instanceId ) {
 		this.instanceId = instanceId;
 	}
 

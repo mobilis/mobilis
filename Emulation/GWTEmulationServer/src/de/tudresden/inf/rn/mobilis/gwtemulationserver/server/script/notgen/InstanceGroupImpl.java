@@ -17,6 +17,10 @@ public class InstanceGroupImpl extends InstanceGroupType {
 			instance.setInstanceId(i);
 			instances.add(instance);
 		}
+		this.setAppNS(instanceGroup.getAppNS());
+		this.setFirstInstanceId(instanceGroup.getFirstInstanceId());
+		this.setInstanceCount(instanceGroup.getInstanceCount());
+		this.setVarName(instanceGroup.getVarName());
 	}
 	
 	public List<InstanceType> getInstances() {

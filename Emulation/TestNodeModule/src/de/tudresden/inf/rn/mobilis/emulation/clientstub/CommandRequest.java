@@ -13,11 +13,11 @@ public class CommandRequest extends XMPPBean {
 	private List< String > parameters = new ArrayList< String >();
 	private List< String > parameterTypes = new ArrayList< String >();
 	private int commandId = Integer.MIN_VALUE;
-	private String instanceId = null;
+	private int instanceId = Integer.MIN_VALUE;
 	private String appNamespace = null;
 
 
-	public CommandRequest( String methodName, List< String > parameters, List< String > parameterTypes, int commandId, String instanceId, String appNamespace ) {
+	public CommandRequest( String methodName, List< String > parameters, List< String > parameterTypes, int commandId, int instanceId, String appNamespace ) {
 		super();
 		this.methodName = methodName;
 		for ( String entity : parameters ) {
@@ -63,7 +63,7 @@ public class CommandRequest extends XMPPBean {
 					this.commandId = Integer.parseInt( parser.nextText() );
 				}
 				else if (tagName.equals( "instanceId" ) ) {
-					this.instanceId = parser.nextText();
+					this.instanceId = Integer.parseInt( parser.nextText() );
 				}
 				else if (tagName.equals( "appNamespace" ) ) {
 					this.appNamespace = parser.nextText();
@@ -149,6 +149,23 @@ public class CommandRequest extends XMPPBean {
 	}
 
 
+	public CommandRequest buildCommandError(String detailedErrorText){
+		CommandRequest fault = ( CommandRequest )this.clone();
+
+		fault.setTo( this.getFrom() );
+    	fault.setId(this.getId());
+		fault.setType( XMPPBean.TYPE_ERROR );
+		fault.errorType = "modify";
+		fault.errorCondition = "not-acceptable";
+		fault.errorText = "Error during execution of application command! This is most commonly because the application namespace isn't known by the TestNodeModule.";
+
+		if(null != detailedErrorText && detailedErrorText.length() > 0)
+			fault.errorText += " Detail: " + detailedErrorText;
+		
+		return fault;
+	}
+
+
 
 
 
@@ -184,11 +201,11 @@ public class CommandRequest extends XMPPBean {
 		this.commandId = commandId;
 	}
 
-	public String getInstanceId() {
+	public int getInstanceId() {
 		return this.instanceId;
 	}
 
-	public void setInstanceId( String instanceId ) {
+	public void setInstanceId( int instanceId ) {
 		this.instanceId = instanceId;
 	}
 

@@ -2,6 +2,8 @@ package de.tudresden.inf.rn.mobilis.gwtemulationserver.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -21,10 +23,14 @@ public class XMLScriptParser implements ScriptParserInterface {
 	public Script parse(File scriptFile) {
 		Schema schema;
 		try {
-			schema = compileSchema("src/script-utils/XMLEmulationScript.xsd");
+			schema = compileSchema("http://mobilis.inf.tu-dresden.de/XMLEmulationScript.xsd");
 		} catch (SAXException e2) {
 			System.err.println("Couldn't compile XMLEmulationScript.xsd!");
 			e2.printStackTrace();
+			return null;
+		}
+		
+		if (schema == null) {
 			return null;
 		}
 		
@@ -59,7 +65,15 @@ public class XMLScriptParser implements ScriptParserInterface {
 	}
 	
 	private Schema compileSchema (String schemaURI) throws SAXException {
-		return SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new File(schemaURI));
+		URL url;
+		try {
+			url = new URL("http://mobilis.inf.tu-dresden.de/XMLEmulationScript.xsd");
+		} catch (MalformedURLException e) {
+			System.err.println("Schema URL is invalid!");
+			e.printStackTrace();
+			return null;
+		}
+		return SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(url);
 	}
 	
 }

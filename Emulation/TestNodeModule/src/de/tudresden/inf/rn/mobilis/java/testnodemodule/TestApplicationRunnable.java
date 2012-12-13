@@ -11,6 +11,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import de.tudresden.inf.rn.mobsda.performance.client.RMITestNodeClient;
@@ -33,11 +34,11 @@ public class TestApplicationRunnable implements Runnable {
 	@Override
 	public void run() {
 		// create working directory
-		File workingDir = new File("app" + appName);
+		File workingDir = new File(appName);
 		workingDir.mkdir();
 
 		// create application command file
-		File commandFile = new File("app" + appName + "/app" + appName + ".command");
+		File commandFile = new File(appName + "/" + appName + ".command");
 		commandFile.delete();
 		try {
 			commandFile.createNewFile();
@@ -91,7 +92,7 @@ public class TestApplicationRunnable implements Runnable {
 		}	
 		
 		// set up RMI
-        String stubName = "TestNodeClient_app" + appName;
+        String stubName = "TestNodeClient_" + appName;
         Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry();
@@ -103,6 +104,7 @@ public class TestApplicationRunnable implements Runnable {
 		} catch (NotBoundException e) {
 			System.out.println("RMI: Error binding to " + stubName);
 			e.printStackTrace();
+			return;
 		}
 		
 		while (shallExecute) {
@@ -112,7 +114,7 @@ public class TestApplicationRunnable implements Runnable {
 					run.runMethod(command.methodName, command.parameterTypes, command.parameters);
 				} catch (IllegalAccessException | InvocationTargetException
 						| NoSuchMethodException | RunMethodException | RemoteException e) {
-					System.out.println("Error while running method: " + command.methodName + "(" + command.parameterTypes + ")" + "with parameters " + "(" + command.parameters + ")");
+					System.out.println("Error while running method: " + command.methodName + "(" + Arrays.toString(command.parameterTypes) + ")" + "with parameters " + "(" + Arrays.toString(command.parameters) + ")");
 					e.printStackTrace();
 				}
 			}
@@ -135,7 +137,7 @@ public class TestApplicationRunnable implements Runnable {
 			run.runMethod(exitCommand.methodName, exitCommand.parameterTypes, exitCommand.parameters);
 		} catch (IllegalAccessException | InvocationTargetException
 				| NoSuchMethodException | RunMethodException e) {
-			System.out.println("Error while running method: " + exitCommand.methodName + "(" + exitCommand.parameterTypes + ")" + "with parameters " + "(" + exitCommand.parameters + ")");
+			System.out.println("Error while running method: " + exitCommand.methodName + "(" + Arrays.toString(exitCommand.parameterTypes) + ")" + "with parameters " + "(" + Arrays.toString(exitCommand.parameters) + ")");
 			e.printStackTrace();
 		} catch (RemoteException e) {
 			/*

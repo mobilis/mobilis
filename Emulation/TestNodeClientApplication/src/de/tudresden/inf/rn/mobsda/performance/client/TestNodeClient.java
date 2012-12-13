@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
 
 import de.tudresden.inf.rn.mobsda.performance.client.exception.NonSerializableException;
 import de.tudresden.inf.rn.mobsda.performance.client.exception.ParameterTypeException;
@@ -72,8 +73,11 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 	
 	@Override
 	public Serializable runMethod(String methodName, String[] parameterClassNames, String[] parameterValues) throws RemoteException, RunMethodException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		System.out.println("Executing " + methodName + "(" + Arrays.toString(parameterValues) + ")");
+		System.out.println("Parameter types are " + Arrays.toString(parameterClassNames));
+		
 		if (parameterClassNames.length != parameterValues.length) {
-			throw new IllegalArgumentException("Parameter class name array lenght doesn't match parameter value array lenght.");
+			throw new IllegalArgumentException("Parameter class name array length doesn't match parameter value array lenght.");
 		}
 		
 		@SuppressWarnings("rawtypes")
@@ -82,18 +86,31 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 		for (int i = 0; i < parameterClassNames.length; i++) {
 			String parameterClassName = parameterClassNames[i];
 			try {
-				parameterClasses[i] = Class.forName(parameterClassName);
-				// TODO: parse all primitive types from String, throw exception if there is a non-primitive type - this could also be done in constructor of Command class
-				// typedParameterValues[i] = 
+				Class<?> parameterClass = Class.forName(parameterClassName);
+				parameterClasses[i] = parameterClass;
 				
+				if (parameterClass.equals(String.class)) {
+					typedParameterValues[i] = parameterValues[i];
+				} else if (parameterClass.equals(Boolean.class)) {
+					typedParameterValues[i] = Boolean.parseBoolean(parameterValues[i]);
+				} else if (parameterClass.equals(Double.class)) {
+					typedParameterValues[i] = Double.parseDouble(parameterValues[i]);
+				} else if (parameterClass.equals(Integer.class)) {
+					typedParameterValues[i] = Integer.parseInt(parameterValues[i]);
+				} else {
+					String errorText = "Parameter type " + parameterClass.getName() + " not supported.";
+					System.out.println(errorText);
+					throw new IllegalArgumentException(errorText);
+				}
 			} catch (ClassNotFoundException e) {
-				System.out.println("Couldn't find parameter type " + parameterClassName);
+				System.err.println("Couldn't find parameter type " + parameterClassName);
 				e.printStackTrace();
 				throw new ParameterTypeException(parameterClassName);
 			}
 		}
 		try {
 			Method method = this.getClass().getMethod(methodName, parameterClasses);
+
 			Object returnValue = method.invoke(this, typedParameterValues);
 			
 			// TODO: write call and result into log

@@ -15,6 +15,7 @@ import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.CommandType;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.ForType;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.InstanceGroupType;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.InstanceType;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.ParameterType;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.Script;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.StartType;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.StopType;
@@ -76,31 +77,42 @@ public abstract class XMLScriptExecutor {
 		} else if (command instanceof AppCommandType) {
 			AppCommandType appCommand = (AppCommandType) command;
 			
-			List<Serializable> params = appCommand.getParameter().getIntOrStringOrBoolean();
+			ParameterType jaxbParams = appCommand.getParameter();
+			List<Serializable> params = null;
+			if (jaxbParams != null) {
+				params = jaxbParams.getIntOrStringOrBoolean();
+			}
 
 			// take care of parameters containing %id% placeholders
 			List<Integer> placeholderParams = new ArrayList<Integer>();
-			
-			for (int i = 0; i < params.size(); i++) {
-				Serializable parameter = params.get(i);
-				if (parameter instanceof String) {
-					if (((String) parameter).contains("%id%")) {
-						placeholderParams.add(i);
+			if (params != null) {
+				
+				for (int i = 0; i < params.size(); i++) {
+					Serializable parameter = params.get(i);
+					if (parameter instanceof String) {
+						if (((String) parameter).contains("%id%")) {
+							placeholderParams.add(i);
+						}
 					}
 				}
 			}
 			
 			AbstractInstanceType instance = instances.get(appCommand.getInstance());
 			if (instance instanceof InstanceType) {
-				for (int index : placeholderParams) {
-					params.set(index, ((String) params.get(index)).replace("%id%", String.valueOf(((InstanceType) instance).getInstanceId())));
+				if (params != null) {
+					for (int index : placeholderParams) {
+						params.set(index, ((String) params.get(index)).replace("%id%", String.valueOf(((InstanceType) instance).getInstanceId())));
+					}
 				}
 				executeAppCommand((InstanceType) instance, appCommand);
 			} else if (instance instanceof InstanceGroupImpl) {
 				InstanceGroupImpl instanceGroup = (InstanceGroupImpl) instance;
+				List<Serializable> paramsCopy = new ArrayList<Serializable>(params);
 				for (InstanceType virtualInstance : instanceGroup.getInstances()) {
-					for (int index : placeholderParams) {
-						params.set(index, ((String) params.get(index)).replace("%id%", String.valueOf(virtualInstance.getInstanceId())));
+					if (params != null) {
+						for (int index : placeholderParams) {
+							params.set(index, ((String) paramsCopy.get(index)).replace("%id%", String.valueOf(virtualInstance.getInstanceId())));
+						}
 					}
 					executeAppCommand(virtualInstance, appCommand);
 				}
