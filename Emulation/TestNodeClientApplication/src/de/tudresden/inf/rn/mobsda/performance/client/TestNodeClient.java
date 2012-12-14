@@ -1,6 +1,9 @@
 package de.tudresden.inf.rn.mobsda.performance.client;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
@@ -15,6 +18,7 @@ import java.util.Arrays;
 import de.tudresden.inf.rn.mobsda.performance.client.exception.NonSerializableException;
 import de.tudresden.inf.rn.mobsda.performance.client.exception.ParameterTypeException;
 import de.tudresden.inf.rn.mobsda.performance.client.exception.RunMethodException;
+import de.tudresden.inf.rn.mobsda.performance.client.helper.TeePrintStream;
 
 public abstract class TestNodeClient implements RMITestNodeClient {
 	
@@ -31,20 +35,18 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 		String[] splitWorkingDir = absoluteWorkingDir.split("/");
 		workingDir = splitWorkingDir[splitWorkingDir.length - 1];
 		
-		// config file
-//		try {
-//			File logFile = getLogFile();
-//			if (logFile != null) {
-//				File configFile = new File(workingDir + "testNodeClient.conf");
-//				configFile.createNewFile();
-//				Files.write(configFile.toPath(), ("log=" + logFile.getPath().toString()).getBytes(Charset.defaultCharset()), StandardOpenOption.WRITE);
-//			} else {
-//				System.out.println("No log!");
-//			}
-//		} catch (IOException e) {
-//			System.out.println("Couldn't create or write to config file!");
-//			e.printStackTrace();
-//		}
+		new File("logs").mkdir();
+		try {
+			File file = new File("logs/sysOutLog " + System.currentTimeMillis() + ".txt");
+			file.createNewFile();
+			FileOutputStream fos = new FileOutputStream(file);
+			TeePrintStream tee = new TeePrintStream(System.out, new PrintStream(fos));
+			System.setOut(tee);
+			System.setErr(tee);
+		} catch (IOException e) {
+			System.err.println("Cannot write system output to logfile!");
+			e.printStackTrace();
+		}
 		
 		// RMI initialization
 		// TODO: put server codebase into initTestNodeClient parameter to make the class more generic
@@ -52,7 +54,7 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 		try {
 			String decodedPath = URLDecoder.decode(path, "UTF-8");
 			System.setProperty("java.rmi.server.codebase", "file:" + decodedPath);
-			System.out.println("decoded path of codedbase is " + decodedPath);
+			System.out.println("decoded path of codebase is " + decodedPath);
 			
 			try {
 				String name = "TestNodeClient_" + workingDir;
