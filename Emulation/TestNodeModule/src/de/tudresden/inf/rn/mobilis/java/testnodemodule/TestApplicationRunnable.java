@@ -62,17 +62,6 @@ public class TestApplicationRunnable implements Runnable {
 			return;
 		}
 		
-		// register WatchService on command file
-//		try {
-//			WatchService watcher = FileSystems.getDefault().newWatchService();
-//			commandFile.toPath().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
-//			
-//		} catch (IOException e) {
-//			System.out.println("Couldn't obtain WatchService for file system.");
-//			e.printStackTrace();
-//			return;
-//		}
-		
 		// run application command file
 		System.out.println("Starting instance " + appName);
 		try {
@@ -128,7 +117,7 @@ public class TestApplicationRunnable implements Runnable {
 			}
 		}
 		
-		System.out.println("Shutting down client...");
+		System.out.println("Shutting down client " + appName);
 		Command exitCommand = new Command();
 		exitCommand.methodName = "exit";
 		exitCommand.parameters = new String[0];

@@ -5,10 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.rmi.AccessException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -189,11 +187,11 @@ public class TestNodeModule {
 						!propertyName.equals("xmpppass") &&
 						!propertyName.equals("emulationserverjid")) {
 					
-					String jarPath = properties.getProperty(propertyName);
-					if (jarPath != null && jarPath != "" && new File(jarPath).exists()) {
-						appPaths.put(propertyName, jarPath);
+					String jarPathAndParams = properties.getProperty(propertyName);
+					if (jarPathAndParams != null && jarPathAndParams != "" && new File(jarPathAndParams.split(" ")[0]).exists()) {
+						appPaths.put(propertyName, jarPathAndParams);
 					} else {
-						System.out.println("Jar path " + jarPath + " specified for namespace " + propertyName +
+						System.out.println("Jar path " + jarPathAndParams + " specified for namespace " + propertyName +
 								" doesn/'t exist. Check the TestNodeModuleSettings.properties file. Ommiting entry...");
 					}
 				}
@@ -340,13 +338,6 @@ public class TestNodeModule {
 	}
 
 	private static XMPPBean executeCommand(CommandRequest in, Command command, String appNamespace, int instanceId) {
-		try {
-			System.out.println("Registry entries: " + Arrays.toString(LocateRegistry.getRegistry().list()));
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		TestApplicationRunnable instance = appInstances.get(appNamespace + "_" + instanceId);
 		if (instance != null) {
 			instance.postCommand(command);

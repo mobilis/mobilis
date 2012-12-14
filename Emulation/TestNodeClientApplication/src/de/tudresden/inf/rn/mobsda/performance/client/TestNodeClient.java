@@ -77,7 +77,7 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 		System.out.println("Parameter types are " + Arrays.toString(parameterClassNames));
 		
 		if (parameterClassNames.length != parameterValues.length) {
-			throw new IllegalArgumentException("Parameter class name array length doesn't match parameter value array lenght.");
+			throw new IllegalArgumentException("Parameter class name array length doesn't match parameter value array length.");
 		}
 		
 		@SuppressWarnings("rawtypes")
