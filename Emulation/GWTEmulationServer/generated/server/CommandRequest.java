@@ -10,9 +10,10 @@ public class CommandRequest extends XMPPBean {
 	private int commandId = Integer.MIN_VALUE;
 	private int instanceId = Integer.MIN_VALUE;
 	private String appNamespace = null;
+	private boolean async = false;
 
 
-	public CommandRequest( String methodName, List< String > parameters, List< String > parameterTypes, int commandId, int instanceId, String appNamespace ) {
+	public CommandRequest( String methodName, List< String > parameters, List< String > parameterTypes, int commandId, int instanceId, String appNamespace, boolean async ) {
 		super();
 		this.methodName = methodName;
 		for ( String entity : parameters ) {
@@ -24,6 +25,7 @@ public class CommandRequest extends XMPPBean {
 		this.commandId = commandId;
 		this.instanceId = instanceId;
 		this.appNamespace = appNamespace;
+		this.async = async;
 
 		this.setType( XMPPBean.TYPE_SET );
 	}
@@ -63,6 +65,9 @@ public class CommandRequest extends XMPPBean {
 				else if (tagName.equals( "appNamespace" ) ) {
 					this.appNamespace = parser.nextText();
 				}
+				else if (tagName.equals( "async" ) ) {
+					this.async = Boolean.parseBoolean( parser.nextText() );
+				}
 				else if (tagName.equals("error")) {
 					parser = parseErrorAttributes(parser);
 				}
@@ -100,7 +105,7 @@ public class CommandRequest extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		CommandRequest clone = new CommandRequest( methodName, parameters, parameterTypes, commandId, instanceId, appNamespace );
+		CommandRequest clone = new CommandRequest( methodName, parameters, parameterTypes, commandId, instanceId, appNamespace, async );
 		clone.cloneBasicAttributes( clone );
 
 		return clone;
@@ -137,6 +142,10 @@ public class CommandRequest extends XMPPBean {
 		sb.append( "<appNamespace>" )
 			.append( this.appNamespace )
 			.append( "</appNamespace>" );
+
+		sb.append( "<async>" )
+			.append( this.async )
+			.append( "</async>" );
 
 		sb = appendErrorPayload(sb);
 
@@ -190,6 +199,14 @@ public class CommandRequest extends XMPPBean {
 
 	public void setAppNamespace( String appNamespace ) {
 		this.appNamespace = appNamespace;
+	}
+
+	public boolean getAsync() {
+		return this.async;
+	}
+
+	public void setAsync( boolean async ) {
+		this.async = async;
 	}
 
 }

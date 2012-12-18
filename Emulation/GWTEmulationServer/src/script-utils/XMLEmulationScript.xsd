@@ -84,6 +84,7 @@
 				</sequence>
 	            <attribute name="instance" type="NCName" use="required"/>
 	            <attribute name="methodName" type="string" use="required"/>
+	            <attribute name="async" type="boolean" use="optional" default="false"/>
 			</extension>
 		</complexContent>
 	</complexType>

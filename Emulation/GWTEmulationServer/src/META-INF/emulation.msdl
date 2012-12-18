@@ -40,6 +40,7 @@
 	                    <xs:element name="commandId" type="xs:int" minOccurs="1" maxOccurs="1"/>
 	                    <xs:element name="instanceId" type="xs:int" minOccurs="1" maxOccurs="1"/>
 	                    <xs:element name="appNamespace" type="xs:string" minOccurs="1" maxOccurs="1"/>
+	                    <xs:element name="async" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
 	                </xs:sequence>
 	            </xs:complexType>
 	        </xs:element>         

@@ -12,7 +12,11 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Arrays;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 
 import de.tudresden.inf.rn.mobsda.performance.client.RMITestNodeClient;
 import de.tudresden.inf.rn.mobsda.performance.client.exception.RunMethodException;
@@ -22,9 +26,21 @@ public class TestApplicationRunnable implements Runnable {
 	private String appName;
 	private String[] cmd;
 	private RMITestNodeClient run;
-	private Object monitor = new Object();
-	private ConcurrentLinkedQueue<Command> commands = new ConcurrentLinkedQueue<Command>();
+	private BlockingQueue<Command> commands = new LinkedBlockingQueue<Command>();
 	private boolean shallExecute = true;
+	private ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactory() {
+		
+		@Override
+		public Thread newThread(Runnable r) {
+			Thread t = new Thread(r);
+			t.setName(appName + "_methodThread");
+			return t;
+		}
+	});
+	
+	public String getAppName() {
+		return this.appName;
+	}
 	
 	public TestApplicationRunnable(String appName, String[] cmd) {
 		this.appName = appName;
@@ -97,54 +113,59 @@ public class TestApplicationRunnable implements Runnable {
 		}
 		
 		while (shallExecute) {
-			while(commands.peek() != null) {
-				Command command = commands.poll();
-				try {
-					run.runMethod(command.methodName, command.parameterTypes, command.parameters);
-				} catch (IllegalAccessException | InvocationTargetException
-						| NoSuchMethodException | RunMethodException | RemoteException e) {
-					System.out.println("Error while running method: " + command.methodName + "(" + Arrays.toString(command.parameterTypes) + ")" + "with parameters " + "(" + Arrays.toString(command.parameters) + ")");
-					e.printStackTrace();
-				}
-			}
 			try {
-				synchronized(monitor) {
-					monitor.wait();
+				final Command command = commands.take();
+				if (command.async) {
+					executorService.execute(new Runnable() {
+						
+						@Override
+						public void run() {
+							runMethod(command);
+						}
+					});
+				} else {
+					runMethod(command);
+				}
+				if (command.methodName.equals("exit")) {
+					shallExecute = false;
 				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				shallExecute = false;
 			}
 		}
 		
 		System.out.println("Shutting down client " + appName);
-		Command exitCommand = new Command();
-		exitCommand.methodName = "exit";
-		exitCommand.parameters = new String[0];
+		executorService.shutdownNow();
+	}
+
+	private void runMethod(final Command command) {
 		try {
-			exitCommand.parameterTypes = new String[0];
-			run.runMethod(exitCommand.methodName, exitCommand.parameterTypes, exitCommand.parameters);
+			run.runMethod(command.methodName, command.parameterTypes, command.parameters);
 		} catch (IllegalAccessException | InvocationTargetException
-				| NoSuchMethodException | RunMethodException e) {
-			System.out.println("Error while running method: " + exitCommand.methodName + "(" + Arrays.toString(exitCommand.parameterTypes) + ")" + "with parameters " + "(" + Arrays.toString(exitCommand.parameters) + ")");
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			/*
-			 * We expect a remote exception here as we force the
-			 * client to shut down which eventually also shuts down
-			 * it's RMI connection, hence the RMI server (aka the
-			 * testing client) cannot post the result of the method
-			 * call after it's execution.
-			 */
-			
+				| NoSuchMethodException | RunMethodException | RemoteException e) {
+			if (!(command.methodName.equals("exit") && e instanceof RemoteException)) {
+				System.out.println("Error while running method: " + command.methodName + "(" + Arrays.toString(command.parameterTypes) + ")" + "with parameters " + "(" + Arrays.toString(command.parameters) + ")");
+				e.printStackTrace();
+			} else {
+				/*
+				 * We expect a remote exception here as we force the
+				 * client to shut down which eventually also shuts down
+				 * it's RMI connection, hence the RMI server (aka the
+				 * testing client) cannot post the result of the method
+				 * call after it's execution.
+				 */
+			}
 		}
-		
 	}
 	
 	public void postCommand(Command command) {
-		commands.add(command);
-		synchronized(monitor) {
-			monitor.notify();
+		try {
+			commands.put(command);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -162,9 +183,15 @@ public class TestApplicationRunnable implements Runnable {
 	 * Tries to stop this application as soon as possible.
 	 */
 	public void stop() {
-		shallExecute = false;
-		synchronized(monitor) {
-			monitor.notify();
+		Command exitCommand = new Command();
+		exitCommand.methodName = "exit";
+		exitCommand.parameters = new String[0];
+		exitCommand.parameterTypes = new String[0];
+		try {
+			commands.put(exitCommand);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

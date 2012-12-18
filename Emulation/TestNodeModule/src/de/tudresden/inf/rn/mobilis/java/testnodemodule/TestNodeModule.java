@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -68,6 +70,8 @@ public class TestNodeModule {
 
 	private static Map<String, String> appPaths = new HashMap<String, String>();
 	private static Map<String, TestApplicationRunnable> appInstances = new HashMap<String, TestApplicationRunnable>();
+	
+	private static ExecutorService executorService = Executors.newCachedThreadPool();
 	
 	/**
 	 * @param args
@@ -154,6 +158,8 @@ public class TestNodeModule {
 		//			testApplicationRunnable.stop();
 				}
 			}
+			
+			executorService.shutdown();
 			
 		}
 
@@ -297,7 +303,7 @@ public class TestNodeModule {
 		TestApplicationRunnable runnable = new TestApplicationRunnable(appNS + "_" + instanceID, cmd);
 		appInstances.put(appNS + "_" + instanceID, runnable);
 		
-		new Thread(runnable).start();
+		executorService.execute(runnable);
 		
 		if (in != null) {
 			StartAck ack = new StartAck();
@@ -323,6 +329,8 @@ public class TestNodeModule {
 				return null;
 			}
 		}
+		
+		appInstances.remove(appNS + "_" + instanceID);
 		
 		app.stop();
 		
@@ -415,6 +423,7 @@ public class TestNodeModule {
 			command.methodName = in.getMethodName();
 			command.parameters = (String[]) in.getParameters().toArray();
 			command.parameterTypes = (String[]) in.getParameterTypes().toArray();
+			command.async = in.getAsync();
 			return executeCommand(in, command, in.getAppNamespace(), in.getInstanceId());
 		}
 
@@ -519,7 +528,7 @@ public class TestNodeModule {
 			if (instance != null) {
 				Command command = new Command();
 				command.methodName = appCommand.getMethodName();
-				
+				command.async = appCommand.isAsync();
 				
 				ParameterType jaxbParameters = appCommand.getParameter();
 				if (jaxbParameters != null) {
