@@ -6,11 +6,12 @@
    		android:id="@+id/menu_context_map_target"
         android:title="Select as next target"
         android:visible="false" >
-         <menu
+<!--    <menu
          	android:id="@+id/menu_context_map_target_submenu" >
         </menu>
-        
+-->        
     </item>
+    
     <item
     	android:id="@+id/menu_context_map_suggestion"
         android:title="Select as suggestion"

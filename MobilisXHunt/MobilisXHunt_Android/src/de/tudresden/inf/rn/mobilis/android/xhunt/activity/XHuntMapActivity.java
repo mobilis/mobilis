@@ -679,7 +679,7 @@ public class XHuntMapActivity extends MapActivity {
 	public boolean onContextItemSelected(MenuItem item) {
 		
 		// If the item 'Select as next target' was tapped:
-		if(item.getItemId() == R.id.menu_context_map_target && item.hasSubMenu()) {
+		if(item.getItemId() == R.id.menu_context_map_target) {
 			
 			int firstSuitableTicket = -1;
 			
