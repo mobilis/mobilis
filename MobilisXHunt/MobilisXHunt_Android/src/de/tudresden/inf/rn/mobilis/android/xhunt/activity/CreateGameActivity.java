@@ -343,8 +343,8 @@ public class CreateGameActivity extends PreferenceActivity {
      */
     private SeekBarPreference createTicketPrefEntry(String ticketName, String role) {
 
-    	int defaultTicketCount = 99;
-    	SeekBarPreference seekbar = new SeekBarPreference(this, 0, 99, defaultTicketCount, "tickets");
+    	int defaultTicketCount = 1000;
+    	SeekBarPreference seekbar = new SeekBarPreference(this, 0, defaultTicketCount, defaultTicketCount, "tickets");
 		
 		seekbar.setKey("key_newgame_" + role.toLowerCase() + ticketName.toLowerCase());
 		seekbar.setTitle(ticketName + " (" + role + ")");
@@ -555,8 +555,9 @@ public class CreateGameActivity extends PreferenceActivity {
 	    	    		SeekBarPreference prefMrX = createTicketPrefEntry(entry.getName(), "Mr.X");
 	    	    		SeekBarPreference prefAgents = createTicketPrefEntry(entry.getName(), "Agents");
 	    	    		
+	    	    		/* commented out since tickets became hidden
 	    	    		getPreferenceScreen().addPreference(prefMrX);
-	    	    		getPreferenceScreen().addPreference(prefAgents);
+	    	    		getPreferenceScreen().addPreference(prefAgents); */
 	    	    		
 	    	    		mPrefTicketsMrX.put(entry.getID(), prefMrX);
 	    	    		mPrefTicketsAgents.put(entry.getID(), prefAgents);

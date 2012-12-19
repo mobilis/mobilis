@@ -164,8 +164,8 @@ public class XHuntMapActivity extends MapActivity {
 	 * !Warning: this function is not available on server in the current version. */
 	private DialogDepartures mDialogDepartures;
 	
-	/** The dialog for the used tickets o all players, reachable via menu. */
-	private DialogUsedTickets mDialogUsedTickets;
+	/* The dialog for the used tickets o all players, reachable via menu. */
+	//private DialogUsedTickets mDialogUsedTickets;
 	
 	//TODO: XHuntMapActivity: add-on focus a player, focus map center
 	
@@ -337,12 +337,13 @@ public class XHuntMapActivity extends MapActivity {
 		    	// If the used ticket dialog should be shown, display this dialog if there is any
 		    	// content in it
 		    	case DialogUsedTickets.DIALOG_ID:
+		    		/* commented out since tickets became hidden
 		    		if(mDialogUsedTickets.hasContent())
 		    			mDialogUsedTickets.show();
 		    		else
 		    			Toast.makeText(XHuntMapActivity.this, "No data available!",
 		    					Toast.LENGTH_LONG).show();
-		    		
+		    		*/
 		    		break;
 	    	}
 	    }
@@ -604,8 +605,10 @@ public class XHuntMapActivity extends MapActivity {
 				getWindowManager().getDefaultDisplay());
 		
 		// Init the used tickets dialog with current device display size
+		/* commented out since tickets became hidden
 		mDialogUsedTickets = new DialogUsedTickets(XHuntMapActivity.this,
 				getWindowManager().getDefaultDisplay());
+		*/
 
 		//Init all overlays aka game elements for this game.
 		stationSignOverlay = new StationSignOverlay(mGame.getRouteManagement().getStationsAsList(), this);
@@ -674,8 +677,62 @@ public class XHuntMapActivity extends MapActivity {
 	 * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
 	 */
 	public boolean onContextItemSelected(MenuItem item) {
+		
+		// If the item 'Select as next target' was tapped:
+		if(item.getItemId() == R.id.menu_context_map_target && item.hasSubMenu()) {
+			
+			int firstSuitableTicket = -1;
+			
+			// look for black tickets
+			for(Map.Entry<Integer, Integer> entry : mRouteManagement.getMyTickets().entrySet()) {
+				Ticket superiorTicket = mRouteManagement.getAreaTickets().get(entry.getKey());
+				if(entry.getValue() > 0 && superiorTicket.isSuperior()) {
+					firstSuitableTicket = entry.getKey();
+					break;
+				}
+			}
+			
+			// if no black ticket found, look for normal tickets
+			if(firstSuitableTicket == -1) {
+				for(Map.Entry<Route, Integer> entry 
+						: mRouteManagement.getMyRouteTicketsForTarget(getMyPlayer().getLastStationId(),
+								tappedReachableStation.getId()).entrySet()) {
+					firstSuitableTicket = entry.getValue();
+					break;
+				}
+			}
+
+			if(firstSuitableTicket != -1) {
+				// If player isn't unmovable
+				if(!mGame.getRouteManagement().isMyPlayerUnmovable(getMyPlayer())){
+					Log.v("", "ticket: " + mGame.getRouteManagement().getAreaTickets().get(item.getGroupId()).getName());
+					// Request new target to server using TargetBean
+					mMxaProxy.getIQProxy().getProxy().Target(
+							mMxaProxy.getIQProxy().getGameServiceJid(),
+							tappedReachableStation.getId(),
+							mGame.getCurrentRound(),
+							firstSuitableTicket, 
+							true,
+							_targetCallback);
+				} else {
+					//send last station and ticket id=0 if unmovable
+					mMxaProxy.getIQProxy().getProxy().Target(
+							mMxaProxy.getIQProxy().getGameServiceJid(),
+							getMyPlayer().getLastStationId(),
+							mGame.getCurrentRound(),
+							Const.TICKET_ID_UNMOVABLE,
+							true,
+							_targetCallback);
+				}
+				
+			} else {
+				Toast.makeText(this, "Error! No route found", Toast.LENGTH_LONG).show();
+			}
+		}
+		
 		// If the item 'Select as next target' was tapped and there were routes
 		// available for the own player to move to this target (has a SubMenu)
+		/* old code, commented out since tickets became hidden
 		if(item.getItemId() == R.id.menu_context_map_target
 				&& item.hasSubMenu()){
 			Menu subMenuTarget = item.getSubMenu();
@@ -737,10 +794,12 @@ public class XHuntMapActivity extends MapActivity {
 			
 			// Add a cancel item to the menu to abort choosing the target
 			subMenuTarget.add(-1, -1, 0, "Cancel");
-		}
+		} */
+		
 		// If the item "Select as suggestion" was tapped, send a TargetBean to the server 
 		// using the id of the station, the current round number, ticket id as -1 and 
 		// isFinal selection as true
+		/* removed
 		else if(item.getItemId() == R.id.menu_context_map_suggestion){
 			mMxaProxy.getIQProxy().getProxy().Target( 
 					mMxaProxy.getIQProxy().getGameServiceJid(), 
@@ -749,8 +808,10 @@ public class XHuntMapActivity extends MapActivity {
 					Const.TICKET_ID_SUGGESTION, 
 					false,
 					_targetCallback );
-		}
+		} */
+		
 		// If ticket was tapped (see first if-case) and not the "Cancel" item
+		/* old code, commented out since tickets became hidden
 		else if(item.getGroupId() > -1 && item.getItemId() > -1
 				&& item.getItemId() != R.id.menu_context_map_cancel){		
 			// If player isn't unmovable
@@ -776,7 +837,7 @@ public class XHuntMapActivity extends MapActivity {
 						true,
 						_targetCallback);
 			}
-		}
+		} */
 		
 		return false;
 	}
@@ -894,7 +955,7 @@ public class XHuntMapActivity extends MapActivity {
 			
  			return true;
  			
- 		// Menu 'game info' was tapped
+ 		/* Menu 'game info' was tapped. Commented out since tickets became hidden
 		case R.id.menu_map_ingameinfo:
 			
 			// no ticket info before first round, show Toast instead
@@ -913,6 +974,8 @@ public class XHuntMapActivity extends MapActivity {
 					_usedTicketsCallback );
 			
 			return true;
+			*/
+ 			
 		// Menu 'departure monitor' was tapped
 		case R.id.menu_map_departuremonitor:
 			// Start loading dialog
@@ -1057,6 +1120,7 @@ public class XHuntMapActivity extends MapActivity {
 		}
 	};
 	
+	/* commented out since tickets became hidden.
 	private IXMPPCallback< UsedTicketsResponse > _usedTicketsCallback = new IXMPPCallback< UsedTicketsResponse >() {
 		
 		@Override
@@ -1093,6 +1157,7 @@ public class XHuntMapActivity extends MapActivity {
 			}
 		}
 	};
+	*/
 	
 	private IXMPPCallback< DepartureDataResponse > _departureDataCallback = new IXMPPCallback< DepartureDataResponse >() {
 		

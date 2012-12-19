@@ -8,8 +8,9 @@
     <item
     	android:id="@+id/menu_context_lobby_tomrx"
         android:title="Set Player to \'Mr.X\'" />
+ <!--
    	<item
     	android:id="@+id/menu_context_lobby_transferTicket"
         android:title="Transfer Ticket" />
-  
+ --> 
 </menu>

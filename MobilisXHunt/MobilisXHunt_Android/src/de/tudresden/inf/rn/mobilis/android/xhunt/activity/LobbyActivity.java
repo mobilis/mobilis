@@ -30,7 +30,6 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -73,17 +72,13 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.PlayerExitResponse;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.PlayerInfo;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.PlayersRequest;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.StartRoundRequest;
-import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.TicketAmount;
-import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.TransferTicketResponse;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.UpdatePlayerResponse;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.UpdateTicketsRequest;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.Game;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.GameState;
-import de.tudresden.inf.rn.mobilis.android.xhunt.model.Ticket;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.XHuntPlayer;
 import de.tudresden.inf.rn.mobilis.android.xhunt.proxy.MXAProxy;
 import de.tudresden.inf.rn.mobilis.android.xhunt.service.ServiceConnector;
-import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogInput;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogPlayerInfo;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogRemoteLoading;
 import de.tudresden.inf.rn.mobilis.mxa.ConstMXA;
@@ -540,9 +535,9 @@ public class LobbyActivity extends Activity {
 		// Get the TableLayout of the Lobby
 		tbl_lobby = (TableLayout) findViewById(R.id.tbl_lobby);
 
-		// Get the GO-Button of the Lobby
-		Button btn_go = (Button) findViewById(R.id.btn_go);
-		btn_go.setOnClickListener(new OnClickListener() {
+		// Get the Ready-Button of the Lobby
+		Button btn_ready = (Button) findViewById(R.id.btn_go);
+		btn_ready.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 
@@ -761,6 +756,7 @@ public class LobbyActivity extends Activity {
 
 			result = true;
 			break;
+		/* commented out since tickets became hidden
 		case R.id.menu_context_lobby_transferTicket:
 			if (selectedPlayerJid.equals(mMxaProxy.getXmppJid())) {
 				Toast.makeText(getApplicationContext(),
@@ -892,6 +888,7 @@ public class LobbyActivity extends Activity {
 			builder.show();
 
 			break;
+		 */
 		}
 
 		if (result) {
