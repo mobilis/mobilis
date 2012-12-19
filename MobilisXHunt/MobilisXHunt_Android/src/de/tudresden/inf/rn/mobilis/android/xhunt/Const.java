@@ -34,7 +34,7 @@ public class Const {
 	public static final int MAP_MAX_ZOOM_LEVEL						= 13;
 	
 	/** Max length of message shown in map activity if a new groupchat message comes in. */
-	public static final int MUC_NOTIFIER_MESSAGE_LENGTH				= 30;	
+	public static final int MUC_NOTIFIER_MESSAGE_LENGTH				= 90;	
 	
 	/** The Constant BUNDLE_KEY_GAME_ID to share information between activities. */
 	public static final String BUNDLE_KEY_GAME_ID					= "key_gameId";
