@@ -52,11 +52,11 @@ public class EmulationProxy {
 		return out;
 	}
 
-	public void Command( String toJid, String methodName, List< String > parameters, List< String > parameterTypes, int commandId, int instanceId, String appNamespace, IXMPPCallback< CommandAck > callback ) {
+	public void Command( String toJid, String methodName, List< String > parameters, List< String > parameterTypes, int commandId, int instanceId, String appNamespace, boolean async, IXMPPCallback< CommandAck > callback ) {
 		if ( null == _bindingStub || null == callback )
 			return;
 
-		CommandRequest out = new CommandRequest( methodName, parameters, parameterTypes, commandId, instanceId, appNamespace );
+		CommandRequest out = new CommandRequest( methodName, parameters, parameterTypes, commandId, instanceId, appNamespace, async );
 		out.setTo( toJid );
 
 		_bindingStub.sendXMPPBean( out, callback );
