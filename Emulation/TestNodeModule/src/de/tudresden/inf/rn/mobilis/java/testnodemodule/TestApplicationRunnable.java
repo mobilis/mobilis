@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import de.tudresden.inf.rn.mobsda.performance.client.RMITestNodeClient;
 import de.tudresden.inf.rn.mobsda.performance.client.exception.RunMethodException;
@@ -137,7 +138,13 @@ public class TestApplicationRunnable implements Runnable {
 		}
 		
 		System.out.println("Shutting down client " + appName);
-		executorService.shutdownNow();
+		try {
+			executorService.awaitTermination(3000, TimeUnit.MILLISECONDS);
+			executorService.shutdownNow();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void runMethod(final Command command) {
@@ -146,7 +153,7 @@ public class TestApplicationRunnable implements Runnable {
 		} catch (IllegalAccessException | InvocationTargetException
 				| NoSuchMethodException | RunMethodException | RemoteException e) {
 			if (!(command.methodName.equals("exit") && e instanceof RemoteException)) {
-				System.out.println("Error while running method: " + command.methodName + "(" + Arrays.toString(command.parameterTypes) + ")" + "with parameters " + "(" + Arrays.toString(command.parameters) + ")");
+				System.out.println("Error while running method: " + command.methodName + "(" + Arrays.toString(command.parameterTypes) + ")" + "with parameters " + "(" + Arrays.toString(command.parameters) + ") on instance " + getAppName());
 				e.printStackTrace();
 			} else {
 				/*

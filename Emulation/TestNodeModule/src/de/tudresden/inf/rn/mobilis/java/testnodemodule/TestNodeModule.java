@@ -5,8 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -50,6 +54,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanSenderReceiver;
+import de.tudresden.inf.rn.mobsda.performance.client.module.RMITestNodeModule;
 
 public class TestNodeModule {
 	
@@ -72,6 +77,13 @@ public class TestNodeModule {
 	private static Map<String, TestApplicationRunnable> appInstances = new HashMap<String, TestApplicationRunnable>();
 	
 	private static ExecutorService executorService = Executors.newCachedThreadPool();
+	
+	private static Object startMonitor = new Object();
+	private static Object stopMonitor = new Object();
+	private static RMITestNodeModule stub; // hold reachable to prevent GC
+	private static Registry registry; // hold reachable to prevent GC
+	private static String name = "TestNodeClient";
+	private static RMIConnector rmiConnector;
 	
 	/**
 	 * @param args
@@ -101,6 +113,18 @@ public class TestNodeModule {
 		// set up RMI
 		try {
 			LocateRegistry.createRegistry(1099);
+			
+			try {
+				rmiConnector = new RMIConnector();
+				stub = (RMITestNodeModule) UnicastRemoteObject.exportObject(rmiConnector, 0);
+				registry = LocateRegistry.getRegistry();
+				registry.rebind(name, stub);
+				System.out.println("TestNodeClient bound on " + name);
+			} catch (Exception e) {
+				System.out.println("TestNodeClient exception during RMI setup:");
+				e.printStackTrace();
+				System.exit(1);
+			}
 		} catch (RemoteException e1) {
 			// TODO Auto-generated catch block
 			System.err.println("Couldn't create RMI registry!");
@@ -159,8 +183,20 @@ public class TestNodeModule {
 				}
 			}
 			
-			executorService.shutdown();
+			try {
+				executorService.awaitTermination(5000, TimeUnit.MILLISECONDS);
+				executorService.shutdownNow();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			
+			try {
+				registry.unbind(name);
+				UnicastRemoteObject.unexportObject(rmiConnector, true);
+			} catch (RemoteException | NotBoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -194,19 +230,19 @@ public class TestNodeModule {
 						!propertyName.equals("emulationserverjid")) {
 					
 					String jarPathAndParams = properties.getProperty(propertyName);
-					if (jarPathAndParams != null && jarPathAndParams != "" && new File(jarPathAndParams.split(" ")[0]).exists()) {
+					if (jarPathAndParams != null && jarPathAndParams != "") {
 						appPaths.put(propertyName, jarPathAndParams);
 					} else {
-						System.out.println("Jar path " + jarPathAndParams + " specified for namespace " + propertyName +
-								" doesn/'t exist. Check the TestNodeModuleSettings.properties file. Ommiting entry...");
+						System.out.println("Jar path specified for namespace " + propertyName +
+								" is either empty or null. Check the TestNodeModuleSettings.properties file. Ommiting entry...");
 					}
 				}
 			}
 		} catch (FileNotFoundException e) {
-			System.out.println("Couldn\'t find settings file. Using default settings.");
+			System.out.println("Couldn't find settings file. Using default settings.");
 			e.printStackTrace();
 		} catch (IOException e) {
-			System.out.println("Couldn\'t read settings file. Using default settings.");
+			System.out.println("Couldn't read settings file. Using default settings.");
 			e.printStackTrace();
 		}
 	}
@@ -301,9 +337,19 @@ public class TestNodeModule {
 		String[] cmd = (System.getProperty("java.home") + "/bin/java -jar " + appPath + " " + parameters).trim().split(" ");
 		
 		TestApplicationRunnable runnable = new TestApplicationRunnable(appNS + "_" + instanceID, cmd);
-		appInstances.put(appNS + "_" + instanceID, runnable);
 		
 		executorService.execute(runnable);
+		
+		try {
+			synchronized (startMonitor) {
+				startMonitor.wait();
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		appInstances.put(appNS + "_" + instanceID, runnable);
 		
 		if (in != null) {
 			StartAck ack = new StartAck();
@@ -332,7 +378,15 @@ public class TestNodeModule {
 		
 		appInstances.remove(appNS + "_" + instanceID);
 		
-		app.stop();
+		try {
+			synchronized (stopMonitor) {
+				app.stop();
+				stopMonitor.wait();
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		if (in != null) {
 			StopAck ack = new StopAck();
@@ -549,6 +603,24 @@ public class TestNodeModule {
 					command.parameterTypes = new String[0];
 				}
 				executeCommand(null, command, instance.getAppNS(), instance.getInstanceId());
+			}
+		}
+		
+	}
+	
+	private static class RMIConnector implements RMITestNodeModule {
+
+		@Override
+		public void notifyOfStart() throws RemoteException {
+			synchronized (startMonitor) {
+				startMonitor.notify();
+			}
+		}
+
+		@Override
+		public void notifyOfStop() throws RemoteException {
+			synchronized (stopMonitor) {
+				stopMonitor.notify();
 			}
 		}
 		

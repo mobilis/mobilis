@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -19,10 +20,19 @@ import de.tudresden.inf.rn.mobsda.performance.client.exception.NonSerializableEx
 import de.tudresden.inf.rn.mobsda.performance.client.exception.ParameterTypeException;
 import de.tudresden.inf.rn.mobsda.performance.client.exception.RunMethodException;
 import de.tudresden.inf.rn.mobsda.performance.client.helper.TeePrintStream;
+import de.tudresden.inf.rn.mobsda.performance.client.module.RMITestNodeModule;
 
 public abstract class TestNodeClient implements RMITestNodeClient {
 	
 	private String workingDir = "";
+	
+	private static RMITestNodeModule testNodeModule; // this is intentionally static to prevent GC from collecting it
+
+	private static RMITestNodeClient stub;
+
+	private static Registry registry;
+
+	private String name;
 	
 	public TestNodeClient() {
 		super();
@@ -49,7 +59,6 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 		}
 		
 		// RMI initialization
-		// TODO: put server codebase into initTestNodeClient parameter to make the class more generic
 		String path = TestNodeClient.class.getProtectionDomain().getCodeSource().getLocation().getFile();
 		try {
 			String decodedPath = URLDecoder.decode(path, "UTF-8");
@@ -57,10 +66,10 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 			System.out.println("decoded path of codebase is " + decodedPath);
 			
 			try {
-				String name = "TestNodeClient_" + workingDir;
+				name = "TestNodeClient_" + workingDir;
 				
-				RMITestNodeClient stub = (RMITestNodeClient) UnicastRemoteObject.exportObject(this, 0);
-				Registry registry = LocateRegistry.getRegistry();
+				stub = (RMITestNodeClient) UnicastRemoteObject.exportObject(this, 0);
+				registry = LocateRegistry.getRegistry();
 				registry.rebind(name, stub);
 				System.out.println("TestNodeClient bound on " + name);
 			} catch (Exception e) {
@@ -70,6 +79,21 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 		} catch (UnsupportedEncodingException e1) {
 			System.out.println("Couldn't decode JAR file path.");
 			e1.printStackTrace();
+		}
+		
+		String stubName = "TestNodeClient";
+        Registry registry;
+		try {
+			registry = LocateRegistry.getRegistry();
+			testNodeModule = (RMITestNodeModule) registry.lookup(stubName);
+		} catch (RemoteException e) {
+			System.out.println("Couldn't obtain RMI registry!");
+			e.printStackTrace();
+			return;
+		} catch (NotBoundException e) {
+			System.out.println("RMI: Error binding to " + stubName);
+			e.printStackTrace();
+			return;
 		}
 	}
 	
@@ -141,6 +165,32 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 		} catch (SecurityException e) {
 			e.printStackTrace();
 			throw e;
+		}
+	}
+	
+	public void notifyStart() {
+		try {
+			testNodeModule.notifyOfStart();
+		} catch (RemoteException e) {
+			System.err.println("Couldn't notify TestNodeModule of finished startup sequence!");
+			e.printStackTrace();
+		}
+	}
+	
+	public void notifyStop() {
+		System.out.println("notifyStop() called");
+		try {
+			testNodeModule.notifyOfStop();
+		} catch (RemoteException e) {
+			System.err.println("Couldn't notify TestNodeModule of shutdown!");
+			e.printStackTrace();
+		}
+		try {
+			registry.unbind(name);
+			UnicastRemoteObject.unexportObject(this, true);
+		} catch (RemoteException | NotBoundException e) {
+			System.err.println("Couldn't unbind from RMI registry!");
+			e.printStackTrace();
 		}
 	}
 	

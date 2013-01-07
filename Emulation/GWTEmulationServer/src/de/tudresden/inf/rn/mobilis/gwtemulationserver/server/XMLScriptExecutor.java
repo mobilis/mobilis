@@ -33,9 +33,13 @@ public abstract class XMLScriptExecutor {
 		System.out.println("Parsing script file...");
 		XMLScriptParser parser = new XMLScriptParser();
 		Script script = parser.parse(scriptFile);
-		for (int i = 0; i < script.getCommand().size(); i++) {
-			CommandType command = script.getCommand().get(i).getValue();
-			executeCommand(command);
+		if (script != null) {
+			for (int i = 0; i < script.getCommand().size(); i++) {
+				CommandType command = script.getCommand().get(i).getValue();
+				executeCommand(command);
+			}
+		} else {
+			return false;
 		}
 		return true;
 	}
