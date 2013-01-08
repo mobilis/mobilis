@@ -29,6 +29,7 @@ public class TestApplicationRunnable implements Runnable {
 	private RMITestNodeClient run;
 	private BlockingQueue<Command> commands = new LinkedBlockingQueue<Command>();
 	private boolean shallExecute = true;
+	private int runningTasks = 0;
 	private ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactory() {
 		
 		@Override
@@ -116,17 +117,13 @@ public class TestApplicationRunnable implements Runnable {
 		while (shallExecute) {
 			try {
 				final Command command = commands.take();
-				if (command.async) {
-					executorService.execute(new Runnable() {
-						
-						@Override
-						public void run() {
-							runMethod(command);
-						}
-					});
-				} else {
-					runMethod(command);
-				}
+				executorService.execute(new Runnable() {
+					
+					@Override
+					public void run() {
+						runMethod(command);
+					}
+				});
 				if (command.methodName.equals("exit")) {
 					shallExecute = false;
 				}
@@ -148,31 +145,53 @@ public class TestApplicationRunnable implements Runnable {
 	}
 
 	private void runMethod(final Command command) {
-		try {
-			run.runMethod(command.methodName, command.parameterTypes, command.parameters);
-		} catch (IllegalAccessException | InvocationTargetException
-				| NoSuchMethodException | RunMethodException | RemoteException e) {
-			if (!(command.methodName.equals("exit") && e instanceof RemoteException)) {
-				System.out.println("Error while running method: " + command.methodName + "(" + Arrays.toString(command.parameterTypes) + ")" + "with parameters " + "(" + Arrays.toString(command.parameters) + ") on instance " + getAppName());
-				e.printStackTrace();
-			} else {
-				/*
-				 * We expect a remote exception here as we force the
-				 * client to shut down which eventually also shuts down
-				 * it's RMI connection, hence the RMI server (aka the
-				 * testing client) cannot post the result of the method
-				 * call after it's execution.
-				 */
+		runningTasks++;
+		if (run != null) {
+			try {
+				run.runMethod(command.methodName, command.parameterTypes, command.parameters);
+			} catch (IllegalAccessException | InvocationTargetException
+					| NoSuchMethodException | RunMethodException | RemoteException e) {
+				if (!(command.methodName.equals("exit") && e instanceof RemoteException)) {
+					System.out.println("Error while running method: " + command.methodName + "(" + Arrays.toString(command.parameterTypes) + ")" + "with parameters " + "(" + Arrays.toString(command.parameters) + ") on instance " + getAppName());
+					e.printStackTrace();
+				} else {
+					/*
+					 * We expect a remote exception here as we force the
+					 * client to shut down which eventually also shuts down
+					 * it's RMI connection, hence the RMI server (aka the
+					 * testing client) cannot post the result of the method
+					 * call after it's execution.
+					 */
+				}
 			}
+		} else {
+			// TODO: abort test with error message
 		}
+		runningTasks--;
 	}
 	
 	public void postCommand(Command command) {
-		try {
-			commands.put(command);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (command.async) {
+			try {
+				commands.put(command);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			if (runningTasks == 0) {
+				runMethod(command);
+			} else {
+				while (runningTasks != 0) {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				runMethod(command);
+			}
 		}
 	}
 	
