@@ -51,6 +51,16 @@ public class EmulationProxy {
 		return out;
 	}
 
+	public void Disconnect( String toJid ) {
+		if ( null == _bindingStub )
+			return;
+
+		DisconnectRequest out = new DisconnectRequest(  );
+		out.setTo( toJid );
+
+		_bindingStub.sendXMPPBean( out );
+	}
+
 	public void Command( String toJid, String packetId ) {
 		if ( null == _bindingStub )
 			return;

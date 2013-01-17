@@ -1,8 +1,8 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
+
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
@@ -16,6 +16,7 @@ import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.CommandAck;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.CommandRequest;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.ConnectAck;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.ConnectRequest;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.DisconnectRequest;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.ExecutionResultAck;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.ExecutionResultRequest;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.IEmulationIncoming;
@@ -184,6 +185,7 @@ public class EmulationConnection {
 			ConnectAck connAck = new ConnectAck();
 			connAck.setFrom(in.getTo());
 			connAck.setTo(in.getFrom());
+			connAck.setId(in.getId());
 			return connAck;
 		}
 
@@ -201,7 +203,11 @@ public class EmulationConnection {
 
 		@Override
 		public XMPPBean onExecutionResult(ExecutionResultRequest in) {
-			return new ExecutionResultAck();
+			ExecutionResultAck ack = new ExecutionResultAck();
+			ack.setFrom(in.getTo());
+			ack.setTo(in.getFrom());
+			ack.setId(in.getId());
+			return ack;
 		}
 
 		@Override
@@ -224,6 +230,12 @@ public class EmulationConnection {
 
 		@Override
 		public void onStopError(StopRequest in) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onDisconnect(DisconnectRequest in) {
 			// TODO Auto-generated method stub
 			
 		}

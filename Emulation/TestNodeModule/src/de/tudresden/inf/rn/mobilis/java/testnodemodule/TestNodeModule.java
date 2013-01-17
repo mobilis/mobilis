@@ -32,6 +32,7 @@ import de.tudresden.inf.rn.mobilis.emulation.clientstub.CommandAck;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.CommandRequest;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.ConnectAck;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.ConnectRequest;
+import de.tudresden.inf.rn.mobilis.emulation.clientstub.DisconnectRequest;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.ExecutionResultAck;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.ExecutionResultRequest;
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.IEmulationIncoming;
@@ -198,6 +199,10 @@ public class TestNodeModule {
 	}
 
 	private static void shutdown() {
+		DisconnectRequest disconnect = new DisconnectRequest();
+		disconnect.setTo(emulationServerJid);
+		xmppSender.sendXMPPBean(disconnect);
+		
 		if (executorService != null && !executorService.isShutdown() && !executorService.isTerminated()) {
 			try {
 				executorService.awaitTermination(5000, TimeUnit.MILLISECONDS);
@@ -316,6 +321,9 @@ public class TestNodeModule {
 	
 	private static void registerPacketListener() {
 		beanPrototypes.put(CommandRequest.NAMESPACE, CommandRequest.CHILD_ELEMENT, new CommandRequest());
+		beanPrototypes.put(StartRequest.NAMESPACE, StartRequest.CHILD_ELEMENT, new StartRequest());
+		beanPrototypes.put(StopRequest.NAMESPACE, StopRequest.CHILD_ELEMENT, new StopRequest());
+		beanPrototypes.put(LogRequest.NAMESPACE, LogRequest.CHILD_ELEMENT, new LogRequest());
 		
 		for (XMPPBean prototype : beanPrototypes.getListOfAllValues()) {
 			new BeanProviderAdapter(new ProxyBean(prototype.getNamespace(), prototype.getChildElement())).addToProviderManager();
