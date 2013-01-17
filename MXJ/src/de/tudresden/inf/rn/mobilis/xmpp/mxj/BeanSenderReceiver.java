@@ -63,6 +63,9 @@ public class BeanSenderReceiver<B extends XMPPBean, ResultBeanType extends XMPPB
 				if (ProviderManager.getInstance().getIQProvider(resultBeanPrototype.getChildElement(), resultBeanPrototype.getNamespace()) == null) {
 					(new BeanProviderAdapter(resultBeanPrototype.getClass().newInstance())).addToProviderManager();
 				}
+				if (ProviderManager.getInstance().getIQProvider(bean.getChildElement(), bean.getNamespace()) == null) {
+					(new BeanProviderAdapter(bean.getClass().newInstance())).addToProviderManager();
+				} 
 			} catch (InstantiationException e) 
 			{
 				// TODO Auto-generated catch block
