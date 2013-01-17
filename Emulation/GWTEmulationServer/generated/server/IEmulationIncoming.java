@@ -12,6 +12,8 @@ public interface IEmulationIncoming {
 
 	XMPPBean onConnect( ConnectRequest in );
 
+	void onDisconnect( DisconnectRequest in );
+
 	void onCommand( CommandAck in );
 
 	void onCommandError( CommandRequest in);

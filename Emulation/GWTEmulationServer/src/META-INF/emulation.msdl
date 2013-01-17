@@ -31,6 +31,7 @@
 	        <xs:element name="ConnectRequest"/>
 	        <xs:element name="ConnectAck"/>
 	        <xs:element name="ConnectError"/>
+	        <xs:element name="DisconnectRequest"/>
 	        <xs:element name="CommandRequest">
 	            <xs:complexType>
 	                <xs:sequence>
@@ -43,7 +44,7 @@
 	                    <xs:element name="async" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
 	                </xs:sequence>
 	            </xs:complexType>
-	        </xs:element>         
+	        </xs:element>
 	        <xs:element name="CommandAck"/>
 	        <xs:element name="CommandError"/>
 	        <xs:element name="ExecutionResultRequest">
@@ -81,6 +82,9 @@
 			<msdl:output element="tns:ConnectAck" />
 			<msdl:outfault ref="tns:ConnectError" />
 	    </msdl:operation>
+	    <msdl:operation name="Disconnect" pattern="http://www.w3.org/ns/wsdl/in-only">
+	    	<msdl:input element="tns:DisconnectRequest"/>
+	    </msdl:operation>
 	    <msdl:operation name="Command" pattern="http://www.w3.org/ns/wsdl/out-in">
 			<msdl:input element="tns:CommandAck" />
 			<msdl:output element="tns:CommandRequest" />
@@ -115,6 +119,9 @@
 			<msdl:input xmpp:type="set" />
 			<msdl:output xmpp:type="result" />
 			<msdl:outfault ref="tns:ConnectError" />
+		</msdl:operation>
+		<msdl:operation ref="tns:Disconnect" xmpp:ident="emulation:iq:disconnect">
+			<msdl:input xmpp:type="chat" />
 		</msdl:operation>
 		<msdl:operation ref="tns:Command" xmpp:ident="emulation:iq:command">
 			<msdl:input xmpp:type="result" />
