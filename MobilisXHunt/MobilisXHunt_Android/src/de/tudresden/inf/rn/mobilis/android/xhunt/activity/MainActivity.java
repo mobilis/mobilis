@@ -171,6 +171,10 @@ public class MainActivity extends Activity {
 		}
 	}
 	
+	public MXAProxy getMXAProxy() {
+		return mMxaProxy;
+	}
+	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#finish()
 	 */
