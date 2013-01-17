@@ -81,7 +81,7 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 			e1.printStackTrace();
 		}
 		
-		String stubName = "TestNodeClient";
+		String stubName = "TestNodeModule";
         Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry();
