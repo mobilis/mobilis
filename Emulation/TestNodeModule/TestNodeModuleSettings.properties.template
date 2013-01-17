@@ -7,6 +7,8 @@ xmpppass=yourpass
 emulationserverjid=emulation@mobilis.inf.tu-dresden.de
 
 serverless=false
+# only used if serverless=true
+serverpath=/users/xzy/scripts/script.xml
 
 # list application namespace <-> path mappings here
 com.my.app=/users/xyz/bin/myApp/app.jar

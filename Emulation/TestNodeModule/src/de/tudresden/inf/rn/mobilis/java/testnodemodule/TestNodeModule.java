@@ -59,10 +59,11 @@ import de.tudresden.inf.rn.mobsda.performance.client.module.RMITestNodeModule;
 public class TestNodeModule {
 	
 	private static String xmppServer = "mobilis.inf.tu-dresden.de";
-	private static String xmppLogin = "testnodemodule";
-	private static String xmppPass = "testnodemodule";
-	private static String xmppResource = "";
+	private static String xmppLogin = "yourloginwithoutserverandresource";
+	private static String xmppPass = "yourpass";
+	private static String xmppResource = "optionalresource";
 	private static String emulationServerJid = "emulation@mobilis.inf.tu-dresden.de";
+	private static String scriptPath = "/users/xzy/scripts/script.xml";
 	
 	private static boolean serverless = false;
 	
@@ -87,8 +88,6 @@ public class TestNodeModule {
 	
 	/**
 	 * @param args
-	 * 				Only used if running in serverless mode (set serverless=true) in
-	 * 				settings file.
 	 * 				### OUTDATED ###
 	 * 				args[0] is the count of the application instances which shall be started,
 	 * 				args[1] is the path to the actual JAR file. Any additional
@@ -96,8 +95,6 @@ public class TestNodeModule {
 	 * 				args[1]...args[args.length] may use %in% which will be replaced by the
 	 * 				application instance number at runtime.
 	 * 				### OUTDATED END ###
-	 *				Alternatively args[0] is the script file (ending by .xml!) to be executed
-	 *				with this module. This also only works in serverless mode.
 	 */
 	public static void main(String[] args) {
 		
@@ -148,14 +145,9 @@ public class TestNodeModule {
 		}
 		
 		if (serverless) {
-			if (args.length == 0) {
-				System.err.println("Need more program arguments. Script not specified!");
-				System.exit(1);
-			}
-			
 			// start local mode
-			if (args[0].trim().toLowerCase().endsWith(".xml")) {
-				File scriptFile = new File(args[0].trim());
+			if (scriptPath.endsWith(".xml")) {
+				File scriptFile = new File(scriptPath);
 				
 				if (new TestNodeModuleScriptExecutor().execute(scriptFile)) {
 					System.out.println("Finished running script!");
@@ -166,7 +158,10 @@ public class TestNodeModule {
 				
 				System.exit(0);
 				
-			} 
+			} else {
+				System.err.println("Specified script file is no XML file!");
+				System.exit(1);
+			}
 //			else {
 //				System.out.println("Starting " + args[0] + " instances of " + args[1]);
 //				final String[] cmd = new String[1 + args.length];
@@ -237,7 +232,8 @@ public class TestNodeModule {
 				xmppResource = properties.getProperty("xmppresource").trim();
 				xmppPass = properties.getProperty("xmpppass").trim();
 				emulationServerJid = properties.getProperty("emulationserverjid").trim();
-				
+			} else {
+				scriptPath = properties.getProperty("scriptpath").trim();
 			}
 			
 			// read application NS <-> path mappings
@@ -397,8 +393,6 @@ public class TestNodeModule {
 				return null;
 			}
 		}
-		
-		appInstances.remove(appNS + "_" + instanceID);
 		
 		try {
 			synchronized (stopMonitor) {
@@ -633,14 +627,20 @@ public class TestNodeModule {
 	private static class RMIConnector implements RMITestNodeModule {
 
 		@Override
-		public void notifyOfStart() throws RemoteException {
+		public void notifyOfStart(String rmiID) throws RemoteException {
 			synchronized (startMonitor) {
 				startMonitor.notify();
 			}
 		}
 
 		@Override
-		public void notifyOfStop() throws RemoteException {
+		public void notifyOfStop(String rmiID) throws RemoteException {
+			System.out.println(rmiID + " has shut down.");
+			TestApplicationRunnable testApplicationRunnable = appInstances.get(rmiID);
+			if (testApplicationRunnable != null) {
+				testApplicationRunnable.shutdown();
+			}
+			appInstances.remove(rmiID);
 			synchronized (stopMonitor) {
 				stopMonitor.notify();
 			}

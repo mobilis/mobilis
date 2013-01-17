@@ -66,7 +66,7 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 			System.out.println("decoded path of codebase is " + decodedPath);
 			
 			try {
-				name = "TestNodeClient_" + workingDir;
+				name = workingDir;
 				
 				stub = (RMITestNodeClient) UnicastRemoteObject.exportObject(this, 0);
 				registry = LocateRegistry.getRegistry();
@@ -170,7 +170,7 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 	
 	public void notifyStart() {
 		try {
-			testNodeModule.notifyOfStart();
+			testNodeModule.notifyOfStart(name);
 		} catch (RemoteException e) {
 			System.err.println("Couldn't notify TestNodeModule of finished startup sequence!");
 			e.printStackTrace();
@@ -180,7 +180,7 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 	public void notifyStop() {
 		System.out.println("notifyStop() called");
 		try {
-			testNodeModule.notifyOfStop();
+			testNodeModule.notifyOfStop(name);
 		} catch (RemoteException e) {
 			System.err.println("Couldn't notify TestNodeModule of shutdown!");
 			e.printStackTrace();

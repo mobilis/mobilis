@@ -24,6 +24,8 @@ import de.tudresden.inf.rn.mobsda.performance.client.exception.RunMethodExceptio
 
 public class TestApplicationRunnable implements Runnable {
 
+	private final static String APP_DIR = "apps";
+	
 	private String appName;
 	private String[] cmd;
 	private RMITestNodeClient run;
@@ -52,11 +54,11 @@ public class TestApplicationRunnable implements Runnable {
 	@Override
 	public void run() {
 		// create working directory
-		File workingDir = new File(appName);
-		workingDir.mkdir();
+		File workingDir = new File(APP_DIR + "/" + appName);
+		workingDir.mkdirs();
 
 		// create application command file
-		File commandFile = new File(appName + "/" + appName + ".command");
+		File commandFile = new File(APP_DIR + "/" + appName + "/" + appName + ".command");
 		commandFile.delete();
 		try {
 			commandFile.createNewFile();
@@ -99,7 +101,7 @@ public class TestApplicationRunnable implements Runnable {
 		}	
 		
 		// set up RMI
-        String stubName = "TestNodeClient_" + appName;
+        String stubName = appName;
         Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry();
@@ -117,15 +119,17 @@ public class TestApplicationRunnable implements Runnable {
 		while (shallExecute) {
 			try {
 				final Command command = commands.take();
-				executorService.execute(new Runnable() {
-					
-					@Override
-					public void run() {
-						runMethod(command);
-					}
-				});
-				if (command.methodName.equals("exit")) {
+				if (command.methodName.equals("@poisonPill")) {
+					// poison pill
 					shallExecute = false;
+				} else if (command != null) {
+					executorService.execute(new Runnable() {
+						
+						@Override
+						public void run() {
+							runMethod(command);
+						}
+					});
 				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -133,11 +137,22 @@ public class TestApplicationRunnable implements Runnable {
 				shallExecute = false;
 			}
 		}
-		
 		System.out.println("Shutting down client " + appName);
 		try {
 			executorService.awaitTermination(3000, TimeUnit.MILLISECONDS);
 			executorService.shutdownNow();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void shutdown() {
+		try {
+			commands.clear();
+			Command c = new Command();
+			c.methodName = "@poisonPill";
+			commands.put(c);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

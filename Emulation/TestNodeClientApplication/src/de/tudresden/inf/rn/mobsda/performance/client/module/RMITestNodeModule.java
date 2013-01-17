@@ -5,8 +5,8 @@ import java.rmi.RemoteException;
 
 public interface RMITestNodeModule extends Remote {
 
-	public void notifyOfStart() throws RemoteException;
+	public void notifyOfStart(String rmiID) throws RemoteException;
 	
-	public void notifyOfStop() throws RemoteException;
+	public void notifyOfStop(String rmiID) throws RemoteException;
 	
 }
