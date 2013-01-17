@@ -89,18 +89,33 @@ public class TestNodeModule {
 	 * @param args
 	 * 				Only used if running in serverless mode (set serverless=true) in
 	 * 				settings file.
+	 * 				### OUTDATED ###
 	 * 				args[0] is the count of the application instances which shall be started,
 	 * 				args[1] is the path to the actual JAR file. Any additional
 	 * 				parameters are put into subsequent elements of args.
 	 * 				args[1]...args[args.length] may use %in% which will be replaced by the
 	 * 				application instance number at runtime.
+	 * 				### OUTDATED END ###
 	 *				Alternatively args[0] is the script file (ending by .xml!) to be executed
 	 *				with this module. This also only works in serverless mode.
 	 */
 	public static void main(String[] args) {
 		
+		// prepare shutdown
+		Thread shutdownThread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				shutdown();
+			}
+		});
+		
+		Runtime.getRuntime().addShutdownHook(shutdownThread);
+		
+		// set up TestNodeModule
 		fetchSettings();
 		if (!serverless) {
+			XMPPConnection.DEBUG_ENABLED = true;
 			connectToXMPP();
 			registerPacketListener();
 			
@@ -132,8 +147,13 @@ public class TestNodeModule {
 			System.exit(1);
 		}
 		
-		// testing code for serverless mode
 		if (serverless) {
+			if (args.length == 0) {
+				System.err.println("Need more program arguments. Script not specified!");
+				System.exit(1);
+			}
+			
+			// start local mode
 			if (args[0].trim().toLowerCase().endsWith(".xml")) {
 				File scriptFile = new File(args[0].trim());
 				
@@ -141,55 +161,58 @@ public class TestNodeModule {
 					System.out.println("Finished running script!");
 				} else {
 					System.err.println("Cannot read script!");
+					System.exit(1);
 				}
 				
-			} else {
-				System.out.println("Starting " + args[0] + " instances of " + args[1]);
-				final String[] cmd = new String[1 + args.length];
-				cmd[0] = System.getProperty("java.home") + "/bin/java";
-				cmd[1] = "-jar";
-				for (int i = 1; i < args.length; i++) {
-					cmd[i+1] = args[i];
-				}
+				System.exit(0);
 				
-				int instanceCount = 0;
-				try {
-					instanceCount = Integer.parseInt(args[0]);
-				} catch (NumberFormatException e) {
-					System.err.println("Couldn't parse instance count! Assuming 1.");
-					e.printStackTrace();
-					instanceCount = 1;
-				}
-				for (int i = 1; i <= instanceCount; i++) {
-					
-					String[] cmd2 = cmd.clone();
-					for (int j = 3; j < cmd.length; j++) {
-						cmd2[j] = cmd[j].replace("%in%", String.valueOf(i));
-					}
-					
-					TestApplicationRunnable testApplicationRunnable = new TestApplicationRunnable(String.valueOf(i), cmd2);
-					appInstances.put("app"+i, testApplicationRunnable);
-					
-					new Thread(testApplicationRunnable).start();
-					
-					// TODO: remove this test code
-		//			try {
-		//				Thread.sleep(3000);
-		//			} catch (InterruptedException e) {
-		//				// TODO Auto-generated catch block
-		//				e.printStackTrace();
-		//			}
-		//			testApplicationRunnable.stop();
-				}
-			}
+			} 
+//			else {
+//				System.out.println("Starting " + args[0] + " instances of " + args[1]);
+//				final String[] cmd = new String[1 + args.length];
+//				cmd[0] = System.getProperty("java.home") + "/bin/java";
+//				cmd[1] = "-jar";
+//				for (int i = 1; i < args.length; i++) {
+//					cmd[i+1] = args[i];
+//				}
+//				
+//				int instanceCount = 0;
+//				try {
+//					instanceCount = Integer.parseInt(args[0]);
+//				} catch (NumberFormatException e) {
+//					System.err.println("Couldn't parse instance count! Assuming 1.");
+//					e.printStackTrace();
+//					instanceCount = 1;
+//				}
+//				for (int i = 1; i <= instanceCount; i++) {
+//					
+//					String[] cmd2 = cmd.clone();
+//					for (int j = 3; j < cmd.length; j++) {
+//						cmd2[j] = cmd[j].replace("%in%", String.valueOf(i));
+//					}
+//					
+//					TestApplicationRunnable testApplicationRunnable = new TestApplicationRunnable(String.valueOf(i), cmd2);
+//					appInstances.put("app"+i, testApplicationRunnable);
+//					
+//					new Thread(testApplicationRunnable).start();
+//				}
+//			}
 			
+		}
+
+	}
+
+	private static void shutdown() {
+		if (executorService != null && !executorService.isShutdown() && !executorService.isTerminated()) {
 			try {
 				executorService.awaitTermination(5000, TimeUnit.MILLISECONDS);
 				executorService.shutdownNow();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
+		}
+		
+		if (registry != null) {
 			try {
 				registry.unbind(name);
 				UnicastRemoteObject.unexportObject(rmiConnector, true);
@@ -198,7 +221,6 @@ public class TestNodeModule {
 				e.printStackTrace();
 			}
 		}
-
 	}
 	
 	private static void fetchSettings() {
