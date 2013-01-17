@@ -124,6 +124,8 @@ public class EmulationConnection {
 	private void registerPacketListener() {
 		
 		beans.put(ConnectRequest.NAMESPACE, ConnectRequest.CHILD_ELEMENT, new ConnectRequest());
+		beans.put(DisconnectRequest.NAMESPACE, DisconnectRequest.CHILD_ELEMENT, new DisconnectRequest());
+		beans.put(ExecutionResultRequest.NAMESPACE, ExecutionResultRequest.CHILD_ELEMENT, new ExecutionResultRequest());
 		
 		for(XMPPBean b : beans.getListOfAllValues()) {
 			new BeanProviderAdapter(b).addToProviderManager();
@@ -141,11 +143,11 @@ public class EmulationConnection {
 		@Override
 		public void processPacket(Packet p) {
 			
-			//System.out.println(TAG + ": processPacket");
+			System.out.println(TAG + ": processPacket: " + p.getFrom());
 			if (p instanceof BeanIQAdapter) {
 				
 				XMPPBean b = ((BeanIQAdapter) p).getBean();
-				//System.out.println(TAG + ": bean check");
+				System.out.println(TAG + ": bean check: " + b.getChildElement());
 				
 				if (b instanceof ConnectRequest) {
 					// handle ConnectRequest
@@ -161,6 +163,15 @@ public class EmulationConnection {
 					XMPPBean ackBean = incoming.onConnect(conReq);
 					outgoing.sendXMPPBean(ackBean);
 					
+			   } else if (b instanceof DisconnectRequest) {
+				   // handle DisconnectRequest
+				   System.out.println(TAG + ": disconnectRequest");
+				   DisconnectRequest disReq = (DisconnectRequest) b;
+				   
+				   if(devices.contains(disReq.getFrom())) {
+						devices.remove(disReq.getFrom());
+						System.out.println(TAG + ": " + disReq.getFrom() + " removed");
+					}
 			   } else if (b instanceof ExecutionResultRequest) {
 				   // handle ExecutionResultRequest
 				   System.out.println(TAG + ": executionResultRequest");

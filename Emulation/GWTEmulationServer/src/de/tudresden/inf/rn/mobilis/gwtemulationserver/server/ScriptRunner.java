@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gwt.user.client.ui.ListBox;
-
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.CommandRequest;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.StartRequest;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.StopRequest;

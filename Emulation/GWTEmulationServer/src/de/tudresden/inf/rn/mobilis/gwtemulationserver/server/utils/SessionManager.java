@@ -1,8 +1,6 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * 

@@ -1,6 +1,5 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.client;
 
-import java.awt.Panel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
