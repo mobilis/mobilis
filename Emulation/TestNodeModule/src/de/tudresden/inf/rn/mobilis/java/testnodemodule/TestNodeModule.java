@@ -84,7 +84,7 @@ public class TestNodeModule {
 	private static Object stopMonitor = new Object();
 	private static RMITestNodeModule stub; // hold reachable to prevent GC
 	private static Registry registry; // hold reachable to prevent GC
-	private static String name = "TestNodeClient";
+	private static String name = "TestNodeModule";
 	private static RMIConnector rmiConnector;
 	
 	/**
@@ -132,7 +132,7 @@ public class TestNodeModule {
 				stub = (RMITestNodeModule) UnicastRemoteObject.exportObject(rmiConnector, 0);
 				registry = LocateRegistry.getRegistry();
 				registry.rebind(name, stub);
-				System.out.println("TestNodeClient bound on " + name);
+				System.out.println("TestNodeModule bound on " + name);
 			} catch (Exception e) {
 				System.out.println("TestNodeClient exception during RMI setup:");
 				e.printStackTrace();
