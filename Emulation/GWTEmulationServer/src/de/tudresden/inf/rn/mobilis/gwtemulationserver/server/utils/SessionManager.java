@@ -14,6 +14,7 @@ import java.util.List;
 public class SessionManager {
 	
 	private HashMap<String,EmulationSession> sessionList;
+	private Integer lastID = 0;
 	
 	public SessionManager() {
 		sessionList = new HashMap<String,EmulationSession>();
@@ -25,20 +26,26 @@ public class SessionManager {
 		
 		if(sessionList.containsKey(id)) {
 			s = sessionList.get(id);
-			System.out.println("Session with id " + id + " exist!");
+			//System.out.println("Session with id " + id + " exist!");
 		} else {
 			if(id.equals("")) {
-				Integer num = sessionList.size();
-				s = new EmulationSession(num.toString());
-				sessionList.put(num.toString(), s);
-				System.out.println("Session with id " + num.toString() + " created!");
+				//Integer num = sessionList.size();
+				//s = new EmulationSession(num.toString());
+				s = new EmulationSession(lastID.toString());
+				sessionList.put(lastID.toString(), s);
+				lastID++;
+				//System.out.println("Session with id " + num.toString() + " created!");
 			} else {
-				System.out.println("Session with id " + id + " unknown!");
+				//System.out.println("Session with id " + id + " unknown!");
 			}
 		}
 		
 		return s;
 		
+	}
+	
+	public Boolean sessionExist(String id) {
+		return sessionList.containsKey(id);
 	}
 	
 	public void deleteSession(String id) {

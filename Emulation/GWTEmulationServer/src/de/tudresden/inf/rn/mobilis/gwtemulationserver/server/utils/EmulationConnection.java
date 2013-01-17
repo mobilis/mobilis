@@ -1,47 +1,65 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.PacketListener;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.PacketTypeFilter;
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Packet;
 
-/**
- * 
- * Class EmulationSession represents an Emulation Session that is managed in the SessionManager.
- * 
- * @author Thomas Walther
- *
- */
-public class EmulationSession {
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.CommandAck;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.CommandRequest;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.ConnectAck;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.ConnectRequest;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.ExecutionResultAck;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.ExecutionResultRequest;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.IEmulationIncoming;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.IEmulationOutgoing;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.StartAck;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.StartRequest;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.StopAck;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.StopRequest;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
+
+public class EmulationConnection {
 	
-	private List<String> devicesInUse;
-	private String id;
-	private String script;
+	private static final String HOST = "mobilis-dev.inf.tu-dresden.de";
+	private static final String USER = "emulationserver";
+	private static final String PASS = "emulationserver";
+	private static final String RESSOURCE = "EmulationServer";
+	private static final String TAG = "EmulationConnection";
 	
-	public EmulationSession(String id) {
-		this.id = id;
-		devicesInUse = new ArrayList<String>();
-	}
+	private Connection connection;
+	private EmulationIncoming incoming = new EmulationIncoming();
+	private EmulationOutgoing outgoing = new EmulationOutgoing();
+	private DoubleKeyMap<String, String, XMPPBean> beans = new DoubleKeyMap<String, String, XMPPBean>(false);
+	private Boolean connected;
+	private List<String> devices;
 	
-	public String getId() {
-		return id;
+	public EmulationConnection() {
+		devices = new ArrayList<String>();
+		connected = false;
+		connection = null;
 	}
 	
 	public List<String> getDeviceList() {
-		return devicesInUse;
+		return devices;
 	}
 	
-	public void addDeviceList(List<String> deviceList) {
-		devicesInUse = deviceList;
+	public void removeDevice(int index) {
+		devices.remove(index);
 	}
 	
-	public void setScriptName(String script) {
-		this.script = script;
-	}
-	
-	public String getScriptName() {
-		return script;
-	}
-	
-	/*public Connection getConnection() {
+	public Connection getConnection() {
 		return connection;
 	}
 	
@@ -56,7 +74,7 @@ public class EmulationSession {
 			
 			if( connection == null ) {
 				// Create the configuration for this new connection
-				ConnectionConfiguration config = new ConnectionConfiguration("quer-dd", 5222);
+				ConnectionConfiguration config = new ConnectionConfiguration(HOST, 5222);
 				config.setCompressionEnabled(true);
 				config.setSASLAuthenticationEnabled(true);
 
@@ -73,7 +91,7 @@ public class EmulationSession {
 			}
 			// Log into the server
 			try {
-				connection.login("emulationserver", "emulationserver", "EmulationServer"+id);
+				connection.login(USER, PASS, RESSOURCE);
 				connected = true;
 				System.out.println(TAG + ": logged in");
 				
@@ -102,43 +120,6 @@ public class EmulationSession {
 		
 	}
 	
-	public Boolean send() {
-		Boolean sent = false;
-		
-		if(connected) {
-			
-			int methodID = 1234;
-			Boolean x = true;
-			
-			for(String device:devices) {
-				List<String> params = new ArrayList<String>();
-				List<String> types = new ArrayList<String>();
-				String user = device.split("@")[0];
-				Integer d = devices.size();
-				
-				params.add(user);
-				types.add("String");
-				params.add(x.toString());
-				types.add("Boolean");
-				params.add(d.toString());
-				types.add("Integer");
-				
-				CommandRequest commReq = new CommandRequest("startAutomaticTest",params,types,methodID, "");
-				commReq.setFrom(connection.getUser());
-				
-				commReq.setTo(device);
-				connection.sendPacket(new BeanIQAdapter((XMPPBean)commReq));
-				
-				System.out.println(TAG + ": sendCommand to " + device + " with params: " + params.toString() + " of types: " + types.toString());
-				x = false;
-			}
-			
-			sent = true;
-		}
-		
-		return sent;
-	}
-	
 	private void registerPacketListener() {
 		
 		beans.put(ConnectRequest.NAMESPACE, ConnectRequest.CHILD_ELEMENT, new ConnectRequest());
@@ -159,37 +140,24 @@ public class EmulationSession {
 		@Override
 		public void processPacket(Packet p) {
 			
-			System.out.println(TAG + ": processPacket");
+			//System.out.println(TAG + ": processPacket");
 			if (p instanceof BeanIQAdapter) {
 				
 				XMPPBean b = ((BeanIQAdapter) p).getBean();
-				System.out.println(TAG + ": bean check");
+				//System.out.println(TAG + ": bean check");
 				
 				if (b instanceof ConnectRequest) {
 					// handle ConnectRequest
 					System.out.println(TAG + ": connectRequest");
 					ConnectRequest conReq = (ConnectRequest) b;
-					Calendar cal = Calendar.getInstance();
-					StringBuilder time = new StringBuilder();
-					time.append(cal.get(Calendar.HOUR_OF_DAY));
-					time.append(":");
-					time.append(cal.get(Calendar.MINUTE));
-					time.append(":");
-					time.append(cal.get(Calendar.SECOND));
-					time.append(":");
-					time.append(cal.get(Calendar.MILLISECOND));
-					if(devices.contains(conReq.getFrom())) {
-						devices.remove(conReq.getFrom());
-						System.out.println(TAG + ": " + time.toString() + " > " + conReq.getFrom() + " removed");
-					} else {
+										
+					if(!devices.contains(conReq.getFrom())) {
 						devices.add(conReq.getFrom());
-						System.out.println(TAG + ": " + time.toString() + " > " + conReq.getFrom() + " added");
+						System.out.println(TAG + ": " + conReq.getFrom() + " added");
 					}
 					
 					// send back ConnectAck
 					XMPPBean ackBean = incoming.onConnect(conReq);
-					ackBean.setFrom(conReq.getTo());
-					ackBean.setTo(conReq.getFrom());
 					outgoing.sendXMPPBean(ackBean);
 					
 			   } else if (b instanceof ExecutionResultRequest) {
@@ -213,7 +181,10 @@ public class EmulationSession {
 
 		@Override
 		public XMPPBean onConnect(ConnectRequest in) {
-			return new ConnectAck();
+			ConnectAck connAck = new ConnectAck();
+			connAck.setFrom(in.getTo());
+			connAck.setTo(in.getFrom());
+			return connAck;
 		}
 
 		@Override
@@ -232,14 +203,37 @@ public class EmulationSession {
 		public XMPPBean onExecutionResult(ExecutionResultRequest in) {
 			return new ExecutionResultAck();
 		}
+
+		@Override
+		public void onStart(StartAck in) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onStartError(StartRequest in) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onStop(StopAck in) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onStopError(StopRequest in) {
+			// TODO Auto-generated method stub
+			
+		}
 		
 	}
 	
 	private class EmulationOutgoing implements IEmulationOutgoing {
 
 		@Override
-		public void sendXMPPBean(XMPPBean out,
-				IXMPPCallback<? extends XMPPBean> callback) {
+		public void sendXMPPBean(XMPPBean out, IXMPPCallback<? extends XMPPBean> callback) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -249,6 +243,6 @@ public class EmulationSession {
 			connection.sendPacket(new BeanIQAdapter(out));
 		}
 		
-	}*/
+	}
 
 }

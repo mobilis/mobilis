@@ -70,3 +70,47 @@ body {
 	padding-top: 10px;
 	padding-bottom: 10px;
 }
+
+.main {
+	width: 100%;
+	height: auto;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.titleLabel {
+	text-align: center;
+	padding: 5px;
+	margin: 5px;
+	font-size: 2em;
+  	font-weight: bold;
+  	color: #777777;
+}
+
+.inner {
+	width: auto;
+	height: auto;
+	text-align: center;
+	margin: 10px;
+}
+
+.label {
+	width: auto;
+	text-align: center;
+	padding: 5px;
+	margin: 5px;
+}
+
+.errorlabel {
+	width: auto;
+	text-align: center;
+	padding: 5px;
+	margin: 5px;
+	color: red;
+}
+
+.button {
+	width: 150px;
+	text-align: center;
+	margin: 10px;
+}

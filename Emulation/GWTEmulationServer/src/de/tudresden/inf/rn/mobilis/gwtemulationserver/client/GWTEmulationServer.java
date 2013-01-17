@@ -16,7 +16,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -29,65 +31,87 @@ import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.SessionInfo;
  */
 public class GWTEmulationServer implements EntryPoint {
 	
-	private static final int REFRESH_INTERVAL = 2000;
-	private static final String SESSION_LABEL = "Enter Session-ID to open existing Emulation Session or leave blank to create a new Session";
-	
-	// UI-Stuff
-	private RootPanel rootPanel = RootPanel.get();
-	private FlowPanel mainPanel = new FlowPanel();
-	private FlowPanel titlePanel = new FlowPanel();
-	private FlowPanel sessionInfoPanel = new FlowPanel();
-	private FlowPanel sessionIDInputPanel = new FlowPanel();
-	private FlowPanel sessionStartPanel = new FlowPanel();
-	private FlowPanel commandPanel = new FlowPanel();
-	private FlowPanel commandStatusPanel = new FlowPanel();
-	private FlowPanel devicePanel = new FlowPanel();
-	private FlowPanel footerPanel = new FlowPanel();
-	private FlowPanel separator = new FlowPanel();
-	private FlowPanel errorPanel = new FlowPanel();
-	
-	private Label title = new Label("Emulation Server Webfrontend");
-	private Label errorLabel = new Label();
-	
-	private Label sessionLabel = new Label();
-	private TextBox sessionIDTextBox = new TextBox();
-	private Button sessionOpenButton = new Button("Open Emulation Session");
-	private Button sessionCloseButton = new Button("Close Emulation Session");
-	
-	private TextBox txtCommand = new TextBox();
-	private Button sendButton = new Button("Send Command");
-	
-	private Label lblSendStatus = new Label();
-	
-	private Label lblIncommingCommand = new Label();
-	
-	private CellList<String> deviceList = new CellList<String>(new TextCell());
-	private ListDataProvider<String> deviceListDataProvider = new ListDataProvider<String>();
-	
 	// Service
 	private EmuServerConnectServiceAsync emuServerConnectSvc = GWT.create(EmuServerConnectService.class);
 	
-	// 
-	private String lastCommand;
-	private Boolean connectionStatus = false;
-	private Timer refreshTimer;
-	private List<String> devices = new ArrayList<String>();
-	private String currentSessionID = "";
+	private HorizontalPanel content;
 	
 	public void onModuleLoad() {
 		
-	    refreshTimer = new Timer() {
+	    /*refreshTimer = new Timer() {
 	      @Override
 	      public void run() {
 	        getDeviceList();
 	      }
 	    };
 	    
-	    initLayout();
+	    initLayout();*/
+		
+		VerticalPanel main = new VerticalPanel();
+		main.addStyleName("main");
+		
+		HorizontalPanel title = new HorizontalPanel();
+		Image logo = new Image("img/logo.png");
+		Label titleLabel = new Label("Mobilis Emulation");
+		titleLabel.addStyleName("titleLabel");
+		title.add(logo);
+		title.add(titleLabel);
+		title.addStyleName("inner");
+		
+		HorizontalPanel menu = new HorizontalPanel();
+		Button scriptButton = new Button("Skripte");
+		Button emuButton = new Button("Emulation");
+		Button logButton = new Button("Logs");
+		scriptButton.addStyleName("button");
+		scriptButton.addClickHandler(new ScriptClickHandler());
+		emuButton.addStyleName("button");
+		emuButton.addClickHandler(new EmulationClickHandler());
+		logButton.addStyleName("button");
+		menu.add(scriptButton);
+		menu.add(emuButton);
+		menu.add(logButton);
+		menu.addStyleName("inner");
+		
+		content = new HorizontalPanel();
+		content.addStyleName("inner");
+		
+		main.add(title);
+		main.add(menu);
+		main.add(content);
+		
+		RootLayoutPanel.get().add(main);
 		
 	}
 	
-	private void onSessionOpenClick() {
+	private class ScriptClickHandler implements ClickHandler {
+
+		@Override
+		public void onClick(ClickEvent event) {
+			// TODO Auto-generated method stub
+			content.clear();
+			
+			ContentScripts contScr = new ContentScripts(emuServerConnectSvc);			
+			content.add(contScr);
+			
+		}
+		
+	}
+	
+	private class EmulationClickHandler implements ClickHandler {
+
+		@Override
+		public void onClick(ClickEvent event) {
+			// TODO Auto-generated method stub
+			content.clear();
+			
+			ContentEmulation contEmu = new ContentEmulation(emuServerConnectSvc);
+			content.add(contEmu);
+			
+		}
+		
+	}
+	
+	/*private void onSessionOpenClick() {
 
 		String inputID = sessionIDTextBox.getText();
 		emuServerConnectSvc.openSession(inputID, new SessionOpenCallback());
@@ -105,7 +129,7 @@ public class GWTEmulationServer implements EntryPoint {
 		
 		if(!txtCommand.getText().isEmpty()) {
 			lastCommand = txtCommand.getText();
-			emuServerConnectSvc.sendCommand(lastCommand, new SendCommandCallback());
+			emuServerConnectSvc.sendCommand(currentSessionID, new SendCommandCallback());
 		} else {
 			lblSendStatus.setText("Please enter Command!");
 		}
@@ -128,7 +152,7 @@ public class GWTEmulationServer implements EntryPoint {
 	private class SendCommandCallback implements AsyncCallback<Boolean> {
 		@Override
 		public void onFailure(Throwable caught) {
-			lblSendStatus.setText("Error sending command: '" + lastCommand + "'!");
+			lblSendStatus.setText("Error sending command: '" + lastCommand + "'! : " + caught.getMessage());
 		}
 
 		@Override
@@ -299,6 +323,6 @@ public class GWTEmulationServer implements EntryPoint {
 		
 		sessionLabel.setText(SESSION_LABEL);
 		
-	}
+	}*/
 	
 }

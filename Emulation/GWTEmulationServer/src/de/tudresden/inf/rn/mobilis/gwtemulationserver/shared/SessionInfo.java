@@ -1,37 +1,38 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.shared;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class SessionInfo implements Serializable {
 	
-	private Boolean connected;
+	private Boolean isSession;
 	private String sessionID;
 	private String errorMessage;
+	private List<String> scriptList;
 	
+	// empty constructor is needed for GWT
 	public SessionInfo() {
-		this.connected = false;
+		this.isSession = false;
 		this.sessionID = "";
 		this.errorMessage = "";
+		this.setScriptList(null);
 	}
 	
-	public SessionInfo(Boolean connected, String id) {
-		this.connected = connected;
+	public SessionInfo(Boolean isSession, String id, List<String> scriptList) {
+		this.isSession = isSession;
 		this.sessionID = id;
 		this.setErrorMessage("");
+		this.setScriptList(scriptList);
 	}
 	
-	public SessionInfo(Boolean connected, String id, String errorMessage) {
-		this.connected = connected;
+	public SessionInfo(Boolean isSession, String id, String errorMessage) {
+		this.isSession = isSession;
 		this.sessionID = id;
 		this.setErrorMessage(errorMessage);
 	}
 	
-	public Boolean getConnected() {
-		return connected;
-	}
-	
-	public void setConnected(Boolean connected) {
-		this.connected = connected;
+	public Boolean isSession() {
+		return isSession;
 	}
 	
 	public String getSessionID() {
@@ -48,6 +49,14 @@ public class SessionInfo implements Serializable {
 
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
+	}
+
+	public List<String> getScriptList() {
+		return scriptList;
+	}
+
+	public void setScriptList(List<String> scriptList) {
+		this.scriptList = scriptList;
 	}
 
 }

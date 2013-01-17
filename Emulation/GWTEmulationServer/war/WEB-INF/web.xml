@@ -4,11 +4,22 @@
   <servlet>
     <servlet-name>Connection Service</servlet-name>
     <servlet-class>de.tudresden.inf.rn.mobilis.gwtemulationserver.server.EmuServerConnectServiceImpl</servlet-class>
+    <load-on-startup>1</load-on-startup>
   </servlet>
   
   <servlet-mapping>
     <servlet-name>Connection Service</servlet-name>
     <url-pattern>/gwtemulationserver/connectionService</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>UploadServlet</servlet-name>
+    <servlet-class>de.tudresden.inf.rn.mobilis.gwtemulationserver.server.UploadServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>UploadServlet</servlet-name>
+    <url-pattern>/gwtemulationserver/upload</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->
