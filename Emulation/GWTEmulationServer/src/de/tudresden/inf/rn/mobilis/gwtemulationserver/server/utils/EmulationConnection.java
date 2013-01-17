@@ -184,6 +184,7 @@ public class EmulationConnection {
 			ConnectAck connAck = new ConnectAck();
 			connAck.setFrom(in.getTo());
 			connAck.setTo(in.getFrom());
+			connAck.setId(in.getId());
 			return connAck;
 		}
 
