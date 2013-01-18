@@ -70,12 +70,12 @@ public class LogClass {
 		}
 		
 		else {
-			logFolder = new File("/var/XHuntServiceLogs");
+			logFolder = new File("logs/XHuntServiceLogs");
 		}
 
 		if(!logFolder.isDirectory()) {
 			try {
-				logFolder.mkdir();
+				logFolder.mkdirs();
 			} catch (SecurityException e) { e.printStackTrace(); }
 		}
 		
