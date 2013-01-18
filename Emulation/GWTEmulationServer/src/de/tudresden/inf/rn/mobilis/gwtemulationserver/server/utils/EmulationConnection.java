@@ -138,6 +138,16 @@ public class EmulationConnection {
 		
 	}
 	
+	private IXMPPCallback<StartAck> startCallback = new IXMPPCallback<StartAck>() {
+
+		@Override
+		public void invoke(StartAck xmppBean) {
+			if(xmppBean.getType() == XMPPBean.TYPE_ERROR) {
+				System.out.println("Couldn't execute StartCommand!");
+			}
+		}
+	};
+	
 	private class IQListener implements PacketListener {
 
 		@Override
