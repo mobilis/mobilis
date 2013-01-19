@@ -48,12 +48,22 @@ public class UploadServlet extends HttpServlet {
 
 	private void processFile(FileItem item) {
 		
-		String scriptPath = getServletContext().getRealPath("skripte") + File.separator + item.getName();
-		File newFile = new File(scriptPath);
+		String scriptPath = getServletContext().getRealPath("skripte");
+		File dir = new File(scriptPath);
+		if(!dir.exists()) {
+			System.out.println("Script-Dir don't exist, creating dir: " + scriptPath);
+			dir.mkdir();
+		}
+		String scriptFilePath = scriptPath + File.separator + item.getName();
+		System.out.println("Upload Marker 1");
+		File newFile = new File(scriptFilePath);
+		System.out.println("Upload Marker 2");
 		if(newFile.exists()) {
+			System.out.println("Upload Marker 3");
 			Integer count = 0;
 			while(newFile.exists()) {
-				String fileName = scriptPath.substring(0, scriptPath.length()-4) + "_" + count.toString() + ".xml";
+				System.out.println("Upload Marker 4");
+				String fileName = scriptFilePath.substring(0, scriptFilePath.length()-4) + "_" + count.toString() + ".xml";
 				newFile = new File(fileName);
 				count++;
 			}

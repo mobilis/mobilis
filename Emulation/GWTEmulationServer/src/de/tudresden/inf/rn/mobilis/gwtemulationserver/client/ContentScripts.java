@@ -48,6 +48,7 @@ public class ContentScripts extends VerticalPanel {
 				String fileName = upload.getFilename();
 				String fileType = fileName.substring(fileName.length()-4, fileName.length());
 				if(fileType.equals(".xml")) {
+					System.out.println("Submit");
 					form.submit();
 				} else {
 					Window.alert("Bitte Skript im xml-Format uploaden!");
@@ -89,16 +90,17 @@ public class ContentScripts extends VerticalPanel {
 			
 			@Override
 			public void onSuccess(List<String> result) {
-				for(String s:result) {
-					Label script = new Label(s);
-					scriptList.add(script);
+				if(result.size() > 0) {
+					for(String s:result) {
+						Label script = new Label(s);
+						scriptList.add(script);
+					}
 				}
 			}
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-				
+				System.out.println("Error getting scriptList!");
 			}
 		});
 		

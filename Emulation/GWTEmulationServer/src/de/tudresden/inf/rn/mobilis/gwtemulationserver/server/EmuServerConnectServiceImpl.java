@@ -113,6 +113,9 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 		File f = new File(scriptPath);
 		String[] fArray = f.list();
 		List<String> scripts = new ArrayList<String>();
+		
+		if(fArray == null) return scripts;
+				
 		for(String s:fArray) {
 			scripts.add(s);
 		}
