@@ -1279,10 +1279,11 @@ public class LobbyActivity extends Activity {
 				if (bean != null && !isError) {
 					mGame.getRouteManagement().setMyTickets(bean.getTickets());
 
+					/* Commented out since tickets became hidden
 					Message msg = new Message();
 					msg.obj = "Ticket amount changed!";
 
-					mMucHandler.sendMessage(msg);
+					mMucHandler.sendMessage(msg); */
 					// Result will be send if XHuntMapActivity is created
 				}
 			}

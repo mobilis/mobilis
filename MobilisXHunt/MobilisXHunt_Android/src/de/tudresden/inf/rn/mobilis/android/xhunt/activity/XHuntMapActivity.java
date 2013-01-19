@@ -705,7 +705,9 @@ public class XHuntMapActivity extends MapActivity {
 			if(firstSuitableTicket != -1) {
 				// If player isn't unmovable
 				if(!mGame.getRouteManagement().isMyPlayerUnmovable(getMyPlayer())){
-					Log.v("", "ticket: " + mGame.getRouteManagement().getAreaTickets().get(item.getGroupId()).getName());
+					//Log.v("", "ticket: " + mGame.getRouteManagement().getAreaTickets().get(item.getGroupId()).getName());
+					Log.v("", "ticket: " + mGame.getRouteManagement().getAreaTickets().get(firstSuitableTicket).getName());
+
 					// Request new target to server using TargetBean
 					mMxaProxy.getIQProxy().getProxy().Target(
 							mMxaProxy.getIQProxy().getGameServiceJid(),
