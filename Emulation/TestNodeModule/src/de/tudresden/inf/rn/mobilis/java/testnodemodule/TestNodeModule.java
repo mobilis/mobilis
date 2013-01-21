@@ -199,9 +199,11 @@ public class TestNodeModule {
 	}
 
 	private static void shutdown() {
-		DisconnectRequest disconnect = new DisconnectRequest();
-		disconnect.setTo(emulationServerJid);
-		xmppSender.sendXMPPBean(disconnect);
+		if (!serverless) {
+			DisconnectRequest disconnect = new DisconnectRequest();
+			disconnect.setTo(emulationServerJid);
+			xmppSender.sendXMPPBean(disconnect);
+		}
 		
 		if (executorService != null && !executorService.isShutdown() && !executorService.isTerminated()) {
 			try {
