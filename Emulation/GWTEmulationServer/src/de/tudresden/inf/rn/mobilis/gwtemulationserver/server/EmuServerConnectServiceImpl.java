@@ -1,29 +1,14 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.server;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.jivesoftware.smack.Connection;
-import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.PacketListener;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.Packet;
-
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.client.EmuServerConnectService;
-import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.CommandRequest;
-import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.ConnectRequest;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.CommandType;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.InstanceGroupType;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.InstanceType;
@@ -33,10 +18,6 @@ import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationSess
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.SessionManager;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.ScriptInfo;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.SessionInfo;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanFilterAdapter;
-import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
-import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
 
 public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements EmuServerConnectService {
 

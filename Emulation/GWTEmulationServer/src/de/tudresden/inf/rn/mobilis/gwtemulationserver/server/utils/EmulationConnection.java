@@ -39,7 +39,7 @@ public class EmulationConnection {
 	private static final String RESSOURCE = "EmulationServer";
 	private static final String TAG = "EmulationConnection";
 	
-	private Connection connection;
+	private XMPPConnection connection;
 	private EmulationIncoming incoming = new EmulationIncoming();
 	private EmulationOutgoing outgoing = new EmulationOutgoing();
 	private DoubleKeyMap<String, String, XMPPBean> beans = new DoubleKeyMap<String, String, XMPPBean>(false);
@@ -60,7 +60,7 @@ public class EmulationConnection {
 		devices.remove(index);
 	}
 	
-	public Connection getConnection() {
+	public XMPPConnection getConnection() {
 		return connection;
 	}
 	

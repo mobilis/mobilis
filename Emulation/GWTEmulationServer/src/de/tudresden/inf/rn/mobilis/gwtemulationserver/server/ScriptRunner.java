@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.CommandAck;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.CommandRequest;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.StartAck;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.StartRequest;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.StopAck;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.StopRequest;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.AppCommandType;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.InstanceType;
@@ -17,6 +20,7 @@ import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationConn
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationSession;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanSenderReceiver;
 
 public class ScriptRunner extends XMLScriptExecutor {
 	
@@ -84,7 +88,23 @@ public class ScriptRunner extends XMLScriptExecutor {
 		startReq.setTo(sendTo);
 		
 		System.out.println("StartCommand -> " + sendTo);
-		emuConnection.getConnection().sendPacket(new BeanIQAdapter((XMPPBean)startReq));
+		BeanSenderReceiver<StartRequest, StartAck> bsr = new BeanSenderReceiver<StartRequest, StartAck>(emuConnection.getConnection());
+		XMPPBean result = bsr.exchange(startReq, new StartAck(), 1);
+		
+		if (result != null) {
+			if (result.getType() == XMPPBean.TYPE_ERROR) {
+				System.err.println("Couldn't send StartCommand to " + sendTo + ": ");
+				System.err.println("\tError type: " + result.errorType);
+				System.err.println("\tError condition: " + result.errorCondition);
+				System.err.println("\tError message: " + result.errorText);
+			} else {
+				System.out.println("Successfully sent StartCommand to " + sendTo);
+			}
+		} else {
+			System.err.println("Couldn't send StartCommand to " + sendTo);
+		}
+		
+		//emuConnection.getConnection().sendPacket(new BeanIQAdapter((XMPPBean)startReq));
 	}
 
 	@Override
@@ -103,7 +123,22 @@ public class ScriptRunner extends XMLScriptExecutor {
 		stopReq.setTo(sendTo);
 		
 		System.out.println("StopCommand -> " + sendTo);
-		emuConnection.getConnection().sendPacket(new BeanIQAdapter((XMPPBean)stopReq));
+		BeanSenderReceiver<StopRequest, StopAck> bsr = new BeanSenderReceiver<StopRequest, StopAck>(emuConnection.getConnection());
+		XMPPBean result = bsr.exchange(stopReq, new StopAck(), 1);
+		
+		if (result != null) {
+			if (result.getType() == XMPPBean.TYPE_ERROR) {
+				System.err.println("Couldn't send StopCommand to " + sendTo + ": ");
+				System.err.println("\tError type: " + result.errorType);
+				System.err.println("\tError condition: " + result.errorCondition);
+				System.err.println("\tError message: " + result.errorText);
+			} else {
+				System.out.println("Successfully sent StopCommand to " + sendTo);
+			}
+		} else {
+			System.err.println("Couldn't send StopCommand to " + sendTo);
+		}
+		//emuConnection.getConnection().sendPacket(new BeanIQAdapter((XMPPBean)stopReq));
 	}
 
 	@Override
@@ -164,7 +199,23 @@ public class ScriptRunner extends XMLScriptExecutor {
 		commReq.setTo(sendTo);
 		
 		System.out.println("AppComand: method->" + methodName + ", to->" + sendTo);
-		emuConnection.getConnection().sendPacket(new BeanIQAdapter((XMPPBean)commReq));
+		BeanSenderReceiver<CommandRequest, CommandAck> bsr = new BeanSenderReceiver<CommandRequest, CommandAck>(emuConnection.getConnection());
+		XMPPBean result = bsr.exchange(commReq, new CommandAck(), 1);
+		
+		if (result != null) {
+			if (result.getType() == XMPPBean.TYPE_ERROR) {
+				System.err.println("Couldn't send AppComand to " + sendTo + ": ");
+				System.err.println("\tError type: " + result.errorType);
+				System.err.println("\tError condition: " + result.errorCondition);
+				System.err.println("\tError message: " + result.errorText);
+			} else {
+				System.out.println("Successfully sent AppComand to " + sendTo);
+			}
+		} else {
+			System.err.println("Couldn't send AppComand to " + sendTo);
+		}
+		
+		//emuConnection.getConnection().sendPacket(new BeanIQAdapter((XMPPBean)commReq));
 		
 	}
 
