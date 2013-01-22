@@ -162,25 +162,25 @@ public class ScriptRunner extends XMLScriptExecutor {
 						Integer intParam = (Integer)param;
 						System.out.println("Integer-Param: " + intParam.toString());
 						parameters.add(intParam.toString());
-						parameterTypes.add("Integer");
+						parameterTypes.add("java.lang.Integer");
 					}
 					if(param instanceof String) {
 						String stringParam = (String)param;
 						System.out.println("String-Param: " + stringParam);
 						parameters.add(stringParam);
-						parameterTypes.add("String");
+						parameterTypes.add("java.lang.String");
 					}
 					if(param instanceof Boolean) {
 						Boolean boolParam = (Boolean)param;
 						System.out.println("Boolean-Param: " + boolParam.toString());
 						parameters.add(boolParam.toString());
-						parameterTypes.add("Boolean");
+						parameterTypes.add("java.lang.Boolean");
 					}
 					if(param instanceof Double) {
 						Double doubleParam = (Double)param;
 						System.out.println("Double-Param: " + doubleParam.toString());
 						parameters.add(doubleParam.toString());
-						parameterTypes.add("Double");
+						parameterTypes.add("java.lang.Double");
 					}
 				}
 			}

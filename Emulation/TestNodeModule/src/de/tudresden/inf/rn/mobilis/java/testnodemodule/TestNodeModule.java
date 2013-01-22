@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -199,9 +200,11 @@ public class TestNodeModule {
 	}
 
 	private static void shutdown() {
-		DisconnectRequest disconnect = new DisconnectRequest();
-		disconnect.setTo(emulationServerJid);
-		xmppSender.sendXMPPBean(disconnect);
+		if (!serverless) {
+			DisconnectRequest disconnect = new DisconnectRequest();
+			disconnect.setTo(emulationServerJid);
+			xmppSender.sendXMPPBean(disconnect);
+		}
 		
 		if (executorService != null && !executorService.isShutdown() && !executorService.isTerminated()) {
 			try {
@@ -464,9 +467,9 @@ public class TestNodeModule {
 					} else if (proxy.isTypeOf(LogRequest.NAMESPACE, LogRequest.CHILD_ELEMENT)) {
 						xmppIncomingHandler.onLog((LogRequest) proxy.parsePayload(new LogRequest()));
 					} else if (proxy.isTypeOf(StartRequest.NAMESPACE, StartRequest.CHILD_ELEMENT)) {
-						xmppIncomingHandler.onStart((StartRequest) proxy.parsePayload(new StartRequest()));
+						outBean = xmppIncomingHandler.onStart((StartRequest) proxy.parsePayload(new StartRequest()));
 					} else if (proxy.isTypeOf(StopRequest.NAMESPACE, StopRequest.CHILD_ELEMENT)) {
-						xmppIncomingHandler.onStop((StopRequest) proxy.parsePayload(new StopRequest()));
+						outBean = xmppIncomingHandler.onStop((StopRequest) proxy.parsePayload(new StopRequest()));
 					}
 					
 					if (outBean != null) {
@@ -499,8 +502,11 @@ public class TestNodeModule {
 		public XMPPBean onCommand(CommandRequest in) {
 			Command command = new Command();
 			command.methodName = in.getMethodName();
-			command.parameters = (String[]) in.getParameters().toArray();
-			command.parameterTypes = (String[]) in.getParameterTypes().toArray();
+			Object[] parameterArray = in.getParameters().toArray();
+			command.parameters = Arrays.copyOf(parameterArray, parameterArray.length, String[].class);
+			Object[] parameterTypeArray = in.getParameterTypes().toArray();
+			command.parameterTypes = Arrays.copyOf(parameterTypeArray, parameterTypeArray.length, String[].class);
+			
 			command.async = in.getAsync();
 			return executeCommand(in, command, in.getAppNamespace(), in.getInstanceId());
 		}
