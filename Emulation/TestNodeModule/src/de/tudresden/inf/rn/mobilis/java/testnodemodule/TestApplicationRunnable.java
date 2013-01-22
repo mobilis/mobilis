@@ -104,7 +104,7 @@ public class TestApplicationRunnable implements Runnable {
         String stubName = appName;
         Registry registry;
 		try {
-			registry = LocateRegistry.getRegistry();
+			registry = LocateRegistry.getRegistry("localhost");
 			run = (RMITestNodeClient) registry.lookup(stubName);
 		} catch (RemoteException e) {
 			System.out.println("Couldn't obtain RMI registry!");

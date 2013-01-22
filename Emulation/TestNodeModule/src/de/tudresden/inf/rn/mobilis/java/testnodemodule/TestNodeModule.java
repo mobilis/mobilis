@@ -131,7 +131,7 @@ public class TestNodeModule {
 			try {
 				rmiConnector = new RMIConnector();
 				stub = (RMITestNodeModule) UnicastRemoteObject.exportObject(rmiConnector, 0);
-				registry = LocateRegistry.getRegistry();
+				registry = LocateRegistry.getRegistry("localhost");
 				registry.rebind(name, stub);
 				System.out.println("TestNodeModule bound on " + name);
 			} catch (Exception e) {
@@ -200,7 +200,7 @@ public class TestNodeModule {
 	}
 
 	private static void shutdown() {
-		if (!serverless) {
+		if (!serverless && xmppSender != null) {
 			DisconnectRequest disconnect = new DisconnectRequest();
 			disconnect.setTo(emulationServerJid);
 			xmppSender.sendXMPPBean(disconnect);

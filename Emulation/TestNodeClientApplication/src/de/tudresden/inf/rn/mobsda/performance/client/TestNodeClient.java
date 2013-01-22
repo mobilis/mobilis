@@ -69,7 +69,7 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 				name = workingDir;
 				
 				stub = (RMITestNodeClient) UnicastRemoteObject.exportObject(this, 0);
-				registry = LocateRegistry.getRegistry();
+				registry = LocateRegistry.getRegistry("localhost");
 				registry.rebind(name, stub);
 				System.out.println("TestNodeClient bound on " + name);
 			} catch (Exception e) {
@@ -84,7 +84,7 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 		String stubName = "TestNodeModule";
         Registry registry;
 		try {
-			registry = LocateRegistry.getRegistry();
+			registry = LocateRegistry.getRegistry("localhost");
 			testNodeModule = (RMITestNodeModule) registry.lookup(stubName);
 		} catch (RemoteException e) {
 			System.out.println("Couldn't obtain RMI registry!");
