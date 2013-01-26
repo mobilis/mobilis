@@ -195,7 +195,7 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 	}
 	
 	@Override
-	public abstract File getLogFile();
+	public abstract String getLogFilePath();
 	
 	/**
 	 * Shuts down the application (normally by somehow calling System.exit()).

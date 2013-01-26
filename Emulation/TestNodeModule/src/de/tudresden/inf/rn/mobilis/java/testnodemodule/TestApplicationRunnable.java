@@ -13,6 +13,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -29,6 +30,7 @@ public class TestApplicationRunnable implements Runnable {
 	private String appName;
 	private String[] cmd;
 	private RMITestNodeClient run;
+	private CountDownLatch applicationStartLatch = new CountDownLatch(1);
 	private BlockingQueue<Command> commands = new LinkedBlockingQueue<Command>();
 	private boolean shallExecute = true;
 	private int runningTasks = 0;
@@ -94,27 +96,11 @@ public class TestApplicationRunnable implements Runnable {
 		
 		// wait for the application to start
 		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
+			applicationStartLatch.await();
+		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}	
-		
-		// set up RMI
-        String stubName = appName;
-        Registry registry;
-		try {
-			registry = LocateRegistry.getRegistry("localhost");
-			run = (RMITestNodeClient) registry.lookup(stubName);
-		} catch (RemoteException e) {
-			System.out.println("Couldn't obtain RMI registry!");
-			e.printStackTrace();
-			return;
-		} catch (NotBoundException e) {
-			System.out.println("RMI: Error binding to " + stubName);
-			e.printStackTrace();
-			return;
-		}
 		
 		while (shallExecute) {
 			try {
@@ -146,6 +132,26 @@ public class TestApplicationRunnable implements Runnable {
 			e.printStackTrace();
 		}
 	}
+	
+	public void notifyOfStart() {
+		applicationStartLatch.countDown();
+		
+		// set up RMI
+        String stubName = appName;
+        Registry registry;
+		try {
+			registry = LocateRegistry.getRegistry("localhost");
+			run = (RMITestNodeClient) registry.lookup(stubName);
+		} catch (RemoteException e) {
+			System.out.println("Couldn't obtain RMI registry!");
+			e.printStackTrace();
+			return;
+		} catch (NotBoundException e) {
+			System.out.println("RMI: Error binding to " + stubName);
+			e.printStackTrace();
+			return;
+		}
+	}
 
 	public void shutdown() {
 		try {
@@ -163,6 +169,8 @@ public class TestApplicationRunnable implements Runnable {
 		runningTasks++;
 		if (run != null) {
 			try {
+				System.out.println("Executing " + command.methodName + "(" + Arrays.toString(command.parameters) + ")");
+				System.out.println("Parameter types are " + Arrays.toString(command.parameterTypes));
 				run.runMethod(command.methodName, command.parameterTypes, command.parameters);
 			} catch (IllegalAccessException | InvocationTargetException
 					| NoSuchMethodException | RunMethodException | RemoteException e) {
@@ -186,7 +194,9 @@ public class TestApplicationRunnable implements Runnable {
 	}
 	
 	public void postCommand(Command command) {
+		System.out.println("CP3 for " + command.methodName);
 		if (command.async) {
+			System.out.println("CP4a for " + command.methodName);
 			try {
 				commands.put(command);
 			} catch (InterruptedException e) {
@@ -194,7 +204,9 @@ public class TestApplicationRunnable implements Runnable {
 				e.printStackTrace();
 			}
 		} else {
+			System.out.println("CP4b for " + command.methodName);
 			if (runningTasks == 0) {
+				System.out.println("CP5a for " + command.methodName);
 				runMethod(command);
 			} else {
 				while (runningTasks != 0) {
@@ -205,14 +217,15 @@ public class TestApplicationRunnable implements Runnable {
 						e.printStackTrace();
 					}
 				}
+				System.out.println("CP5b for " + command.methodName);
 				runMethod(command);
 			}
 		}
 	}
 	
-	public File getLogFile() {
+	public String getLogFilePath() {
 		try {
-			return run.getLogFile();
+			return run.getLogFilePath();
 		} catch (RemoteException e) {
 			System.out.println("RemoteException during access of getLogFile() method.");
 			e.printStackTrace();

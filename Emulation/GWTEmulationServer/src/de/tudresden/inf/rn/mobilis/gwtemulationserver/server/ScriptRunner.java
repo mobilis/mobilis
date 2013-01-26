@@ -1,12 +1,31 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.server;
 
+import java.io.File;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smackx.bytestreams.ibb.InBandBytestreamManager;
+import org.jivesoftware.smackx.bytestreams.ibb.InBandBytestreamManager.StanzaType;
+import org.jivesoftware.smackx.filetransfer.FileTransfer.Status;
+import org.jivesoftware.smackx.filetransfer.FileTransferListener;
+import org.jivesoftware.smackx.filetransfer.FileTransferManager;
+import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
+import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
+import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
+
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.helper.FileHelper;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.CommandAck;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.CommandRequest;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.LogRequest;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.StartAck;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.StartRequest;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.StopAck;
@@ -108,8 +127,9 @@ public class ScriptRunner extends XMLScriptExecutor {
 	}
 
 	@Override
-	public void executeStopCommand(InstanceType instance, StopType stopCommand) {
+	public void executeStopCommand(final InstanceType instance, StopType stopCommand) {
 		
+		LogRequest logReq = new LogRequest(instance.getAppNS(), instance.getInstanceId());
 		StopRequest stopReq = new StopRequest(instance.getAppNS(), instance.getInstanceId());
 		//String sendTo = deviceAssignment.get(stopCommand.getInstance());
 		String sendTo = "";
@@ -120,7 +140,95 @@ public class ScriptRunner extends XMLScriptExecutor {
 			sendTo = selections.get(instance.getInstanceId()-1);
 		}
 		
+		logReq.setTo(sendTo);
 		stopReq.setTo(sendTo);
+		
+		final String finalSendTo = new String(sendTo);
+		
+		final FileTransferManager ftm = new FileTransferManager(emuConnection.getConnection());
+		FileTransferNegotiator.setServiceEnabled( emuConnection.getConnection(), true );
+//		InBandBytestreamManager.getByteStreamManager(emuConnection.getConnection()).setStanza(StanzaType.MESSAGE);
+		
+		final CountDownLatch logTransferReceivedLatch = new CountDownLatch(1);
+		final CountDownLatch logTransferFinishedLatch = new CountDownLatch(1);
+		
+		
+		FileTransferListener fileTransferListener = new FileTransferListener() {
+			
+			@Override
+			public void fileTransferRequest(final FileTransferRequest request) {
+				if (request.getRequestor().equals(finalSendTo) && request.getFileSize() > 0) {
+					Thread logReceiver = new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							logTransferReceivedLatch.countDown();
+							try {
+								String logPath = session.getSessionDir() + "/logs/_" + instance.getAppNS() + "_" + instance.getInstanceId() + "/";
+								File logFolder = new File(logPath);
+								logFolder.mkdirs();
+								System.out.println("Log file transfer for instance " + instance.getAppNS() + "_" + instance.getInstanceId() + " started.");
+								IncomingFileTransfer fileTransfer = request.accept();
+//							InputStream fileInputStream = fileTransfer.recieveFile();
+								fileTransfer.recieveFile(new File(logPath + request.getFileName()));
+								while (!fileTransfer.isDone()) {
+									System.out.println("File transfer status: " + fileTransfer.getStatus());
+									System.out.println("File transfer progress: " + fileTransfer.getProgress());
+									
+									if (fileTransfer.getStatus().equals(Status.error)) {
+										System.err.println("Error during file transfer: " + fileTransfer.getError().getMessage());
+										fileTransfer.cancel();
+									}
+									
+									try {
+										Thread.sleep(1000);
+									} catch (InterruptedException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
+//							FileHelper.createFileFromInputStream(fileInputStream, logPath + request.getFileName());
+								if (fileTransfer.getStatus().equals(Status.error)) {
+									System.err.println("Error during file transfer: " + fileTransfer.getError().getMessage());
+									fileTransfer.cancel();
+								} else if (fileTransfer.getStatus().equals(Status.complete)){
+									System.out.println("File transfer complete.");
+								} else {
+									System.out.println("File transfer finished with status: " + fileTransfer.getStatus());
+								}
+								
+//							try {
+//								fileInputStream.close();
+//							} catch (IOException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
+							} catch (XMPPException e) {
+								System.err.println("Log file transfer for session " + session.getId() + " failed!");
+								e.printStackTrace();
+							}
+							logTransferFinishedLatch.countDown();
+						}
+					});
+					logReceiver.start();
+				}
+			}
+		};
+		ftm.addFileTransferListener(fileTransferListener);
+		
+		System.out.println("LogRequest -> " + sendTo);
+		emuConnection.getConnection().sendPacket(new BeanIQAdapter((XMPPBean) logReq));
+		
+		try {
+			if (logTransferReceivedLatch.await(5000, TimeUnit.MILLISECONDS)) {
+				logTransferFinishedLatch.await();
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		ftm.removeFileTransferListener(fileTransferListener);
 		
 		System.out.println("StopCommand -> " + sendTo);
 		BeanSenderReceiver<StopRequest, StopAck> bsr = new BeanSenderReceiver<StopRequest, StopAck>(emuConnection.getConnection());

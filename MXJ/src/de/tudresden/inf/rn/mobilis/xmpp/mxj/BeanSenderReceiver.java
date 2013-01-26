@@ -37,7 +37,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
  */
 public class BeanSenderReceiver<B extends XMPPBean, ResultBeanType extends XMPPBean> {
 
-	private int timeout = 2000; 
+	private int timeout = 10000; 
 	private XMPPConnection connection;
 	private B beanOut;
 	private PacketCollector beanCollector;

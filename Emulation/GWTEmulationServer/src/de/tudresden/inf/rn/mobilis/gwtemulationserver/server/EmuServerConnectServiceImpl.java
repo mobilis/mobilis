@@ -1,7 +1,9 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.server;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +64,7 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 		
 		//Connection.DEBUG_ENABLED = true;
 		
-		EmulationSession session = sessionManager.getSession(id);
+		EmulationSession session = sessionManager.getSession(id, getServletContext());
 		SessionInfo info = null;
 		
 		if(session != null) {
@@ -81,7 +83,7 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 		
 		//EmulationSession session = sessionManager.getSession(id);
 		//session.disconnect();
-		sessionManager.deleteSession(id);
+//		sessionManager.deleteSession(id);
 		
 		return true;
 		
@@ -140,7 +142,8 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 		
 		Boolean executed = false;
 		//ScriptInfo scriptVars = getNeededDevices(script);
-		EmulationSession session = sessionManager.getSession(id);
+		EmulationSession session = sessionManager.getSession(id, getServletContext());
+		session.setStartTime(System.currentTimeMillis());
 		/*Map<String,String> deviceAssignment = new HashMap<String, String>();
 		for(int i=0;i<scriptVars.size();i++) {
 			String var = scriptVars.get(i);
@@ -164,6 +167,8 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 				}
 			}*/
 		}
+		
+		session.setEndTime(System.currentTimeMillis());
 		
 		return executed;
 	}

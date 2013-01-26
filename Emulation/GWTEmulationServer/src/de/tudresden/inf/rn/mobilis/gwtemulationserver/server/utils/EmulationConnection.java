@@ -34,8 +34,8 @@ import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
 public class EmulationConnection {
 	
 	private static final String HOST = "mobilis-dev.inf.tu-dresden.de";
-	private static final String USER = "emulationserver";
-	private static final String PASS = "emulationserver";
+	private static final String USER = "emulationserver2";
+	private static final String PASS = "emulationserver2";
 	private static final String RESSOURCE = "EmulationServer";
 	private static final String TAG = "EmulationConnection";
 	

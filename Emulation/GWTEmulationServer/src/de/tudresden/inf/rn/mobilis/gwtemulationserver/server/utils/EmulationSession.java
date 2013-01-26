@@ -15,10 +15,14 @@ public class EmulationSession {
 	private List<String> devicesInUse;
 	private String id;
 	private String script;
+	private String sessionDir;
+	private long startTime;
+	private long endTime;
 	
-	public EmulationSession(String id) {
+	public EmulationSession(String id, String sessionDir) {
 		this.id = id;
 		devicesInUse = new ArrayList<String>();
+		this.sessionDir = sessionDir;
 	}
 	
 	public String getId() {
@@ -39,6 +43,30 @@ public class EmulationSession {
 	
 	public String getScriptName() {
 		return script;
+	}
+	
+	public void setSessionDir(String sessionDir) {
+		this.sessionDir = sessionDir;
+	}
+	
+	public String getSessionDir() {
+		return sessionDir;
+	}
+
+	public long getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+
+	public long getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
 	}
 	
 	/*public Connection getConnection() {

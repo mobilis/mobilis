@@ -26,7 +26,9 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smackx.filetransfer.FileTransfer.Status;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
+import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 
 import de.tudresden.inf.rn.mobilis.emulation.clientstub.CommandAck;
@@ -72,6 +74,7 @@ public class TestNodeModule {
 	private static String xmppJid = "";
 	
 	private static XMPPConnection con;
+	private static FileTransferManager fileTransferManager;
 	private static TestNodeModuleIncomingHandler xmppIncomingHandler;
 	private static TestNodeModuleSender xmppSender;
 	private static DoubleKeyMap<String, String, XMPPBean> beanPrototypes = new DoubleKeyMap<String, String, XMPPBean>(false);
@@ -80,6 +83,7 @@ public class TestNodeModule {
 	private static Map<String, TestApplicationRunnable> appInstances = new HashMap<String, TestApplicationRunnable>();
 	
 	private static ExecutorService executorService = Executors.newCachedThreadPool();
+	private static ExecutorService uploadService = Executors.newCachedThreadPool();
 	
 	private static Object startMonitor = new Object();
 	private static Object stopMonitor = new Object();
@@ -206,10 +210,21 @@ public class TestNodeModule {
 			xmppSender.sendXMPPBean(disconnect);
 		}
 		
+		//TODO: call exit() on all clients
+		
 		if (executorService != null && !executorService.isShutdown() && !executorService.isTerminated()) {
 			try {
 				executorService.awaitTermination(5000, TimeUnit.MILLISECONDS);
 				executorService.shutdownNow();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if (uploadService != null && !uploadService.isShutdown() && !uploadService.isTerminated()) {
+			try {
+				uploadService.awaitTermination(5000, TimeUnit.MILLISECONDS);
+				uploadService.shutdownNow();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -297,6 +312,9 @@ public class TestNodeModule {
 			System.exit(1);
 		}
 		
+		fileTransferManager = new FileTransferManager(con);
+		FileTransferNegotiator.setServiceEnabled(con, true );
+		
 		System.out.println("Successfully logged in to XMPP server " + xmppServer + " .");
 	}
 	
@@ -378,6 +396,7 @@ public class TestNodeModule {
 			e.printStackTrace();
 		}
 		
+		runnable.notifyOfStart();
 		appInstances.put(appNS + "_" + instanceID, runnable);
 		
 		if (in != null) {
@@ -427,8 +446,10 @@ public class TestNodeModule {
 	}
 
 	private static XMPPBean executeCommand(CommandRequest in, Command command, String appNamespace, int instanceId) {
+		System.out.println("CP1 for " + in.getMethodName());
 		TestApplicationRunnable instance = appInstances.get(appNamespace + "_" + instanceId);
 		if (instance != null) {
+			System.out.println("CP2 for " + in.getMethodName());
 			instance.postCommand(command);
 		} else {
 			String errorText = "Instance " + instanceId + " of application " + appNamespace + " is not running on this TestNodeModule!";
@@ -500,6 +521,7 @@ public class TestNodeModule {
 
 		@Override
 		public XMPPBean onCommand(CommandRequest in) {
+			System.out.println("Received CommandRequest for " + in.getAppNamespace() + in.getInstanceId() + ": " + in.getMethodName() + "(" + in.getParameters() + ")");
 			Command command = new Command();
 			command.methodName = in.getMethodName();
 			Object[] parameterArray = in.getParameters().toArray();
@@ -524,22 +546,55 @@ public class TestNodeModule {
 		}
 
 		@Override
-		public void onLog(LogRequest in) {
-			File log = appInstances.get(in.getAppNamespace() + "_" + in.getInstanceId()).getLogFile();
-			
-			if (log != null && log.canRead() && log.exists()) {
-				// initiate file transfer
-				FileTransferManager fileTransferManager = new FileTransferManager(con);
-				OutgoingFileTransfer fileTransfer = fileTransferManager.createOutgoingFileTransfer(in.getFrom());
-				try {
-					fileTransfer.sendFile(log, "log for application instance " + in.getInstanceId());
-				} catch (XMPPException e) {
-					System.out.println("Couldn't send log file for application instance " + in.getInstanceId());
-					e.printStackTrace();
+		public void onLog(final LogRequest in) {
+			String logPath = appInstances.get(in.getAppNamespace() + "_" + in.getInstanceId()).getLogFilePath();
+			final File log = new File(logPath);
+			executorService.execute(new Runnable() {
+				
+				@Override
+				public void run() {
+					
+					if (log != null && log.canRead() && log.exists()) {
+						OutgoingFileTransfer.setResponseTimeout(7000);
+						OutgoingFileTransfer fileTransfer = fileTransferManager.createOutgoingFileTransfer(in.getFrom());
+						try {
+							fileTransfer.sendFile(log, "log_" + in.getAppNamespace() + "_" + in.getInstanceId());
+							while (!fileTransfer.isDone()) {
+								System.out.println("File transfer status: " + fileTransfer.getStatus());
+								System.out.println("File transfer progress: " + fileTransfer.getProgress());
+								
+								if (fileTransfer.getStatus().equals(Status.error)) {
+									System.err.println("Error during file transfer: " + fileTransfer.getError().getMessage());
+									fileTransfer.cancel();
+									return;
+								}
+								
+								try {
+									Thread.sleep(1000);
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+							
+							if (fileTransfer.getStatus().equals(Status.error)) {
+								System.err.println("Error during file transfer: " + fileTransfer.getError().getMessage());
+								fileTransfer.cancel();
+							} else if (fileTransfer.getStatus().equals(Status.complete)){
+								System.out.println("File transfer complete.");
+							} else {
+								System.out.println("File transfer finished with status: " + fileTransfer.getStatus());
+							}
+							
+						} catch (XMPPException e) {
+							System.out.println("Couldn't send log file for application instance " + in.getAppNamespace() + "_" + in.getInstanceId());
+							e.printStackTrace();
+						}
+					} else {
+						System.out.println("Log file for application " + in.getAppNamespace() + "_" + in.getInstanceId() + " couldn't be read!");
+					}
 				}
-			} else {
-				System.out.println("Log file for application instance " + in.getInstanceId() + " couldn't be read!");
-			}
+			});
 			
 		}
 

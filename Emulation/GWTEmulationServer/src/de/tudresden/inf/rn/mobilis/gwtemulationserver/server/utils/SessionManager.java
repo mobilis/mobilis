@@ -1,6 +1,9 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils;
 
+import java.io.File;
 import java.util.HashMap;
+
+import javax.servlet.ServletContext;
 
 /**
  * 
@@ -18,7 +21,7 @@ public class SessionManager {
 		sessionList = new HashMap<String,EmulationSession>();
 	}
 	
-	public EmulationSession getSession(String id) {
+	public EmulationSession getSession(String id, ServletContext servletContext) {
 		
 		EmulationSession s = null;
 		
@@ -29,7 +32,10 @@ public class SessionManager {
 			if(id.equals("")) {
 				//Integer num = sessionList.size();
 				//s = new EmulationSession(num.toString());
-				s = new EmulationSession(lastID.toString());
+				String sessionDir = servletContext.getRealPath("sessions/" + lastID);
+				new File(sessionDir).mkdirs();
+				s = new EmulationSession(lastID.toString(), sessionDir);
+				new File(s.getSessionDir() + "/logs").mkdirs();
 				sessionList.put(lastID.toString(), s);
 				lastID++;
 				//System.out.println("Session with id " + num.toString() + " created!");
