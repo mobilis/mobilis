@@ -211,11 +211,24 @@ public class TestNodeModule {
 		}
 		
 		//TODO: call exit() on all clients
+		for (TestApplicationRunnable app : appInstances.values()) {
+			try {
+				synchronized (stopMonitor) {
+					app.stop();
+					stopMonitor.wait();
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
 		if (executorService != null && !executorService.isShutdown() && !executorService.isTerminated()) {
 			try {
-				executorService.awaitTermination(5000, TimeUnit.MILLISECONDS);
-				executorService.shutdownNow();
+				executorService.shutdown();
+				if (!executorService.awaitTermination(5000, TimeUnit.MILLISECONDS)) {
+					executorService.shutdownNow();
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -446,10 +459,8 @@ public class TestNodeModule {
 	}
 
 	private static XMPPBean executeCommand(CommandRequest in, Command command, String appNamespace, int instanceId) {
-		System.out.println("CP1 for " + in.getMethodName());
 		TestApplicationRunnable instance = appInstances.get(appNamespace + "_" + instanceId);
 		if (instance != null) {
-			System.out.println("CP2 for " + in.getMethodName());
 			instance.postCommand(command);
 		} else {
 			String errorText = "Instance " + instanceId + " of application " + appNamespace + " is not running on this TestNodeModule!";

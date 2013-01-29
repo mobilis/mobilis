@@ -123,10 +123,11 @@ public class TestApplicationRunnable implements Runnable {
 				shallExecute = false;
 			}
 		}
-		System.out.println("Shutting down client " + appName);
 		try {
-			executorService.awaitTermination(3000, TimeUnit.MILLISECONDS);
-			executorService.shutdownNow();
+			executorService.shutdown();
+			if (!executorService.awaitTermination(3000, TimeUnit.MILLISECONDS)) {
+				executorService.shutdownNow();
+			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -194,9 +195,7 @@ public class TestApplicationRunnable implements Runnable {
 	}
 	
 	public void postCommand(Command command) {
-		System.out.println("CP3 for " + command.methodName);
 		if (command.async) {
-			System.out.println("CP4a for " + command.methodName);
 			try {
 				commands.put(command);
 			} catch (InterruptedException e) {
@@ -204,9 +203,7 @@ public class TestApplicationRunnable implements Runnable {
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("CP4b for " + command.methodName);
 			if (runningTasks == 0) {
-				System.out.println("CP5a for " + command.methodName);
 				runMethod(command);
 			} else {
 				while (runningTasks != 0) {
@@ -217,7 +214,6 @@ public class TestApplicationRunnable implements Runnable {
 						e.printStackTrace();
 					}
 				}
-				System.out.println("CP5b for " + command.methodName);
 				runMethod(command);
 			}
 		}
@@ -241,12 +237,8 @@ public class TestApplicationRunnable implements Runnable {
 		exitCommand.methodName = "exit";
 		exitCommand.parameters = new String[0];
 		exitCommand.parameterTypes = new String[0];
-		try {
-			commands.put(exitCommand);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		exitCommand.async = true;
+		postCommand(exitCommand);
 	}
 
 }
