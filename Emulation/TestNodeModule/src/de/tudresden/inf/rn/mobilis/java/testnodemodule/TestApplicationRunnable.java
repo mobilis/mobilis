@@ -60,7 +60,15 @@ public class TestApplicationRunnable implements Runnable {
 		workingDir.mkdirs();
 
 		// create application command file
-		File commandFile = new File(APP_DIR + "/" + appName + "/" + appName + ".command");
+		String fileDir = APP_DIR + "/" + appName + "/" + appName;
+		String os = System.getProperty("os.name");
+		System.out.println("Detected OS: " + os);
+		if(os.contains("Windows")) {
+			fileDir += ".bat";
+		} else {
+			fileDir += ".command";
+		}
+		File commandFile = new File(fileDir);
 		commandFile.delete();
 		try {
 			commandFile.createNewFile();
@@ -74,7 +82,7 @@ public class TestApplicationRunnable implements Runnable {
 		commandFile.setExecutable(true);
 		// TODO: pass cmd to this class as a String (also eases replace operation in TestNodeModule)
 		try {
-			Files.write(commandFile.toPath(), ("cd " + workingDir.getAbsolutePath() + "\n").getBytes(Charset.defaultCharset()), StandardOpenOption.APPEND, StandardOpenOption.WRITE);
+			Files.write(commandFile.toPath(), ("cd \"" + workingDir.getAbsolutePath() + "\"\n").getBytes(Charset.defaultCharset()), StandardOpenOption.APPEND, StandardOpenOption.WRITE);
 			for (String s : cmd) {
 					Files.write(commandFile.toPath(), (s + " ").getBytes(Charset.defaultCharset()), StandardOpenOption.APPEND, StandardOpenOption.WRITE);
 			}

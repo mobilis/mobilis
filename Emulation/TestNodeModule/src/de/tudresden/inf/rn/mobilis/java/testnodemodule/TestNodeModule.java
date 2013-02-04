@@ -394,7 +394,7 @@ public class TestNodeModule {
 			}
 		}
 		
-		String[] cmd = (System.getProperty("java.home") + "/bin/java -jar " + appPath + " " + parameters).trim().split(" ");
+		String[] cmd = ("\"" + System.getProperty("java.home") + "/bin/java\" -jar " + appPath + " " + parameters).trim().split(" ");
 		
 		TestApplicationRunnable runnable = new TestApplicationRunnable(appNS + "_" + instanceID, cmd);
 		
