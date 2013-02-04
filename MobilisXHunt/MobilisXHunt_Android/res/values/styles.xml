@@ -2,7 +2,7 @@
 <resources>
     <style name="Theme" parent="android:Theme"></style>
 
-    <style name="Theme.XHunt" parent="android:style/Theme.Black">
+    <style name="Theme.XHunt" parent="android:style/Theme.DeviceDefault.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:configChanges">orientation|keyboardHidden</item>
@@ -34,7 +34,7 @@
         <item name="android:background">@drawable/title_button</item>
     </style>
 
-    <style name="TitleBarProgressIndicator" parent="@android:style/Widget.ProgressBar.Small">
+    <style name="TitleBarProgressIndicator" parent="@android:style/Widget.DeviceDefault.ProgressBar.Small">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginLeft">14dip</item>
