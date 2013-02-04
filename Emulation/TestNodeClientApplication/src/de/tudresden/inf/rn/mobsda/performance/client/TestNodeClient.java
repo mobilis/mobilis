@@ -42,8 +42,8 @@ public abstract class TestNodeClient implements RMITestNodeClient {
 		// working dir
 		String absoluteWorkingDir = System.getProperty("user.dir");
 		System.out.println("workingDir = " + absoluteWorkingDir);
-		String[] splitWorkingDir = absoluteWorkingDir.split("/");
-		workingDir = splitWorkingDir[splitWorkingDir.length - 1];
+		File workingDirFile = new File(absoluteWorkingDir);
+		workingDir = workingDirFile.getName();
 		
 		new File("logs").mkdir();
 		try {
