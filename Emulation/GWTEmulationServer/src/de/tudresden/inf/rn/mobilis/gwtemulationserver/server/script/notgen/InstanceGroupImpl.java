@@ -11,7 +11,7 @@ public class InstanceGroupImpl extends InstanceGroupType {
 	private List<InstanceType> instances = new ArrayList<InstanceType>();
 	
 	public InstanceGroupImpl(InstanceGroupType instanceGroup) {
-		for (int i = instanceGroup.getFirstInstanceId(); i < instanceGroup.getInstanceCount() - instanceGroup.getFirstInstanceId() + 2; i++) {
+		for (int i = instanceGroup.getFirstInstanceId(); i < instanceGroup.getInstanceCount() + instanceGroup.getFirstInstanceId(); i++) {
 			InstanceType instance = new InstanceType();
 			instance.setAppNS(instanceGroup.getAppNS());
 			instance.setVarName(instanceGroup.getVarName());

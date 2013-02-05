@@ -110,7 +110,10 @@ public abstract class XMLScriptExecutor {
 				executeAppCommand((InstanceType) instance, appCommand);
 			} else if (instance instanceof InstanceGroupImpl) {
 				InstanceGroupImpl instanceGroup = (InstanceGroupImpl) instance;
-				List<Serializable> paramsCopy = new ArrayList<Serializable>(params);
+				List<Serializable> paramsCopy = null;
+				if (params != null) {
+					paramsCopy = new ArrayList<Serializable>(params);
+				}
 				for (InstanceType virtualInstance : instanceGroup.getInstances()) {
 					if (params != null) {
 						for (int index : placeholderParams) {
