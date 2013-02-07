@@ -10,12 +10,14 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -51,6 +53,10 @@ public class ContentEmulation extends VerticalPanel {
 	private String currentStep;
 	private String selectedScript;
 	
+	private ScrollPanel mainScrollPanel;
+
+	private VerticalPanel mainVPanel;
+	
 	public ContentEmulation (EmuServerConnectServiceAsync emuServerConnectSvc) {
 		
 		super();
@@ -69,6 +75,10 @@ public class ContentEmulation extends VerticalPanel {
 		
 		currentStep = "";
 		selectedScript = "";
+		
+		mainVPanel = new VerticalPanel();
+
+		mainScrollPanel = new ScrollPanel(mainVPanel);
 		
 		errorPanel = new HorizontalPanel();
 		lblError = new Label("");
@@ -91,6 +101,12 @@ public class ContentEmulation extends VerticalPanel {
 		
 	}
 	
+	@Override
+	protected void onLoad() {
+		mainScrollPanel.setSize(Window.getClientWidth() + "px", (Window.getClientHeight() - this.getAbsoluteTop()) + "px");
+		super.onLoad();
+	}
+	
 	private void getDeviceList() {
 		emuServerConnectSvc.getDeviceList(currentSession, new GetDeviceCallback());
 	}
@@ -110,6 +126,8 @@ public class ContentEmulation extends VerticalPanel {
 	private void initOpenedSession() {
 		
 		this.clear();
+		mainScrollPanel.clear();
+		mainVPanel.clear();
 		
 		this.currentStep = "STEP1";
 		
@@ -154,10 +172,11 @@ public class ContentEmulation extends VerticalPanel {
 		buttonPanel.add(btnCloseSession);
 		
 		VerticalPanel sessionPanel = getSessionPanel();
-		
-		this.add(buttonPanel);
-		this.add(errorPanel);
-		this.add(sessionPanel);
+		this.add(mainScrollPanel);
+		mainScrollPanel.add(mainVPanel);
+		mainVPanel.add(buttonPanel);
+		mainVPanel.add(errorPanel);
+		mainVPanel.add(sessionPanel);
 		
 		deviceFetcher.scheduleRepeating(REFRESH_INTERVAL);
 		
@@ -166,6 +185,8 @@ public class ContentEmulation extends VerticalPanel {
 	private void initClosedSession() {
 		
 		this.clear();
+		mainScrollPanel.clear();
+		mainVPanel.clear();
 		
 		buttonPanel = new HorizontalPanel();
 		btnNewSession = new Button("new session");
@@ -233,9 +254,11 @@ public class ContentEmulation extends VerticalPanel {
 		buttonPanel.add(btnNewSession);
 		//buttonPanel.add(btnOpenSession);
 		
-		this.add(buttonPanel);
-		this.add(errorPanel);
-		this.add(listBoxPanel);
+		this.add(mainScrollPanel);
+		mainScrollPanel.add(mainVPanel);
+		mainVPanel.add(buttonPanel);
+		mainVPanel.add(errorPanel);
+		mainVPanel.add(listBoxPanel);
 		
 	}
 	
@@ -511,6 +534,8 @@ public class ContentEmulation extends VerticalPanel {
 		
 		//deviceFetcher.cancel();
 		this.clear();
+		mainScrollPanel.clear();
+		mainVPanel.clear();
 		
 		this.currentStep = "STEP2";
 		
@@ -531,10 +556,11 @@ public class ContentEmulation extends VerticalPanel {
 		buttonPanel.add(btnCloseSession);
 		
 		VerticalPanel sessionPanel = getSessionPanel2();
-		
-		this.add(buttonPanel);
-		this.add(errorPanel);
-		this.add(sessionPanel);
+		this.add(mainScrollPanel);
+		mainScrollPanel.add(mainVPanel);
+		mainVPanel.add(buttonPanel);
+		mainVPanel.add(errorPanel);
+		mainVPanel.add(sessionPanel);
 		
 	}
 	
@@ -542,6 +568,8 @@ public class ContentEmulation extends VerticalPanel {
 	private void startEmulation2(Map<String, String> instanceSelection, Map<String, List<String>> instanceGroupSelection) {
 		
 		this.clear();
+		mainScrollPanel.clear();
+		mainVPanel.clear();
 		
 		this.currentStep = "STEP3";
 		
@@ -565,9 +593,10 @@ public class ContentEmulation extends VerticalPanel {
 				}
 			}
 		});
-		
-		this.add(errorPanel);
-		this.add(statusPanel);
+		this.add(mainScrollPanel);
+		mainScrollPanel.add(mainVPanel);
+		mainVPanel.add(errorPanel);
+		mainVPanel.add(statusPanel);
 		
 	}
 	
