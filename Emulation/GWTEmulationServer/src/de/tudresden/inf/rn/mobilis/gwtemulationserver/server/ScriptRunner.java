@@ -37,6 +37,7 @@ import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.StartType;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.StopType;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationConnection;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationSession;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.InstanceGroupExecutorInfo;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanSenderReceiver;
@@ -46,9 +47,9 @@ public class ScriptRunner extends XMLScriptExecutor {
 	private EmulationConnection emuConnection;
 	private EmulationSession session;
 	private Map<String, String> instanceSelection;
-	private Map<String, List<String>> instanceGroupSelection;
+	private Map<String, InstanceGroupExecutorInfo> instanceGroupSelection;
 	
-	public ScriptRunner(EmulationConnection emuConn, EmulationSession session, Map<String, String> instanceSelection, Map<String, List<String>> instanceGroupSelection) {
+	public ScriptRunner(EmulationConnection emuConn, EmulationSession session, Map<String, String> instanceSelection, Map<String, InstanceGroupExecutorInfo> instanceGroupSelection) {
 		super();
 		this.emuConnection = emuConn;
 		this.session = session;
@@ -100,8 +101,9 @@ public class ScriptRunner extends XMLScriptExecutor {
 		if(instanceSelection.containsKey(startCommand.getInstance())) {
 			sendTo = instanceSelection.get(startCommand.getInstance());
 		} else if(instanceGroupSelection.containsKey(startCommand.getInstance())) {
-			List<String> selections = instanceGroupSelection.get(startCommand.getInstance());
-			sendTo = selections.get(instance.getInstanceId()-1);
+			InstanceGroupExecutorInfo instanceGroupExecutorInfo = instanceGroupSelection.get(startCommand.getInstance());
+			List<String> selections = instanceGroupExecutorInfo.getExecutors();
+			sendTo = selections.get(instance.getInstanceId() - instanceGroupExecutorInfo.getFirstInstanceId());
 		}
 		
 		startReq.setTo(sendTo);
@@ -136,8 +138,9 @@ public class ScriptRunner extends XMLScriptExecutor {
 		if(instanceSelection.containsKey(stopCommand.getInstance())) {
 			sendTo = instanceSelection.get(stopCommand.getInstance());
 		} else if(instanceGroupSelection.containsKey(stopCommand.getInstance())) {
-			List<String> selections = instanceGroupSelection.get(stopCommand.getInstance());
-			sendTo = selections.get(instance.getInstanceId()-1);
+			InstanceGroupExecutorInfo instanceGroupExecutorInfo = instanceGroupSelection.get(stopCommand.getInstance());
+			List<String> selections = instanceGroupExecutorInfo.getExecutors();
+			sendTo = selections.get(instance.getInstanceId() - instanceGroupExecutorInfo.getFirstInstanceId());
 		}
 		
 		logReq.setTo(sendTo);
@@ -189,7 +192,12 @@ public class ScriptRunner extends XMLScriptExecutor {
 								}
 //							FileHelper.createFileFromInputStream(fileInputStream, logPath + request.getFileName());
 								if (fileTransfer.getStatus().equals(Status.error)) {
-									System.err.println("Error during file transfer: " + fileTransfer.getError().getMessage());
+									System.err.print("Error during file transfer: " + fileTransfer.getError().getMessage());
+									if (fileTransfer.getError() != null) {
+										System.out.println(fileTransfer.getError().toString());
+									} else {
+										System.out.println("unknown error.");
+									}
 									fileTransfer.cancel();
 								} else if (fileTransfer.getStatus().equals(Status.complete)){
 									System.out.println("File transfer complete.");
@@ -300,8 +308,9 @@ public class ScriptRunner extends XMLScriptExecutor {
 		if(instanceSelection.containsKey(appCommand.getInstance())) {
 			sendTo = instanceSelection.get(appCommand.getInstance());
 		} else if(instanceGroupSelection.containsKey(appCommand.getInstance())) {
-			List<String> selections = instanceGroupSelection.get(appCommand.getInstance());
-			sendTo = selections.get(instance.getInstanceId()-1);
+			InstanceGroupExecutorInfo instanceGroupExecutorInfo = instanceGroupSelection.get(appCommand.getInstance());
+			List<String> selections = instanceGroupExecutorInfo.getExecutors();
+			sendTo = selections.get(instance.getInstanceId() - instanceGroupExecutorInfo.getFirstInstanceId());
 		}
 		
 		commReq.setTo(sendTo);

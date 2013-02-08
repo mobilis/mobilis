@@ -8,20 +8,22 @@ import java.util.Map;
 
 public class ScriptInfo implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	private List<String> instances;
-	private Map<String,Integer> instanceGroups;
+	private Map<String,InstanceGroupInfo> instanceGroups;
 	
 	public ScriptInfo() {
 		
 		this.instances = new ArrayList<String>();
-		this.instanceGroups = new HashMap<String, Integer>();
+		this.instanceGroups = new HashMap<String, InstanceGroupInfo>();
 		
 	}
 	
-	public ScriptInfo(List<String> instances, Map<String,Integer> instanceGroups) {
+	public ScriptInfo(List<String> instances, Map<String,InstanceGroupInfo> instanceGroups) {
 		
 		this.instances = new ArrayList<String>();
-		this.instanceGroups = new HashMap<String, Integer>();
+		this.instanceGroups = new HashMap<String, InstanceGroupInfo>();
 		
 		this.setInstances(instances);
 		this.setInstanceGroups(instanceGroups);
@@ -32,8 +34,8 @@ public class ScriptInfo implements Serializable {
 		this.instances.add(instance);
 	}
 	
-	public void addInstanceGroup(String instance, Integer count) {
-		this.instanceGroups.put(instance, count);
+	public void addInstanceGroup(String instance, InstanceGroupInfo instanceGroup) {
+		this.instanceGroups.put(instance, instanceGroup);
 	}
 
 	public List<String> getInstances() {
@@ -44,11 +46,11 @@ public class ScriptInfo implements Serializable {
 		this.instances = instances;
 	}
 
-	public Map<String, Integer> getInstanceGroups() {
+	public Map<String, InstanceGroupInfo> getInstanceGroups() {
 		return instanceGroups;
 	}
 
-	public void setInstanceGroups(Map<String, Integer> instanceGroups) {
+	public void setInstanceGroups(Map<String, InstanceGroupInfo> instanceGroups) {
 		this.instanceGroups = instanceGroups;
 	}
 

@@ -18,6 +18,8 @@ import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.Script;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationConnection;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationSession;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.SessionManager;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.InstanceGroupExecutorInfo;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.InstanceGroupInfo;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.ScriptInfo;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.SessionInfo;
 
@@ -124,7 +126,8 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 					if (command instanceof InstanceType) {
 						neededDevices.addInstance(((InstanceType)command).getVarName());
 					} else if (command instanceof InstanceGroupType) {
-						neededDevices.addInstanceGroup(((InstanceGroupType)command).getVarName(), ((InstanceGroupType)command).getInstanceCount());
+						InstanceGroupType instanceGroup = (InstanceGroupType) command;
+						neededDevices.addInstanceGroup(instanceGroup.getVarName(), new InstanceGroupInfo(instanceGroup.getVarName(), instanceGroup.getInstanceCount(), instanceGroup.getFirstInstanceId()));
 					}
 				}
 			} else {
@@ -138,7 +141,7 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public Boolean startScript(String id, String script, Map<String, String> instanceSelection, Map<String, List<String>> instanceGroupSelection) {
+	public Boolean startScript(String id, String script, Map<String, String> instanceSelection, Map<String, InstanceGroupExecutorInfo> instanceGroupSelection) {
 		
 		Boolean executed = false;
 		//ScriptInfo scriptVars = getNeededDevices(script);

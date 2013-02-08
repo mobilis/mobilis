@@ -6,6 +6,7 @@ import java.util.Map;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.InstanceGroupExecutorInfo;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.ScriptInfo;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.SessionInfo;
 
@@ -21,6 +22,5 @@ public interface EmuServerConnectService extends RemoteService {
 	public Boolean closeSession(String id);
 	public List<String> getScriptList();
 	public ScriptInfo getNeededDevices(String script);
-	public Boolean startScript(String id, String script, Map<String, String> instanceSelection, Map<String, List<String>> instanceGroupSelection);
-
+	public Boolean startScript(String id, String script, Map<String, String> instanceSelection, Map<String, InstanceGroupExecutorInfo> instanceGroupSelection);
 }

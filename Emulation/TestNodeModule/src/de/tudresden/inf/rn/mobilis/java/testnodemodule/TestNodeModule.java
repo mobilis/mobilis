@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -80,7 +81,7 @@ public class TestNodeModule {
 	private static DoubleKeyMap<String, String, XMPPBean> beanPrototypes = new DoubleKeyMap<String, String, XMPPBean>(false);
 
 	private static Map<String, String> appPaths = new HashMap<String, String>();
-	private static Map<String, TestApplicationRunnable> appInstances = new HashMap<String, TestApplicationRunnable>();
+	private static Map<String, TestApplicationRunnable> appInstances = new ConcurrentHashMap<String, TestApplicationRunnable>();
 	
 	private static ExecutorService executorService = Executors.newCachedThreadPool();
 	private static ExecutorService uploadService = Executors.newCachedThreadPool();

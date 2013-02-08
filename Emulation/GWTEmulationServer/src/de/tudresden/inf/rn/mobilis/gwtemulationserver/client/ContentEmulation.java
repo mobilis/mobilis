@@ -23,6 +23,8 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.InstanceGroupExecutorInfo;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.InstanceGroupInfo;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.ScriptInfo;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.SessionInfo;
 
@@ -142,8 +144,8 @@ public class ContentEmulation extends VerticalPanel {
 				if(result != null) {
 					Integer count = 0;
 					count += result.getInstances().size();
-					for(Map.Entry<String, Integer> entry:result.getInstanceGroups().entrySet()) {
-						count += entry.getValue();
+					for(Map.Entry<String, InstanceGroupInfo> entry:result.getInstanceGroups().entrySet()) {
+						count += entry.getValue().getCount();
 					}
 					virtualDevices = result;
 					neededDevices = count;
@@ -402,7 +404,7 @@ public class ContentEmulation extends VerticalPanel {
 		sessionPanel2.add(pHeader);
 		
 		final Map<String,ListBox> instanceListBoxes = new HashMap<String,ListBox>();
-		final Map<String,List<ListBox>> instanceGroupListBoxes = new HashMap<String,List<ListBox>>();
+		final Map<String,InstanceGroupListBoxesList> instanceGroupListBoxes = new HashMap<String,InstanceGroupListBoxesList>();
 		
 		final Button btnStartEmulation2 = new Button("Start");
 		btnStartEmulation2.setStyleName("button");
@@ -418,15 +420,15 @@ public class ContentEmulation extends VerticalPanel {
 					instanceSelection.put(virtDev, lb.getItemText(lb.getSelectedIndex()));
 				}
 				
-				Map<String,List<String>> instanceGroupSelection = new HashMap<String, List<String>>();
-				for(Map.Entry<String, List<ListBox>> entry:instanceGroupListBoxes.entrySet()) {
-					String virtDevGroup = entry.getKey();
-					List<ListBox> boxes = entry.getValue();
+				Map<String,InstanceGroupExecutorInfo> instanceGroupSelection = new HashMap<String, InstanceGroupExecutorInfo>();
+				for(Map.Entry<String, InstanceGroupListBoxesList> entry:instanceGroupListBoxes.entrySet()) {
+					String virtDevGroupName = entry.getKey();
+					List<ListBox> boxes = entry.getValue().getListBoxes();
 					List<String> selected = new ArrayList<String>();
 					for(ListBox lb:boxes) {
 						selected.add(lb.getItemText(lb.getSelectedIndex()));
 					}
-					instanceGroupSelection.put(virtDevGroup, selected);
+					instanceGroupSelection.put(virtDevGroupName, new InstanceGroupExecutorInfo(virtDevGroupName, selected, entry.getValue().getFirstInstanceId()));
 				}
 				
 				startEmulation2(instanceSelection,instanceGroupSelection);
@@ -463,15 +465,16 @@ public class ContentEmulation extends VerticalPanel {
 		
 		// add selection for instance groups
 		Tree groupTree = new Tree();
-		for(Map.Entry<String, Integer> entry:virtualDevices.getInstanceGroups().entrySet()) {
+		for(Map.Entry<String, InstanceGroupInfo> entry:virtualDevices.getInstanceGroups().entrySet()) {
 			
 			final List<ListBox> groupListBoxesSolo = new ArrayList<ListBox>();
 			
-			String virtDevGroup = entry.getKey();
-			Integer virtDevCount = entry.getValue();
+			String virtDevGroupName = entry.getKey();
+			InstanceGroupInfo instanceGroup = entry.getValue();
+			Integer virtDevCount = instanceGroup.getCount();
 			
 			HorizontalPanel groupRootPanel = new HorizontalPanel();
-			Label lblGroupRoot = new Label(virtDevGroup);
+			Label lblGroupRoot = new Label(virtDevGroupName);
 			lblGroupRoot.setHorizontalAlignment(ALIGN_CENTER);
 			lblGroupRoot.setWidth("230px");
 			ListBox lbGroupRoot = new ListBox(false);
@@ -495,9 +498,10 @@ public class ContentEmulation extends VerticalPanel {
 			
 			TreeItem groupRootItem = new TreeItem(groupRootPanel);
 			
-			for(int i=0;i<virtDevCount;i++) {
+			int firstInstanceId = instanceGroup.getFirstInstanceId();
+			for(int i = firstInstanceId; i < virtDevCount + firstInstanceId + 1; i++) {
 				HorizontalPanel groupItemPanel = new HorizontalPanel();
-				Label lblGroupItem = new Label(virtDevGroup + "/" + i);
+				Label lblGroupItem = new Label(virtDevGroupName + "/" + i);
 				lblGroupItem.setWidth("250px");
 				ListBox lbGroupItem = new ListBox(false);
 				lbGroupItem.setWidth("200px");
@@ -508,8 +512,8 @@ public class ContentEmulation extends VerticalPanel {
 				groupItemPanel.add(lblGroupItem);
 				groupItemPanel.add(lbGroupItem);
 				groupRootItem.addItem(new TreeItem(groupItemPanel));
-				instanceGroupListBoxes.put(virtDevGroup, groupListBoxesSolo);
 			}
+			instanceGroupListBoxes.put(virtDevGroupName, new InstanceGroupListBoxesList(groupListBoxesSolo, firstInstanceId));
 			
 			groupTree.addItem(groupRootItem);
 			
@@ -565,7 +569,7 @@ public class ContentEmulation extends VerticalPanel {
 	}
 	
 	// execute emulation
-	private void startEmulation2(Map<String, String> instanceSelection, Map<String, List<String>> instanceGroupSelection) {
+	private void startEmulation2(Map<String, String> instanceSelection, Map<String, InstanceGroupExecutorInfo> instanceGroupSelection) {
 		
 		this.clear();
 		mainScrollPanel.clear();
@@ -581,7 +585,9 @@ public class ContentEmulation extends VerticalPanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				setErrorLabel("Skriptausführung konnte nicht gestartet werden: " + caught.getMessage());
+				setErrorLabel("Skriptausführung konnte nicht gestartet werden: " + caught.getStackTrace().toString());
+				System.err.println("Skriptausführung konnte nicht gestartet werden! ");
+				caught.printStackTrace();
 			}
 
 			@Override

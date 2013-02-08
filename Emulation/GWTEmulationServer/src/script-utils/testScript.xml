@@ -4,9 +4,11 @@
 	<!-- define application instances -->
 	<instance varName="doctor" appNS="time.lord" instanceId="1"/>
 	<instanceGroup varName="daleks" appNS="evil.race" firstInstanceId="1" instanceCount="20"/>
+	<instanceGroup firstInstanceId="21" appNS="evil.race" instanceCount="3" varName="daleks2"/>
 	
 	<!-- start instances -->
 	<start instance="daleks"/>
+	<start instance="daleks2"/>
 	<start instance="doctor"/>
 	
 	<!-- run commands -->
@@ -31,8 +33,15 @@
 	        <double>42.00</double>
 	    </parameter>
 	</appCommand>
+	<appCommand instance="daleks2" methodName="shout">
+		<parameter>
+			<string>Exterminate!</string>
+			<string>%id%</string>
+		</parameter>
+	</appCommand>
 	
 	<!-- stop instances -->
 	<stop instance="daleks"/>
+	<stop instance="daleks2"/>
 	<stop instance="doctor"/>
 </script>
