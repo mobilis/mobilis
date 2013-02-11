@@ -2,7 +2,7 @@
 <project name="GWTEmulationServer" default="war" basedir=".">
   <!-- Configure path to GWT SDK -->
   <!-- change this to your needs -->
-  <property name="gwt.sdk" location="C:\Development\EclispeJuno\eclipse\plugins\com.google.gwt.eclipse.sdkbundle_2.5.0.v201211121240-rel-r42\gwt-2.5.0" />
+  <property name="gwt.sdk" location="C:\Development\eclipse\plugins\com.google.gwt.eclipse.sdkbundle_2.5.0.v201211121240-rel-r42\gwt-2.5.0" />
 
   <path id="project.class.path">
     <pathelement location="war/WEB-INF/classes"/>

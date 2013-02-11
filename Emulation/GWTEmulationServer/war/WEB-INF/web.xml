@@ -26,5 +26,9 @@
   <welcome-file-list>
     <welcome-file>GWTEmulationServer.html</welcome-file>
   </welcome-file-list>
+  
+  <listener>
+  	<listener-class>de.tudresden.inf.rn.mobilis.gwtemulationserver.server.CtxListener</listener-class>
+  </listener>
 
 </web-app>

@@ -22,16 +22,6 @@ public class GWTEmulationServer implements EntryPoint {
 	private HorizontalPanel content;
 	
 	public void onModuleLoad() {
-		
-	    /*refreshTimer = new Timer() {
-	      @Override
-	      public void run() {
-	        getDeviceList();
-	      }
-	    };
-	    
-	    initLayout();*/
-		
 		VerticalPanel main = new VerticalPanel();
 		main.addStyleName("main");
 		
@@ -52,6 +42,7 @@ public class GWTEmulationServer implements EntryPoint {
 		emuButton.addStyleName("button");
 		emuButton.addClickHandler(new EmulationClickHandler());
 		logButton.addStyleName("button");
+		logButton.addClickHandler(new LogClickHandler());
 		menu.add(scriptButton);
 		menu.add(emuButton);
 		menu.add(logButton);
@@ -65,249 +56,33 @@ public class GWTEmulationServer implements EntryPoint {
 		main.add(content);
 		
 		RootLayoutPanel.get().add(main);
-		
 	}
 	
 	private class ScriptClickHandler implements ClickHandler {
-
 		@Override
 		public void onClick(ClickEvent event) {
-			// TODO Auto-generated method stub
 			content.clear();
-			
 			ContentScripts contScr = new ContentScripts(emuServerConnectSvc);			
 			content.add(contScr);
-			
 		}
-		
 	}
 	
 	private class EmulationClickHandler implements ClickHandler {
-
 		@Override
 		public void onClick(ClickEvent event) {
-			// TODO Auto-generated method stub
 			content.clear();
-			
 			ContentEmulation contEmu = new ContentEmulation(emuServerConnectSvc);
 			content.add(contEmu);
-			
 		}
-		
 	}
 	
-	/*private void onSessionOpenClick() {
-
-		String inputID = sessionIDTextBox.getText();
-		emuServerConnectSvc.openSession(inputID, new SessionOpenCallback());
-		
-	}
-	
-	private void onSessionCloseClick() {
-
-		refreshTimer.cancel();
-		emuServerConnectSvc.closeSession(currentSessionID, new SessionCloseCallback());
-		
-	}
-	
-	private void onSendClick() {
-		
-		if(!txtCommand.getText().isEmpty()) {
-			lastCommand = txtCommand.getText();
-			emuServerConnectSvc.sendCommand(currentSessionID, new SendCommandCallback());
-		} else {
-			lblSendStatus.setText("Please enter Command!");
-		}
-		
-	}
-	
-	private void setErrorLabel(String error) {
-		
-		errorLabel.setText(error);
-		errorPanel.setVisible(true);
-		
-	}
-	
-	private void getDeviceList() {
-		
-		emuServerConnectSvc.getDeviceList(currentSessionID, new GetDeviceCallback());
-		
-	}
-	
-	private class SendCommandCallback implements AsyncCallback<Boolean> {
+	private class LogClickHandler implements ClickHandler {
 		@Override
-		public void onFailure(Throwable caught) {
-			lblSendStatus.setText("Error sending command: '" + lastCommand + "'! : " + caught.getMessage());
-		}
-
-		@Override
-		public void onSuccess(Boolean result) {
-			lblSendStatus.setText("Command: '" + lastCommand + "' was sent!");
+		public void onClick(ClickEvent event) {
+			content.clear();
+			ContentLogs contLogs = new ContentLogs(emuServerConnectSvc);
+			content.add(contLogs);
 		}
 	}
-	
-	private class GetDeviceCallback implements AsyncCallback<List<String>> {
-		@Override
-		public void onFailure(Throwable caught) {
-			setErrorLabel("Error getting device list!");
-		}
-
-		@Override
-		public void onSuccess(List<String> deviceListReturn) {
-			if(deviceListReturn != null) {
-				devices = deviceListReturn;
-				deviceListDataProvider.setList(devices);
-				deviceList.redraw();
-			} else {
-				refreshTimer.cancel();
-				String id = currentSessionID;
-				initClosed();
-				setErrorLabel("Session with ID " + id + " was closed!");
-			}
-		}
-	}
-	
-	private class SessionOpenCallback implements AsyncCallback<SessionInfo> {
-
-		@Override
-		public void onFailure(Throwable caught) {
-			setErrorLabel("Error opening session: Can't connect to Emulation Server!");
-		}
-
-		@Override
-		public void onSuccess(SessionInfo result) {
-			currentSessionID = result.getSessionID();
-			connectionStatus = result.getConnected();
-			if(connectionStatus) {
-				refreshTimer.scheduleRepeating(REFRESH_INTERVAL);
-				initOpened();
-			} else {
-				setErrorLabel(result.getErrorMessage());
-			}
-		}
-		
-	}
-	
-	private class SessionCloseCallback implements AsyncCallback<Boolean> {
-
-		@Override
-		public void onFailure(Throwable caught) {
-			setErrorLabel("Error closing session: Can't connect to Emulation Server!");
-		}
-
-		@Override
-		public void onSuccess(Boolean result) {
-			if(result) {
-				initClosed();
-			}
-		}
-		
-	}
-	
-	private void initLayout() {
-		
-		mainPanel.setStyleName("mainPanel");
-		titlePanel.setStyleName("outerPanel");
-		sessionInfoPanel.setStyleName("innerPanel");
-		sessionIDInputPanel.setStyleName("innerPanel");
-		sessionStartPanel.setStyleName("innerPanel");
-		commandPanel.setStyleName("innerPanel");
-		commandStatusPanel.setStyleName("innerPanel");
-		devicePanel.setStyleName("innerPanel");
-		footerPanel.setStyleName("outerPanel");
-		separator.setStyleName("separator");
-		errorPanel.setStyleName("error");
-		
-		sessionOpenButton.setStyleName("buttonStyle");
-		sessionCloseButton.setStyleName("buttonStyle");
-		sendButton.setStyleName("buttonStyle");
-		
-		sessionOpenButton.addClickHandler(new ClickHandler(){
-			@Override
-			public void onClick(ClickEvent event) {
-				onSessionOpenClick();
-			}
-		});
-		sessionCloseButton.addClickHandler(new ClickHandler(){
-			@Override
-			public void onClick(ClickEvent event) {
-				onSessionCloseClick();
-			}
-		});
-		sendButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				onSendClick();
-			}
-		});
-		
-		// create cellList
-		deviceListDataProvider.addDataDisplay(deviceList);
-		//deviceListDataProvider.getList().add("TEST");
-		
-		// add widgets to panels
-		titlePanel.add(title);
-		sessionInfoPanel.add(sessionLabel);
-		sessionIDInputPanel.add(sessionIDTextBox);
-		sessionStartPanel.add(sessionOpenButton);
-		sessionStartPanel.add(sessionCloseButton);
-		commandPanel.add(txtCommand);
-		commandPanel.add(sendButton);
-		commandStatusPanel.add(lblSendStatus);
-		devicePanel.add(deviceList);
-		errorPanel.add(errorLabel);
-		
-		// add panels to main panel
-		mainPanel.add(titlePanel);
-		mainPanel.add(sessionInfoPanel);
-		mainPanel.add(sessionIDInputPanel);
-		mainPanel.add(sessionStartPanel);
-		mainPanel.add(errorPanel);
-		mainPanel.add(separator);
-		mainPanel.add(commandPanel);
-		mainPanel.add(commandStatusPanel);
-		mainPanel.add(devicePanel);
-		mainPanel.add(footerPanel);
-		
-		rootPanel.add(mainPanel);
-		
-		initClosed();
-		
-	}
-	
-	private void initOpened() {
-		
-		sessionIDTextBox.setEnabled(false);
-		sessionOpenButton.setEnabled(false);
-		sessionCloseButton.setEnabled(true);
-		commandPanel.setVisible(true);
-		commandStatusPanel.setVisible(true);
-		devicePanel.setVisible(true);
-		separator.setVisible(true);
-		errorPanel.setVisible(false);
-		
-		sessionLabel.setText("Session with ID " + currentSessionID + " open");
-		
-	}
-	
-	private void initClosed() {
-		
-		currentSessionID = "";
-		
-		devices.clear();
-		deviceListDataProvider.setList(devices);
-		
-		sessionIDTextBox.setEnabled(true);
-		sessionOpenButton.setEnabled(true);
-		sessionCloseButton.setEnabled(false);
-		commandPanel.setVisible(false);
-		commandStatusPanel.setVisible(false);
-		devicePanel.setVisible(false);
-		separator.setVisible(false);
-		errorPanel.setVisible(false);
-		
-		sessionLabel.setText(SESSION_LABEL);
-		
-	}*/
 	
 }

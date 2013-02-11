@@ -1,12 +1,14 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.server;
 
 import java.io.File;
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.servlet.ServletException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -17,11 +19,12 @@ import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.InstanceType
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.Script;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationConnection;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationSession;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationStatus;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.SessionManager;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.InstanceGroupExecutorInfo;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.InstanceGroupInfo;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.ScriptInfo;
-import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.SessionInfo;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.SessionList;
 
 public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements EmuServerConnectService {
 
@@ -29,21 +32,22 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 	private SessionManager sessionManager = new SessionManager();
 	private EmulationConnection connection = new EmulationConnection();
 	
+	private EntityManagerFactory emf = Persistence.createEntityManagerFactory("emulationserver");
+	private EntityManager em = emf.createEntityManager();
+	
 	@Override
 	public void init() throws ServletException {
 		//Connection.DEBUG_ENABLED = true;
 		connection.connect();
 		super.init();
-		
 	}
 
 	@Override
 	public void destroy() {
 		connection.disconnect();
+		em.close();
 		super.destroy();
 	}
-
-
 
 	@Override
 	public Boolean sendCommand(String cmd) {
@@ -53,44 +57,13 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public List<String> getDeviceList(String id) {
+	public List<String> getDeviceList() {
 		
-		List<String> devices = null;
-		if(sessionManager.sessionExist(id)) devices=connection.getDeviceList();
+		List<String> devices = connection.getDeviceList();
 		return devices;
 		
 	}
-
-	@Override
-	public SessionInfo openSession(String id) {
-		
-		//Connection.DEBUG_ENABLED = true;
-		
-		EmulationSession session = sessionManager.getSession(id, getServletContext());
-		SessionInfo info = null;
-		
-		if(session != null) {
-			String sessionID = session.getId();
-			info = new SessionInfo(true,sessionID,getScriptList());
-		} else{
-			info = new SessionInfo(false,"","Session with ID " + id + " don't exist!");
-		}
-		
-		return info;
-		
-	}
-
-	@Override
-	public Boolean closeSession(String id) {
-		
-		//EmulationSession session = sessionManager.getSession(id);
-		//session.disconnect();
-//		sessionManager.deleteSession(id);
-		
-		return true;
-		
-	}
-
+	
 	@Override
 	public List<String> getScriptList() {
 		
@@ -141,12 +114,36 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public Boolean startScript(String id, String script, Map<String, String> instanceSelection, Map<String, InstanceGroupExecutorInfo> instanceGroupSelection) {
+	public Boolean startScript(String script, Map<String, String> instanceSelection, Map<String, InstanceGroupExecutorInfo> instanceGroupSelection) {
 		
 		Boolean executed = false;
+		
+		ArrayList<String> devices = new ArrayList<String>();
+		for(Map.Entry<String, String> entry:instanceSelection.entrySet()) {
+			devices.add(entry.getValue());
+		}
+		for(Entry<String, InstanceGroupExecutorInfo> entry:instanceGroupSelection.entrySet()) {
+			InstanceGroupExecutorInfo deviceList = entry.getValue();
+			for(String device:deviceList.getExecutors()) {
+				devices.add(device);
+			}
+		}
+		
 		//ScriptInfo scriptVars = getNeededDevices(script);
-		EmulationSession session = sessionManager.getSession(id, getServletContext());
+		//EmulationSession session = sessionManager.getSession(id, getServletContext());
+		Integer count = 1;
+		try {
+			ArrayList<EmulationSession> sessions = new ArrayList<EmulationSession>(em.createQuery("from EmulationSession").getResultList());
+			if(sessions != null) count = sessions.size();
+		} catch(Exception e) {
+			System.err.println(e.getMessage());
+		}
+		
+		em.getTransaction().begin();
+		
+		EmulationSession session = new EmulationSession(script, getServletContext().getRealPath("sessions/" + count.toString()), devices);
 		session.setStartTime(System.currentTimeMillis());
+		session.setStatus(new EmulationStatus());
 		/*Map<String,String> deviceAssignment = new HashMap<String, String>();
 		for(int i=0;i<scriptVars.size();i++) {
 			String var = scriptVars.get(i);
@@ -154,7 +151,7 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 		}*/
 		
 		if(session != null) {
-			session.setScriptName(script);
+			session.setScript(script);
 			//session.addDeviceList(deviceSelection);
 			
 			ScriptRunner runner = new ScriptRunner(connection, session, instanceSelection, instanceGroupSelection);
@@ -173,7 +170,34 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 		
 		session.setEndTime(System.currentTimeMillis());
 		
+		if(executed) {
+			em.persist(session);
+			em.getTransaction().commit();
+		} else {
+			em.getTransaction().rollback();
+		}
+		
 		return executed;
 	}
-
+	
+	@Override
+	public SessionList getSessionList() {
+		
+		SessionList sessionList = new SessionList();
+		
+		try{
+			ArrayList<EmulationSession> sessions = new ArrayList<EmulationSession>(em.createQuery("from EmulationSession").getResultList());
+			for(EmulationSession session:sessions) {
+				sessionList.addId(session.getId());
+				sessionList.addStartTime(session.getStartTime());
+				sessionList.addEndTime(session.getEndTime());
+				sessionList.addScript(session.getScript());
+			}
+		} catch(Exception e) {
+			System.err.println(e.getMessage());
+		}
+		
+		return sessionList;
+	}
+	
 }

@@ -34,7 +34,7 @@ public class SessionManager {
 				//s = new EmulationSession(num.toString());
 				String sessionDir = servletContext.getRealPath("sessions/" + lastID);
 				new File(sessionDir).mkdirs();
-				s = new EmulationSession(lastID.toString(), sessionDir);
+				//s = new EmulationSession(lastID.toString(), sessionDir);
 				new File(s.getSessionDir() + "/logs").mkdirs();
 				sessionList.put(lastID.toString(), s);
 				lastID++;
