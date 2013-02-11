@@ -35,6 +35,7 @@ import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.InstanceType
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.ParameterType;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.StartType;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.StopType;
+import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationCommand;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationConnection;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationSession;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.InstanceGroupExecutorInfo;
@@ -112,17 +113,22 @@ public class ScriptRunner extends XMLScriptExecutor {
 		BeanSenderReceiver<StartRequest, StartAck> bsr = new BeanSenderReceiver<StartRequest, StartAck>(emuConnection.getConnection());
 		XMPPBean result = bsr.exchange(startReq, new StartAck(), 1);
 		
+		EmulationCommand emuCmd = new EmulationCommand(instance.getAppNS(), "StartCommand", sendTo);
+		
 		if (result != null) {
 			if (result.getType() == XMPPBean.TYPE_ERROR) {
 				System.err.println("Couldn't send StartCommand to " + sendTo + ": ");
 				System.err.println("\tError type: " + result.errorType);
 				System.err.println("\tError condition: " + result.errorCondition);
 				System.err.println("\tError message: " + result.errorText);
+				session.getStatus().addNotFinishedCommand(emuCmd);
 			} else {
 				System.out.println("Successfully sent StartCommand to " + sendTo);
+				session.getStatus().addFinishedCommand(emuCmd);
 			}
 		} else {
 			System.err.println("Couldn't send StartCommand to " + sendTo);
+			session.getStatus().addNotFinishedCommand(emuCmd);
 		}
 		
 		//emuConnection.getConnection().sendPacket(new BeanIQAdapter((XMPPBean)startReq));
@@ -242,17 +248,22 @@ public class ScriptRunner extends XMLScriptExecutor {
 		BeanSenderReceiver<StopRequest, StopAck> bsr = new BeanSenderReceiver<StopRequest, StopAck>(emuConnection.getConnection());
 		XMPPBean result = bsr.exchange(stopReq, new StopAck(), 1);
 		
+		EmulationCommand emuCmd = new EmulationCommand(instance.getAppNS(), "StopCommand", sendTo);
+		
 		if (result != null) {
 			if (result.getType() == XMPPBean.TYPE_ERROR) {
 				System.err.println("Couldn't send StopCommand to " + sendTo + ": ");
 				System.err.println("\tError type: " + result.errorType);
 				System.err.println("\tError condition: " + result.errorCondition);
 				System.err.println("\tError message: " + result.errorText);
+				session.getStatus().addNotFinishedCommand(emuCmd);
 			} else {
 				System.out.println("Successfully sent StopCommand to " + sendTo);
+				session.getStatus().addFinishedCommand(emuCmd);
 			}
 		} else {
 			System.err.println("Couldn't send StopCommand to " + sendTo);
+			session.getStatus().addNotFinishedCommand(emuCmd);
 		}
 		//emuConnection.getConnection().sendPacket(new BeanIQAdapter((XMPPBean)stopReq));
 	}
@@ -319,17 +330,22 @@ public class ScriptRunner extends XMLScriptExecutor {
 		BeanSenderReceiver<CommandRequest, CommandAck> bsr = new BeanSenderReceiver<CommandRequest, CommandAck>(emuConnection.getConnection());
 		XMPPBean result = bsr.exchange(commReq, new CommandAck(), 1);
 		
+		EmulationCommand emuCmd = new EmulationCommand(appNamespace, methodName, sendTo);
+		
 		if (result != null) {
 			if (result.getType() == XMPPBean.TYPE_ERROR) {
 				System.err.println("Couldn't send AppComand to " + sendTo + ": ");
 				System.err.println("\tError type: " + result.errorType);
 				System.err.println("\tError condition: " + result.errorCondition);
 				System.err.println("\tError message: " + result.errorText);
+				session.getStatus().addNotFinishedCommand(emuCmd);
 			} else {
 				System.out.println("Successfully sent AppComand to " + sendTo);
+				session.getStatus().addFinishedCommand(emuCmd);
 			}
 		} else {
 			System.err.println("Couldn't send AppComand to " + sendTo);
+			session.getStatus().addNotFinishedCommand(emuCmd);
 		}
 		
 		//emuConnection.getConnection().sendPacket(new BeanIQAdapter((XMPPBean)commReq));
