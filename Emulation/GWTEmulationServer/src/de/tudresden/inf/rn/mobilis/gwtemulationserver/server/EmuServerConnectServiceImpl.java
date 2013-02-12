@@ -29,11 +29,8 @@ import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.SessionList;
 public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements EmuServerConnectService {
 
 	private String TAG = "EmulationServerService";
-	private SessionManager sessionManager = new SessionManager();
+	//private SessionManager sessionManager = new SessionManager();
 	private EmulationConnection connection = new EmulationConnection();
-	
-	private EntityManagerFactory emf = Persistence.createEntityManagerFactory("emulationserver");
-	private EntityManager em = emf.createEntityManager();
 	
 	@Override
 	public void init() throws ServletException {
@@ -45,7 +42,6 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public void destroy() {
 		connection.disconnect();
-		em.close();
 		super.destroy();
 	}
 
@@ -116,6 +112,9 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Boolean startScript(String script, Map<String, String> instanceSelection, Map<String, InstanceGroupExecutorInfo> instanceGroupSelection) {
 		
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("emulationserver");
+		EntityManager em = emf.createEntityManager();
+		
 		Boolean executed = false;
 		
 		ArrayList<String> devices = new ArrayList<String>();
@@ -177,11 +176,17 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 			em.getTransaction().rollback();
 		}
 		
+		em.close();
+		emf.close();
+		
 		return executed;
 	}
 	
 	@Override
 	public SessionList getSessionList() {
+		
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("emulationserver");
+		EntityManager em = emf.createEntityManager();
 		
 		SessionList sessionList = new SessionList();
 		
@@ -196,6 +201,9 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 		} catch(Exception e) {
 			System.err.println(e.getMessage());
 		}
+		
+		em.close();
+		emf.close();
 		
 		return sessionList;
 	}
