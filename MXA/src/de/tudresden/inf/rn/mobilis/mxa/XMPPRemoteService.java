@@ -22,6 +22,7 @@
 
 package de.tudresden.inf.rn.mobilis.mxa;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -101,6 +102,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -109,9 +111,11 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import de.tudresden.inf.rn.mobilis.mxa.ConstMXA.MessageItems;
 import de.tudresden.inf.rn.mobilis.mxa.ConstMXA.RosterItems;
+import de.tudresden.inf.rn.mobilis.mxa.activities.MainActivity;
 import de.tudresden.inf.rn.mobilis.mxa.callbacks.IChatStateCallback;
 import de.tudresden.inf.rn.mobilis.mxa.callbacks.IConnectionCallback;
 import de.tudresden.inf.rn.mobilis.mxa.callbacks.IXMPPIQCallback;
@@ -154,6 +158,12 @@ public class XMPPRemoteService extends Service {
 	private static final String TAG = "XMPPRemoteService";
 
 	private static final int XMPPSERVICE_STATUS = 1;
+
+	private static final int VERSION_CODE_ICE_CREAM_SANDWICH = 14;
+
+	private static final boolean RUN_IN_FOREGROUND = false;
+
+	private static final int NOTIFICATION_ID = 1101;
 
 	private SharedPreferences mPreferences;
 	private XMPPConnection mConn;
@@ -262,10 +272,7 @@ public class XMPPRemoteService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
-		// Clear leftover notification in case this service previously got
-		// killed while playing
-		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		nm.cancel(XMPPSERVICE_STATUS);
+		stopNotification();
 		instance = this;
 	}
 
@@ -340,6 +347,7 @@ public class XMPPRemoteService extends Service {
 
 						ConnectionConfiguration config = new ConnectionConfiguration(
 								host, port, serviceName);
+						configureTrustStore(config);
 						if (!useEncryption)
 							config.setSecurityMode(SecurityMode.disabled);
 						else
@@ -427,8 +435,8 @@ public class XMPPRemoteService extends Service {
 
 							// TODO we have a BUG here that causes all entries
 							// to be offline, this
-							// hapens if roster updates are sent before the
-							// table is initally cleared
+							// happens if roster updates are sent before the
+							// table is initially cleared
 							// Solution: Shift the deletion upwards, remove the
 							// code below, because
 							// it should be done by the roster listener
@@ -448,28 +456,9 @@ public class XMPPRemoteService extends Service {
 							for (RosterEntry re : rosterEntries)
 								entries.add(re.getUser());
 							xmppReadWorker.entriesAdded(entries);
-
-							// Notification
-							NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-							Notification status = new Notification(
-									R.drawable.stat_notify_chat,
-									getString(R.string.sb_txt_text),
-									System.currentTimeMillis());
-							status.setLatestEventInfo(
-									XMPPRemoteService.this,
-									getString(R.string.sb_txt_title),
-									getString(R.string.sb_txt_text),
-									PendingIntent
-											.getActivity(
-													XMPPRemoteService.this,
-													0,
-													new Intent(
-															ConstMXA.INTENT_SERVICEMONITOR),
-													0));
-							status.flags |= Notification.FLAG_ONGOING_EVENT;
-							status.icon = R.drawable.stat_notify_chat;
-							nm.notify(XMPPSERVICE_STATUS, status);
+							
+//							// Notification
+							showConnectionNotification();
 
 							// initialize services
 							mFileTransferService = new FileTransferService(
@@ -489,6 +478,7 @@ public class XMPPRemoteService extends Service {
 							mIQQueueTimer = new Timer();
 							mIQQueueTimer.schedule(
 									new IQQueueCheckBackgroundRunner(), 0);
+
 						} catch (XMPPException e) {
 							msg2.arg1 = ConstMXA.MSG_STATUS_ERROR;
 							Bundle b = msg2.getData();
@@ -590,26 +580,7 @@ public class XMPPRemoteService extends Service {
 											+ mConn.getServiceName());
 							
 							// Notification
-							NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-							Notification status = new Notification(
-									R.drawable.stat_notify_chat,
-									getString(R.string.sb_txt_text),
-									System.currentTimeMillis());
-							status.setLatestEventInfo(
-									XMPPRemoteService.this,
-									getString(R.string.sb_txt_title),
-									getString(R.string.sb_txt_text),
-									PendingIntent
-											.getActivity(
-													XMPPRemoteService.this,
-													0,
-													new Intent(
-															ConstMXA.INTENT_SERVICEMONITOR),
-													0));
-							status.flags |= Notification.FLAG_ONGOING_EVENT;
-							status.icon = R.drawable.stat_notify_chat;
-							nm.notify(XMPPSERVICE_STATUS, status);
+							showConnectionNotification();
 							
 							Message msgResend = new Message();
 							msgResend.what = ConstMXA.MSG_IQ_RESEND;
@@ -643,6 +614,8 @@ public class XMPPRemoteService extends Service {
 						NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 						nm.cancel(XMPPSERVICE_STATUS);
 
+						stopNotification();
+						
 						mConn.disconnect();
 						msg2.arg1 = ConstMXA.MSG_STATUS_SUCCESS;
 						xmppResults.sendMessage(msg2);
@@ -748,10 +721,35 @@ public class XMPPRemoteService extends Service {
 					}
 
 				}
+
+
+
 			};
 
 			Looper.loop();
 		}
+	}
+
+	/**
+	 * Configure trust store for pre and post ICS API.
+	 * 
+	 * @param connectionConfiguration
+	 */
+	private void configureTrustStore(ConnectionConfiguration connectionConfiguration) {
+		if (Build.VERSION.SDK_INT >= VERSION_CODE_ICE_CREAM_SANDWICH) {
+			
+		    connectionConfiguration.setTruststoreType("AndroidCAStore");
+		    connectionConfiguration.setTruststorePassword(null);
+		    connectionConfiguration.setTruststorePath(null);
+		} else {
+		    connectionConfiguration.setTruststoreType("BKS");
+		    String path = System.getProperty("javax.net.ssl.trustStore");
+		    if (path == null)
+		        path = System.getProperty("java.home") + File.separator + "etc"
+		            + File.separator + "security" + File.separator
+		            + "cacerts.bks";
+		    connectionConfiguration.setTruststorePath(path);
+		}					
 	}
 
 	/**
@@ -765,6 +763,60 @@ public class XMPPRemoteService extends Service {
 	 * @author Istvan Koren
 	 * 
 	 */
+	
+	/**
+	 * @author Tobias Rho
+	 */
+	private void showConnectionNotification() {
+		if (RUN_IN_FOREGROUND) {
+			Notification note = new NotificationCompat.Builder(this)
+					.setContentTitle(getString(R.string.sb_txt_title))
+					.setContentText(getString(R.string.sb_txt_text))
+					.setSmallIcon(R.drawable.stat_notify_chat).build();
+
+			Intent i = new Intent(this, MainActivity.class);
+
+			i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+					| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+			PendingIntent pi = PendingIntent.getActivity(this, 0, i, 0);
+
+			note.setLatestEventInfo(this, getString(R.string.sb_txt_title),
+					getString(R.string.sb_txt_text), pi);
+			note.flags |= Notification.FLAG_NO_CLEAR;
+
+			startForeground(NOTIFICATION_ID, note);
+		} else {
+			NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+			Notification status = new Notification(R.drawable.stat_notify_chat,
+					getString(R.string.sb_txt_text), System.currentTimeMillis());
+			status.setLatestEventInfo(XMPPRemoteService.this,
+					getString(R.string.sb_txt_title),
+					getString(R.string.sb_txt_text), PendingIntent.getActivity(
+							XMPPRemoteService.this, 0, new Intent(
+									ConstMXA.INTENT_SERVICEMONITOR), 0));
+			status.flags |= Notification.FLAG_ONGOING_EVENT;
+			status.icon = R.drawable.stat_notify_chat;
+			nm.notify(XMPPSERVICE_STATUS, status);
+		}
+	}
+	
+	/**
+	 * 	Clear leftover notification in case this service previously got
+	 *	killed while running.
+	 *
+	 * @author Tobias Rho
+	 */
+	private void stopNotification() {
+		if(RUN_IN_FOREGROUND){
+			stopForeground(true);
+		} else {
+			NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+			nm.cancel(XMPPSERVICE_STATUS);
+		}
+	}
+	
 	private class IQRunner implements Runnable {
 		private Message msg;
 
@@ -1615,6 +1667,7 @@ public class XMPPRemoteService extends Service {
 			Message msg = new Message();
 			msg.what = ConstMXA.MSG_CONNECT;
 
+			
 			// set ack target
 			Bundle data = new Bundle();
 			data.putParcelable("MSN_ACK", acknowledgement);
