@@ -13,6 +13,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -212,7 +213,9 @@ public class TestNodeModule {
 		}
 		
 		//TODO: call exit() on all clients
-		for (TestApplicationRunnable app : appInstances.values()) {
+		Iterator<TestApplicationRunnable> appIterator = appInstances.values().iterator();
+		while (appIterator.hasNext()) {
+			TestApplicationRunnable app = appIterator.next();
 			try {
 				synchronized (stopMonitor) {
 					app.stop();
