@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2009 Technische Universit�t Dresden
+ * Copyright (C) 2009 Technische Universität Dresden
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -610,9 +610,6 @@ public class XMPPRemoteService extends Service {
 						// listeners
 						// TODO only disconnect from XMPP server if all
 						// service consumers disconnected before
-
-						NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-						nm.cancel(XMPPSERVICE_STATUS);
 
 						stopNotification();
 						
