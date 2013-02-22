@@ -107,7 +107,7 @@
         </service>
 
         <activity
-            android:name=".VersionActivity"
+            android:name="de.tudresden.inf.rn.mobilis.android.xhunt.activity.VersionActivity"
             android:label="@string/title_activity_version" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

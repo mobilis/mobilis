@@ -37,7 +37,6 @@ import android.widget.Button;
 import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.xhunt.Const;
 import de.tudresden.inf.rn.mobilis.android.xhunt.R;
-import de.tudresden.inf.rn.mobilis.android.xhunt.VersionActivity;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.GameState;
 import de.tudresden.inf.rn.mobilis.android.xhunt.proxy.MXAProxy;
 import de.tudresden.inf.rn.mobilis.android.xhunt.service.ServiceConnector;

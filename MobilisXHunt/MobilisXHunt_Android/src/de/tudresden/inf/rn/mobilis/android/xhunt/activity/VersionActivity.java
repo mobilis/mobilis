@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.android.xhunt;
+package de.tudresden.inf.rn.mobilis.android.xhunt.activity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.widget.TextView;
+import de.tudresden.inf.rn.mobilis.android.xhunt.R;
 
 public class VersionActivity extends Activity {
 

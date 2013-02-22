@@ -55,6 +55,6 @@
 	<target name="writeVersionFile" if="${isUnix}">
 		<echo file="version.txt" append="false">build info: ${branch} ${repository.version} ${repository.dirty}
 user: ${repository.user}
-link to github commit page: https://github.com/danielschuster/mobilis/commit/${repository.version}</echo>
+link to github commit page: https://github.com/mobilis/mobilis/commit/${repository.version}</echo>
 	</target>
 </project>
