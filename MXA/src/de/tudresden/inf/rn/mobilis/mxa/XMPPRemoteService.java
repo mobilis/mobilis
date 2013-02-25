@@ -211,10 +211,10 @@ public class XMPPRemoteService extends Service {
 	private static long PACKET_TIMEOUT = 5000;
 
 	static {
-		// System.setProperty("smack.debuggerClass",
-		// "de.tudresden.inf.rn.mobilis.mxa.util.Debugger");
-		//
-		// XMPPConnection.DEBUG_ENABLED = true;
+//		System.setProperty("smack.debuggerClass",
+//		"de.tudresden.inf.rn.mobilis.mxa.util.Debugger");
+		
+		Connection.DEBUG_ENABLED = true;
 	}
 
 	/*

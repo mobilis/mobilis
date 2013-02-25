@@ -6,6 +6,5 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="lib" path="libs/android-integration.jar"/>
 	<classpathentry kind="lib" path="libs/jmdns.jar"/>
-	<classpathentry kind="lib" path="libs/asmack-android-14-0.8.jar" sourcepath="libs/asmack-android-14-source-0.8.zip"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

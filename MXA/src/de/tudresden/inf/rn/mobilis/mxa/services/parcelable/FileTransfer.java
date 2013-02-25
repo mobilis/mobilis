@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2009 Technische Universität Dresden
+ * Copyright (C) 2009 Technische UniversitÃ¤t Dresden
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * The FileTransfer parcelable is included in all calls concerning FileTransfers.
+ * The FileTransfer parcelable is included in all calls concerning FileTransfers (as defined in XEP-0096).
  * It includes members for determining the path and size of the underlying file.
- * @author Benjamin Söllner
+ * @author Benjamin SÃ¶llner
  */
-public class FileTransfer implements Parcelable {
+public class FileTransfer extends ByteStream {
 
 	// members
-	public String to;
-	public String from;
 	public String description = null;
 	public String path = null;
 	public int blockSize;
@@ -55,6 +53,7 @@ public class FileTransfer implements Parcelable {
 	};
 
 	public FileTransfer() {
+		super();
 	}
 	
 	public FileTransfer(String from, String to, String description, String path, String mimeType, int blockSize, long size) {
@@ -79,7 +78,7 @@ public class FileTransfer implements Parcelable {
 	@Override
 	public int describeContents() {
 		// TODO Auto-generated method stub
-		return 0;
+		return super.describeContents();
 	}
 
 	/*
@@ -89,8 +88,7 @@ public class FileTransfer implements Parcelable {
 	 */
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeString(this.from);
-		dest.writeString(this.to);
+		super.writeToParcel(dest, flags);
 		dest.writeString(this.path);
 		dest.writeString(this.description);
 		dest.writeString(this.mimeType);
@@ -99,8 +97,7 @@ public class FileTransfer implements Parcelable {
 	}
 
 	public void readFromParcel(Parcel in) {
-		this.from = in.readString();
-		this.to = in.readString();
+		super.readFromParcel(in);
 		this.path = in.readString();
 		this.description = in.readString();
 		this.mimeType = in.readString();

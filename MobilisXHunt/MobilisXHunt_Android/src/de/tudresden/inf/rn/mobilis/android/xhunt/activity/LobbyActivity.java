@@ -84,7 +84,7 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogRemoteLoading;
 import de.tudresden.inf.rn.mobilis.mxa.ConstMXA;
 import de.tudresden.inf.rn.mobilis.mxa.services.callbacks.IFileAcceptCallback;
 import de.tudresden.inf.rn.mobilis.mxa.services.callbacks.IFileCallback;
-import de.tudresden.inf.rn.mobilis.mxa.services.parcelable.FileTransfer;
+import de.tudresden.inf.rn.mobilis.mxa.services.parcelable.ByteStream;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 // TODO: The change of player icons are difficult to see, because they just changing the 
@@ -1077,7 +1077,7 @@ public class LobbyActivity extends Activity {
 
 		@Override
 		public void processFile(IFileAcceptCallback accepCallback,
-				FileTransfer xmppFile, String streamID) throws RemoteException {
+				ByteStream xmppFile, String streamID) throws RemoteException {
 
 			/*
 			 * Not needed anymore because the area.xml and vehicle icons were integrated in the res folder.

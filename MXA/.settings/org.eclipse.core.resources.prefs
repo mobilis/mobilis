@@ -1,0 +1,8 @@
+eclipse.preferences.version=1
+encoding//src/de/tudresden/inf/rn/mobilis/mxa/XMPPRemoteService.java=UTF-8
+encoding//src/de/tudresden/inf/rn/mobilis/mxa/services/callbacks/IFileCallback.aidl=UTF-8
+encoding//src/de/tudresden/inf/rn/mobilis/mxa/services/filetransfer/FileTransferService.java=UTF-8
+encoding//src/de/tudresden/inf/rn/mobilis/mxa/services/parcelable/ByteStream.aidl=UTF-8
+encoding//src/de/tudresden/inf/rn/mobilis/mxa/services/parcelable/ByteStream.java=UTF-8
+encoding//src/de/tudresden/inf/rn/mobilis/mxa/services/parcelable/FileTransfer.java=UTF-8
+encoding/<project>=UTF-8

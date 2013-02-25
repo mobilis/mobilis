@@ -20,19 +20,8 @@
  * mobilis project: http://mobilisplatform.sourceforge.net
  */
 
-package de.tudresden.inf.rn.mobilis.mxa.services.callbacks;
+package de.tudresden.inf.rn.mobilis.mxa.services.parcelable;
 
-import android.os.Messenger;
-
-oneway interface IFileAcceptCallback {
-
-    /**
-     * This method is called if an MXA client accepts an incoming file transfer.
-     */
-    void acceptFile(in Messenger acknowledgement, in int requestCode, in String streamID, in String path, in int blockSize);
-    
-    /**
-     * This method is called if an MXA client denies an incoming file transfer.
-     */
-    void denyFileTransferRequest(in Messenger acknowledgement, in int requestCode, in String streamID);
-}
+// Declare ByteStream so AIDL can find it and knows that it implements
+// the parcelable protocol.
+parcelable ByteStream;

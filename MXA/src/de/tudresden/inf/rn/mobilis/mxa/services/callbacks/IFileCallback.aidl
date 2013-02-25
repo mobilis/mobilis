@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2009 Technische Universit‰t Dresden
+ * Copyright (C) 2009 Technische Universit√§t Dresden
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 
 package de.tudresden.inf.rn.mobilis.mxa.services.callbacks;
 
-import de.tudresden.inf.rn.mobilis.mxa.services.parcelable.FileTransfer;
+import de.tudresden.inf.rn.mobilis.mxa.services.parcelable.ByteStream;
 import de.tudresden.inf.rn.mobilis.mxa.services.callbacks.IFileAcceptCallback;
 
 oneway interface IFileCallback {
@@ -30,5 +30,5 @@ oneway interface IFileCallback {
     /**
      * Called by the service if there is a new incoming file transfer.
      */
-    void processFile(IFileAcceptCallback acceptCallback, in FileTransfer file, String streamID);
+    void processFile(IFileAcceptCallback acceptCallback, in ByteStream stream, String streamID);
 }
