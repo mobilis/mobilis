@@ -5,14 +5,17 @@
     <item
    		android:id="@+id/menu_lobby_muc"
         android:icon="@+android:drawable/sym_action_chat"
-        android:title="Chat" />
+        android:title="Chat"
+        android:showAsAction="collapseActionView" />
     <item
    		android:id="@+id/menu_lobby_info"
         android:icon="@+android:drawable/ic_menu_recent_history"
-        android:title="Info" />
+        android:title="Info"
+    	android:showAsAction="collapseActionView" />
     <item
     	android:id="@+id/menu_lobby_quit"
         android:icon="@+android:drawable/ic_lock_power_off"
-        android:title="Quit" />
+        android:title="Quit"
+		android:showAsAction="collapseActionView" />
   
 </menu>
