@@ -1,12 +1,5 @@
 package de.inf.tudresden.rn.mobilis.mxaonfire.activities;
 
-import java.text.NumberFormat;
-import java.util.logging.SimpleFormatter;
-
-import de.inf.tudresden.rn.mobilis.mxaonfire.service.FileTransferDescriber;
-import de.inf.tudresden.rn.mobilis.mxaonfire.service.FileTransferManager;
-import de.inf.tudresden.rn.mobilis.mxaonfire.service.ListeningFileTransferService;
-import de.tudresden.inf.rn.mobilis.mxa.ConstMXA;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -16,7 +9,10 @@ import android.os.Handler;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
-import android.widget.TextView;
+import de.inf.tudresden.rn.mobilis.mxaonfire.service.FileTransferDescriber;
+import de.inf.tudresden.rn.mobilis.mxaonfire.service.FileTransferManager;
+import de.tudresden.inf.rn.mobilis.mxa.ConstMXA;
+import de.tudresden.inf.rn.mobilis.mxa.services.parcelable.FileTransfer;
 
 
 public class FileReceiveActivity extends Activity {
@@ -64,7 +60,9 @@ public class FileReceiveActivity extends Activity {
 					int blocks=b.getInt("BLOCKSTRANSFERRED");
 					long bytes=b.getLong("BYTESTRANSFERRED");
 					Log.v(TAG," receiving file: blocks: "+blocks+" bytes:"  +bytes);
-					mProgressDialog.setProgress((int) blocks);
+					if (mProgressDialog != null) {
+						mProgressDialog.setProgress((int) blocks);
+					}
 				}else if (msg.arg1==ConstMXA.MSG_STATUS_ERROR)
 				{
 					Bundle b= msg.getData();
@@ -74,7 +72,9 @@ public class FileReceiveActivity extends Activity {
 				}else if (msg.arg1==ConstMXA.MSG_STATUS_DELIVERED)
 				{
 					Log.v(TAG,"file transferred");
-					mProgressDialog.dismiss();
+					if (mProgressDialog != null) {
+						mProgressDialog.dismiss();
+					}
 					finish();
 				}
 				break;
@@ -89,19 +89,43 @@ public class FileReceiveActivity extends Activity {
 		// void acceptFile(in Messenger acknowledgement, in int requestCode, in String streamID, in String path, in int blockSize);
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		
-		builder.setMessage(mFtd.mFile.from+" sends you a file ("+mFtd.mFile.path+" "+mFtd.mFile.size/1000.0+"KB)")
-		.setCancelable(false)
-		.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
-				try {
-					mFtd.mFileAcceptCallback.acceptFile(new Messenger(mHandler), 0 , mFtd.mStreamID	, "/mnt/sdcard/mxaonfire/"+mFtd.mFile.path,1000);
-					createProgressDialog(mFtd.mFile.size/1000);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		String message = "";
+		DialogInterface.OnClickListener acceptClickListener = null;
+		if (mFtd.mFile instanceof FileTransfer) {
+			final FileTransfer fileTransfer = (FileTransfer) mFtd.mFile;
+			message = mFtd.mFile.from + " sends you a file ("+fileTransfer.path+" "+fileTransfer.size/1000.0+"KB)";
+			
+			acceptClickListener = new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					try {
+						mFtd.mFileAcceptCallback.acceptFile(new Messenger(mHandler), 0 , mFtd.mStreamID	, "/mnt/sdcard/mxaonfire/"+fileTransfer.path,1000);
+						createProgressDialog(fileTransfer.size/1000);
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-			}
-		})
+			};
+		} else {
+			message = mFtd.mFile.from + " sends you a file.";
+			
+			acceptClickListener = new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					try {
+						mFtd.mFileAcceptCallback.acceptFile(new Messenger(mHandler), 0 , mFtd.mStreamID	, "/mnt/sdcard/mxaonfire/"+System.currentTimeMillis(),1000);
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			};
+		}
+		
+		builder.setMessage(message)
+		.setCancelable(false)
+		.setPositiveButton("Accept", acceptClickListener)
 		.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				try {

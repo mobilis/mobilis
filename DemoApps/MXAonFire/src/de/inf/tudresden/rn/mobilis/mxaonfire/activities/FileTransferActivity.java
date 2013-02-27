@@ -2,22 +2,10 @@ package de.inf.tudresden.rn.mobilis.mxaonfire.activities;
 
 import java.io.File;
 
-import de.inf.tudresden.rn.mobilis.mxaonfire.R;
-import de.inf.tudresden.rn.mobilis.mxaonfire.util.Const;
-import de.tudresden.inf.rn.mobilis.mxa.ConstMXA;
-import de.tudresden.inf.rn.mobilis.mxa.IXMPPService;
-import de.tudresden.inf.rn.mobilis.mxa.MXAController;
-import de.tudresden.inf.rn.mobilis.mxa.services.callbacks.IFileAcceptCallback;
-import de.tudresden.inf.rn.mobilis.mxa.services.callbacks.IFileCallback;
-import de.tudresden.inf.rn.mobilis.mxa.services.callbacks.IFileCallback.Stub;
-import de.tudresden.inf.rn.mobilis.mxa.services.filetransfer.IFileTransferService;
-import de.tudresden.inf.rn.mobilis.mxa.services.parcelable.FileTransfer;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -25,6 +13,15 @@ import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import de.inf.tudresden.rn.mobilis.mxaonfire.R;
+import de.inf.tudresden.rn.mobilis.mxaonfire.util.Const;
+import de.tudresden.inf.rn.mobilis.mxa.ConstMXA;
+import de.tudresden.inf.rn.mobilis.mxa.MXAController;
+import de.tudresden.inf.rn.mobilis.mxa.services.callbacks.IFileAcceptCallback;
+import de.tudresden.inf.rn.mobilis.mxa.services.callbacks.IFileCallback;
+import de.tudresden.inf.rn.mobilis.mxa.services.filetransfer.IFileTransferService;
+import de.tudresden.inf.rn.mobilis.mxa.services.parcelable.ByteStream;
+import de.tudresden.inf.rn.mobilis.mxa.services.parcelable.FileTransfer;
 
 
 /**
@@ -56,7 +53,7 @@ public class FileTransferActivity extends Activity {
 		
 				
 		
-		FileTransferAccepter acceptor= new FileTransferAccepter();
+		FileTransferAcceptor acceptor= new FileTransferAcceptor();
 		acceptor.registerHandler(mAcceptFileHandler);
 		try {
 			//register the callback
@@ -89,7 +86,7 @@ public class FileTransferActivity extends Activity {
 					try {
 						//try to send it
 						mTv.append("\nFile: "+f.getAbsolutePath());
-						Log.v(TAG,"Länge: "+String.valueOf(f.length()));
+						Log.v(TAG,"L��nge: "+String.valueOf(f.length()));
 						//count of blocks is length/1000
 						mBar.setMax((int)(f.length()/1000.0));
 						IFileTransferService fts = MXAController.get()
@@ -126,7 +123,7 @@ public class FileTransferActivity extends Activity {
 				//means there were blocks acked
 				Bundle b2 = msg.getData();
 				Log.v(TAG,"transferiert bytes"+String.valueOf((int)b2.getLong("BYTESTRANSFERRED")));
-				Log.v(TAG,"transferiert blöcke"+String.valueOf((int)b2.getInt("BLOCKSTRANSFERRED")));
+				Log.v(TAG,"transferiert bl��cke"+String.valueOf((int)b2.getInt("BLOCKSTRANSFERRED")));
 				if (b2.getInt("BLOCKSTRANSFERRED")>0)mBar.setProgress((int)b2.getInt("BLOCKSTRANSFERRED"));
 				break;
 			}
@@ -143,21 +140,29 @@ public class FileTransferActivity extends Activity {
 		}
 	};
 	
-	class FileTransferAccepter extends IFileCallback.Stub{
+	class FileTransferAcceptor extends IFileCallback.Stub{
 
 		private Handler handler;
 		
 		@Override
 		public void processFile(IFileAcceptCallback acceptCallback,
-				FileTransfer file, String streamID) throws RemoteException {
+				ByteStream file, String streamID) throws RemoteException {
 			Message msg= Message.obtain();
 			msg.what=ConstMXA.MSG_SEND_FILE;
 			
-			//register a file transfer service with mxa, so incoming packets are treated here
-			Log.e("FileTransferActivity", file.from+" "+file.to+" "+file.size+" "+file.description+" "+file.mimeType+" "+file.path);
-			Log.e("FileTransferActivity", streamID+" "+acceptCallback.toString());
-			acceptCallback.acceptFile(new Messenger(acceptFileHandler), 0, streamID, "/mnt/sdcard/download/"+file.path,  1); 
+			if (file instanceof FileTransfer) {
+				FileTransfer fileTransfer = (FileTransfer) file;
+				//register a file transfer service with mxa, so incoming packets are treated here
+				Log.e("FileTransferActivity", "XEP-0096 File Transfer: " + file.from+" "+file.to+" "+fileTransfer.size+" "+fileTransfer.description+" "+fileTransfer.mimeType+" "+fileTransfer.path);
+				Log.e("FileTransferActivity", streamID+" "+acceptCallback.toString());
+				acceptCallback.acceptFile(new Messenger(acceptFileHandler), 0, streamID, "/mnt/sdcard/download/"+fileTransfer.path,  1); 
 //			Toast.makeText(FileTransferActivity.this, file.toString(),Toast.LENGTH_SHORT).show();
+			} else {
+				//register a file transfer service with mxa, so incoming packets are treated here
+				Log.e("FileTransferActivity", "XEP-0065 File Transfer: " + file.from+" "+file.to);
+				Log.e("FileTransferActivity", streamID+" "+acceptCallback.toString());
+				acceptCallback.acceptFile(new Messenger(acceptFileHandler), 0, streamID, "/mnt/sdcard/download/"+System.currentTimeMillis(),  1); 
+			}
 			 
 		}
 		

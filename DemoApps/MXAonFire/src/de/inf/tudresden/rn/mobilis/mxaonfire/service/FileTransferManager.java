@@ -1,10 +1,9 @@
 package de.inf.tudresden.rn.mobilis.mxaonfire.service;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import de.tudresden.inf.rn.mobilis.mxa.services.callbacks.IFileAcceptCallback;
-import de.tudresden.inf.rn.mobilis.mxa.services.parcelable.FileTransfer;
+import de.tudresden.inf.rn.mobilis.mxa.services.parcelable.ByteStream;
 
 public class FileTransferManager {
 	private static FileTransferManager instance= new FileTransferManager();
@@ -15,7 +14,7 @@ public class FileTransferManager {
 	
 	private ArrayList<FileTransferDescriber> mList= new ArrayList<FileTransferDescriber>(); 
 	
-	public void insert(IFileAcceptCallback cb, FileTransfer f, String id)
+	public void insert(IFileAcceptCallback cb, ByteStream f, String id)
 	{
 		FileTransferDescriber ftd=new FileTransferDescriber();
 		ftd.mFile=f;

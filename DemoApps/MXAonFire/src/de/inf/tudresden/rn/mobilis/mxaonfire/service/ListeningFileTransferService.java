@@ -8,6 +8,7 @@ import de.tudresden.inf.rn.mobilis.mxa.MXAController;
 import de.tudresden.inf.rn.mobilis.mxa.MXAListener;
 import de.tudresden.inf.rn.mobilis.mxa.services.callbacks.IFileAcceptCallback;
 import de.tudresden.inf.rn.mobilis.mxa.services.callbacks.IFileCallback;
+import de.tudresden.inf.rn.mobilis.mxa.services.parcelable.ByteStream;
 import de.tudresden.inf.rn.mobilis.mxa.services.parcelable.FileTransfer;
 import android.R;
 import android.app.AlertDialog;
@@ -79,7 +80,7 @@ public class ListeningFileTransferService extends Service implements MXAListener
 	private IFileCallback mFileCallback = new IFileCallback.Stub() {
 	
 		@Override
-		public void processFile(IFileAcceptCallback  fileAcceptCallback, FileTransfer file,
+		public void processFile(IFileAcceptCallback  fileAcceptCallback, ByteStream file,
 				String streamId) throws RemoteException {
 			
 			
