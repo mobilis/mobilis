@@ -165,7 +165,8 @@ public class CreateGameActivity extends PreferenceActivity {
 				mRemoteLoadingDialog.cancel();
 			}
 			
-			loadAreaInformation();
+			createGame();
+			//loadAreaInformation();
 		}
 	};
 	

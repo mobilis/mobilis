@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universit�t Dresden
+ * Copyright (C) 2010 Technische Universität Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -518,7 +518,9 @@ public class SqlHelper {
 		HashMap<Integer, Route> routes = new HashMap<Integer, Route>();
 		
 		try {
-			for(Route route : queryAreaRoutes(areaId)){
+			
+			ArrayList<Route> areaRoutes = queryAreaRoutes(areaId);
+			for(Route route : areaRoutes){
 				routes.put(route.getId(), route);
 			}
 		} catch (SQLException e) {
@@ -547,6 +549,11 @@ public class SqlHelper {
 			" from " + mDbName + "." + TABLE_AREA_HAS_ROUTES + " as ahr, " + mDbName + 
 			"." + TABLE_ROUTE + " as route ) as routes where area." + COLUMN_ID + "=" + areaId;
 //		mController.log(strStatement);
+		
+		if (mMysqlConnection == null) {
+			mMysqlConnection = DriverManager
+					.getConnection(getConnectionURI());
+		}
 		
 		mStatement = mMysqlConnection.createStatement();
 		mResultSet = mStatement.executeQuery(strStatement);
@@ -638,6 +645,10 @@ public class SqlHelper {
 			mDbName + "." + TABLE_STATION + " as station ) as stations " +
 			") as stations ) as stations where area." + COLUMN_ID + "=" + areaId;
 //		mController.log(strStatement);
+		if (mMysqlConnection == null) {
+			mMysqlConnection = DriverManager
+					.getConnection(getConnectionURI());
+		}
 			
 		mStatement = mMysqlConnection.createStatement();
 		mResultSet = mStatement.executeQuery(strStatement);
@@ -702,6 +713,11 @@ public class SqlHelper {
 			mDbName + "." + TABLE_TICKET + " as ticket ) as tickets " + 
 			") as tickets where area." + COLUMN_ID + "=" + areaId;
 //		mController.log(strStatement);
+		
+		if (mMysqlConnection == null) {
+			mMysqlConnection = DriverManager
+					.getConnection(getConnectionURI());
+		}
 		
 		mStatement = mMysqlConnection.createStatement();
 		mResultSet = mStatement.executeQuery(strStatement);

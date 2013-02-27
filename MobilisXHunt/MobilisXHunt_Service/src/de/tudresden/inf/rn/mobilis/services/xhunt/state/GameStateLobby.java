@@ -265,7 +265,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 			
 			
 			// Start to transmitting the game files like game data and ticket icons
-			transmitGameData(player.getJid());
+			//transmitGameData(player.getJid());
 		}
 		// If game is not open, it is not configured yet or the maximum of players has been reached
 		else {
