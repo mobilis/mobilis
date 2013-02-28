@@ -31,7 +31,7 @@
         
     </PreferenceCategory>
         
-    <PreferenceCategory
-        android:title="@string/newgame_category_tickets" />
+    <!--<PreferenceCategory
+        android:title="@string/newgame_category_tickets" />  -->
     
 </PreferenceScreen>
