@@ -361,7 +361,7 @@ public class LobbyActivity extends Activity {
 			if (msg.obj != null) {
 				Toast toast = Toast.makeText(LobbyActivity.this,
 						msg.obj.toString(), Toast.LENGTH_LONG);
-				toast.setGravity(Gravity.TOP, 0, 50);
+				toast.setGravity(Gravity.TOP, 0, 100);
 				toast.show();
 
 				mServiceConnector.getXHuntService().getTools()
