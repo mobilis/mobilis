@@ -34,7 +34,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -71,8 +70,6 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.RoundStatusRequest;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.SnapshotRequest;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.StartRoundRequest;
 import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.TargetResponse;
-import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.UsedTicketsInfo;
-import de.tudresden.inf.rn.mobilis.android.xhunt.clientstub.UsedTicketsResponse;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.Game;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.GameState;
 import de.tudresden.inf.rn.mobilis.android.xhunt.model.Route;
@@ -273,7 +270,7 @@ public class XHuntMapActivity extends MapActivity {
 	    	if(msg.obj != null){
 	    		// Display a toast on top of the screen
 		    	Toast toast = Toast.makeText(XHuntMapActivity.this, msg.obj.toString(), Toast.LENGTH_LONG);
-		    	toast.setGravity(Gravity.TOP, 0, 50);
+		    	toast.setGravity(Gravity.TOP, 0, 100);
 		    	toast.show();
 		    	
 		    	// Let the device vibrate
