@@ -157,6 +157,7 @@
 					<xs:element name="IsModerator" type="xs:boolean" />
 					<xs:element name="IsMrX" type="xs:boolean" />
 					<xs:element name="IsReady" type="xs:boolean" />
+					<xs:element name="IconColorID" type="xs:int" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType name="PlayerSnapshotInfo">

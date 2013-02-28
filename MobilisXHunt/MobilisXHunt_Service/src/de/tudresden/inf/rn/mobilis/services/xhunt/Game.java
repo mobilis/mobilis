@@ -177,7 +177,8 @@ public class Game {
 										player.getName(), 
 										player.isModerator(), 
 										player.isMrx(),
-										player.isReady()
+										player.isReady(),
+										player.getPlayerIconID()
 								),
 								new LocationInfo( 
 										player.getJid(),									
@@ -206,7 +207,8 @@ public class Game {
 									mrxPlayer.getName(), 
 									mrxPlayer.isModerator(), 
 									mrxPlayer.isMrx(),
-									mrxPlayer.isReady()
+									mrxPlayer.isReady(),
+									mrxPlayer.getPlayerIconID()
 							),
 							new LocationInfo(
 									mrxPlayer.getJid(),
@@ -229,7 +231,8 @@ public class Game {
 									mrxPlayer.getName(), 
 									mrxPlayer.isModerator(), 
 									mrxPlayer.isMrx(),
-									mrxPlayer.isReady()
+									mrxPlayer.isReady(),
+									mrxPlayer.getPlayerIconID()
 							),
 							new LocationInfo( mrxPlayer.getJid(), -1, -1 ),
 							mrxPlayer.isCurrentTargetFinal(),
@@ -356,7 +359,8 @@ public class Game {
 					player.getName(),
 					player.isModerator(),
 					player.isMrx(),
-					player.isReady())
+					player.isReady(),
+					player.getPlayerIconID())
 			);
 		}
 		

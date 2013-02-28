@@ -11,15 +11,17 @@ public class PlayerInfo implements XMPPInfo {
 	private boolean IsModerator = false;
 	private boolean IsMrX = false;
 	private boolean IsReady = false;
+	private int IconColorID = Integer.MIN_VALUE;
 
 
-	public PlayerInfo( String Jid, String PlayerName, boolean IsModerator, boolean IsMrX, boolean IsReady ) {
+	public PlayerInfo( String Jid, String PlayerName, boolean IsModerator, boolean IsMrX, boolean IsReady, int IconColorID ) {
 		super();
 		this.Jid = Jid;
 		this.PlayerName = PlayerName;
 		this.IsModerator = IsModerator;
 		this.IsMrX = IsMrX;
 		this.IsReady = IsReady;
+		this.IconColorID = IconColorID;
 	}
 
 	public PlayerInfo(){}
@@ -52,6 +54,9 @@ public class PlayerInfo implements XMPPInfo {
 				}
 				else if (tagName.equals( "IsReady" ) ) {
 					this.IsReady = Boolean.parseBoolean( parser.nextText() );
+				}
+				else if (tagName.equals( "IconColorID" ) ) {
+					this.IconColorID = Integer.parseInt( parser.nextText() );
 				}
 				else
 					parser.next();
@@ -109,6 +114,10 @@ public class PlayerInfo implements XMPPInfo {
 			.append( this.IsReady )
 			.append( "</IsReady>" );
 
+		sb.append( "<IconColorID>" )
+			.append( this.IconColorID )
+			.append( "</IconColorID>" );
+
 		return sb.toString();
 	}
 
@@ -152,6 +161,14 @@ public class PlayerInfo implements XMPPInfo {
 
 	public void setIsReady( boolean IsReady ) {
 		this.IsReady = IsReady;
+	}
+
+	public int getIconColorID() {
+		return this.IconColorID;
+	}
+
+	public void setIconColorID( int IconColorID ) {
+		this.IconColorID = IconColorID;
 	}
 
 }

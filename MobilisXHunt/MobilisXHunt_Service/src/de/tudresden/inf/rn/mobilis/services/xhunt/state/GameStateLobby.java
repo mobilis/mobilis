@@ -22,6 +22,8 @@ package de.tudresden.inf.rn.mobilis.services.xhunt.state;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
@@ -52,6 +54,9 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 	/** The class specific Logger object. */
 	private final static Logger LOGGER = Logger.getLogger(GameStateLobby.class.getCanonicalName());
 	
+	/** This Map contains the IDs of Colors which were already assigned to Players. */
+	private static Map<Integer, String> mOccupiedColorIDs;
+	
 	/**
 	 * Instantiates a new GameStateLobby.
 	 *
@@ -61,6 +66,9 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 	public GameStateLobby(XHunt control, Game game){
 		this.control = control;
 		this.game = game;
+		
+		if(mOccupiedColorIDs == null)
+			mOccupiedColorIDs = new ConcurrentHashMap<Integer, String>();
 		
 		// create tmp and parent dirs if necessary
 		File tmpDir = new File( _tmpFolderPath );
@@ -178,6 +186,33 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 						playerJid);
 		}
 	}
+	
+	
+	/**
+	 * This method searches for the lowest Color ID which has not been assigned to a player,
+	 * and also checks for already assigned Color IDs which can be freed because the corresponding player left.
+	 * 
+	 * @param playerJID the JID of the Player to which the returned Color ID will be assigned.
+	 * @return a Color ID which will be sent to the Client App
+	 */
+	private int getUnoccupiedColorId(String playerJID) {
+		// delete ID from mOccupiedColorIDs if corresponding Player left Game
+		for(Map.Entry<Integer, String> entry : mOccupiedColorIDs.entrySet()) {
+			if(!game.getPlayers().containsKey(entry.getValue()))
+				mOccupiedColorIDs.remove(entry);
+		}
+		
+		// find lowest ID which is not occupied
+		Integer clrId = new Integer(0);
+		while(mOccupiedColorIDs.keySet().contains(clrId)) {
+			clrId++;
+		}
+		
+		// remember this Color ID as occupied
+		mOccupiedColorIDs.put(clrId, playerJID);
+		
+		return clrId;
+	}
 
 	/**
 	 * Handle JoinGameBean. This game is needed of each player to play this game, also the creator 
@@ -203,10 +238,17 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 			// (mostly it is the creator of the game)
 			else if(game.getPlayers().size() == 0){
 				player = new XHuntPlayer(inBean.getFrom(), inBean.getPlayerName(), true, true, false);
+				
+				player.setPlayerIconID(-1);
+				player.setPlayerColorID(-1);
 			}
 			// Else the player will be an agent and doesn't own rights as moderator
 			else{
 				player = new XHuntPlayer(inBean.getFrom(), inBean.getPlayerName(), false, false, false);
+				
+				int iconColorId = getUnoccupiedColorId(inBean.getFrom());
+				player.setPlayerIconID(iconColorId);
+				player.setPlayerColorID(iconColorId);
 			}
 			
 			// Add/replace new player

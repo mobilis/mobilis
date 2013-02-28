@@ -101,7 +101,7 @@ public class LogClass {
 				mFHandler.setFormatter(new SimpleFormatter() {
 					@Override
 					public String format(LogRecord record) {
-						return super.format(record) + "\r\n";
+						return super.format(record) + System.getProperty("line.separator");
 					}
 				});
 				mFHandler.setLevel(Level.ALL);
@@ -111,7 +111,12 @@ public class LogClass {
 		}
 
 		mCHandler = new ConsoleHandler();
-		mCHandler.setFormatter(new SimpleFormatter());
+		mCHandler.setFormatter(new SimpleFormatter() {
+			@Override
+			public String format(LogRecord record) {
+				return super.format(record) + System.getProperty("line.separator");
+			}
+		});
 		mCHandler.setLevel(Level.ALL);
 		mLogger.addHandler(mCHandler);
 	}

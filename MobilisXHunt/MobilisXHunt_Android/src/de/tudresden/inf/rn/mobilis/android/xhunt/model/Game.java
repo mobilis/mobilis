@@ -62,7 +62,7 @@ public class Game {
     
     /** The remain player icons and colors for the agents. */
     private CopyOnWriteArrayList<IconColorPair> mAgentsIconColorPairs;
-    
+
     /** The icon and color for mr.x. */
     private IconColorPair mMrXIconColorPair;
     
@@ -250,32 +250,56 @@ public class Game {
 		mRoutemanagement.setMyTickets(bean.getTickets());
 		
 		gamePlayers.clear();		
-		
+
 		// Assign icons and colors to players
-		int iconCounter = 0;
-		for(PlayerSnapshotInfo info : bean.getPlayerSnapshots()){
-			XHuntPlayer player = new XHuntPlayer(info.getPlayerInfo().getJid(), info.getPlayerInfo().getPlayerName(),
-					info.getPlayerInfo().getIsModerator(), info.getPlayerInfo().getIsMrX(), info.getPlayerInfo().getIsReady());
-			
-			player.setCurrentTargetFinal(info.getIsTargetFinal());
-			player.setCurrentTarget(info.getTargetId());
-			player.setReachedTarget(info.getTargetReached());
-			player.setLastStation(info.getLastStationId());
-			
-			if(player.isMrX()){
-				player.setPlayerIconID(mMrXIconColorPair.IconId);
-				player.setPlayerColorID(mMrXIconColorPair.Color);
-			}
-			else{
-				player.setGeoLocation(info.getLocation().getLatitude(), info.getLocation().getLongitude());
+		try {
+			// new Service version with Color Ids contained in PlayerInfo
+			for(PlayerSnapshotInfo info : bean.getPlayerSnapshots()){
+				XHuntPlayer player = new XHuntPlayer(info.getPlayerInfo().getJid(), info.getPlayerInfo().getPlayerName(),
+						info.getPlayerInfo().getIsModerator(), info.getPlayerInfo().getIsMrX(), info.getPlayerInfo().getIsReady());
 				
-				player.setPlayerIconID(mAgentsIconColorPairs.get(iconCounter).IconId);				
-				player.setPlayerColorID(mAgentsIconColorPairs.get(iconCounter).Color);
+				player.setCurrentTargetFinal(info.getIsTargetFinal());
+				player.setCurrentTarget(info.getTargetId());
+				player.setReachedTarget(info.getTargetReached());
+				player.setLastStation(info.getLastStationId());
 				
-				iconCounter++;
+				if(player.isMrX()){
+					player.setPlayerIconID(mMrXIconColorPair.IconId);
+					player.setPlayerColorID(mMrXIconColorPair.Color);
+				}
+				else{
+					player.setGeoLocation(info.getLocation().getLatitude(), info.getLocation().getLongitude());
+					
+					int iconColorId = info.getPlayerInfo().getIconColorID();
+					player.setPlayerIconID(mAgentsIconColorPairs.get(iconColorId).IconId);
+					player.setPlayerColorID(mAgentsIconColorPairs.get(iconColorId).Color);
+				}
+				gamePlayers.put(player.getJid(), player);			
 			}
-			
-			gamePlayers.put(player.getJid(), player);			
+		} catch(Exception e) {
+			// old Service version without Color Ids contained in PlayerInfo
+			int iconCounter = 0;
+			for(PlayerSnapshotInfo info : bean.getPlayerSnapshots()){
+				XHuntPlayer player = new XHuntPlayer(info.getPlayerInfo().getJid(), info.getPlayerInfo().getPlayerName(),
+						info.getPlayerInfo().getIsModerator(), info.getPlayerInfo().getIsMrX(), info.getPlayerInfo().getIsReady());
+				
+				player.setCurrentTargetFinal(info.getIsTargetFinal());
+				player.setCurrentTarget(info.getTargetId());
+				player.setReachedTarget(info.getTargetReached());
+				player.setLastStation(info.getLastStationId());
+				
+				if(player.isMrX()){
+					player.setPlayerIconID(mMrXIconColorPair.IconId);
+					player.setPlayerColorID(mMrXIconColorPair.Color);
+				}
+				else{
+					player.setGeoLocation(info.getLocation().getLatitude(), info.getLocation().getLongitude());
+					player.setPlayerIconID(mAgentsIconColorPairs.get(iconCounter).IconId);				
+					player.setPlayerColorID(mAgentsIconColorPairs.get(iconCounter).Color);
+					iconCounter++;
+				}
+				gamePlayers.put(player.getJid(), player);			
+			}
 		}
 	}
 	
@@ -409,27 +433,52 @@ public class Game {
 			
 		gamePlayers.clear();
 		
-		int iconCounter = 0;
-		for(PlayerInfo info : playerInfos){
-			if( !gamePlayers.containsKey(info.getJid()) ){
-				XHuntPlayer player = new XHuntPlayer(info.getJid(), info.getPlayerName(),
-						info.getIsModerator(), info.getIsMrX(), info.getIsReady());
-				
-				if(player.isMrX()){
-					player.setPlayerIconID(mMrXIconColorPair.IconId);
-					player.setPlayerColorID(mMrXIconColorPair.Color);
-				}
-				else{
-					player.setPlayerIconID(mAgentsIconColorPairs.get(iconCounter).IconId);				
-					player.setPlayerColorID(mAgentsIconColorPairs.get(iconCounter).Color);
-					
-					iconCounter++;
-				}
-				
-				gamePlayers.put(player.getJid(), player);		
-			}
-		}
 		
+		try{
+			for(PlayerInfo info : playerInfos){
+				if( !gamePlayers.containsKey(info.getJid()) ){
+					XHuntPlayer player = new XHuntPlayer(info.getJid(), info.getPlayerName(),
+							info.getIsModerator(), info.getIsMrX(), info.getIsReady());
+				
+					if(player.isMrX()){
+						player.setPlayerIconID(mMrXIconColorPair.IconId);
+						player.setPlayerColorID(mMrXIconColorPair.Color);
+					}
+					else{
+						int iconColorId = info.getIconColorID();
+						player.setPlayerIconID(mAgentsIconColorPairs.get(iconColorId).IconId);
+						player.setPlayerColorID(mAgentsIconColorPairs.get(iconColorId).Color);
+					}		
+					gamePlayers.put(player.getJid(), player);		
+				}
+			}
+			
+			Log.i("Game", "PlayerInfos contained color IDs (new Service version)");
+			
+		} catch(Exception e) {
+			int iconCounter = 0;
+			for(PlayerInfo info : playerInfos){
+				if( !gamePlayers.containsKey(info.getJid()) ){
+					XHuntPlayer player = new XHuntPlayer(info.getJid(), info.getPlayerName(),
+							info.getIsModerator(), info.getIsMrX(), info.getIsReady());
+				
+					if(player.isMrX()){
+						player.setPlayerIconID(mMrXIconColorPair.IconId);
+						player.setPlayerColorID(mMrXIconColorPair.Color);
+					}
+					else{
+						player.setPlayerIconID(mAgentsIconColorPairs.get(iconCounter).IconId);				
+						player.setPlayerColorID(mAgentsIconColorPairs.get(iconCounter).Color);		
+						iconCounter++;
+					}
+					
+					gamePlayers.put(player.getJid(), player);		
+				}
+			}
+			
+			Log.w(getClass().getName(), "PlayerInfos didn't contain color IDs (old Service version)", e);
+		}
+
 		return true;
 	}
 	

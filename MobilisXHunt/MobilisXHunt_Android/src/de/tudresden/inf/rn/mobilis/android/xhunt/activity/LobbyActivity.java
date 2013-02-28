@@ -576,12 +576,9 @@ public class LobbyActivity extends Activity {
 		ImageView icon = new ImageView(LobbyActivity.this);
 
 		// If player is ready, use normal icon, else set an opacity
-		if (player.isReady()) {
-			icon.setImageResource(player.getPlayerIconID());
-		} else {
-			icon.setImageResource(player.getPlayerIconID());
+		icon.setImageResource(player.getPlayerIconID());
+		if (!player.isReady())
 			icon.setAlpha(150);
-		}
 		icon.setPadding(3, 0, 0, 10);
 
 		// Define name of player
@@ -747,7 +744,8 @@ public class LobbyActivity extends Activity {
 								mMxaProxy.getIQProxy().getGameServiceJid(),
 								new PlayerInfo(player.getJid(), player
 										.getName(), player.isModerator(), true,
-										player.isReady()),
+										player.isReady(),
+										player.getPlayerIconID()),
 								_updatePlayerCallback);
 			} else {
 				Toast.makeText(LobbyActivity.this, "You're already Mr.X",
@@ -1052,9 +1050,13 @@ public class LobbyActivity extends Activity {
 				.getProxy()
 				.UpdatePlayer(
 						mMxaProxy.getIQProxy().getGameServiceJid(),
-						new PlayerInfo(player.getJid(), player.getName(),
-								player.isModerator(), player.isMrX(), player
-										.isReady()), _updatePlayerCallback);
+						new PlayerInfo(player.getJid(),
+								player.getName(),
+								player.isModerator(),
+								player.isMrX(),
+								player.isReady(),
+								player.getPlayerIconID()),
+						_updatePlayerCallback);
 	}
 
 	/**
