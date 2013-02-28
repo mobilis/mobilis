@@ -233,7 +233,7 @@ public class PlayerIconOverlay extends ItemizedOverlay<OverlayItem> {
 		super.draw(canvas, mapView, shadow);
 		
 		// some parameters
-		int fontSize = 12;
+		int fontSize = 18;
 		int titleMargin = 3;
 		
 		// calculate height of player icon
