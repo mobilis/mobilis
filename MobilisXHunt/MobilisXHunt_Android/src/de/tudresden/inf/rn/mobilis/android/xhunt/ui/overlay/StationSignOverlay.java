@@ -22,6 +22,7 @@ package de.tudresden.inf.rn.mobilis.android.xhunt.ui.overlay;
 import java.util.ArrayList;
 
 import android.graphics.drawable.Drawable;
+import android.util.SparseArray;
 import android.widget.Toast;
 
 import com.google.android.maps.ItemizedOverlay;
@@ -37,6 +38,9 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.model.Station;
  */
 public class StationSignOverlay extends ItemizedOverlay<OverlayItem> {
 
+	private SparseArray<Drawable> stationDrawables = new SparseArray<Drawable>(5);
+	private SparseArray<Drawable> reachableStationDrawables = new SparseArray<Drawable>(5);
+	
 	/** The station overlays. */
 	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
 	
@@ -59,6 +63,19 @@ public class StationSignOverlay extends ItemizedOverlay<OverlayItem> {
 		
 		this.stations=stations;
 		this.mMapActivity=mapActivity;
+		
+		// create station drawables and cache them
+		stationDrawables.append(13, mMapActivity.getResources().getDrawable(R.drawable.station_10px));
+		reachableStationDrawables.append(13, mMapActivity.getResources().getDrawable(R.drawable.station_green_10px));
+		stationDrawables.append(14, mMapActivity.getResources().getDrawable(R.drawable.station_20px));
+		reachableStationDrawables.append(14, mMapActivity.getResources().getDrawable(R.drawable.station_green_20px));
+		stationDrawables.append(15, mMapActivity.getResources().getDrawable(R.drawable.station_30px));
+		reachableStationDrawables.append(15, mMapActivity.getResources().getDrawable(R.drawable.station_green_30px));
+		stationDrawables.append(16, mMapActivity.getResources().getDrawable(R.drawable.station_40px));
+		reachableStationDrawables.append(16, mMapActivity.getResources().getDrawable(R.drawable.station_green_40px));
+		stationDrawables.append(17, mMapActivity.getResources().getDrawable(R.drawable.station_50px));
+		reachableStationDrawables.append(17, mMapActivity.getResources().getDrawable(R.drawable.station_green_50px));
+		
 		update();
 	}
 
@@ -128,24 +145,14 @@ public class StationSignOverlay extends ItemizedOverlay<OverlayItem> {
 		mOverlays.clear();
 		
 		int zoomLevel = mMapActivity.getCurrentZoomLevel();
-		Drawable d_normal, d_reachable;	
-		
-		// Set the Markers according to the zoom level
-		d_normal    = mMapActivity.getResources().getDrawable(R.drawable.station_10px);
-		d_reachable = mMapActivity.getResources().getDrawable(R.drawable.station_green_10px);
-		if (zoomLevel==14) {
-			d_normal=mMapActivity.getResources().getDrawable(R.drawable.station_20px);
-			d_reachable = mMapActivity.getResources().getDrawable(R.drawable.station_green_20px);
-		} else if (zoomLevel==15) {
-			d_normal=mMapActivity.getResources().getDrawable(R.drawable.station_30px);
-			d_reachable = mMapActivity.getResources().getDrawable(R.drawable.station_green_30px);
-		} else if (zoomLevel==16) {
-			d_normal=mMapActivity.getResources().getDrawable(R.drawable.station_40px);
-			d_reachable = mMapActivity.getResources().getDrawable(R.drawable.station_green_40px);			
-		} else if (zoomLevel>16) {
-			d_normal=mMapActivity.getResources().getDrawable(R.drawable.station_50px);
-			d_reachable = mMapActivity.getResources().getDrawable(R.drawable.station_green_50px);
+		int zoomLevelDrawable = zoomLevel;
+		if (zoomLevel < 14) {
+			zoomLevelDrawable = 13;
+		} else if (zoomLevel > 16) {
+			zoomLevelDrawable = 17;
 		}
+		Drawable d_normal = stationDrawables.get(zoomLevelDrawable);
+		Drawable d_reachable = reachableStationDrawables.get(zoomLevelDrawable);
 		
 		// Iterates thru all stations and creates an overlayitem
 		OverlayItem overlayitem;

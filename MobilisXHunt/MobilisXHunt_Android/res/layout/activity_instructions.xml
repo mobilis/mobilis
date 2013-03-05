@@ -27,6 +27,7 @@
    <TextView
         android:id="@+id/instructions_tv_text"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:textIsSelectable="false"/>
   
 </LinearLayout>

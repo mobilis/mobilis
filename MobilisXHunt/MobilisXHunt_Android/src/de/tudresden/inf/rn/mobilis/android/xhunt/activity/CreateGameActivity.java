@@ -120,7 +120,6 @@ public class CreateGameActivity extends PreferenceActivity {
 	
 	
     /* The handler for the AreasBean shows a dialog to choose an area.
-     * App doesn't need an Area Request any more, but the Server still expect it.
      */
     private Handler mAreasHandler = new Handler() {
 		/*@Override

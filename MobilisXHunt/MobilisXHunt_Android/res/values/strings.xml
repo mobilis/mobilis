@@ -67,7 +67,7 @@
     <string name="newgame_summary_rounds"></string>
     <string name="newgame_summary_starttimer"></string>
     <string name="settings_btn_mxa_title">MXA Settings</string>
-    <string name="settings_btn_ok_title">Ok</string>
+    <string name="settings_btn_ok_title">OK</string>
     <string name="settings_dialog_title_serverjid">Server Coordinator Jid:</string>
     <string name="settings_dialog_title_username">Your Name:</string>
     <string name="settings_edit_title_serverjid">Server Coordinator Jid</string>

@@ -19,6 +19,7 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.android.xhunt.helper;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -42,6 +43,7 @@ public class SharedPrefHelper {
 	 *
 	 * @param context the context of the application
 	 */
+	@SuppressLint("CommitPrefEdits")
 	public SharedPrefHelper(Context context) {
 		prefs = context.getSharedPreferences( Const.SHARED_PREF_KEY_FILE_NAME, Context.MODE_PRIVATE);
 		editor = prefs.edit();

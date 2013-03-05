@@ -20,16 +20,17 @@
 /**
  * A 'Route' represents a bus-, tram- or railway-route in reality.
  * It consists of different stations, a start station and an end station.
- * @author Fanny, Robert
+ * @author Fanny, Robert, Sven
  */
 
 package de.tudresden.inf.rn.mobilis.android.xhunt.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
 
 import android.graphics.Paint;
+import android.util.Log;
+import android.util.SparseArray;
 
 /**
  * The Class Route represents a connection between two or more stations.
@@ -51,18 +52,20 @@ public class Route {
 	/** The name of the end direction of the route. */
 	private String endName;
 	
-	/** The stations which belongs to this route 
-	 * (position(from start to end), stationId). */
-	private Map<Integer, Integer> stationIds;
+	/** The stations which belong to this route 
+	 * linked in the order they are situated along the route. */
+	private LinkedList<Integer> stationIds;
 	
 	/** The paint for this route to display it on the map. */
 	private Paint pathPaint;
+	
+	private SparseArray<float[]> pathsForZoomlevels = new SparseArray<float[]>(10);
 	
 	/**
 	 * Instantiates a new Route.
 	 */
 	public Route() {
-		this.stationIds = new HashMap<Integer, Integer>();
+		this.stationIds = new LinkedList<Integer>();
 		
 		// Default values for a route paint
 		this.pathPaint = new Paint();
@@ -86,7 +89,7 @@ public class Route {
 		this.ticketId = ticketId;
 		this.startName = start;
 		this.endName = end;
-		this.stationIds = new HashMap<Integer, Integer>();
+		this.stationIds = new LinkedList<Integer>();
 		
 		this.pathPaint = pathpaint;
 		this.pathPaint.setStrokeWidth(3);
@@ -102,7 +105,7 @@ public class Route {
 	 * @return true, if successful
 	 */
 	public void addStation(int position, Station station){
-		stationIds.put(position, station.getId());
+		stationIds.add(position, station.getId());
 	}
 	
 	/**
@@ -112,7 +115,7 @@ public class Route {
 	 * @param stationId the id of the station
 	 */
 	public void addStation(int position, int stationId){
-		stationIds.put(position, stationId);
+		stationIds.add(position, stationId);
 	}
 	
 	/**
@@ -122,12 +125,7 @@ public class Route {
 	 * @return true, if station belongs to the route
 	 */
 	public boolean containsStation(int cmpStationId){
-		for(int stationId : stationIds.values()){
-			if(stationId == cmpStationId )
-				return true;
-		}
-		
-		return false;
+		return stationIds.contains(cmpStationId);
 	}
 	
 	/**
@@ -164,10 +162,7 @@ public class Route {
 	 * @return the position of a station
 	 */
 	public Integer getPositionOfStation(int stationId){
-		for (Integer position : stationIds.keySet()){
-			if (stationIds.get(position).equals(stationId)) return position;
-		}
-		return -1;
+		return stationIds.indexOf(stationId);
 	}
 	
 	/**
@@ -194,7 +189,7 @@ public class Route {
 	 * 
 	 * @return the stations
 	 */
-	public Map<Integer, Integer> getStationIds() {
+	public LinkedList<Integer> getStationIds() {
 		return stationIds;
 	}
 
@@ -257,7 +252,7 @@ public class Route {
 	 * 
 	 * @param stops the stations of this route
 	 */
-	public void setStations(Map<Integer, Integer> stops) {
+	public void setStations(LinkedList<Integer> stops) {
 		this.stationIds = stops;
 	}
 	
@@ -288,15 +283,9 @@ public class Route {
 	public ArrayList<Integer> getNextStationIds(int stationId){
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		
-		if (!stationIds.containsValue(stationId)) return list;
+		if (!this.containsStation(stationId)) return list;
 		
-		int position=-1;		
-		for (int pos : stationIds.keySet()){
-			if (stationIds.get(pos).equals(stationId)) {
-				position=pos;
-				break;
-			}
-		}
+		int position = this.getPositionOfStation(stationId);
 		
 		// Return an empty list, if station was not found in the HashMap.
 		if (position==-1) return list;
@@ -334,12 +323,28 @@ public class Route {
 	public String toString() {
 		String stations = "";
 		
-		for(Map.Entry<Integer, Integer> s : stationIds.entrySet()){
-			stations += " " + s.getKey() + ";" + s.getValue();
+		int i = 0;
+		for (int stationId : stationIds) {
+			stations += " " + i + ";" + stationId;
 		}
 		
 		return "Route [id=" + id + ", name=" + name + ", ticketId=" + ticketId
 				+ ", startName=" + startName + ", endName=" + endName
 				+ ", stationIds=" + stations + "]";
+	}
+
+	public float[] getPathForZoomlevel(int zoomlevel) {
+		Log.i("############", "Zoomlevel get:" + zoomlevel);
+		float[] path = pathsForZoomlevels.get(zoomlevel);
+		if (path != null) {
+			return path.clone();
+		} else {
+			return null;
+		}
+	}
+
+	public void setPathForZoomlevel(float[] path, int zoomlevel) {
+		Log.i("############", "Zoomlevel set:" + zoomlevel);
+		this.pathsForZoomlevels.put(zoomlevel, path.clone());
 	}
 }
