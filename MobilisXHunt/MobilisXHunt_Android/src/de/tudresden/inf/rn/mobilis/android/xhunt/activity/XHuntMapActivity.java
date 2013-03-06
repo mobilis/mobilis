@@ -1194,19 +1194,8 @@ public class XHuntMapActivity extends MapActivity {
 				mExitGameHandler.sendMessage(msg);
 			}
 			else {
-				// If the exit bean is assigned to us act, else ignore
-				/*if(bean.Jid.equals(mMxaProxy.getXmppJid())){
-					// If the type is a RESULT, we send a request before for leaving the game
-					if(bean.getType() == XMPPBean.TYPE_RESULT)
-							mExitGameHandler.sendEmptyMessage(0);
-					// Else the moderator has kicked own player
-					else if(bean.getType() == XMPPBean.TYPE_SET){
-						mExitGameHandler.sendEmptyMessage(1);
-						
-						// Confirm the exit player
-						mMxaProxy.getIQProxy().sendPlayerExitIQResult(bean.getId());
-					}
-				}	*/ //TODO		
+				if(bean.getType() == XMPPBean.TYPE_RESULT)
+					mExitGameHandler.sendEmptyMessage(0);
 			}
 		}
 	};

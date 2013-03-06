@@ -121,6 +121,17 @@ public class MobilisXHuntProxy {
 
 		return out;
 	}
+	
+	public void PlayerExitResponse(String toJid, String packetId) {
+		if ( null == _bindingStub )
+			return;
+		
+		PlayerExitResponse out = new PlayerExitResponse();
+		out.setTo(toJid);
+		out.setId(packetId);
+		
+		_bindingStub.sendXMPPBean(out);
+	}
 
 	public void Players( String toJid, String packetId ) {
 		if ( null == _bindingStub )

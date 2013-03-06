@@ -728,7 +728,7 @@ public class LobbyActivity extends Activity {
 						.getIQProxy()
 						.getProxy()
 						.PlayerExit(mMxaProxy.getIQProxy().getGameServiceJid(),
-								player.getJid(), false, _playerExitCallback);
+								player.getJid(), false, _kickPlayerCallback);
 				result = true;
 			} else {
 				Toast.makeText(LobbyActivity.this, "Nice try :-)",
@@ -1166,18 +1166,17 @@ public class LobbyActivity extends Activity {
 				msg.obj = bean.errorText;
 				mExitGameHandler.sendMessage(msg);
 			} else {
-				// If the exit iq is assigned to us act, else ignore
-				/*
-				 * if(bean.get.equals(mMxaProxy.getXmppJid())){ // If the type
-				 * is a RESULT, we send a request before for leaving the game
-				 * if(bean.getType() == XMPPBean.TYPE_RESULT)
-				 * mExitGameHandler.sendEmptyMessage(0); // Else the moderator
-				 * has kicked us else if(bean.getType() == XMPPBean.TYPE_SET){
-				 * mExitGameHandler.sendEmptyMessage(1);
-				 * mMxaProxy.getIQProxy().sendPlayerExitIQResult(bean.getId());
-				 * } }
-				 */// TODO
+				if(bean.getType() == XMPPBean.TYPE_RESULT)
+					mExitGameHandler.sendEmptyMessage(0);
 			}
+		}
+	};
+	
+	private IXMPPCallback<PlayerExitResponse> _kickPlayerCallback = new IXMPPCallback<PlayerExitResponse>() {
+
+		@Override
+		public void invoke(PlayerExitResponse bean) {
+			// do nothing
 		}
 	};
 
