@@ -75,6 +75,7 @@ public class XHuntPlayer {
 		
 		str += "jid: " + jid;
 		str += " name: " + name;
+		str += " colorID: " + playerColor;
 		str += "\n";
 		str += "isMod: " + isModerator();
 		str += " isMr.X: " + isMrx();

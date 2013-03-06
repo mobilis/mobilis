@@ -199,7 +199,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 		// delete ID from mOccupiedColorIDs if corresponding Player left Game
 		for(Map.Entry<Integer, String> entry : mOccupiedColorIDs.entrySet()) {
 			if(!game.getPlayers().containsKey(entry.getValue()))
-				mOccupiedColorIDs.remove(entry);
+				mOccupiedColorIDs.remove(entry.getKey());
 		}
 		
 		// find lowest ID which is not occupied
@@ -210,7 +210,6 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 		
 		// remember this Color ID as occupied
 		mOccupiedColorIDs.put(clrId, playerJID);
-		
 		return clrId;
 	}
 
