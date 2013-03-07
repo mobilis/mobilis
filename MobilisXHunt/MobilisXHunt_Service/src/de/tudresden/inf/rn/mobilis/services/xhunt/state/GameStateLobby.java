@@ -520,6 +520,11 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 						game.clearMrXStatus();
 						updatePlayer.setMrx(true);
 						
+						// exchange icon and path colors
+						fromPlayer.setPlayerIconID(updatePlayer.getPlayerIconID());
+						fromPlayer.setPlayerColorID(updatePlayer.getPlayerColorID());
+						updatePlayer.setPlayerIconID(-1);
+						updatePlayer.setPlayerColorID(-1);
 						statusChanged = true;
 						updateInfo = "Player " + updatePlayer.getName() 
 							+ " is now Mr.X";
