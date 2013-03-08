@@ -12,10 +12,12 @@
         android:icon="@+android:drawable/ic_menu_recent_history"
         android:title="Ticket Info" />
  -->
+ <!--
 	<item
     	android:id="@+id/menu_map_departuremonitor"
         android:icon="@+android:drawable/ic_menu_compass"
         android:title="Departure Monitor" />
+-->
         
 	<item
     	android:id="@+id/menu_map_quit"

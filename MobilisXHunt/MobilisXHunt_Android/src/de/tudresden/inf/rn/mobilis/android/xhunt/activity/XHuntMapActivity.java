@@ -975,19 +975,19 @@ public class XHuntMapActivity extends MapActivity {
 			return true;
 			*/
  			
-		// Menu 'departure monitor' was tapped
-		case R.id.menu_map_departuremonitor:
-			// Start loading dialog
-			mRemoteLoadingDialog.setLoadingText("Requesting departure data.\n\n     Please wait...");
-			mRemoteLoadingDialog.run();
-			
-			// Request departures from server
-			mMxaProxy.getIQProxy().getProxy().DeprtureData( 
-					mMxaProxy.getIQProxy().getGameServiceJid(), 
-					getMyPlayer().getLastStationId(),
-					_departureDataCallback );
-			
-			return true;
+//		// Menu 'departure monitor' was tapped
+//		case R.id.menu_map_departuremonitor:
+//			// Start loading dialog
+//			mRemoteLoadingDialog.setLoadingText("Requesting departure data.\n\n     Please wait...");
+//			mRemoteLoadingDialog.run();
+//			
+//			// Request departures from server
+//			mMxaProxy.getIQProxy().getProxy().DeprtureData( 
+//					mMxaProxy.getIQProxy().getGameServiceJid(), 
+//					getMyPlayer().getLastStationId(),
+//					_departureDataCallback );
+//			
+//			return true;
 		// Menu 'quit game' was tapped
 		case R.id.menu_map_quit:
 			// Open an exit dialog
