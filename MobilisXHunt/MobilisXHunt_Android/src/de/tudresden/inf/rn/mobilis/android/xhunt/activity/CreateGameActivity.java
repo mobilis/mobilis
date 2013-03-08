@@ -602,24 +602,30 @@ public class CreateGameActivity extends PreferenceActivity {
 	 * A summary displays the current value of a preference.
 	 */
 	private void updateSummaries(){
-		mEditMaxPlayers.setSummary(mSharedPrefHelper.getValue(mEditMaxPlayers.getKey()));
-		mEditMinPlayers.setSummary(mSharedPrefHelper.getValue(mEditMinPlayers.getKey()));
-		mEditRounds.setSummary(mSharedPrefHelper.getValue(mEditRounds.getKey()));
-		mEditStartTimer.setSummary(mSharedPrefHelper.getValue(mEditStartTimer.getKey()));
-
-		String startTimerVal = mSharedPrefHelper.getValue(getKeyStartTimer());
-		
-		if(startTimerVal != null){
-			try{
-				mEditStartTimer.setSummary((Integer.valueOf(startTimerVal) / 1000) + "sec");
+		if (mEditMaxPlayers != null)
+			mEditMaxPlayers.setSummary(mSharedPrefHelper.getValue(mEditMaxPlayers.getKey()));
+		if (mEditMinPlayers != null)
+			mEditMinPlayers.setSummary(mSharedPrefHelper.getValue(mEditMinPlayers.getKey()));
+		if (mEditRounds != null)
+			mEditRounds.setSummary(mSharedPrefHelper.getValue(mEditRounds.getKey()));
+		if (mEditStartTimer != null) {
+			mEditStartTimer.setSummary(mSharedPrefHelper.getValue(mEditStartTimer.getKey()));
+			
+			String startTimerVal = mSharedPrefHelper.getValue(getKeyStartTimer());
+			
+			if(startTimerVal != null){
+				try{
+					mEditStartTimer.setSummary((Integer.valueOf(startTimerVal) / 1000) + "sec");
+				}
+				catch (NumberFormatException e){
+					mEditStartTimer.setSummary(startTimerVal);
+				}
 			}
-			catch (NumberFormatException e){
+			else{
 				mEditStartTimer.setSummary(startTimerVal);
-			}
+			}	
+			
 		}
-		else{
-			mEditStartTimer.setSummary(startTimerVal);
-		}	
 	}
 	
 	/*
