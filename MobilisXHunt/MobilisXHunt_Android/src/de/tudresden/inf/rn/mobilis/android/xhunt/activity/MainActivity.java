@@ -309,7 +309,7 @@ public class MainActivity extends Activity {
 		mMxaProxy.setNickname(mServiceConnector.getXHuntService().getSharedPrefHelper()
 				.getValue(getResources().getString(R.string.bundle_key_settings_username)));
 		
-		mMxaProxy.getIQProxy().sendServiceDiscoveryIQ(null);
+		mMxaProxy.getIQProxy().sendServiceDiscoveryIQ(Const.SERVICE_NAMESPACE);
     }
     
     /**

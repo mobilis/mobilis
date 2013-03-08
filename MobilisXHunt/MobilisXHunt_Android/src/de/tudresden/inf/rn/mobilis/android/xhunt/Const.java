@@ -24,6 +24,9 @@ package de.tudresden.inf.rn.mobilis.android.xhunt;
  */
 public class Const {
 	
+	/** The namespace of the XHunt Service. */
+	public static final String SERVICE_NAMESPACE					= "http://mobilis.inf.tu-dresden.de#services/MobilisXHuntService";
+	
 	/** The Constant MAP_ACTIVITY_ID. */
 	public static final int MAP_ACTIVITY_ID							= 9003;
 	

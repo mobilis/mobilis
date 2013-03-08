@@ -226,7 +226,7 @@ public class CreateGameActivity extends PreferenceActivity {
 			minplayers = Integer.valueOf(mSharedPrefHelper.getValue(getKeyMinPlayers()));
 			maxplayers = Integer.valueOf(mSharedPrefHelper.getValue(getKeyMaxPlayers()));
 		}
-		catch(Exception e) { System.out.println(e.getMessage()); }
+		catch(Exception e) { Log.e(this.getClass().toString(), e.getMessage()); }
 		
 		List<TicketAmount> ticketsMrX = new ArrayList<TicketAmount>();
 		List<TicketAmount> ticketsAgents = new ArrayList<TicketAmount>();
@@ -238,7 +238,7 @@ public class CreateGameActivity extends PreferenceActivity {
 				//amount = Integer.valueOf(mSharedPrefHelper.getValue(entry.getValue().getKey()));
 				amount = mSharedPrefHelper.getValueAsInt(entry.getValue().getKey());
 			}
-			catch(Exception e) { System.out.println(e.getMessage()); }
+			catch(Exception e) { Log.e(this.getClass().toString(), e.getMessage()); }
 
 			if(amount > 0)
 				ticketsMrX.add(new TicketAmount(entry.getKey(), amount));
@@ -250,7 +250,7 @@ public class CreateGameActivity extends PreferenceActivity {
 			try{
 				amount = mSharedPrefHelper.getValueAsInt(entry.getValue().getKey());
 			}
-			catch(NumberFormatException e){ System.out.println(e.getMessage()); }
+			catch(NumberFormatException e){ Log.e(this.getClass().toString(), e.getMessage()); }
 			
 			if(amount > 0)
 				ticketsAgents.add( new TicketAmount(entry.getKey(), amount));

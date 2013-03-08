@@ -130,14 +130,12 @@ public class IQProxy {
 	private IMobilisXHuntOutgoing _proxyOutgoingMapper = new IMobilisXHuntOutgoing() {
 		
 		@Override
-		public void sendXMPPBean( XMPPBean out ) {			
+		public void sendXMPPBean( XMPPBean out ) {
 			mMXAProxy.sendIQ(beanToIQ( out, true ));
 		}
 		
 		@Override
-		public void sendXMPPBean(
-				XMPPBean out,
-				IXMPPCallback< ? extends XMPPBean > callback ) {
+		public void sendXMPPBean( XMPPBean out, IXMPPCallback< ? extends XMPPBean > callback ) {
 			_waitingCallbacks.put( out.getId(), callback );
 			mMXAProxy.sendIQ(beanToIQ( out, true ));
 		}
@@ -508,8 +506,7 @@ public class IQProxy {
 	 * @param serviceName the service name
 	 * @param servicePassword the service password
 	 */
-	public void sendCreateNewServiceInstanceIQ(String serviceNamespace,
-			String serviceName, String servicePassword){
+	public void sendCreateNewServiceInstanceIQ(String serviceNamespace, String serviceName, String servicePassword){
 		CreateNewServiceInstanceBean bean = 
 			new CreateNewServiceInstanceBean(serviceNamespace, servicePassword);
 		bean.setServiceName(serviceName);

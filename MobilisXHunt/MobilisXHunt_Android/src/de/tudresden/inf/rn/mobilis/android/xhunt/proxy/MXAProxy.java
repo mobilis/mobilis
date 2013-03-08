@@ -477,7 +477,7 @@ public class MXAProxy implements MXAListener {
 			// Cache the IQ to resend it, if connection is lost
 			Log.v(TAG, ">>>>>>cached iq: " + xmppIq.packetID);
 			mIqCache.put(xmppIq.packetID, xmppIq);
-
+			
 			// if connection is up, send all IQs waiting in cache
 			if (this.isConnected()) {
 				this.sendIQsFromCache();

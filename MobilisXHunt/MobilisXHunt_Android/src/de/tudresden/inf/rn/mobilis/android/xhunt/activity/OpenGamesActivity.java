@@ -179,7 +179,7 @@ public class OpenGamesActivity extends Activity {
 			mOpenGamesListAdapter.List.clear();
     	
 		// Send a ServiceDiscovery to the Mobilis-Server an asking for all running XHunt-Services
-    	mMxaProxy.getIQProxy().sendServiceDiscoveryIQ("http://mobilis.inf.tu-dresden.de#services/MobilisXHuntService");
+    	mMxaProxy.getIQProxy().sendServiceDiscoveryIQ(Const.SERVICE_NAMESPACE);
     }
 	
 	/* (non-Javadoc)
