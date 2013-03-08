@@ -102,6 +102,8 @@ public class MXAProxy implements MXAListener {
 		}
 	};
 
+	private String cachedJid;
+
 	/**
 	 * Instantiates a new MXAProxy.
 	 * 
@@ -263,15 +265,15 @@ public class MXAProxy implements MXAListener {
 	 * @return the own XMPP jid
 	 */
 	public String getXmppJid() {
-		String jid = "";
-
 		try {
-			if (this.isConnected())
-				jid = iXMPPService.getUsername();
+			if (this.isConnected()) {
+				return iXMPPService.getUsername();
+			} else {
+				return cachedJid;
+			}
 		} catch (RemoteException e) {
+			return cachedJid;
 		}
-
-		return jid;
 	}
 
 	/**
@@ -542,6 +544,8 @@ public class MXAProxy implements MXAListener {
 		public void handleMessage(Message msg) {
 			try {
 				if (iXMPPService != null && iXMPPService.isConnected()) {
+					cachedJid = iXMPPService.getUsername();
+					
 					for (int i = 0; i < xmppConnectHandlers.size(); i++) {
 						xmppConnectHandlers.get(i).sendEmptyMessage(0);
 					}

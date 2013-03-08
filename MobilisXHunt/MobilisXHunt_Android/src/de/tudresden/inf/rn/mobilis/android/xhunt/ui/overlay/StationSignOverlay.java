@@ -21,6 +21,8 @@ package de.tudresden.inf.rn.mobilis.android.xhunt.ui.overlay;
 
 import java.util.ArrayList;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.widget.Toast;
@@ -65,14 +67,20 @@ public class StationSignOverlay extends ItemizedOverlay<OverlayItem> {
 		this.mMapActivity=mapActivity;
 		
 		// create station drawables and cache them
-		stationDrawables.append(13, mMapActivity.getResources().getDrawable(R.drawable.station_10px));
-		reachableStationDrawables.append(13, mMapActivity.getResources().getDrawable(R.drawable.station_green_10px));
-		stationDrawables.append(14, mMapActivity.getResources().getDrawable(R.drawable.station_20px));
-		reachableStationDrawables.append(14, mMapActivity.getResources().getDrawable(R.drawable.station_green_20px));
-		stationDrawables.append(15, mMapActivity.getResources().getDrawable(R.drawable.station_30px));
-		reachableStationDrawables.append(15, mMapActivity.getResources().getDrawable(R.drawable.station_green_30px));
-		stationDrawables.append(16, mMapActivity.getResources().getDrawable(R.drawable.station_40px));
-		reachableStationDrawables.append(16, mMapActivity.getResources().getDrawable(R.drawable.station_green_40px));
+		Drawable unscaledStationDrawable = mMapActivity.getResources().getDrawable(R.drawable.station_50px);
+		Bitmap stationBitmap = ((BitmapDrawable) unscaledStationDrawable).getBitmap();
+		Drawable unscaledGreenStationDrawable = mMapActivity.getResources().getDrawable(R.drawable.station_green_50px);
+		Bitmap greenStationBitmap = ((BitmapDrawable) unscaledGreenStationDrawable).getBitmap();
+		
+		
+		stationDrawables.append(13, new BitmapDrawable(mMapActivity.getResources(), Bitmap.createScaledBitmap(stationBitmap, 10, 10, true)));
+		reachableStationDrawables.append(13, new BitmapDrawable(mMapActivity.getResources(), Bitmap.createScaledBitmap(greenStationBitmap, 10, 10, true)));
+		stationDrawables.append(14, new BitmapDrawable(mMapActivity.getResources(), Bitmap.createScaledBitmap(stationBitmap, 20, 20, true)));
+		reachableStationDrawables.append(14, new BitmapDrawable(mMapActivity.getResources(), Bitmap.createScaledBitmap(greenStationBitmap, 20, 20, true)));
+		stationDrawables.append(15, new BitmapDrawable(mMapActivity.getResources(), Bitmap.createScaledBitmap(stationBitmap, 30, 30, true)));
+		reachableStationDrawables.append(15, new BitmapDrawable(mMapActivity.getResources(), Bitmap.createScaledBitmap(greenStationBitmap, 30, 30, true)));
+		stationDrawables.append(16, new BitmapDrawable(mMapActivity.getResources(), Bitmap.createScaledBitmap(stationBitmap, 40, 40, true)));
+		reachableStationDrawables.append(16, new BitmapDrawable(mMapActivity.getResources(), Bitmap.createScaledBitmap(greenStationBitmap, 40, 40, true)));
 		stationDrawables.append(17, mMapActivity.getResources().getDrawable(R.drawable.station_50px));
 		reachableStationDrawables.append(17, mMapActivity.getResources().getDrawable(R.drawable.station_green_50px));
 		

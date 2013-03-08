@@ -284,8 +284,13 @@ public class SettingsActivity extends PreferenceActivity
 	 * A summary displays the current value of a preference.
 	 */
 	private void updateSummaries(){
-		mEditNickname.setSummary(getSharedPrefValue(getKeyNickname()));
-		mEditServerJID.setSummary(getSharedPrefValue(getKeyServerJid()));
+		if (mEditNickname != null) {
+			mEditNickname.setSummary(getSharedPrefValue(getKeyNickname()));
+		}
+		
+		if (mEditServerJID != null) {
+			mEditServerJID.setSummary(getSharedPrefValue(getKeyServerJid()));
+		}
 	}
 
 }
