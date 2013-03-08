@@ -480,8 +480,13 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 					fromPlayer.setReady(true);
 					
 					updatePlayers = true;
-					updateInfo = "Player " + fromPlayer.getName() 
-						+ " has changed status ready to " + fromPlayer.isReady();
+					if (fromPlayer.isReady()) {
+						updateInfo = "Player " + fromPlayer.getName() 
+								+ " is ready now. ";
+					} else {
+						updateInfo = "Player " + fromPlayer.getName() 
+								+ " is not ready. ";
+					}
 				}
 				else {
 					out = inBean.buildPermissionFault( "You can only change your ready status." );
@@ -498,8 +503,13 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 					
 					// Set ready status of player
 					updatePlayer.setReady(inBean.getPlayerInfo().getIsReady());
-					updateInfo = "Player " + updatePlayer.getName() 
-						+ " has changed status ready to " + updatePlayer.isReady();
+					if (fromPlayer.isReady()) {
+						updateInfo = "Player " + fromPlayer.getName() 
+								+ " is ready now. ";
+					} else {
+						updateInfo = "Player " + fromPlayer.getName() 
+								+ " is not ready. ";
+					}
 					
 					// Set moderator status for player
 					if(inBean.getPlayerInfo().getIsModerator()
