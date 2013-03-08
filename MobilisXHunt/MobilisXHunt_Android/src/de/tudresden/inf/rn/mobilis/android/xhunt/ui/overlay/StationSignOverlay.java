@@ -81,8 +81,8 @@ public class StationSignOverlay extends ItemizedOverlay<OverlayItem> {
 		reachableStationDrawables.append(15, new BitmapDrawable(mMapActivity.getResources(), Bitmap.createScaledBitmap(greenStationBitmap, 30, 30, true)));
 		stationDrawables.append(16, new BitmapDrawable(mMapActivity.getResources(), Bitmap.createScaledBitmap(stationBitmap, 40, 40, true)));
 		reachableStationDrawables.append(16, new BitmapDrawable(mMapActivity.getResources(), Bitmap.createScaledBitmap(greenStationBitmap, 40, 40, true)));
-		stationDrawables.append(17, mMapActivity.getResources().getDrawable(R.drawable.station_50px));
-		reachableStationDrawables.append(17, mMapActivity.getResources().getDrawable(R.drawable.station_green_50px));
+		stationDrawables.append(17, new BitmapDrawable(mMapActivity.getResources(), Bitmap.createScaledBitmap(stationBitmap, 50, 50, true)));
+		reachableStationDrawables.append(17, new BitmapDrawable(mMapActivity.getResources(), Bitmap.createScaledBitmap(greenStationBitmap, 50, 50, true)));
 		
 		update();
 	}
@@ -146,10 +146,29 @@ public class StationSignOverlay extends ItemizedOverlay<OverlayItem> {
 		return true;		
 	}
 	
+//	@Override
+//	public boolean onTouchEvent(MotionEvent event, MapView map) {
+//		scaleGestureDetector.onTouchEvent(event);
+//		return super.onTouchEvent(event, map);
+//	}
+//	
+//	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+//	    @Override
+//	    public void onScaleEnd(ScaleGestureDetector detector) {
+//	    	Log.i("###############", "gesture detector zoom level: " + mMapActivity.getCurrentZoomLevel());
+//	    	update();
+//	    	
+//	    	mMapActivity.invalidateMapView();
+//	    	super.onScaleEnd(detector);
+//	    }
+//	}
+	
 	/**
 	 * Update the station overlays.
 	 */
 	public void update(){
+//		Log.i("###############", "update zoom level: " + mMapActivity.getCurrentZoomLevel());
+		
 		mOverlays.clear();
 		
 		int zoomLevel = mMapActivity.getCurrentZoomLevel();

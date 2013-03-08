@@ -45,6 +45,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Toast;
 import android.widget.ZoomButtonsController;
@@ -90,6 +91,7 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.ui.overlay.PlayerIconOverlay;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.overlay.RoutesOverlay;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.overlay.StationSignOverlay;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.overlay.TargetRouteOverlay;
+import de.tudresden.inf.rn.mobilis.android.xhunt.ui.overlay.TouchOverlay;
 import de.tudresden.inf.rn.mobilis.mxa.parcelable.XMPPIQ;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
@@ -543,6 +545,11 @@ public class XHuntMapActivity extends MapActivity {
 		return mGame;
 	}
 	
+	public void invalidateMapView() {
+		if (mapView != null)
+			mapView.invalidate();
+	}
+	
     /**
      * Initializes the components.
      */
@@ -612,6 +619,7 @@ public class XHuntMapActivity extends MapActivity {
 		playerOverlay = new PlayerIconOverlay(this, mapView, mServiceConnector.getXHuntService());
 		routeOverlay = new RoutesOverlay(this, mapView, mServiceConnector.getXHuntService());
 		targetRouteOverlay = new TargetRouteOverlay(mServiceConnector.getXHuntService());
+		
 	}
 	
 	/**
@@ -648,7 +656,10 @@ public class XHuntMapActivity extends MapActivity {
 			@Override
 			public void onVisibilityChanged(boolean visible) {}
 		});
+        
 	}
+	
+	
 	
 	/**
 	 * Inits the overlays aka game elements of the map.
@@ -658,6 +669,7 @@ public class XHuntMapActivity extends MapActivity {
 		mapOverlays.add(stationSignOverlay);
 		mapOverlays.add(playerOverlay);
 		mapOverlays.add(targetRouteOverlay);
+		mapOverlays.add(new TouchOverlay(this));
 		
 		mapView.invalidate();
 	}
@@ -1070,7 +1082,7 @@ public class XHuntMapActivity extends MapActivity {
     /**
      * This function will redraw and refresh all map components and it's data
      */
-    private void updateMapData(){
+    public void updateMapData(){
 		try{
 			playerOverlay.updateMrX(mGame.isShowMrX());
 			playerOverlay.updatePlayers();
@@ -1199,7 +1211,6 @@ public class XHuntMapActivity extends MapActivity {
 			}
 		}
 	};
-
 
     /**
      * The Class GameStatePlay represents a state of the game.
