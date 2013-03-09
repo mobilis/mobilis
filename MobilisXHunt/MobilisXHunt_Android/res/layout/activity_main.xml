@@ -21,7 +21,7 @@
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/main_linearLayout"
-	android:layout_width="wrap_content"
+	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:orientation="vertical"
 	android:layout_gravity="center_vertical|center_horizontal" >
@@ -30,29 +30,30 @@
 		android:layout_height="wrap_content"
 		android:id="@+id/main_btn_play"
 		android:text="@string/main_button_play_title"
-		android:layout_width="150dip"
-		android:layout_marginBottom="5dip" />
+		android:layout_width="match_parent"
+		android:layout_marginBottom="15dip"
+		android:background="#99CC00" />
 		
 	<Button
 		android:layout_height="wrap_content"
 		android:id="@+id/main_btn_settings"
 		android:text="@string/main_button_settings_title"
-		android:layout_width="fill_parent"
-		android:layout_marginBottom="5dip" />
+		android:layout_width="match_parent"
+		android:layout_marginBottom="15dip" />
 		
 	<Button
 		android:layout_height="wrap_content"
 		android:id="@+id/main_btn_instructions"
 		android:text="@string/main_button_instructions_title"
-		android:layout_width="fill_parent"
-		android:layout_marginBottom="5dip" />
+		android:layout_width="match_parent"
+		android:layout_marginBottom="15dip" />
 	
 	<Button
 		android:layout_height="wrap_content"
 		android:id="@+id/main_btn_version"
 		android:text="@string/main_button_version_title"
-		android:layout_width="fill_parent"
-		android:layout_marginBottom="5dip" />
+		android:layout_width="match_parent"
+		android:layout_marginBottom="15dip" />
 		
 	<!-- <Button
 		android:layout_height="wrap_content"
@@ -65,7 +66,7 @@
 		android:layout_height="wrap_content"
 		android:id="@+id/main_btn_exit"
 		android:text="@string/main_button_exit_title"
-		android:layout_width="fill_parent"
-		android:layout_marginTop="10dip" />
+		android:layout_width="match_parent"
+		android:layout_marginTop="25dip" />
 
 </LinearLayout>

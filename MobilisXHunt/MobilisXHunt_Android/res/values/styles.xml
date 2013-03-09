@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <style name="Theme" parent="android:Theme"></style>
 
-    <style name="Theme.XHunt" parent="android:style/Theme.DeviceDefault">
+    <style name="Theme.XHunt" parent="android:style/Theme.DeviceDefault.Light">
         <item name="android:windowNoTitle">false</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:configChanges">orientation|keyboardHidden</item>
+        <item name="android:buttonStyle">@style/Button</item>
     </style>
 
     <style name="HomeButton">
@@ -18,6 +19,11 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/foreground1</item>
         <item name="android:background">@null</item>
+    </style>
+    
+    <style name="Button" parent="android:style/Widget.DeviceDefault.Button.Borderless">
+        <item name="android:background">#0099CC</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="TitleBar">

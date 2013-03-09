@@ -54,45 +54,45 @@
         <activity
             android:name=".activity.CreateGameActivity"
             android:configChanges="orientation|keyboardHidden|keyboard"
-            android:label="@string/app_name"
+            android:label="Game Creation"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.XHunt" >
+            android:theme="@style/Theme.XHunt">
         </activity>
         <activity
             android:name=".activity.OpenGamesActivity"
             android:configChanges="orientation|keyboardHidden|keyboard"
-            android:label="@string/app_name"
+            android:label="Available Games"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.XHunt" >
         </activity>
         <activity
             android:name=".activity.GameInstructionActivity"
-            android:label="@string/app_name"
+            android:label="How To Play"
             android:theme="@style/Theme.XHunt" >
         </activity>
         <activity
             android:name=".activity.LobbyActivity"
             android:configChanges="orientation|keyboardHidden|keyboard"
-            android:label="@string/app_name"
+            android:label="Lobby"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.XHunt" >
         </activity>
         <activity
             android:name=".activity.MUCActivity"
-            android:label="@string/app_name"
+            android:label="Chat"
             android:theme="@style/Theme.XHunt" >
         </activity>
         <activity
             android:name=".activity.SettingsActivity"
             android:configChanges="orientation|keyboardHidden|keyboard"
-            android:label="@string/app_name"
+            android:label="Settings"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.XHunt" >
         </activity>
         <activity
             android:name=".activity.XHuntMapActivity"
             android:configChanges="orientation|keyboardHidden|keyboard"
-            android:label="@string/app_name"
+            android:label=""
             android:screenOrientation="portrait"
             android:theme="@style/Theme.XHunt" >
         </activity>
