@@ -175,7 +175,7 @@ public class GameStatePlay extends GameState{
 			
 			boolean isPlayerAtTarget = game.isPlayerAtTarget(updatePlayer);
 			// If a player has reached or left his target position
-			if(isPlayerAtTarget ^ updatePlayer.getReachedTarget()){
+			if(isPlayerAtTarget || updatePlayer.getReachedTarget()){
 				updatePlayer.setReachedTarget(isPlayerAtTarget);
 	
 				// If Mr.X reached or left his target, only notify him, else notify all players
@@ -197,9 +197,7 @@ public class GameStatePlay extends GameState{
 			}
 			
 			// If all players have reached their target, switch to GameStateRoundMrX
-			if(game.areAllPlayersAtTarget()
-					&& mWaitingForPlayersReachingTarget){
-				mWaitingForPlayersReachingTarget = false;
+			if(game.areAllPlayersAtTarget()){
 				mSubState = new GameStateRoundMrX();
 			}
 		}
@@ -480,8 +478,6 @@ public class GameStatePlay extends GameState{
 			
 			// Reset targets of the agents
 			game.clearAgentTargets();
-			// True as long as one or more player doesn't reached their target
-			mWaitingForPlayersReachingTarget = true;
 			
 			// Notify agents about the start of the new round, containing the current number of round, 
 			// if Mr.X is visible and the amount of tickets for each agent
