@@ -5,16 +5,18 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent" >
 	
-	<Button
-		android:id="@+id/creategame_btn_create"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:paddingBottom="5px"
-		android:text="Create" />
-	
 	<ListView
 		android:id="@android:id/list"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent" />
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingBottom="5dp"
+		android:layout_weight="1" />
 		
+	<Button
+		android:id="@+id/creategame_btn_create"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom"
+		android:text="Create" />
+	
 </LinearLayout>
