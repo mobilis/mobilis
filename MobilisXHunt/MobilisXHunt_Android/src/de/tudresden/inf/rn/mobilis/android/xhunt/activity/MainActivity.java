@@ -308,7 +308,7 @@ public class MainActivity extends Activity {
     private void startGame(){
 		mMxaProxy.setNickname(mServiceConnector.getXHuntService().getSharedPrefHelper()
 				.getValue(getResources().getString(R.string.bundle_key_settings_username)));
-		
+
 		mMxaProxy.getIQProxy().sendServiceDiscoveryIQ(null);
     }
     
@@ -325,10 +325,10 @@ public class MainActivity extends Activity {
 			if(inBean.getType() == XMPPBean.TYPE_ERROR){
 				Log.e(TAG, "IQ Type ERROR: " + inBean.toXML());
 			}
-			
+
 			if( inBean instanceof MobilisServiceDiscoveryBean){
 				MobilisServiceDiscoveryBean bean = (MobilisServiceDiscoveryBean)inBean;		
-				
+
 				// If responded MobilisServiceDiscoveryBean is not of kind ERROR, 
 				// check Mobilis-Server response for XHunt support
 				if(bean != null && bean.getType() != XMPPBean.TYPE_ERROR ){
@@ -342,7 +342,7 @@ public class MainActivity extends Activity {
 								break;
 							}								
 						}
-						
+					
 						if(serverSupportsXHunt){
 							mServiceDiscoveryResultHandler.sendEmptyMessage(CODE_SERVICES_AVAILABLE);
 						}
