@@ -25,6 +25,7 @@ package de.tudresden.inf.rn.mobilis.android.xhunt.ui;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
@@ -107,6 +108,7 @@ public class PanelInfoBottom extends LinearLayout {
 		mTextViewStatus = new TextView(mContext);
 		mTextViewStatus.setGravity(Gravity.CENTER_VERTICAL);
 		mTextViewStatus.setPadding(5, 0, 0, 0);
+		mTextViewStatus.setTextColor(Color.WHITE);
 		
 		this.addView(mImageViewReachedTarget);
 		this.addView(mTextViewStatus);

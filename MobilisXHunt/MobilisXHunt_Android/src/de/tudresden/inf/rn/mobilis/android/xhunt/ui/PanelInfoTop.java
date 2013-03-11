@@ -24,6 +24,7 @@
 package de.tudresden.inf.rn.mobilis.android.xhunt.ui;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.TextView;
@@ -96,8 +97,10 @@ public class PanelInfoTop extends PanelTransparent {
 		this.isMrX = isMrX;
 				
 		mTextViewTurn.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.LEFT));
+		mTextViewTurn.setTextColor(Color.WHITE);
 		this.addView(mTextViewTurn);
 		
+		mTextViewRound.setTextColor(Color.WHITE);
 		mTextViewRound.setText("Round: " + mGame.getCurrentRound());
 		this.addView(mTextViewRound);
 				
