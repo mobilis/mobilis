@@ -261,7 +261,7 @@ public class GameStateRoundInitial extends GameState{
 			
 			// If each player has reach his target, stop polling locations in this GameState 
 			// and switch to GameStatePlay.
-			if(game.areAllPlayersAtTarget()){
+			if(game.areAllPlayersAtTarget() && game.getMisterX().isOnline()){
 				stopPollingLocations();
 				game.setGameState(new GameStatePlay(control, game));
 			}
@@ -389,9 +389,11 @@ public class GameStateRoundInitial extends GameState{
 					// Collect the locations of all agents
 					for(XHuntPlayer player : game.getPlayers().values()){
 						if(!player.isMrx() && player.getGeoLocation()!=null){
-							infos.add(new LocationInfo(player.getJid(),
+							infos.add(new LocationInfo(
+									player.getJid(),
 									player.getGeoLocation().getLatitudeE6(),
-									player.getGeoLocation().getLongitudeE6()));
+									player.getGeoLocation().getLongitudeE6(),
+									player.isOnline()));
 						}
 						else{
 							playerMrX = player;
@@ -399,24 +401,32 @@ public class GameStateRoundInitial extends GameState{
 					}
 					
 					// Send the locations of all agents to each agent
+					boolean mrXOnline = playerMrX != null ? playerMrX.isOnline() : false;
 					for ( String toJid : game.getAgentsJids() ) {
 						control.getConnection().getProxy().Location( 
 								toJid, 
-								infos, LocationCallback );
+								infos,
+								mrXOnline,
+								LocationCallback );
 					}
 					
 					// Add the location of Mr.X to the list of locations of the agents 
 					// and send this list to Mr.X
 					if(playerMrX != null){
 						if (playerMrX.getGeoLocation()!=null) {
-							infos.add(new LocationInfo(playerMrX.getJid(),
+							infos.add(new LocationInfo(
+									playerMrX.getJid(),
 									playerMrX.getGeoLocation().getLatitudeE6(),
-									playerMrX.getGeoLocation().getLongitudeE6()));
+									playerMrX.getGeoLocation().getLongitudeE6(),
+									playerMrX.isOnline()));
 						}
 						
 						control.getConnection().getProxy().Location( 
 								game.getMisterX().getJid(), 
-								infos, LocationCallback );
+								infos,
+								playerMrX.isOnline(),
+								LocationCallback );
+						
 						System.out.println("GameStateRoundInitial Sending LocationRequests done");
 					}
 		        }

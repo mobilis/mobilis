@@ -10,13 +10,15 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 public class LocationRequest extends XMPPBean {
 
 	private List< LocationInfo > LocationInfos = new ArrayList< LocationInfo >();
+	private boolean MrXOnline = false;
 
 
-	public LocationRequest( List< LocationInfo > LocationInfos ) {
+	public LocationRequest( List< LocationInfo > LocationInfos, boolean MrXOnline ) {
 		super();
 		for ( LocationInfo entity : LocationInfos ) {
 			this.LocationInfos.add( entity );
 		}
+		this.MrXOnline = MrXOnline;
 
 		this.setType( XMPPBean.TYPE_SET );
 	}
@@ -45,6 +47,9 @@ public class LocationRequest extends XMPPBean {
 					this.LocationInfos.add( entity );
 					
 					parser.next();
+				}
+				else if (tagName.equals( "MrXOnline" ) ) {
+					this.MrXOnline = Boolean.parseBoolean( parser.nextText() );
 				}
 				else if (tagName.equals("error")) {
 					parser = parseErrorAttributes(parser);
@@ -83,7 +88,7 @@ public class LocationRequest extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		LocationRequest clone = new LocationRequest( LocationInfos );
+		LocationRequest clone = new LocationRequest( LocationInfos, MrXOnline );
 		clone.cloneBasicAttributes( clone );
 
 		return clone;
@@ -99,6 +104,10 @@ public class LocationRequest extends XMPPBean {
 			sb.append( "</" + LocationInfo.CHILD_ELEMENT + ">" );
 		}
 
+		sb.append( "<MrXOnline>" )
+			.append( this.MrXOnline )
+			.append( "</MrXOnline>" );
+
 		sb = appendErrorPayload(sb);
 
 		return sb.toString();
@@ -111,6 +120,14 @@ public class LocationRequest extends XMPPBean {
 
 	public void setLocationInfos( List< LocationInfo > LocationInfos ) {
 		this.LocationInfos = LocationInfos;
+	}
+
+	public boolean getMrXOnline() {
+		return this.MrXOnline;
+	}
+
+	public void setMrXOnline( boolean MrXOnline ) {
+		this.MrXOnline = MrXOnline;
 	}
 
 }

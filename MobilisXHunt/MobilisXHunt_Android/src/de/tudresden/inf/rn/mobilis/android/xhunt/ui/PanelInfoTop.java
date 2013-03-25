@@ -187,58 +187,65 @@ public class PanelInfoTop extends PanelTransparent {
 		}
 		
 		else if(!isMrX) {
-		
-			if(mGame.getCurrentRound() == 0) {	
-				
-				int stillMovingCounter = 0;
-				for(XHuntPlayer player : mGame.getGamePlayers().values()) {		
-					if((!player.isMrX()) && (!player.getReachedTarget())) {
-						if(mGame.getRouteManagement().getStationById(player.getCurrentTargetId()) != null) {
-							stillMovingCounter++;
-							beginning = false;
+			
+			// check if Mr.X responds to IQs
+			if(!mGame.getMrX().isOnline()) {
+				newText = "!! Mr.X currently w/o connection !!";
+			}
+			
+			else {
+				if(mGame.getCurrentRound() == 0) {	
+					
+					int stillMovingCounter = 0;
+					for(XHuntPlayer player : mGame.getGamePlayers().values()) {		
+						if((!player.isMrX()) && (!player.getReachedTarget())) {
+							if(mGame.getRouteManagement().getStationById(player.getCurrentTargetId()) != null) {
+								stillMovingCounter++;
+								beginning = false;
+							}
 						}
+					}	
+					
+					if(!beginning) {
+						if(stillMovingCounter == 0)
+							newText = "Wait till Mr.X chose next target...";
+						else if(stillMovingCounter == 1)
+							newText = stillMovingCounter + " agent still on the move";
+						else
+							newText = stillMovingCounter + " agents still on the move";
 					}
-				}	
+				}
 				
-				if(!beginning) {
-					if(stillMovingCounter == 0)
-						newText = "Wait till Mr.X chose next target...";
-					else if(stillMovingCounter == 1)
+				else if(mGame.getCurrentRound() > 0) {		
+					
+					int stillChoosingCounter = 0;
+					int stillMovingCounter = 0;		
+					for(XHuntPlayer player : mGame.getGamePlayers().values()) {
+						if(!player.isMrX())
+							if(mGame.getRouteManagement().getStationById(player.getCurrentTargetId()) == null)
+								stillChoosingCounter++;
+					}		
+					
+					for(XHuntPlayer player : mGame.getGamePlayers().values()) {
+						if((!player.isMrX()) && (!player.getReachedTarget()))
+							if(mGame.getRouteManagement().getStationById(player.getCurrentTargetId()) != null)
+								stillMovingCounter++;
+					}	
+					
+					
+					if(stillMovingCounter == 1)
 						newText = stillMovingCounter + " agent still on the move";
 					else
 						newText = stillMovingCounter + " agents still on the move";
+					
+					if(stillChoosingCounter == 1)
+						newText = stillChoosingCounter + " agent still choosing target";
+					else if(stillChoosingCounter > 1)
+						newText = stillChoosingCounter + " agents still choosing targets";
+					
+					if((stillMovingCounter == 0) && (stillChoosingCounter == 0))
+						newText = "Wait till Mr.X chose next target...";
 				}
-			}
-			
-			else if(mGame.getCurrentRound() > 0) {		
-				
-				int stillChoosingCounter = 0;
-				int stillMovingCounter = 0;		
-				for(XHuntPlayer player : mGame.getGamePlayers().values()) {
-					if(!player.isMrX())
-						if(mGame.getRouteManagement().getStationById(player.getCurrentTargetId()) == null)
-							stillChoosingCounter++;
-				}		
-				
-				for(XHuntPlayer player : mGame.getGamePlayers().values()) {
-					if((!player.isMrX()) && (!player.getReachedTarget()))
-						if(mGame.getRouteManagement().getStationById(player.getCurrentTargetId()) != null)
-							stillMovingCounter++;
-				}	
-				
-				
-				if(stillMovingCounter == 1)
-					newText = stillMovingCounter + " agent still on the move";
-				else
-					newText = stillMovingCounter + " agents still on the move";
-				
-				if(stillChoosingCounter == 1)
-					newText = stillChoosingCounter + " agent still choosing target";
-				else if(stillChoosingCounter > 1)
-					newText = stillChoosingCounter + " agents still choosing targets";
-				
-				if((stillMovingCounter == 0) && (stillChoosingCounter == 0))
-					newText = "Wait till Mr.X chose next target...";
 			}
 		}
 

@@ -51,6 +51,10 @@ public class XHuntPlayer {
 	/** The player color id. */
 	private int playerColor;
 	
+	/** True if the player responds to IQs. */
+	private boolean playerOnline;
+	
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -64,6 +68,7 @@ public class XHuntPlayer {
 		str += "isMod: " + isModerator();
 		str += " isMr.X: " + isMrX();
 		str += " isReady: " + isReady();
+		str += " isOnline: " + isOnline();
 		
 		return str;
 	}
@@ -87,6 +92,7 @@ public class XHuntPlayer {
 		this.currentTargetId=-1;
 		this.currentTargetFinal=false;
 		this.lastStationId=-1;
+		this.playerOnline = true;
 	}
 	
 	/**
@@ -340,4 +346,21 @@ public class XHuntPlayer {
 		this.playerColor = playerColorID;
 	}
 	
+	/**
+	 * Checks whether the player's online state is true or false.
+	 *
+	 * @return true, if the player responds to IQs
+	 */
+	public boolean isOnline() {
+		return playerOnline;
+	}
+
+	/**
+	 * Sets true, if the player's online state is true.
+	 *
+	 * @param playerOnline true if the player responds to IQs
+	 */
+	public void setOnline(boolean playerOnline) {
+		this.playerOnline = playerOnline;
+	}
 }

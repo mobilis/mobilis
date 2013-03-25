@@ -167,14 +167,19 @@ public class PlayerIconOverlay extends ItemizedOverlay<OverlayItem> {
 			if(player.getGeoLocation() != null
 					&& player.getGeoLocation().getLatitudeE6() != -1
 					&& player.getGeoLocation().getLongitudeE6() != -1){
-				/** Creates the playeroverlay for each player **/
+				
+				// Creates the playeroverlay for each player
+				int iconID = player.isOnline()
+						? player.getPlayerIconID()
+								: R.drawable.ic_player_na_36;
+						
 				OverlayItem oi = new OverlayItem(player.getGeoLocation(), player.getJid(), player.getName());
-				oi.setMarker(boundCenterBottom(mMapActivity.getResources().getDrawable(player.getPlayerIconID())));
+				oi.setMarker(boundCenterBottom(mMapActivity.getResources().getDrawable(iconID)));
 				overlayIcons.add(oi);
 
 				Station currentTarget = mXhuntService.getCurrentGame().getRouteManagement().getStationById(player.getCurrentTargetId());
-				/** Creates a ghost of a player which points on the target **/
-				if(!player.getReachedTarget() && currentTarget != null){
+				// Creates a ghost of a player which points on the target
+				if(!player.getReachedTarget() && currentTarget != null && player.isOnline()){
 					OverlayItem o = new OverlayItem(currentTarget.getGeoPoint(), player.getJid() + "_ghost", player.getName());
 					Drawable d = mMapActivity.getResources().getDrawable(player.getPlayerIconID()).mutate();
 					d.setAlpha(75);
@@ -198,8 +203,9 @@ public class PlayerIconOverlay extends ItemizedOverlay<OverlayItem> {
 	 * @param show true if mr.x should be shown
 	 */
 	public void updateMrX(boolean show){
-		if(mrX != null
-				&& !mrX.getJid().equals(mXhuntService.getMXAProxy().getXmppJid())){
+		if((mrX != null)
+				&& (!mrX.getJid().equals(mXhuntService.getMXAProxy().getXmppJid()))
+				&& (mrX.isOnline())) {
 			Station currentTargetMrX = mXhuntService.getCurrentGame().getRouteManagement().getStationById(mrX.getCurrentTargetId());			
 		
 			if(currentTargetMrX != null){
@@ -233,7 +239,7 @@ public class PlayerIconOverlay extends ItemizedOverlay<OverlayItem> {
 		super.draw(canvas, mapView, shadow);
 		
 		// some parameters
-		int fontSize = 18;
+		int fontSize = 12;
 		int titleMargin = 3;
 		
 		// calculate height of player icon

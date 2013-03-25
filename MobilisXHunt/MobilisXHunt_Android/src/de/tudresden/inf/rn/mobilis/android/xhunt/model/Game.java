@@ -487,9 +487,18 @@ public class Game {
 	 *
 	 * @param locationInfos the infos about the location of all players
 	 */
-	public void updatePlayerLocations(List<LocationInfo> locationInfos){
-		for(LocationInfo info : locationInfos){
-			gamePlayers.get(info.getJid()).setGeoLocation(info.getLatitude(), info.getLongitude());
+	public void updatePlayerLocations(List<LocationInfo> locationInfos) {
+		XHuntPlayer player;
+		for(LocationInfo info : locationInfos) {
+			player = gamePlayers.get(info.getJid());
+			player.setGeoLocation(info.getLatitude(), info.getLongitude());
+			try {
+				player.setOnline(info.getPlayerOnline());				
+			} catch(Exception e) {
+				Log.w("Game", "XHuntService doesn't support info about player's online state", e);
+				player.setOnline(true);				
+			}
+			
 		}
 	}
 	

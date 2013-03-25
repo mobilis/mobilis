@@ -1317,9 +1317,11 @@ public class LobbyActivity extends Activity {
 						.Location(
 								mMxaProxy.getIQProxy().getGameServiceJid(),
 								bean.getId(),
-								new LocationInfo(mMxaProxy.getXmppJid(),
-										geoPoint.getLatitudeE6(), geoPoint
-												.getLongitudeE6()));
+								new LocationInfo(
+										mMxaProxy.getXmppJid(),
+										geoPoint.getLatitudeE6(),
+										geoPoint.getLongitudeE6(),
+										true));
 			}
 		}
 

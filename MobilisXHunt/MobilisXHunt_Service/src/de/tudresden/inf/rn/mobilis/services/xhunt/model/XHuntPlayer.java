@@ -58,8 +58,8 @@ public class XHuntPlayer {
 	/** The players color id. */
 	private int playerColor;
 	
-	/** True if the players location is up to date. */
-	private boolean isLocationUpToDate;
+	/** True if the player responds to IQs. */
+	private boolean playerOnline;
 	
 	/** The amount of players tickets. */
 	private HashMap<Integer, Integer> ticketsAmount;
@@ -80,6 +80,7 @@ public class XHuntPlayer {
 		str += "isMod: " + isModerator();
 		str += " isMr.X: " + isMrx();
 		str += " isReady: " + isReady();
+		str += " isOnline: " + isOnline();
 		
 		return str;
 	}
@@ -103,7 +104,7 @@ public class XHuntPlayer {
 		this.currentTargetId=-1;
 		this.currentTargetFinal=false;
 		this.lastStationId=-1;
-		this.isLocationUpToDate = false;
+		this.playerOnline = true;
 		this.ticketsAmount = new HashMap<Integer, Integer>();
 		this.usedTickets = new ArrayList<Integer>();
 	}
@@ -144,21 +145,21 @@ public class XHuntPlayer {
 	}
 	
 	/**
-	 * Checks if the location of the player is up to date.
+	 * Checks whether the player's online state is true or false.
 	 *
-	 * @return true, if the location is up to date
+	 * @return true, if the player responds to IQs
 	 */
-	public boolean isLocationUpToDate() {
-		return isLocationUpToDate && (geoLocation != null);
+	public boolean isOnline() {
+		return playerOnline;
 	}
 
 	/**
-	 * Sets true, if the location is up to date.
+	 * Sets true, if the player's online state is true.
 	 *
-	 * @param isLocationUpToDate true if the location is up to date
+	 * @param playerOnline true if the player responds to IQs
 	 */
-	public void setLocationUpToDate(boolean isLocationUpToDate) {
-		this.isLocationUpToDate = isLocationUpToDate;
+	public void setOnline(boolean playerOnline) {
+		this.playerOnline = playerOnline;
 	}
 
 	/**

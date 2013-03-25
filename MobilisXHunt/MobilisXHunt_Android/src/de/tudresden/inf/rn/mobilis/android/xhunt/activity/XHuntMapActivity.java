@@ -1284,7 +1284,16 @@ public class XHuntMapActivity extends MapActivity {
 		 */
 		private void handleLocationBean(LocationRequest bean){
 			if( bean != null && bean.getType() != XMPPBean.TYPE_ERROR ){
-				// Update locations of all palyers
+				// set online state of Mr.X
+				try {
+					mGame.getMrX().setOnline(bean.getMrXOnline());
+				} catch(Exception e) {
+					Log.w(TAG, "XHuntService doesn't support info about player's online state", e);
+					mGame.getMrX().setOnline(true);
+				}
+				
+				
+				// Update locations of all players
 				mGame.updatePlayerLocations(bean.getLocationInfos());
 
 				// Notify the gui handler to redraw all map elements (to refresh the locations)
@@ -1299,7 +1308,8 @@ public class XHuntMapActivity extends MapActivity {
 						new LocationInfo(
 								mMxaProxy.getXmppJid(), 
 								geoPoint.getLatitudeE6(), 
-								geoPoint.getLongitudeE6() ));
+								geoPoint.getLongitudeE6(),
+								true));
 			}
 		}
 		

@@ -591,10 +591,9 @@ public class SqlHelper {
 			while (mResultSet.next()) {
 				route.addStation(mResultSet.getInt(COLUMN_POSITION), mResultSet.getInt(COLUMN_STATION_ID));
 			}
-			
-			LOGGER.info("Read from DB: " + route.toString());
 		}
 		
+		LOGGER.info("Read " + routes.size() + " routes from DB");
 		return routes;
 	}
 	
@@ -663,9 +662,9 @@ public class SqlHelper {
 			station.setGeoPoint(mResultSet.getInt(COLUMN_LATITUDE), mResultSet.getInt(COLUMN_LONGITUDE));
 			
 			stations.add(station);
-			LOGGER.info("Read from DB: " + station.toString());
 		}
-		
+
+		LOGGER.info("Read " + stations.size() + " stations from DB");
 		return stations;
 	}
 	
@@ -732,9 +731,9 @@ public class SqlHelper {
 			ticket.setSuperior(mResultSet.getInt(COLUMN_ISSUPERIOR) == 1);
 			
 			tickets.add(ticket);
-			LOGGER.info("Read from DB: " + ticket.toString());
 		}
-		
+
+		LOGGER.info("Read " + tickets.size() + " tickets from DB");
 		return tickets;
 	}
 	
