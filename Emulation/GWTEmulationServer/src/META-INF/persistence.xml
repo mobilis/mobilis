@@ -16,9 +16,9 @@
             <property name="datanucleus.storeManagerType" value="true" />
     		<property name="hibernate.bytecode.use_reflection_optimizer" value="false" />
     		<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
-    		<property name="hibernate.connection.url" value="jdbc:mysql://thomaswalther.eu:3306/EmulationServer" />
-    		<property name="hibernate.connection.username" value="mobilis" />
-    		<property name="hibernate.connection.password" value="mobilis" />
+    		<property name="hibernate.connection.url" value="jdbc:mysql://quer-dd:3306/mobilis_emulation" />
+    		<property name="hibernate.connection.username" value="emuserver" />
+    		<property name="hibernate.connection.password" value="emuserver" />
     		<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
     		<property name="hibernate.hbm2ddl.auto" value="update"/>
     		<property name="show_sql" value="true" />

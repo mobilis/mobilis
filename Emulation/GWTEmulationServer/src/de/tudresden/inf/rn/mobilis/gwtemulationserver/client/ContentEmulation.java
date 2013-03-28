@@ -32,9 +32,6 @@ public class ContentEmulation extends VerticalPanel {
 	
 	private HorizontalPanel errorPanel;
 	private Label lblError;
-	private Label lblConnectedDevices = new Label();
-	private Label lblNeededDevices = new Label();
-	
 	private List<String> connectedDevices = new ArrayList<String>();
 	private ScriptInfo virtualDevices;
 	private List<String> scriptList = new ArrayList<String>();
