@@ -153,6 +153,7 @@ public class OpenGamesActivity extends Activity {
 			mMxaProxy = mServiceConnector.getXHuntService().getMXAProxy();
 			
 			mRemoteLoadingDialog = new DialogRemoteLoading(OpenGamesActivity.this, Const.CONNECTION_TIMEOUT_DELAY);
+			
 			discoverOpenGames();
 		}
 	};
@@ -179,7 +180,7 @@ public class OpenGamesActivity extends Activity {
 			mOpenGamesListAdapter.List.clear();
     	
 		// Send a ServiceDiscovery to the Mobilis-Server an asking for all running XHunt-Services
-    	mMxaProxy.getIQProxy().sendServiceDiscoveryIQ(Const.SERVICE_NAMESPACE);
+    	mMxaProxy.getIQProxy().sendServiceDiscoveryIQ("http://mobilis.inf.tu-dresden.de#services/MobilisXHuntService");
     }
 	
 	/* (non-Javadoc)
@@ -265,6 +266,7 @@ public class OpenGamesActivity extends Activity {
 		if(mMxaProxy != null){
 			mServiceConnector.getXHuntService().setGameState(new GameStateOpengames());
 			mRemoteLoadingDialog = new DialogRemoteLoading(OpenGamesActivity.this, Const.CONNECTION_TIMEOUT_DELAY);
+
 			discoverOpenGames();
 		}
 		
@@ -414,24 +416,44 @@ public class OpenGamesActivity extends Activity {
 			// Handle MobilisServiceDiscoveryBean and the containing services
 			if( inBean instanceof MobilisServiceDiscoveryBean){
 				MobilisServiceDiscoveryBean bean = (MobilisServiceDiscoveryBean)inBean;
-				
+
 				if(inBean.getType() == XMPPBean.TYPE_ERROR){
 					Log.e(TAG, "IQ Type ERROR: " + inBean.toXML());
 				}
-				else{				
+				
+				else {				
 					if(bean != null && bean.getType() != XMPPBean.TYPE_ERROR ){
 						if( bean.getDiscoveredServices() != null
 								&& bean.getDiscoveredServices().size() > 0 ){
-							mOpenGamesListAdapter.List.clear();
-
-							for (MobilisServiceInfo info : bean.getDiscoveredServices()) {
-								mOpenGamesListAdapter.List.add(new OpenGameItem(info.hashCode(), R.drawable.ic_game,
-										info.getJid(), Integer.parseInt(info.getVersion()), info.getServiceName(), ""));
+							
+							// check if ServiceDiscoveryBean contains game instances or just admin-/coordinator-/etc services
+							List<MobilisServiceInfo> gameInstances = new ArrayList<MobilisServiceInfo>();
+							for(MobilisServiceInfo info : bean.getDiscoveredServices()) {
+								if((info.getJid() != null)
+										&& (info.getJid().toLowerCase().contains("xhunt"))
+										&& (!info.getJid().toLowerCase().contains("coordinator"))
+										&& (!info.getJid().toLowerCase().contains("admin"))
+										&& (!info.getJid().toLowerCase().contains("deployment"))) {
+									gameInstances.add(info);
+								}
 							}
 							
-							mDiscoverGamesHandler.sendEmptyMessage(CODE_SERVICE_GAMES_AVAILABLE);
-						}
-						else{
+							// if ServiceDiscoveryBean contained game instances, refresh list
+							if(gameInstances.size() > 0) {
+								mOpenGamesListAdapter.List.clear();
+								for(MobilisServiceInfo info : gameInstances) {
+									mOpenGamesListAdapter.List.add(new OpenGameItem(info.hashCode(), R.drawable.ic_game,
+											info.getJid(), Integer.parseInt(info.getVersion()), info.getServiceName(), ""));
+								}
+								
+								mDiscoverGamesHandler.sendEmptyMessage(CODE_SERVICE_GAMES_AVAILABLE);
+							}
+							
+							else {
+								mDiscoverGamesHandler.sendEmptyMessage(CODE_SERVICE_NO_GAMES_AVAILABLE);
+							}
+
+						} else {
 							mDiscoverGamesHandler.sendEmptyMessage(CODE_SERVICE_NO_GAMES_AVAILABLE);
 						}
 					}

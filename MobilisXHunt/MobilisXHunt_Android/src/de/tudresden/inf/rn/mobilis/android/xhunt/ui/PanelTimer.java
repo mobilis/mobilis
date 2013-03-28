@@ -156,6 +156,7 @@ public class PanelTimer extends PanelTransparent {
 		this.mTextViewTimerBig.setPadding(10, 10, 10, 0);
 		this.mTextViewTimerBig.setGravity(Gravity.CENTER);
 		this.mTextViewTimerBig.setTextSize((int)(this.mTextViewTimerBig.getTextSize() * 1.5));
+		this.mTextViewTimerBig.setTextColor(Color.WHITE);
 		llBig.addView(this.mTextViewTimerBig);
 		
 		// if mr.x timer is enabled, display an option to cancel current timer
@@ -182,7 +183,7 @@ public class PanelTimer extends PanelTransparent {
 		this.mTextViewTimerSmall = new TextView(context);
 		this.mTextViewTimerSmall.setPadding(10, 0, 0, 10);
 		this.mTextViewTimerSmall.setGravity(Gravity.CENTER);
-		this.mTextViewTimerSmall.setTextColor(Color.GRAY);
+		this.mTextViewTimerSmall.setTextColor(Color.WHITE);
 		this.addView(this.mTextViewTimerSmall);
 		
 		mIsRunning = false;
