@@ -10,6 +10,10 @@ public class SessionList implements Serializable {
 	private List<Long> startTime;
 	private List<Long> endTime;
 	private List<String> script;
+	private List<List<String>> devices;
+	private List<String> sessionDir;
+	private List<Integer> finished;
+	private List<Integer> notFinished;
 	
 	public SessionList() {
 		
@@ -17,6 +21,10 @@ public class SessionList implements Serializable {
 		this.startTime = new ArrayList<Long>();
 		this.endTime = new ArrayList<Long>();
 		this.script = new ArrayList<String>();
+		this.devices = new ArrayList<List<String>>();
+		this.sessionDir = new ArrayList<String>();
+		this.finished = new ArrayList<Integer>();
+		this.notFinished = new ArrayList<Integer>();
 		
 	}
 	
@@ -34,6 +42,22 @@ public class SessionList implements Serializable {
 	
 	public void addScript(String script) {
 		this.script.add(script);
+	}
+	
+	public void addDevices(List<String> devices) {
+		this.devices.add(devices);
+	}
+	
+	public void addSessionDir(String dir) {
+		this.sessionDir.add(dir);
+	}
+	
+	public void addFinished(Integer finished) {
+		this.finished.add(finished);
+	}
+	
+	public void addNotFinished(Integer notFinished) {
+		this.notFinished.add(notFinished);
 	}
 
 	public List<Long> getId() {
@@ -66,6 +90,38 @@ public class SessionList implements Serializable {
 
 	public void setScript(List<String> script) {
 		this.script = script;
+	}
+
+	public List<List<String>> getDevices() {
+		return devices;
+	}
+
+	public void setDevices(List<List<String>> devices) {
+		this.devices = devices;
+	}
+
+	public List<String> getSessionDir() {
+		return sessionDir;
+	}
+
+	public void setSessionDir(List<String> sessionDir) {
+		this.sessionDir = sessionDir;
+	}
+
+	public List<Integer> getFinished() {
+		return finished;
+	}
+
+	public void setFinished(List<Integer> finished) {
+		this.finished = finished;
+	}
+
+	public List<Integer> getNotFinished() {
+		return notFinished;
+	}
+
+	public void setNotFinished(List<Integer> notFinished) {
+		this.notFinished = notFinished;
 	}
 
 }

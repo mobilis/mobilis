@@ -1,16 +1,16 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
 
 /**
  * 
@@ -27,25 +27,22 @@ public class EmulationSession implements Serializable {
 	private Long id;
 	private String script;
 	private String sessionDir;
-	@Column(columnDefinition="longblob")
-	private ArrayList<String> devices;
+	private List<String> devices;
 	private Long startTime;
 	private Long endTime;
-	@Column(columnDefinition="longblob")
 	private EmulationStatus status;
 	
 	public EmulationSession() {
 	}
 	
-	public EmulationSession(String script, String sessionDir, ArrayList<String> devices) {
+	public EmulationSession(String script, String sessionDir, List<String> devices) {
 		this.script = script;
 		this.sessionDir = sessionDir;
 		this.devices = devices;
 	}
 	
 	@Id
-	@GeneratedValue(generator="increment")
-	@GenericGenerator(name="increment", strategy="increment")
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	public Long getId() {
 		return id;
 	}
@@ -70,11 +67,17 @@ public class EmulationSession implements Serializable {
 		return sessionDir;
 	}
 	
-	public void setDevices(ArrayList<String> devices) {
+	public void setDevices(List<String> devices) {
 		this.devices = devices;
 	}
 	
-	public ArrayList<String> getDevices() {
+	/*@ElementCollection
+	@CollectionTable(name="devices", joinColumns=@JoinColumn(name="dev_id"))
+	@Column(name="device")*/
+	@Column(name="device")
+	@ElementCollection
+	//@Fetch(FetchMode.SUBSELECT)
+	public List<String> getDevices() {
 		return devices;
 	}
 	
@@ -94,6 +97,7 @@ public class EmulationSession implements Serializable {
 		return endTime;
 	}
 
+	@ManyToOne(cascade=CascadeType.ALL)
 	public EmulationStatus getStatus() {
 		return status;
 	}

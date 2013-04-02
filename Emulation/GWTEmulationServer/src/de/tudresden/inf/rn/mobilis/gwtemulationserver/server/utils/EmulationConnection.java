@@ -3,7 +3,6 @@ package de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -33,7 +32,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
 
 public class EmulationConnection {
 	
-	private static final String HOST = "mobilis-dev.inf.tu-dresden.de";
+	private static final String HOST = "localhost";
 	private static final String USER = "emulationserver";
 	private static final String PASS = "emulationserver";
 	private static final String RESSOURCE = "EmulationServer";
@@ -153,7 +152,7 @@ public class EmulationConnection {
 		@Override
 		public void processPacket(Packet p) {
 			
-			System.out.println(TAG + ": processPacket: " + p.getFrom());
+			//System.out.println(TAG + ": processPacket: " + p.getFrom());
 			if (p instanceof BeanIQAdapter) {
 				
 				XMPPBean b = ((BeanIQAdapter) p).getBean();
@@ -193,6 +192,7 @@ public class EmulationConnection {
 				   ackBean.setTo(exResReq.getFrom());
 				   outgoing.sendXMPPBean(ackBean);
 			   }
+				System.out.println();
 			}
 			
 		}

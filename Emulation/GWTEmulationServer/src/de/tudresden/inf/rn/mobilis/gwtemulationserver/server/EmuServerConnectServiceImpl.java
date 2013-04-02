@@ -20,7 +20,6 @@ import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.script.Script;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationConnection;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationSession;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.EmulationStatus;
-import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.utils.SessionManager;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.InstanceGroupExecutorInfo;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.InstanceGroupInfo;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.shared.ScriptInfo;
@@ -71,7 +70,10 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 		if(fArray == null) return scripts;
 				
 		for(String s:fArray) {
-			scripts.add(s);
+			String fileType = s.substring(s.length()-4, s.length());
+			if(fileType.equals(".xml")) {
+				scripts.add(s);
+			}
 		}
 		
 		return scripts;
@@ -117,7 +119,7 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 		
 		Boolean executed = false;
 		
-		ArrayList<String> devices = new ArrayList<String>();
+		List<String> devices = new ArrayList<String>();
 		for(Map.Entry<String, String> entry:instanceSelection.entrySet()) {
 			devices.add(entry.getValue());
 		}
@@ -197,6 +199,18 @@ public class EmuServerConnectServiceImpl extends RemoteServiceServlet implements
 				sessionList.addStartTime(session.getStartTime());
 				sessionList.addEndTime(session.getEndTime());
 				sessionList.addScript(session.getScript());
+				//sessionList.addDevices(session.getDevices());
+				sessionList.addSessionDir(session.getSessionDir());
+				sessionList.addFinished(session.getStatus().getFinishedCommands().size());
+				sessionList.addNotFinished(session.getStatus().getNotFinishedCommands().size());
+				/*System.out.println("Finished: ");
+				for(EmulationCommand emucmd:session.getStatus().getFinishedCommands()) {
+					System.out.println("   " + emucmd.getCommand());
+				}
+				System.out.println("Not Finished: ");
+				for(EmulationCommand emucmd:session.getStatus().getNotFinishedCommands()) {
+					System.out.println("   " + emucmd.getCommand());
+				}*/
 			}
 		} catch(Exception e) {
 			System.err.println(e.getMessage());
