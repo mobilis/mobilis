@@ -31,7 +31,7 @@ public class SnapshotResponse extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		SnapshotResponse clone = new SnapshotResponse(  );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

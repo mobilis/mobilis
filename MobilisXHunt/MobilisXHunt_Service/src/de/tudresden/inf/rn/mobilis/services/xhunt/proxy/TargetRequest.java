@@ -89,7 +89,7 @@ public class TargetRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		TargetRequest clone = new TargetRequest( StationId, Round, TicketId, IsFinal );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

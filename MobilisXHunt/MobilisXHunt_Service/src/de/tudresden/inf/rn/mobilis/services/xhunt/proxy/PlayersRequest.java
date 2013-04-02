@@ -89,7 +89,7 @@ public class PlayersRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		PlayersRequest clone = new PlayersRequest( Players, Info );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

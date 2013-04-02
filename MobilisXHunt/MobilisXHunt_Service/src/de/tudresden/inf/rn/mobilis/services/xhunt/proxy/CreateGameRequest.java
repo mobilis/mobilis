@@ -114,7 +114,7 @@ public class CreateGameRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		CreateGameRequest clone = new CreateGameRequest( AreaId, GameName, GamePassword, CountRounds, MinPlayers, MaxPlayers, StartTimer, TicketsMrX, TicketsAgents );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

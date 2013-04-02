@@ -121,7 +121,7 @@ public class SnapshotRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		SnapshotRequest clone = new SnapshotRequest( GameName, Round, IsRoundStart, ShowMrX, StartTimer, Tickets, PlayerSnapshots );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

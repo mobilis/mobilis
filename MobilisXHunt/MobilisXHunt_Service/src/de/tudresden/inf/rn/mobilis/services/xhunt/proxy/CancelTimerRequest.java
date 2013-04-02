@@ -31,7 +31,7 @@ public class CancelTimerRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		CancelTimerRequest clone = new CancelTimerRequest(  );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

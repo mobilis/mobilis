@@ -84,7 +84,7 @@ public class TransferTicketRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		TransferTicketRequest clone = new TransferTicketRequest( FromPlayerJid, ToPlayerJid, Ticket );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

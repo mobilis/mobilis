@@ -89,7 +89,7 @@ public class RoundStatusRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		RoundStatusRequest clone = new RoundStatusRequest( Round, RoundStatusInfos );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

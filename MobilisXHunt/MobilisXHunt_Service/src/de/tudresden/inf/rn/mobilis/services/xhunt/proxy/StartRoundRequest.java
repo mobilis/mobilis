@@ -94,7 +94,7 @@ public class StartRoundRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		StartRoundRequest clone = new StartRoundRequest( Round, ShowMrX, Tickets );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

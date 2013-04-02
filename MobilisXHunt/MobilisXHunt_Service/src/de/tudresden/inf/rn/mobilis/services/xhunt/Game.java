@@ -106,7 +106,7 @@ public class Game {
 		mTickets = new HashMap<Integer, Ticket>();
 		mRoutemanagement = new RouteManagement();
         
-        openMultiUserChat();
+		openMultiUserChat();
 		
         System.out.println("Game created (PlayerMin: " + control.getSettings().getMinPlayers() + ", PlayerMax: " + control.getSettings().getMaxPlayers() +")");
         
@@ -156,7 +156,9 @@ public class Game {
 		if(toPlayer != null){
 			bean.setGameName( control.getSettings().getGameName() );
 			bean.setRound( round );
-			bean.setIsRoundStart( isRoundStart(playerJid) );
+			//bean.setIsRoundStart( isRoundStart(playerJid) );
+			/* The one above leads to multiple calls of mStartRoundHandler in the client */
+			bean.setIsRoundStart(false);
 			bean.setShowMrX( showMisterX() );
 			bean.setStartTimer( control.getSettings().getStartTimer() );
 			

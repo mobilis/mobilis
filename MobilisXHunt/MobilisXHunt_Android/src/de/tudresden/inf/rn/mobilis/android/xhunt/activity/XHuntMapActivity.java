@@ -45,7 +45,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Toast;
 import android.widget.ZoomButtonsController;
@@ -359,10 +358,10 @@ public class XHuntMapActivity extends MapActivity {
 	    	mPanelInfoBottom.setInfoText("Choose your next target!");
 	    	mPanelInfoBottom.setTargetReached(false);
 	    	
-	    	Log.v(TAG, "what: " + msg.what + " lastStaion: " 
+	    	Log.v(TAG, "what: " + msg.what + " lastStation: " 
 	    			+ mGame.getPlayerByJID(mMxaProxy.getXmppJid()).getLastStationId());
 	    	
-	    	// Clear all reachable stations (this will color all stations as usal)
+	    	// Clear all reachable stations (this will color all stations as usual)
 	    	mRouteManagement.resetReachableStations();
 	    	mRouteManagement.updateReachableStations(msg.what);
 	    	

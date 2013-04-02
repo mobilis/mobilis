@@ -36,6 +36,7 @@ import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.JoinGameRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayerExitRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayersResponse;
+import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.SnapshotResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TransferTicketRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdatePlayerRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdateTicketsResponse;
@@ -78,7 +79,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 		
 		loadGameData();
 		
-		control.getConnection().startDelayedResultBeansTimer();
+		//control.getConnection().startDelayedResultBeansTimer();
 	}
 	
 	/**
@@ -129,6 +130,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 		else if(inBean instanceof TransferTicketRequest){
 			onTransferTicket((TransferTicketRequest) inBean);
 		}
+		else if(inBean instanceof SnapshotResponse) {}
 		// If no defined Bean was matched, respond an error to the requester
 		else {
 			inBean.errorType = "wait";

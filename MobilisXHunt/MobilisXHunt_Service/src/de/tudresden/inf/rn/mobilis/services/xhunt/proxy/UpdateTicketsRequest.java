@@ -84,7 +84,7 @@ public class UpdateTicketsRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		UpdateTicketsRequest clone = new UpdateTicketsRequest( Tickets );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

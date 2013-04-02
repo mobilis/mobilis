@@ -89,7 +89,7 @@ public class LocationRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		LocationRequest clone = new LocationRequest( LocationInfos, MrXOnline );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

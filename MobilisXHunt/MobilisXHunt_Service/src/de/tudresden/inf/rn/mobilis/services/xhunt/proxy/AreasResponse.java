@@ -84,7 +84,7 @@ public class AreasResponse extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		AreasResponse clone = new AreasResponse( Areas );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

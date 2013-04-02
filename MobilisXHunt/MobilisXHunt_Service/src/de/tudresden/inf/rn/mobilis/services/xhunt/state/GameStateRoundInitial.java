@@ -43,6 +43,7 @@ import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayerExitRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayersResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.RoundStatusResponse;
+import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.SnapshotResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.StartRoundResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TicketAmount;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
@@ -124,6 +125,7 @@ public class GameStateRoundInitial extends GameState{
 			// Just result of the player
 			control.getConnection().handleCallback( inBean );
 		}
+		else if(inBean instanceof SnapshotResponse) {}
 		// If no defined Bean was matched, respond an error to the requester
 		else {
 			inBean.errorType = "wait";

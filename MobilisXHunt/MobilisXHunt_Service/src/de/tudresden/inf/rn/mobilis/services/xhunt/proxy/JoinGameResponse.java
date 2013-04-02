@@ -94,7 +94,7 @@ public class JoinGameResponse extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		JoinGameResponse clone = new JoinGameResponse( ChatRoom, ChatPassword, StartTimer, IncomingGameFileNames );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

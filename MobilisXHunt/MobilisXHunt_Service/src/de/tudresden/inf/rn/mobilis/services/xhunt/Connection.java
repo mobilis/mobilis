@@ -23,12 +23,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Logger;
 
 import org.jivesoftware.smack.XMPPException;
@@ -69,6 +71,7 @@ import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.StartRoundRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.StartRoundResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TargetRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TargetResponse;
+import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TicketAmount;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TransferTicketRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TransferTicketResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdatePlayerRequest;
@@ -106,7 +109,7 @@ public class Connection {
 	private Timer mSendSnapshotsTimer;
 	
 	/** The waiting timeout in milliseconds for a XMPPBean of type result. */
-	private long mResultBeansTimeoutMillis = 15 * 1000;
+	private long mResultBeansTimeoutMillis = 10 * 1000;
 	
 	/** The limit for delayed result-XMPPBeans. This number determines, how often 
 	 * a result-XMPPBean can miss the mResultBeansTimeoutMillis before the 
@@ -137,7 +140,7 @@ public class Connection {
 		= new ConcurrentHashMap<String, Connection.BeanTimePair>();
 	
 	/** Players which are waiting for the beginning of the next round to return. */
-	private List<XHuntPlayer> playersWaitingForReturn;
+	private Set<XHuntPlayer> playersWaitingForReturn;
 	
 	private MobilisXHuntProxy _proxy;
 	
@@ -196,6 +199,7 @@ public class Connection {
 	 * The Interval is defined by {@link mSendSnapshotsInterval}.
 	 */
 	private void startSendingSnapshots() {
+		// restart to avoid errors
 		if(mSendSnapshotsTimer != null)
 			mSendSnapshotsTimer.cancel();
 
@@ -203,13 +207,28 @@ public class Connection {
 		mSendSnapshotsTimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
+				Set<XHuntPlayer> offlinePlayers = new HashSet<XHuntPlayer>();
+				for(Map.Entry<String, XHuntPlayer> entry : mController.getActGame().getPlayers().entrySet()) {
+					if(!entry.getValue().isOnline())
+						offlinePlayers.add(entry.getValue());
+				}
+				
+				//if game was closed, cancel timer
 				if(!mController.getActGame().isGameOpen())
 					mSendSnapshotsTimer.cancel();
 				
-				else
-					for(Map.Entry<String, XHuntPlayer> entry : mController.getActGame().getPlayers().entrySet())
-						if(!entry.getValue().isOnline())
-							sendSnapshot(entry.getKey());
+				// if all players are back online, write log message and cancel timer
+				if(offlinePlayers.size() == 0) {
+					LOGGER.info("no more offline players, stopping snapshot timer");
+					mSendSnapshotsTimer.cancel();
+				}
+				
+				else {
+					for(XHuntPlayer player : offlinePlayers) {
+						LOGGER.info("sending Snapshot to " + player.getJid());
+						sendSnapshot(player.getJid());
+					}
+				}
 			}
 		}, 0, mSendSnapshotsInterval);
 	}
@@ -246,44 +265,66 @@ public class Connection {
 				LOGGER.warning("Player " + jid + " was not found in the Game's Player List!");
 				return;
 			}
+
+			int subState = ((GameStatePlay) mController.getActGame().getGameState()).getSubGameStateID();
 			
 			// Mr.X can rejoin anytime
 			if(returnee.isMrx()) {
 				LOGGER.info("Setting Mr.X back to online");
 				returnee.setOnline(true);
+				
+				// if it's GameStateRoundMrX, he could have missed the StartRoundIQ, just send another one
+				if(subState == GameStatePlay.SUBSTATE_MRX) {
+					List<TicketAmount> ticketsMrX = new ArrayList< TicketAmount >();
+					for ( Map.Entry< Integer, Integer > entry : mController.getSettings().getTicketsMrX().entrySet() ) {
+						ticketsMrX.add( new TicketAmount(entry.getKey(), entry.getValue()) );
+					}
+					
+					mController.getConnection().getProxy().StartRound( 
+							mController.getActGame().getMisterX().getJid(), 
+							mController.getActGame().getRound(), 
+							true, 
+							ticketsMrX, 
+							new IXMPPCallback< StartRoundResponse >() {
+								@Override
+								public void invoke( StartRoundResponse xmppBean ) {}
+							} );
+				}
 			}
 
 			// Agents have to rejoin depending on their state
 			else if(!returnee.isMrx()) {
 				if(playersWaitingForReturn == null)
-					playersWaitingForReturn = new ArrayList<XHuntPlayer>();
-				int subState = ((GameStatePlay) mController.getActGame().getGameState()).getSubGameStateID();
+					playersWaitingForReturn = new CopyOnWriteArraySet<XHuntPlayer>();
 				
-				// if Agent didn't choose a target, he has to wait until the beginning of the next round 
-				if(returnee.getCurrentTargetId() == -1) {
-					LOGGER.info("Agent " + jid + " didn't choose a target, adding him to playersWaitingForReturn");
-					playersWaitingForReturn.add(returnee);
-				}
-				
-				// if Agent chose a target, but hasn't reached it yet, he can return as long as it's GameStateRoundAgents
-				else if((returnee.getCurrentTargetId() != -1) && (!returnee.getReachedTarget())) {
-					if(subState == GameStatePlay.SUBSTATE_AGENTS) {
-						LOGGER.info("Setting Agent " + jid + " back to online, he has to move to his previously chosen target");
-						returnee.setOnline(true);
-					} else {
-						LOGGER.info("Agent " + jid + " can't rejoin in GameStateRoundMrX, adding him to playersWaitingForReturn");
+				if(!playersWaitingForReturn.contains(returnee)) {
+					
+					// if Agent didn't choose a target, he has to wait until the beginning of the next round 
+					if(returnee.getCurrentTargetId() == -1) {
+						LOGGER.info("Agent " + jid + " didn't choose a target, adding him to playersWaitingForReturn");
 						playersWaitingForReturn.add(returnee);
 					}
+					
+					// if Agent chose a target, but hasn't reached it yet, he can return as long as it's GameStateRoundAgents
+					else if((returnee.getCurrentTargetId() != -1) && (!returnee.getReachedTarget())) {
+						if(subState == GameStatePlay.SUBSTATE_AGENTS) {
+							LOGGER.info("Setting Agent " + jid + " back to online, he has to move to his previously chosen target");
+							returnee.setOnline(true);
+						} else {
+							LOGGER.info("Agent " + jid + " can't rejoin in GameStateRoundMrX, adding him to playersWaitingForReturn");
+							playersWaitingForReturn.add(returnee);
+						}
+					}
+					
+					// if Agent has reached his target, he can rejoin at the beginning of the next round
+					else if(returnee.getReachedTarget()) {
+						LOGGER.info("Agent " + jid + " already reached his target, adding him to playersWaitingForReturn");
+						playersWaitingForReturn.add(returnee);
+					}
+					
+					else
+						LOGGER.warning("Unhandled State of returning Player");
 				}
-				
-				// if Agent has reached his target, he can rejoin at the beginning of the next round
-				else if(returnee.getReachedTarget()) {
-					LOGGER.info("Agent " + jid + " already reached his target, adding him to playersWaitingForReturn");
-					playersWaitingForReturn.add(returnee);
-				}
-				
-				else
-					LOGGER.warning("Unhandled State of returning Player");
 			}
 			
 		} else {
@@ -313,13 +354,11 @@ public class Connection {
 		
 		long currentTime = System.currentTimeMillis();
 		
-		printWaitingBeanMap();
-		
 		ArrayList<String> removableWaitingBeanIds = new ArrayList<String>(); 
 		for(Map.Entry<String, BeanTimePair> entry : mWaitingForResultBeans.entrySet()){
 
 			// if the player left the game or the bean was marked for deletion, don't wait for a response to this bean any more
-			if(entry.getValue().DeleteFromWaitings || mController.getActGame().getPlayerByJid(entry.getValue().Bean.getTo()) == null) { 
+			if(entry.getValue().DeleteFromWaitings || mController.getActGame().getPlayerByJid(entry.getValue().Bean.getTo()) == null) {
 				removableWaitingBeanIds.add(entry.getKey());
 				
 				// skip rest of condition checking
@@ -332,28 +371,43 @@ public class Connection {
 				// check if a result-XMPPBean has exceeded the maximum number of delay periods
 				if(entry.getValue().DelayedPeriods > mLimitForDelayedPeriods) {
 					
-					// kick player if still in GameStateLobby, GameStateRoundInitial etc
-					if(!(mController.getActGame().getGameState() instanceof GameStatePlay))
-						kickNotRespondingPlayer(entry.getValue().Bean.getTo());
+					// check whether player really is offline or if he already sent newer beans
+					if(!entry.getValue().playerGaveSignOfLive) {
+
+						// kick player if still in GameStateLobby, GameStateRoundInitial etc
+						if(!(mController.getActGame().getGameState() instanceof GameStatePlay))
+							kickNotRespondingPlayer(entry.getValue().Bean.getTo());
+						
+						// else mark him as offline
+						else
+							disableNotRespondingPlayer(entry.getValue().Bean.getTo());
+					}
 					
-					// else mark him as offline
-					else
-						disableNotRespondingPlayer(entry.getValue().Bean.getTo());
+					// if he already sent newer beans, just don't wait for a response to this one any more
+					else {
+						LOGGER.info("marking old waiting bean for deletion, player still seems to be alive");
+						entry.getValue().DeleteFromWaitings = true;
+					}
 				}
 				
 				// if maximum number of delay periods is not reached yet, increment delayed periods value
 				else {
 					if(!mIsFiletransferActive)
 						entry.getValue().DelayedPeriods++;
-					
-					LOGGER.info(entry.getKey() + " has a delay of " + entry.getValue().DelayedPeriods + " periods");
 				}
 			}
 		}
 		
 		// remove all result-XMPPBeans from mWatingForResultBeans which were marked before
-		for(String waitingBeanId : removableWaitingBeanIds)
+		StringBuilder strBuilder = new StringBuilder();
+		for(String waitingBeanId : removableWaitingBeanIds) {
+			strBuilder.append(System.getProperty("line.separator") + "- " + mWaitingForResultBeans.get(waitingBeanId).Bean.toXML());
 			mWaitingForResultBeans.remove(waitingBeanId);
+		}
+		if(strBuilder.toString().length() > 0)
+			LOGGER.info("removed following Beans from mWaitingForResultBeans: " + strBuilder.toString());
+		
+		printWaitingBeanMap();
 	}
 	
 	/**
@@ -369,7 +423,7 @@ public class Connection {
 		if(player != null)
 			player.setOnline(false);
 		
-		if(playersWaitingForReturn.contains(player))
+		if((playersWaitingForReturn != null) && (playersWaitingForReturn.contains(player)))
 			playersWaitingForReturn.remove(player);
 		
 		// Mark each result-XMPPBean which we are waiting for for deletion
@@ -511,18 +565,26 @@ public class Connection {
 	/**
 	 * Prints detailed information about the waiting XMPPBeans, if there are any.
 	 */
-	public void printWaitingBeanMap() {
+	private void printWaitingBeanMap() {
 		if(mWaitingForResultBeans.size() > 0) {
-			LOGGER.info("Waiting for " + mWaitingForResultBeans.size() + " result beans:");
 			
-			for(Map.Entry<String, BeanTimePair> entry : mWaitingForResultBeans.entrySet()){
-				LOGGER.info("Waiting Bean: [" 
+			StringBuilder strBuilder = new StringBuilder();
+			strBuilder.append("Waiting for " + mWaitingForResultBeans.size() + " result beans:");
+			
+			int count = 1;
+			for(Map.Entry<String, BeanTimePair> entry : mWaitingForResultBeans.entrySet()) {
+				strBuilder.append(System.getProperty("line.separator")
+						+ "- Waiting Bean #" + count++ + ": ["
 						+ " id=" + entry.getKey()
 						+ " timestamp=" + entry.getValue().TimeStamp
 						+ " delayedPeriod=" + entry.getValue().DelayedPeriods
-						+ " delete=" + entry.getValue().DeleteFromWaitings
-						+ " " + beanToString(entry.getValue().Bean));
+						+ " playerGaveOtherSignsOfLife=" + entry.getValue().playerGaveSignOfLive
+						+ " delete=" + entry.getValue().DeleteFromWaitings + "] "
+						+ System.getProperty("line.separator")
+						+ beanToString(entry.getValue().Bean)
+						);
 			}
+			LOGGER.info(strBuilder.toString());
 		}
 	}
 	
@@ -688,11 +750,13 @@ public class Connection {
 		bean.setFrom(mMobilisAgent.getFullJid());
 		
 		// if the player is not available, do not send any XMPPBEan beside a SnapshotBean
+		// Player can be null in GameStateUninitialized and beginning of GameStateLobby
 		XHuntPlayer plr = mController.getActGame().getPlayerByJid(bean.getTo());
-		if((plr != null) &&
-			(plr.isOnline() || bean.getNamespace().equals(SnapshotRequest.NAMESPACE))) {
+		if((plr == null) || (plr.isOnline() || bean.getNamespace().equals(SnapshotRequest.NAMESPACE))) {
 				// just wait for XMPPBeans of type get or set (Snapshots are 'Set')
-				if(bean.getType() == XMPPBean.TYPE_SET || bean.getType() == XMPPBean.TYPE_GET) {
+				// and don't wait for responses to UpdateTicketsRequests, the client doesn't send any
+				if((bean.getType() == XMPPBean.TYPE_SET || bean.getType() == XMPPBean.TYPE_GET)
+						&& !(bean instanceof UpdateTicketsRequest)) {
 					// add a copy of the XMPPBean to the list of waiting XMPPBeans mWaitingForResultBeans
 					XMPPBean clone = bean.clone();
 					mWaitingForResultBeans.put(bean.getId(), new BeanTimePair(clone, System.currentTimeMillis()));
@@ -702,8 +766,9 @@ public class Connection {
 				sendBean(bean);
 				return true;
 		}
-		else 
+		else {
 			return false;
+		}
 	}
 	
 	/*
@@ -882,26 +947,52 @@ public class Connection {
 	 */
 	public boolean verifyIncomingBean(XMPPBean inBean){
 		boolean isBeanAccepted = false;
-		
-		LOGGER.info("Verifying incoming IQ: " + beanToString(inBean));
+		String resultMsg = "";
 		
 		// just handle the XMPPBeans of type result, each other XMPPBeans automatically accepted 
 		// so that the current GameState can handle this XMPPBean
 		if(inBean.getType() == XMPPBean.TYPE_RESULT){
 			// if we are waiting for this result, accept the XMPPBean
-			isBeanAccepted = (mWaitingForResultBeans.remove(inBean.getId()) != null);
+			BeanTimePair btp = mWaitingForResultBeans.remove(inBean.getId());
+			isBeanAccepted = ((btp != null) && (!btp.DeleteFromWaitings));
+			if(isBeanAccepted) resultMsg += " Bean was expected Result";
 			
 			// if it's coming from a unavailable player, accept the XMPPBean and let the player rejoin
 			XHuntPlayer plr = mController.getActGame().getPlayerByJid(inBean.getFrom());
-			if((plr != null) && (!plr.isOnline())) {
+			if((plr == null) || (!plr.isOnline())) {
+				if(!plr.isOnline()) resultMsg += " Bean was accepted because it was sent by a Player marked as offline";
 				isBeanAccepted = true;
 				handleReturningPlayer(inBean.getFrom());
 			}
 		}
 		else if (inBean.getType() == XMPPBean.TYPE_GET || inBean.getType() == XMPPBean.TYPE_SET){
+			resultMsg += " Bean was accepted because it was of type GET or SET";
 			isBeanAccepted = true;
 		}
 		
+		if(!isBeanAccepted && (inBean.getType() != XMPPBean.TYPE_ERROR))
+			resultMsg += " Bean was rejected because it neither was an expected result, nor did it come from an offline Player";
+		
+		if(inBean.getType() == XMPPBean.TYPE_ERROR)
+			resultMsg += " Bean was of Type Error, maybe addressee is offline";
+		
+		LOGGER.info("Verifying incoming IQ: " + beanToString(inBean)
+				+ System.getProperty("line.separator") + "-->" + resultMsg);
+		
+		// if we are waiting for other responses from this player, set a boolean in the corresponding BeanTimePairs
+		// so that checkForDelayedResultBeans() knows that this Player shouldn't be marked as offline
+		if(isBeanAccepted) {
+			int cnt = 0;
+			for(Map.Entry<String, BeanTimePair> entry : mWaitingForResultBeans.entrySet()) {
+				if(entry.getValue().Bean.getTo().equals(inBean.getFrom())) {
+					entry.getValue().playerGaveSignOfLive = true;
+					cnt++;
+				}
+			}
+			if(cnt > 0)
+				LOGGER.info("received newer bean from player who still owes " + cnt + " response(s), prevent marking him as offline");
+		}
+
 		return isBeanAccepted;
 	}
 	
@@ -939,6 +1030,10 @@ public class Connection {
 		/** True if this XMPPBean should be removed from the list of waiting XMPPBeans 
 		 * while next check for result XMPPBeans happens. */
 		public boolean DeleteFromWaitings = false;
+		
+		/** Is set to true if the player sent other beans although he didn't respond to this one.
+		 *  Prevents player from being set to offline if he just didn't respond to a single bean. */
+		public boolean playerGaveSignOfLive = false;
 		
 		/**
 		 * Instantiates a new BeanTimePair.

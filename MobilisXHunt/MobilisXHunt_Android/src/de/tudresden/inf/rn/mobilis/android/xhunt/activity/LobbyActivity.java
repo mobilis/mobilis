@@ -1278,6 +1278,7 @@ public class LobbyActivity extends Activity {
 				UpdateTicketsRequest bean = (UpdateTicketsRequest) inBean;
 
 				if (bean != null && !isError) {
+					//mMxaProxy.getIQProxy().getProxy().UpdateTickets(bean.getFrom(), bean.getId());
 					mGame.getRouteManagement().setMyTickets(bean.getTickets());
 
 					/* Commented out since tickets became hidden

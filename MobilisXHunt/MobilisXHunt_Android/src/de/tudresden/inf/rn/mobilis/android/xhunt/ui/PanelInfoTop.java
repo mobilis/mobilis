@@ -23,6 +23,9 @@
  */
 package de.tudresden.inf.rn.mobilis.android.xhunt.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
@@ -163,20 +166,31 @@ public class PanelInfoTop extends PanelTransparent {
 
 		String newText = "nearest station will be assigned";
 		
+		// only count online players. try/catch to ensure compatibility with older service versions.
+		List<XHuntPlayer> onlinePlayers = new ArrayList<XHuntPlayer>();
+		try {
+			for(XHuntPlayer player : mGame.getGamePlayers().values())
+				if(player.isOnline())
+					onlinePlayers.add(player);
+		} catch(Exception e) {
+			for(XHuntPlayer player : mGame.getGamePlayers().values())
+				onlinePlayers.add(player);
+		}
+		
 		if(isMrX) {
-			if(mGame.getGamePlayers().values().size() == 1)
+			if(onlinePlayers.size() == 1)
 				newText = "You are playing alone.";
 			
 			else {
 				if(mGame.getCurrentRound() > 0) {
 					newText = "";
 					
-					for(XHuntPlayer player : mGame.getGamePlayers().values()) {		
+					for(XHuntPlayer player : onlinePlayers) {		
 						if(player.isMrX()) {
 							if(!player.getReachedTarget())
 								newText = "Go to marked station";
 							if(player.getReachedTarget()) {
-								if(mGame.getGamePlayers().values().size() == 2)
+								if(onlinePlayers.size() == 2)
 									newText = "Wait till the agent made his move";
 								else
 									newText ="Wait till agents made their moves";
@@ -200,7 +214,7 @@ public class PanelInfoTop extends PanelTransparent {
 				if(mGame.getCurrentRound() == 0) {	
 					
 					int stillMovingCounter = 0;
-					for(XHuntPlayer player : mGame.getGamePlayers().values()) {		
+					for(XHuntPlayer player : onlinePlayers) {		
 						if((!player.isMrX()) && (!player.getReachedTarget())) {
 							if(mGame.getRouteManagement().getStationById(player.getCurrentTargetId()) != null) {
 								stillMovingCounter++;
@@ -223,13 +237,13 @@ public class PanelInfoTop extends PanelTransparent {
 					
 					int stillChoosingCounter = 0;
 					int stillMovingCounter = 0;		
-					for(XHuntPlayer player : mGame.getGamePlayers().values()) {
+					for(XHuntPlayer player : onlinePlayers) {
 						if(!player.isMrX())
 							if(mGame.getRouteManagement().getStationById(player.getCurrentTargetId()) == null)
 								stillChoosingCounter++;
 					}		
 					
-					for(XHuntPlayer player : mGame.getGamePlayers().values()) {
+					for(XHuntPlayer player : onlinePlayers) {
 						if((!player.isMrX()) && (!player.getReachedTarget()))
 							if(mGame.getRouteManagement().getStationById(player.getCurrentTargetId()) != null)
 								stillMovingCounter++;
