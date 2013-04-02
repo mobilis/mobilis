@@ -214,7 +214,7 @@ public class Connection {
 				}
 				
 				//if game was closed, cancel timer
-				if(!mController.getActGame().isGameOpen())
+				if(mController.getActGame().getGameState() instanceof GameStateGameOver)
 					mSendSnapshotsTimer.cancel();
 				
 				// if all players are back online, write log message and cancel timer
@@ -863,7 +863,7 @@ public class Connection {
 		mDelayedResultBeansTimer.schedule(
 			new TimerTask() {
 				public void run() {
-					if(!mController.getActGame().isGameOpen())
+					if(mController.getActGame().getGameState() instanceof GameStateGameOver)
 						mDelayedResultBeansTimer.cancel();
 					else
 						checkForDelayedResultBeans();

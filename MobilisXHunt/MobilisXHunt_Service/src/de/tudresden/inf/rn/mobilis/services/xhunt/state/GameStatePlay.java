@@ -64,9 +64,6 @@ public class GameStatePlay extends GameState{
 	/** The timer which polls the location of all players if ticks. */
 	private Timer mPollingTimer;
 	
-	/** Timer used for waiting for Mr.X to come back if he's currently offline. */
-	private Timer waitForMrXTimer;
-	
 	/** Identifiers for the two different Substates, needed for letting Players rejoin after connection disturbances */
 	public static final int SUBSTATE_MRX = 1, SUBSTATE_AGENTS = 2;
 	
@@ -250,7 +247,7 @@ public class GameStatePlay extends GameState{
 		mPollingTimer.schedule(
 			new TimerTask() {
 				public void run() {
-					if(!game.isGameOpen())
+					if(game.getGameState() instanceof GameStateGameOver)
 						mPollingTimer.cancel();
 					
 					// If there are not enough players available or Mr.X is gone, switch to 

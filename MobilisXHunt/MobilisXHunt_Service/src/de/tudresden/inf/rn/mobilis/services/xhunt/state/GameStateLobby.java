@@ -223,6 +223,9 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 	 */
 	//@Override
 	public XMPPBean onJoinGame( JoinGameRequest inBean ) {
+		if(inBean.getIsSpectator())
+			return null;
+		
 		XMPPBean out = null;
 		LOGGER.info("game is open: " + game.isGameOpen());
 		
