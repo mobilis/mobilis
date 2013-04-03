@@ -353,7 +353,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 					}
 				}
 				else{
-					// if exit player is mr.x, moderator got mr.x
+					// if exit player is mr.x, moderator becomes mr.x
 					if(exitPlayer.isMrx()){
 						XHuntPlayer moderator = fromPlayer.isModerator()
 							? fromPlayer
@@ -398,6 +398,11 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 						game.setGameState(new GameStateRoundInitial(control, game));
 						LOGGER.info("Status changed to GameStateRoundInitial");
 					}
+					
+					// else check if new players can join now that one left
+					else if((game.getPlayers().size() >= control.getSettings().getMinPlayers())
+							&& (game.getPlayers().size() < control.getSettings().getMaxPlayers()))
+						game.setGameIsOpen(true);
 				}
 			}
 			// If player wants to kick another player but isn't moderator, respond an error
