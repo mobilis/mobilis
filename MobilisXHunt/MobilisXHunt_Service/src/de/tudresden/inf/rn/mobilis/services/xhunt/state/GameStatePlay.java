@@ -30,11 +30,11 @@ import de.tudresden.inf.rn.mobilis.services.xhunt.Connection;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Game;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Settings;
 import de.tudresden.inf.rn.mobilis.services.xhunt.XHunt;
+import de.tudresden.inf.rn.mobilis.services.xhunt.helper.EmptyCallback;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.XHuntPlayer;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.DepartureDataRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.DepartureDataResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationInfo;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayerExitRequest;
@@ -215,6 +215,7 @@ public class GameStatePlay extends GameState{
 	 *
 	 * @param reason the game over reason
 	 */
+	@SuppressWarnings("unchecked")
 	private void setGameOver(String reason){
 		game.setGameIsOpen(false);
 		
@@ -229,11 +230,7 @@ public class GameStatePlay extends GameState{
 			control.getConnection().getProxy().GameOver( 
 					toJid, 
 					reason, 
-					new IXMPPCallback< GameOverResponse >() {
-						
-						@Override
-						public void invoke( GameOverResponse xmppBean ) {}
-					} );
+					new EmptyCallback());
 		}
 	}
 	
@@ -328,6 +325,7 @@ public class GameStatePlay extends GameState{
 		/**
 		 * Instantiates a new GameStateRoundMrX.
 		 */
+		@SuppressWarnings("unchecked")
 		public GameStateRoundMrX(){
 			LOGGER.info("SubGameState: GameStateRoundMrX");
 			
@@ -357,11 +355,7 @@ public class GameStatePlay extends GameState{
 						game.getRound(), 
 						true, 
 						ticketsMrX, 
-						new IXMPPCallback< StartRoundResponse >() {
-							
-							@Override
-							public void invoke( StartRoundResponse xmppBean ) {}
-						} );
+						new EmptyCallback());
 			}
 		}
 		
@@ -507,6 +501,7 @@ public class GameStatePlay extends GameState{
 		/**
 		 * Instantiates a new GameStateRoundAgents.
 		 */
+		@SuppressWarnings("unchecked")
 		public GameStateRoundAgents(){
 			LOGGER.info("SubGameState: GameStateRoundAgents");
 			
@@ -529,11 +524,7 @@ public class GameStatePlay extends GameState{
 						game.getRound(), 
 						game.showMisterX(),
 						tickets,
-						new IXMPPCallback< StartRoundResponse >() {
-							
-							@Override
-							public void invoke( StartRoundResponse xmppBean ) {}
-						} );
+						new EmptyCallback());
 			}
 		}
 		

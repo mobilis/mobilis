@@ -40,6 +40,7 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
+import de.tudresden.inf.rn.mobilis.services.xhunt.helper.EmptyCallback;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.XHuntPlayer;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.AreasRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.AreasResponse;
@@ -255,6 +256,7 @@ public class Connection {
 	 * 
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	private void handleReturningPlayer(String jid) {
 		
 		// Players can only return in GameStatePlay
@@ -285,10 +287,7 @@ public class Connection {
 							mController.getActGame().getRound(), 
 							true, 
 							ticketsMrX, 
-							new IXMPPCallback< StartRoundResponse >() {
-								@Override
-								public void invoke( StartRoundResponse xmppBean ) {}
-							} );
+							new EmptyCallback());
 				}
 			}
 
@@ -441,6 +440,7 @@ public class Connection {
 	 * 
 	 * @param playerJid the jid of the player
 	 */
+	@SuppressWarnings("unchecked")
 	private void kickNotRespondingPlayer(String playerJid){
 		LOGGER.warning("Kicking not responding Player " + playerJid);
 		
@@ -482,13 +482,7 @@ public class Connection {
 			
 			// notify all other players about removing of the unavailable player
 			mController.getActGame().getGameState().sendPlayersBean("Player " + unavailablePlayer.getName()
-					+ " is no more available", new IXMPPCallback< PlayersResponse >() {
-						
-						@Override
-						public void invoke( PlayersResponse xmppBean ) {
-							// Do nothing
-						}
-					});
+					+ " is no more available", new EmptyCallback());
 		}		
 	}
 	
@@ -1006,7 +1000,9 @@ public class Connection {
 		
 		@Override
 		public void sendXMPPBean( XMPPBean out, IXMPPCallback< ? extends XMPPBean > callback ) {
-			_waitingCallbacks.put( out.getId(), callback );
+			if(!(callback instanceof EmptyCallback))
+				_waitingCallbacks.put( out.getId(), callback );
+			
 			sendXMPPBean( out );
 		}
 	};

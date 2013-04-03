@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Connection;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Game;
 import de.tudresden.inf.rn.mobilis.services.xhunt.XHunt;
+import de.tudresden.inf.rn.mobilis.services.xhunt.helper.EmptyCallback;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.XHuntPlayer;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.AreasRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.CancelTimerRequest;
@@ -36,7 +37,6 @@ import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.CreateGameRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.DepartureDataRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.DepartureDataResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationInfo;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationResponse;
@@ -142,6 +142,7 @@ public class GameStateRoundInitial extends GameState{
 	/**
 	 * Dismiss the start timer for the agents.
 	 */
+	@SuppressWarnings("unchecked")
 	private void dismissStartTimerAgents(){
 		for(XHuntPlayer player : game.getAgents())
 			// If a player doesn't provide a location after timer dismissed, 
@@ -154,30 +155,19 @@ public class GameStateRoundInitial extends GameState{
 					setGameOver("Not enough players to carry on with this game!");
 				}
 				else{
-					sendPlayersBean("Player " + player.getName() + " can not provide a geo location and was kicked.", new IXMPPCallback< PlayersResponse >() {
-						
-						@Override
-						public void invoke( PlayersResponse xmppBean ) {
-							// Do nothing
-						}
-					});
+					sendPlayersBean("Player " + player.getName() + " can not provide a geo location and was kicked.", new EmptyCallback());
 				}
 			}
 		
 		// Tell the agents their nearest station to start at
-		sendRoundStatusBeanForAgents(new IXMPPCallback< RoundStatusResponse >() {
-			
-			@Override
-			public void invoke( RoundStatusResponse xmppBean ) {
-				// Do nothing
-			}
-		});
+		sendRoundStatusBeanForAgents(new EmptyCallback());
 		mIsStartTimerAgentsRunning = false;
 	}
 	
 	/**
 	 * Dismiss start timer for Mr.X.
 	 */
+	@SuppressWarnings("unchecked")
 	private void dismissStartTimerMrX(){
 		// If Mr.X doesn't provide a location after timer dismissed, 
 		// the game will be shutdown
@@ -186,13 +176,7 @@ public class GameStateRoundInitial extends GameState{
 		}
 		// Else tell Mr.X his nearest station to start at
 		else{			
-			sendRoundStatusBeanForMrX(new IXMPPCallback< RoundStatusResponse >() {
-				
-				@Override
-				public void invoke( RoundStatusResponse xmppBean ) {
-					// Do nothing
-				}
-			});
+			sendRoundStatusBeanForMrX(new EmptyCallback());
 		}
 		
 		mIsStartTimerMrxRunning = false;		
@@ -208,6 +192,7 @@ public class GameStateRoundInitial extends GameState{
 	 */
 	private IXMPPCallback< LocationResponse > LocationCallback = new IXMPPCallback< LocationResponse >() {
 		
+		@SuppressWarnings("unchecked")
 		@Override
 		public void invoke( LocationResponse inBean ) {
 			XHuntPlayer updatePlayer = null;
@@ -248,17 +233,9 @@ public class GameStateRoundInitial extends GameState{
 				updatePlayer.setReachedTarget(true);
 
 				if(updatePlayer.isMrx())
-					sendRoundStatusBeanForMrX(new IXMPPCallback< RoundStatusResponse >() {
-						
-						@Override
-						public void invoke( RoundStatusResponse xmppBean ) {}
-					});
+					sendRoundStatusBeanForMrX(new EmptyCallback());
 				else
-					sendRoundStatusBeanForAgents(new IXMPPCallback< RoundStatusResponse >() {
-						
-						@Override
-						public void invoke( RoundStatusResponse xmppBean ) {}
-					});
+					sendRoundStatusBeanForAgents(new EmptyCallback());
 			}
 			
 			// If each player has reach his target, stop polling locations in this GameState 
@@ -270,6 +247,7 @@ public class GameStateRoundInitial extends GameState{
 		}
 	};
 	
+	@SuppressWarnings("unchecked")
 	private void setGameOver(String reason){
 		game.setGameIsOpen(false);
 		
@@ -291,11 +269,7 @@ public class GameStateRoundInitial extends GameState{
 			control.getConnection().getProxy().GameOver( 
 					toJid, 
 					reason, 
-					new IXMPPCallback< GameOverResponse >() {
-						
-						@Override
-						public void invoke( GameOverResponse xmppBean ) {}
-					} );
+					new EmptyCallback());
 		}
 	}
 	
@@ -303,6 +277,7 @@ public class GameStateRoundInitial extends GameState{
 	 * Start initial round. This will send the StartRoundBean, which contains the 
 	 * the current round number, if Mr.X is visible and the amount of tickets.
 	 */
+	@SuppressWarnings("unchecked")
 	private void startInitialRound(){
 		// init and send tickets to mrx
 		if(game.getMisterX().getTicketsAmount().size() < 1)
@@ -318,11 +293,7 @@ public class GameStateRoundInitial extends GameState{
 				game.getRound(), 
 				true, 
 				ticketsMrX, 
-				new IXMPPCallback< StartRoundResponse >() {
-					
-					@Override
-					public void invoke( StartRoundResponse xmppBean ) {}
-				} );
+				new EmptyCallback());
 		
 		
 		// init and send tickets to agents
@@ -340,11 +311,7 @@ public class GameStateRoundInitial extends GameState{
 					game.getRound(), 
 					true, 
 					ticketsAgents, 
-					new IXMPPCallback< StartRoundResponse >() {
-						
-						@Override
-						public void invoke( StartRoundResponse xmppBean ) {}
-					} );
+					new EmptyCallback());
 		}
 		
 		
