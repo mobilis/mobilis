@@ -155,7 +155,7 @@ public class XHunt extends MobilisService {
 				if(e.getXMPPError() != null){
 					int errorcode = e.getXMPPError().getCode();
 					String errormessage = e.getXMPPError().getMessage();
-					LOGGER.severe(errorcode + " - " + errormessage);
+					LOGGER.severe(errorcode + " - " + errormessage + " - " + e.getMessage());
 				} else {
 					LOGGER.severe("XHunt#shutdown: Unknown Error while shut down XHunt Service: " 
 							+ getAgent().getFullJid());

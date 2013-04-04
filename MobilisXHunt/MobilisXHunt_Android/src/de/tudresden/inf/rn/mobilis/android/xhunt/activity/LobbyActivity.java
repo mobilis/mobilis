@@ -82,6 +82,7 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.service.ServiceConnector;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogPlayerInfo;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogRemoteLoading;
 import de.tudresden.inf.rn.mobilis.mxa.ConstMXA;
+import de.tudresden.inf.rn.mobilis.mxa.ConstMXA.MessageItems;
 import de.tudresden.inf.rn.mobilis.mxa.services.callbacks.IFileAcceptCallback;
 import de.tudresden.inf.rn.mobilis.mxa.services.callbacks.IFileCallback;
 import de.tudresden.inf.rn.mobilis.mxa.services.parcelable.ByteStream;
@@ -659,6 +660,13 @@ public class LobbyActivity extends Activity {
 
 		initComponents();
 		bindXHuntService();
+		
+		// delete old chat messages from internal database
+		int cntMsgsDeleted = getContentResolver().delete(
+				MessageItems.CONTENT_URI,
+				null,
+				null);
+		Log.i(TAG, cntMsgsDeleted + " old chat messages deleted");
 	}
 
 	/*
