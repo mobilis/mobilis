@@ -286,9 +286,9 @@ public class LobbyActivity extends Activity {
 					mMxaProxy.connectToMUC(mGame.getChatID(),
 							mGame.getChatPassword());
 				} catch (RemoteException e) {
-					Log.e(TAG, "ERROR while connecting to MUC");
+					Log.e(TAG, "Failed to connect to MUC");
 					Toast.makeText(LobbyActivity.this,
-							"ERROR while connecting to MUC", Toast.LENGTH_LONG)
+							"Failed to connect to chat", Toast.LENGTH_LONG)
 							.show();
 				}
 
@@ -420,7 +420,7 @@ public class LobbyActivity extends Activity {
 					AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
 							LobbyActivity.this);
 
-					alertBuilder.setTitle("Update player failed");
+					alertBuilder.setTitle("Failed to update Player");
 					alertBuilder.setMessage(msg.obj.toString());
 					alertBuilder.setPositiveButton("Ok",
 							new DialogInterface.OnClickListener() {
@@ -739,7 +739,7 @@ public class LobbyActivity extends Activity {
 								player.getJid(), false, _kickPlayerCallback);
 				result = true;
 			} else {
-				Toast.makeText(LobbyActivity.this, "Nice try :-)",
+				Toast.makeText(LobbyActivity.this, "You can't kick yourself.",
 						Toast.LENGTH_LONG).show();
 			}
 			break;
@@ -756,7 +756,7 @@ public class LobbyActivity extends Activity {
 										player.getPlayerIconID()),
 								_updatePlayerCallback);
 			} else {
-				Toast.makeText(LobbyActivity.this, "You're already Mr.X",
+				Toast.makeText(LobbyActivity.this, "You already are Mr.X",
 						Toast.LENGTH_LONG).show();
 			}
 

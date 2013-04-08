@@ -328,7 +328,7 @@ public class XHuntMapActivity extends MapActivity {
 		    		if(mDialogDepartures.hasContent())
 		    			mDialogDepartures.show();
 		    		else
-		    			Toast.makeText(XHuntMapActivity.this, "No data available!",
+		    			Toast.makeText(XHuntMapActivity.this, "No departure data available!",
 		    					Toast.LENGTH_LONG).show();
 		    			
 		    		break;
@@ -736,7 +736,7 @@ public class XHuntMapActivity extends MapActivity {
 				}
 				
 			} else {
-				Toast.makeText(this, "Error! No route found", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "Error! No route to target found", Toast.LENGTH_LONG).show();
 			}
 		}
 		

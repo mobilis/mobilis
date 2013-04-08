@@ -154,7 +154,7 @@ public class MUCActivity extends Activity{
 		else {
 			// If XMPP isn't connected notify the user
 			Toast toast = Toast.makeText(MUCActivity.this,
-					"Sorry, connection to server lost. Please try again in a moment",
+					"Currently no connection to server. Please try again in a moment",
 					Toast.LENGTH_LONG);
 			toast.setGravity(Gravity.TOP, 0, 0);
 	    	toast.show();

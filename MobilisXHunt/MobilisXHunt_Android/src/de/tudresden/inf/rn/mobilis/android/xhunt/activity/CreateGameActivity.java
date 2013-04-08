@@ -144,7 +144,7 @@ public class CreateGameActivity extends PreferenceActivity {
 			
 			if(msg.what == -1){
 				Toast.makeText(CreateGameActivity.this, 
-						"Couldn't create Game. Reasons: " + msg.obj.toString(),
+						"Couldn't create game. Reasons: " + msg.obj.toString(),
 						Toast.LENGTH_LONG).show();
 			}
 			else{
