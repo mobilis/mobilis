@@ -64,13 +64,13 @@ public class GameStateGameOver extends GameState{
 	 * available.
 	 */
 	private void checkShutdownCondition(){
-		LOGGER.info("GameStateGameOver#checkShutdownCondition: "
-				+ "shutdown in gameOverState?: " + (game.getPlayers().size() == 0));
-		
 		Set<XHuntPlayer> avlblPlayers = new HashSet<XHuntPlayer>();
 		for(Map.Entry<String, XHuntPlayer> entry : game.getPlayers().entrySet())
 			if(entry.getValue().isOnline())
 				avlblPlayers.add(entry.getValue());
+		
+		LOGGER.info("GameStateGameOver#checkShutdownCondition: "
+				+ "shutdown in gameOverState?: " + (avlblPlayers.size() == 0));
 		
 		if(avlblPlayers.size() == 0){
 			try {
