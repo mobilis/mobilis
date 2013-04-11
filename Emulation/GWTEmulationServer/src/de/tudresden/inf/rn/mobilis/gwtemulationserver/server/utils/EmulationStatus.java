@@ -4,21 +4,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name="EmulationStatus")
 public class EmulationStatus implements Serializable {
 	
 	private Long id;
-	private ArrayList<EmulationCommand> finishedCommands;
-	private ArrayList<EmulationCommand> notFinishedCommands;
+	private List<EmulationCommand> finishedCommands;
+	private List<EmulationCommand> notFinishedCommands;
 	
 	public EmulationStatus() {
 		this.finishedCommands = new ArrayList<EmulationCommand>();
@@ -26,8 +26,8 @@ public class EmulationStatus implements Serializable {
 	}
 	
 	@Id
-	@GeneratedValue(generator="increment")
-	@GenericGenerator(name="increment", strategy="increment")
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	//@GenericGenerator(name="increment", strategy="increment")
 	public Long getId() {
 		return id;
 	}
@@ -36,28 +36,32 @@ public class EmulationStatus implements Serializable {
 		this.id = id;
 	}
 	
-	public ArrayList<EmulationCommand> getFinishedCommands() {
+	//@OneToMany(targetEntity=EmulationCommand.class, mappedBy="EmulationStatus", fetch=FetchType.EAGER)
+	@OneToMany(cascade=CascadeType.ALL)
+	//@Fetch(FetchMode.JOIN)
+	public List<EmulationCommand> getFinishedCommands() {
 		return finishedCommands;
 	}
 	
-	public void setFinishedCommands(ArrayList<EmulationCommand> finishedCommands) {
+	public void setFinishedCommands(List<EmulationCommand> finishedCommands) {
 		this.finishedCommands = finishedCommands;
 	}
 	
-	public ArrayList<EmulationCommand> getNotFinishedCommands() {
+	//@OneToMany(targetEntity=EmulationCommand.class, mappedBy="EmulationStatus", fetch=FetchType.EAGER)
+	@OneToMany(cascade=CascadeType.ALL)
+	//@Fetch(FetchMode.JOIN)
+	public List<EmulationCommand> getNotFinishedCommands() {
 		return notFinishedCommands;
 	}
 	
-	public void setNotFinishedCommands(ArrayList<EmulationCommand> notFinishedCommands) {
+	public void setNotFinishedCommands(List<EmulationCommand> notFinishedCommands) {
 		this.notFinishedCommands = notFinishedCommands;
 	}
 	
-	@Transient
 	public void addFinishedCommand(EmulationCommand cmd) {
 		finishedCommands.add(cmd);
 	}
 	
-	@Transient
 	public void addNotFinishedCommand(EmulationCommand cmd) {
 		notFinishedCommands.add(cmd);
 	}

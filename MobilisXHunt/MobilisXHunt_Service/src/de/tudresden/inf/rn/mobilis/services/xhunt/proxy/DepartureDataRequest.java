@@ -74,7 +74,7 @@ public class DepartureDataRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		DepartureDataRequest clone = new DepartureDataRequest( StationId );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

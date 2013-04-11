@@ -46,20 +46,19 @@ public class GameInstructionActivity extends Activity{
 	private void initComponents(){
 		
 		TextView tv_instructions = (TextView)findViewById(R.id.instructions_tv_text);
-		tv_instructions.setText("This game is the real-time version of the famous board game Scotland Yard.\n");
+		tv_instructions.setText("This game is a real-life version of the popular board game Scotland Yard.\n\n");
 		tv_instructions.setText(tv_instructions.getText() 
-				+ "There are two kinds of characters: Mister X,"
-				+ " a criminal, and some agents that haunt him. Mr. X tries not to be caught.\n");
+				+ "Players can assume two roles: One has to play Mister X, a fugitive infamous villain, "
+				+ "while the rest of the players act as Agents, trying to find him. This is complicated "
+				+ "by the fact that Mister X can see all the Agents\' positions on his map, while they "
+				+ "can only see each other.\n\n");
 		tv_instructions.setText(tv_instructions.getText() 
-				+ "The players are in a city, e.g. Dresden," 
-				+ " and have the possibility to take the public transports to get from one station to the next." 
-				+ " Everyone only has a certain number of different tickets, for example 5 bus tickets," 
-				+ " 5 tram tickets and 2 railway tickets.");
+				+ "The game is round-based, at the beginning of each round the players have to choose a "
+				+ "target, which equals to a station of the local public transport. If an Agent happens "
+				+ "to encounter Mister X at the target station, the Agents win the game, else everyone "
+				+ "(including Mister X) moves on until the maximum number of rounds is reached.\n\n");
 		tv_instructions.setText(tv_instructions.getText()
-				+ "The game consists of 10 rounds, in each one first Mr. X has to choose his next target and then the agents."
-				+ " After this it needs some time until everybody reaches the target station by bus, tram or railway."
-				+ " If everybody arrived and Mr. X is not on the same station as one agent, the next round starts."
-				+ " If Mr. X is caught the agents win, but if the ten rounds are over and Mr. X wasn\'t found, he wins.");
+				+ "Hint: Mister X becomes visible on the Agents\' map every third round, so watch out!");
 		
 	}
 }

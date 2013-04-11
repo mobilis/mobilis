@@ -30,12 +30,11 @@ import org.jivesoftware.smack.packet.Message;
 
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
 import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
+import de.tudresden.inf.rn.mobilis.services.xhunt.helper.EmptyCallback;
 import de.tudresden.inf.rn.mobilis.services.xhunt.helper.LogClass;
 import de.tudresden.inf.rn.mobilis.services.xhunt.helper.SqlHelper;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.services.IQListener;
 import de.tudresden.inf.rn.mobilis.services.xhunt.services.MessageService;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 
 
 /**
@@ -111,7 +110,7 @@ public class XHunt extends MobilisService {
 				if(e.getXMPPError() != null){
 					int errorcode = e.getXMPPError().getCode();
 					String errormessage = e.getXMPPError().getMessage();
-					LOGGER.severe(errorcode + " - " + errormessage);
+					LOGGER.severe(errorcode + " - " + errormessage + " - " + e.getMessage());
 				}else{
 					LOGGER.severe("XHunt#start: Unknown Error while connecting to the XMPP-Server");
 				}
@@ -131,6 +130,7 @@ public class XHunt extends MobilisService {
 	/* (non-Javadoc)
 	 * @see de.tudresden.inf.rn.mobilis.server.services.AppSpecificService#shutdown()
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void shutdown() throws Exception {
 		// If a game is open, notify all players while using a GameOverBean
@@ -141,13 +141,7 @@ public class XHunt extends MobilisService {
 					mConnection.getProxy().GameOver( 
 							toJid, 
 							"Server was shut down", 
-							new IXMPPCallback< GameOverResponse >() {
-								
-								@Override
-								public void invoke( GameOverResponse xmppBean ) {
-									// Do nothing
-								}
-							} );
+							new EmptyCallback());
 				}
 				/*GameOverRequest bean = 
 					new GameOverRequest("Server was shut down");
@@ -161,7 +155,7 @@ public class XHunt extends MobilisService {
 				if(e.getXMPPError() != null){
 					int errorcode = e.getXMPPError().getCode();
 					String errormessage = e.getXMPPError().getMessage();
-					LOGGER.severe(errorcode + " - " + errormessage);
+					LOGGER.severe(errorcode + " - " + errormessage + " - " + e.getMessage());
 				} else {
 					LOGGER.severe("XHunt#shutdown: Unknown Error while shut down XHunt Service: " 
 							+ getAgent().getFullJid());

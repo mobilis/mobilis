@@ -124,6 +124,7 @@
 					<xs:element name="Jid" type="xs:string" />
 					<xs:element name="Latitude" type="xs:int" />
 					<xs:element name="Longitude" type="xs:int" />
+					<xs:element name="PlayerOnline" type="xs:boolean" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:element name="LocationRequest">
@@ -131,6 +132,7 @@
 					<xs:sequence>
 						<xs:element name="LocationInfos" type="tns:LocationInfo"
 							minOccurs="0" maxOccurs="unbounded" />
+						<xs:element name="MrXOnline" type="xs:boolean" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

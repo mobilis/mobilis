@@ -31,7 +31,7 @@ public class PlayerExitResponse extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		PlayerExitResponse clone = new PlayerExitResponse(  );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

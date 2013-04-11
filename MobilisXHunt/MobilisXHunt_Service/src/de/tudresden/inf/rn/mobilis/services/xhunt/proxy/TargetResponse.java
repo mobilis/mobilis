@@ -74,7 +74,7 @@ public class TargetResponse extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		TargetResponse clone = new TargetResponse( TicketId );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

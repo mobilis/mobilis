@@ -58,7 +58,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 public class Game {
 	
 	//Components
-	/** The m routemanagement. */
+	/** The routemanagement. */
 	private RouteManagement mRoutemanagement;
 	
 	/** The muc. */
@@ -106,7 +106,7 @@ public class Game {
 		mTickets = new HashMap<Integer, Ticket>();
 		mRoutemanagement = new RouteManagement();
         
-        openMultiUserChat();
+		openMultiUserChat();
 		
         System.out.println("Game created (PlayerMin: " + control.getSettings().getMinPlayers() + ", PlayerMax: " + control.getSettings().getMaxPlayers() +")");
         
@@ -156,7 +156,9 @@ public class Game {
 		if(toPlayer != null){
 			bean.setGameName( control.getSettings().getGameName() );
 			bean.setRound( round );
-			bean.setIsRoundStart( isRoundStart(playerJid) );
+			//bean.setIsRoundStart( isRoundStart(playerJid) );
+			/* The one above leads to multiple calls of mStartRoundHandler in the client */
+			bean.setIsRoundStart(false);
 			bean.setShowMrX( showMisterX() );
 			bean.setStartTimer( control.getSettings().getStartTimer() );
 			
@@ -187,7 +189,8 @@ public class Game {
 											: -1,
 										null != player.getGeoLocation()
 											? player.getGeoLocation().getLongitudeE6()
-											: -1
+											: -1,
+										player.isOnline()
 								),
 								player.isCurrentTargetFinal(),
 								player.getCurrentTargetId(),								
@@ -211,13 +214,14 @@ public class Game {
 									mrxPlayer.getPlayerIconID()
 							),
 							new LocationInfo(
-									mrxPlayer.getJid(),
-									null != mrxPlayer.getGeoLocation()
+								mrxPlayer.getJid(),
+								null != mrxPlayer.getGeoLocation()
 									? mrxPlayer.getGeoLocation().getLatitudeE6()
 									: -1,
 								null != mrxPlayer.getGeoLocation()
 									? mrxPlayer.getGeoLocation().getLongitudeE6()
-									: -1
+									: -1,
+								mrxPlayer.isOnline()
 							),
 							mrxPlayer.isCurrentTargetFinal(),
 							mrxPlayer.getCurrentTargetId(),
@@ -234,7 +238,7 @@ public class Game {
 									mrxPlayer.isReady(),
 									mrxPlayer.getPlayerIconID()
 							),
-							new LocationInfo( mrxPlayer.getJid(), -1, -1 ),
+							new LocationInfo( mrxPlayer.getJid(), -1, -1, mrxPlayer.isOnline() ),
 							mrxPlayer.isCurrentTargetFinal(),
 							mrxPlayer.getCurrentTargetId(),							
 							mrxPlayer.getReachedTarget(),
@@ -507,14 +511,15 @@ public class Game {
 		return false;
 	}
 	
-	/**Computes if all players have already reached their target. Uses isPlayerAtTarget().
+	/**Computes if all online players have already reached their target. Uses isPlayerAtTarget().
 	 * @return True, if the distance of all players between them and their targets is smaller that 50 meters.
 	 */
 	public boolean areAllPlayersAtTarget() {
 		boolean result = true;
 		
-		for(XHuntPlayer player : gamePlayers.values()){
-			result = result && isPlayerAtTarget(player);
+		for(XHuntPlayer player : gamePlayers.values()) {
+			if(player.isOnline())
+				result = result && isPlayerAtTarget(player);
 		}
 		
 		return result;

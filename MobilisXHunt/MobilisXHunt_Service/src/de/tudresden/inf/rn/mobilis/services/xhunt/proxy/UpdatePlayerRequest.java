@@ -74,7 +74,7 @@ public class UpdatePlayerRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		UpdatePlayerRequest clone = new UpdatePlayerRequest( PlayerInfo );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

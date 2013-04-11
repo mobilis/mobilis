@@ -894,7 +894,7 @@
 			<xsl:text> );</xsl:text>
 			
 			<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
-			<xsl:text>clone.cloneBasicAttributes( clone );</xsl:text>
+			<xsl:text>this.cloneBasicAttributes( clone );</xsl:text>
 		
 			<xsl:value-of select="$newline" /><xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
 			<xsl:text>return clone;</xsl:text>

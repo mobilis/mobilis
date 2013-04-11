@@ -31,7 +31,7 @@ public class AreasRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		AreasRequest clone = new AreasRequest(  );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

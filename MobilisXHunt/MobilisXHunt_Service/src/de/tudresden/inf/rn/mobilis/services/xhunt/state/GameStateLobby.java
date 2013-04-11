@@ -20,26 +20,23 @@
 package de.tudresden.inf.rn.mobilis.services.xhunt.state;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Game;
 import de.tudresden.inf.rn.mobilis.services.xhunt.XHunt;
+import de.tudresden.inf.rn.mobilis.services.xhunt.helper.EmptyCallback;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.Ticket;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.XHuntPlayer;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.JoinGameRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayerExitRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayersResponse;
+import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.SnapshotResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TransferTicketRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdatePlayerRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.UpdateTicketsResponse;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 /**
@@ -78,7 +75,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 		
 		loadGameData();
 		
-		control.getConnection().startDelayedResultBeansTimer();
+		//control.getConnection().startDelayedResultBeansTimer();
 	}
 	
 	/**
@@ -129,6 +126,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 		else if(inBean instanceof TransferTicketRequest){
 			onTransferTicket((TransferTicketRequest) inBean);
 		}
+		else if(inBean instanceof SnapshotResponse) {}
 		// If no defined Bean was matched, respond an error to the requester
 		else {
 			inBean.errorType = "wait";
@@ -142,13 +140,13 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 		}
 	}
 	
-	//TODO: Failure handling if a file doesn't exists
-	/**
+	// TO DO: Failure handling if a file doesn't exists
+	/*
 	 * Transmit game data to player.
 	 *
 	 * @param playerJid the jid of the player
 	 */
-	private void transmitGameData(String playerJid){		
+	/*private void transmitGameData(String playerJid){		
 		// Transmit route, station and ticket information via file transfer
 		if(mGameDataFile != null) {
 			System.out.println("Transmitting GameDataFile ("+mGameDataFile.getAbsolutePath()+") to "+playerJid);		
@@ -185,7 +183,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 						"icon",
 						playerJid);
 		}
-	}
+	}*/
 	
 	
 	/**
@@ -220,7 +218,11 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 	 * @param inBean the JoinGameBean which contains the player information
 	 */
 	//@Override
+	@SuppressWarnings("unchecked")
 	public XMPPBean onJoinGame( JoinGameRequest inBean ) {
+		if(inBean.getIsSpectator())
+			return null;
+		
 		XMPPBean out = null;
 		LOGGER.info("game is open: " + game.isGameOpen());
 		
@@ -279,13 +281,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 					incomingFileNames );
 			
 			// Notify each player of the new joined player
-			sendPlayersBean("Player " + player.getName() + " has joined.", new IXMPPCallback< PlayersResponse >() {
-				
-				@Override
-				public void invoke( PlayersResponse xmppBean ) {
-					// Do nothing
-				}
-			});
+			sendPlayersBean("Player " + player.getName() + " has joined.", new EmptyCallback());
 			
 			if(player.isMrx()){
 				player.setTicketsAmount(control.getSettings().getTicketsMrX());
@@ -296,11 +292,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 			
 			control.getConnection().getProxy().UpdateTickets( inBean.getFrom(),
 					player.getTicketsAmountAsList(),
-					new IXMPPCallback< UpdateTicketsResponse >() {
-				
-				@Override
-				public void invoke( UpdateTicketsResponse xmppBean ) {}
-			} );
+					new EmptyCallback());
 			
 			
 			
@@ -324,6 +316,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 	 * @param inBean the PlayerExitBean which contain the jid of the exit player
 	 */
 	//@Override
+	@SuppressWarnings("unchecked")
 	public XMPPBean onPlayerExit( PlayerExitRequest inBean ) {
 		XMPPBean out = null;
 		XHuntPlayer exitPlayer = game.getPlayerByJid(inBean.getJid());
@@ -353,21 +346,14 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 					game.setGameState(new GameStateGameOver(control, game));
 					LOGGER.info("Status changed to GameStateGameOver");
 					
-					IXMPPCallback< GameOverResponse > callback = new IXMPPCallback< GameOverResponse >() {
-						
-						@Override
-						public void invoke( GameOverResponse xmppBean ) {
-							// Do nothing
-						}
-					};
 					for ( String toJid : game.getPlayers().keySet() ) {
 						control.getConnection().getProxy().GameOver( 
 								toJid, 
-								"Moderator has left!", callback );
+								"Moderator has left!", new EmptyCallback() );
 					}
 				}
 				else{
-					// if exit player is mr.x, moderator got mr.x
+					// if exit player is mr.x, moderator becomes mr.x
 					if(exitPlayer.isMrx()){
 						XHuntPlayer moderator = fromPlayer.isModerator()
 							? fromPlayer
@@ -384,18 +370,11 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 							// Switch to GameOver
 							game.setGameState(new GameStateGameOver(control, game));
 							LOGGER.info("Status changed to GameStateGameOver");
-							
-							IXMPPCallback< GameOverResponse > callback = new IXMPPCallback< GameOverResponse >() {
-								
-								@Override
-								public void invoke( GameOverResponse xmppBean ) {
-									// Do nothing
-								}
-							};
+
 							for ( String toJid : game.getPlayers().keySet() ) {
 								control.getConnection().getProxy().GameOver( 
 										toJid, 
-										"No Moderator available!", callback );
+										"No Moderator available!", new EmptyCallback() );
 							}
 						}
 					}
@@ -405,25 +384,13 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 						control.getConnection().getProxy().GameOver( 
 								inBean.getJid(), 
 								"Moderator has kicked you!",
-								new IXMPPCallback< GameOverResponse >() {
-									
-									@Override
-									public void invoke( GameOverResponse xmppBean ) {
-										// Do nothing
-									}
-								} );
+								new EmptyCallback());
 						
 						updateInfo = "Player " + exitPlayer.getName() + " was kicked by Moderator.";
 					}
 					
 					// Notify rest of players about the exited player
-					sendPlayersBean(updateInfo, new IXMPPCallback< PlayersResponse >() {
-						
-						@Override
-						public void invoke( PlayersResponse xmppBean ) {
-							// Do nothing
-						}
-					});
+					sendPlayersBean(updateInfo, new EmptyCallback());
 					
 					// check if rest of players are ready to play and minimum of players is reached
 					if(game.areAllPlayersReady()
@@ -431,6 +398,11 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 						game.setGameState(new GameStateRoundInitial(control, game));
 						LOGGER.info("Status changed to GameStateRoundInitial");
 					}
+					
+					// else check if new players can join now that one left
+					else if((game.getPlayers().size() >= control.getSettings().getMinPlayers())
+							&& (game.getPlayers().size() < control.getSettings().getMaxPlayers()))
+						game.setGameIsOpen(true);
 				}
 			}
 			// If player wants to kick another player but isn't moderator, respond an error
@@ -463,6 +435,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 	 * @param inBean the UpdatePlayerBean which contains the new player information
 	 */
 	//@Override
+	@SuppressWarnings("unchecked")
 	public XMPPBean onUpdatePlayer( UpdatePlayerRequest inBean ) {
 		XMPPBean out = null;
 		XHuntPlayer fromPlayer = game.getPlayerByJid(inBean.getFrom());
@@ -604,13 +577,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 						info );
 				
 				if(updatePlayers)
-					sendPlayersBean(updateInfo, new IXMPPCallback< PlayersResponse >() {
-						
-						@Override
-						public void invoke( PlayersResponse xmppBean ) {
-							// Do nothing
-						}
-					});
+					sendPlayersBean(updateInfo, new EmptyCallback());
 			}
 		}
 		else{
@@ -621,6 +588,7 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 		return out;
 	}
 
+	@SuppressWarnings("unchecked")
 	public XMPPBean onTransferTicket( TransferTicketRequest in ) {
 		XMPPBean out = null;
 		XHuntPlayer fromPlayer = game.getPlayerByJid( in.getFromPlayerJid() );
@@ -649,19 +617,11 @@ class GameStateLobby extends GameState /*implements IMobilisXHuntIncoming*/ {
 				
 				control.getConnection().getProxy().UpdateTickets( in.getFromPlayerJid(),
 						fromPlayer.getTicketsAmountAsList(),
-						new IXMPPCallback< UpdateTicketsResponse >() {
-					
-					@Override
-					public void invoke( UpdateTicketsResponse xmppBean ) {}
-				} );
+						new EmptyCallback());
 				
 				control.getConnection().getProxy().UpdateTickets( in.getToPlayerJid(),
 						toPlayer.getTicketsAmountAsList(),
-						new IXMPPCallback< UpdateTicketsResponse >() {
-					
-					@Override
-					public void invoke( UpdateTicketsResponse xmppBean ) {}
-				} );
+						new EmptyCallback());
 			}
 			else{
 				out = in.buildInputDataFault( "Not enough tickets available or unavailable type of ticket." );

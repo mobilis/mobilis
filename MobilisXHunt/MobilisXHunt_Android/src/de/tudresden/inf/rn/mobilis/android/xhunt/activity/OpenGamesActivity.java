@@ -115,7 +115,7 @@ public class OpenGamesActivity extends Activity {
 					break;
 				case CODE_SERVICE_GAMES_FAILURE:
 					Toast.makeText(OpenGamesActivity.this,
-							"Failed to loading open games!", Toast.LENGTH_LONG).show();
+							"Failed to load open games!", Toast.LENGTH_LONG).show();
 					break;
 			}
 		}
@@ -132,13 +132,13 @@ public class OpenGamesActivity extends Activity {
 	    	switch(msg.what){
 		    	case -1:
 		    		Toast.makeText(OpenGamesActivity.this,
-		    				"Failed to load details: " + msg.obj.toString(), Toast.LENGTH_LONG).show();
+		    				"Failed to load game details: " + msg.obj.toString(), Toast.LENGTH_LONG).show();
 		    		break;
 		    	case DialogGameDetails.DIALOG_ID:
 		    		if(mDialogGameDetails.hasContent())
 		    			mDialogGameDetails.show();
 		    		else
-		    			Toast.makeText(OpenGamesActivity.this, "No data available!", Toast.LENGTH_LONG).show();
+		    			Toast.makeText(OpenGamesActivity.this, "No game data available!", Toast.LENGTH_LONG).show();
 		    			
 		    		break;
 	    	}

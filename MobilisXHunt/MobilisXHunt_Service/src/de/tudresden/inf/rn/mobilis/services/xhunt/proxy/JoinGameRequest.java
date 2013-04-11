@@ -84,7 +84,7 @@ public class JoinGameRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		JoinGameRequest clone = new JoinGameRequest( GamePassword, PlayerName, IsSpectator );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

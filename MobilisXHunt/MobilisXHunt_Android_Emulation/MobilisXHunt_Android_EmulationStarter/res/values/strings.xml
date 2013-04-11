@@ -1,11 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">MobilisXHunt_AutomaticStarter</string>
+    <string name="app_name">Mobilis Emulation Starter</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">MobilisXHunt_AutomaticStarter</string>
-    <string name="btnStart">Start XHunt-Test</string>
-    <string name="isMisterX">Mister X</string>
-    <string name="txtUserName">XMPP username:</string>
-    <string name="txtPlayerCount">number of players:</string>
-
+    <string name="title_emulationstarter">Mobilis Emulation Starter</string>
+    <string name="btnConnect">Connect</string>
+    <string name="txtConnectionStatus">not connected</string>
+    <string name="txtIncomingTitle">Empfangene Commands:</string>
+    <string name="settings_key_emuserver">settings_key_emuserver</string>
+    <string name="settings_title_emuserver">EmulationServer Host</string>
+    <string name="settings_dialogTitle_emuserver">Enter EmulationServer Host</string>
+    <string name="title_settings">Mobilis Emulation Starter Settings</string>
+    <string name="menu_clear">Liste leeren</string>
 </resources>

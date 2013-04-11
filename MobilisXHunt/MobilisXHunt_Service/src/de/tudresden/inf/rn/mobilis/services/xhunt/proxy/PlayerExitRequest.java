@@ -79,7 +79,7 @@ public class PlayerExitRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		PlayerExitRequest clone = new PlayerExitRequest( Jid, IsSpectator );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

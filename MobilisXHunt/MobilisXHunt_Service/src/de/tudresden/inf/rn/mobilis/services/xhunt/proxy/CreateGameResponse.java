@@ -31,7 +31,7 @@ public class CreateGameResponse extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		CreateGameResponse clone = new CreateGameResponse(  );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

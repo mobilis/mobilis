@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Connection;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Game;
 import de.tudresden.inf.rn.mobilis.services.xhunt.XHunt;
+import de.tudresden.inf.rn.mobilis.services.xhunt.helper.EmptyCallback;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.XHuntPlayer;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsResponse;
@@ -114,6 +115,7 @@ public abstract class GameState {
 	 *
 	 * @param info an optional information text which will be displayed on client side
 	 */
+	@SuppressWarnings("unchecked")
 	public void sendPlayersBean(String info, IXMPPCallback< PlayersResponse > callback){
 		if(game != null && control != null){
 			System.out.println("gameplayers: " + game.getPlayers().size());
@@ -126,11 +128,7 @@ public abstract class GameState {
 						info,
 						callback != null
 							? callback
-							: new IXMPPCallback< PlayersResponse >() {
-
-								@Override
-								public void invoke( PlayersResponse xmppBean ) {}
-							});
+							: new EmptyCallback() );
 			}			
 			
 			/*sendXMPPBean(
@@ -145,6 +143,7 @@ public abstract class GameState {
 	/**
 	 * Send RoundStatusBean to inform all players about the state of the current round.
 	 */
+	@SuppressWarnings("unchecked")
 	protected void sendRoundStatusBean(){
 		if(game != null && control != null){
 			ArrayList<RoundStatusInfo> info = new ArrayList<RoundStatusInfo>();
@@ -155,13 +154,7 @@ public abstract class GameState {
 			
 			// Send a result RoundStatusBean to _ALL_ players
 			for ( String toJid : game.getPlayers().keySet() ) {
-				control.getConnection().getProxy().RoundStatus( toJid, game.getRound(), info, new IXMPPCallback< RoundStatusResponse >() {
-					
-					@Override
-					public void invoke( RoundStatusResponse xmppBean ) {
-						// Do nothing
-					}
-				} );
+				control.getConnection().getProxy().RoundStatus( toJid, game.getRound(), info, new EmptyCallback());
 			}
 			
 			
@@ -176,6 +169,7 @@ public abstract class GameState {
 	/**
 	 * Send RoundStatusBean to inform Mr.X about his own state of the current round.
 	 */
+	@SuppressWarnings("unchecked")
 	protected void sendRoundStatusBeanForMrX(IXMPPCallback< RoundStatusResponse > callback){
 		System.out.println("game=" + game + " control=" + control);
 		if(game != null && control != null){
@@ -190,11 +184,7 @@ public abstract class GameState {
 					info, 
 					callback != null
 						? callback
-						: new IXMPPCallback< RoundStatusResponse >() {
-
-							@Override
-							public void invoke( RoundStatusResponse xmppBean ) {}
-						} );
+						: new EmptyCallback());
 			
 			/*sendXMPPBean(
 					new RoundStatusBean(game.getRound(), info),
@@ -207,6 +197,7 @@ public abstract class GameState {
 	 * Send RoundStatusBean to inform all players about the state of the agents 
 	 * of the current round.
 	 */
+	@SuppressWarnings("unchecked")
 	protected void sendRoundStatusBeanForAgents(IXMPPCallback< RoundStatusResponse > callback){
 		if(game != null && control != null){	
 			ArrayList<RoundStatusInfo> info = new ArrayList<RoundStatusInfo>();
@@ -222,11 +213,7 @@ public abstract class GameState {
 						info, 
 						callback != null
 						? callback
-						: new IXMPPCallback< RoundStatusResponse >() {
-
-							@Override
-							public void invoke( RoundStatusResponse xmppBean ) {}
-						} );
+						: new EmptyCallback());
 			}
 			
 			

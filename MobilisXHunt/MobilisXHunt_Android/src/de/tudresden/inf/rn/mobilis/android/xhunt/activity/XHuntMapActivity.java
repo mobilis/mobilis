@@ -45,7 +45,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Toast;
 import android.widget.ZoomButtonsController;
@@ -329,7 +328,7 @@ public class XHuntMapActivity extends MapActivity {
 		    		if(mDialogDepartures.hasContent())
 		    			mDialogDepartures.show();
 		    		else
-		    			Toast.makeText(XHuntMapActivity.this, "No data available!",
+		    			Toast.makeText(XHuntMapActivity.this, "No departure data available!",
 		    					Toast.LENGTH_LONG).show();
 		    			
 		    		break;
@@ -359,10 +358,10 @@ public class XHuntMapActivity extends MapActivity {
 	    	mPanelInfoBottom.setInfoText("Choose your next target!");
 	    	mPanelInfoBottom.setTargetReached(false);
 	    	
-	    	Log.v(TAG, "what: " + msg.what + " lastStaion: " 
+	    	Log.v(TAG, "what: " + msg.what + " lastStation: " 
 	    			+ mGame.getPlayerByJID(mMxaProxy.getXmppJid()).getLastStationId());
 	    	
-	    	// Clear all reachable stations (this will color all stations as usal)
+	    	// Clear all reachable stations (this will color all stations as usual)
 	    	mRouteManagement.resetReachableStations();
 	    	mRouteManagement.updateReachableStations(msg.what);
 	    	
@@ -737,7 +736,7 @@ public class XHuntMapActivity extends MapActivity {
 				}
 				
 			} else {
-				Toast.makeText(this, "Error! No route found", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "Error! No route to target found", Toast.LENGTH_LONG).show();
 			}
 		}
 		
@@ -1284,7 +1283,16 @@ public class XHuntMapActivity extends MapActivity {
 		 */
 		private void handleLocationBean(LocationRequest bean){
 			if( bean != null && bean.getType() != XMPPBean.TYPE_ERROR ){
-				// Update locations of all palyers
+				// set online state of Mr.X
+				try {
+					mGame.getMrX().setOnline(bean.getMrXOnline());
+				} catch(Exception e) {
+					Log.w(TAG, "XHuntService doesn't support info about player's online state", e);
+					mGame.getMrX().setOnline(true);
+				}
+				
+				
+				// Update locations of all players
 				mGame.updatePlayerLocations(bean.getLocationInfos());
 
 				// Notify the gui handler to redraw all map elements (to refresh the locations)
@@ -1299,7 +1307,8 @@ public class XHuntMapActivity extends MapActivity {
 						new LocationInfo(
 								mMxaProxy.getXmppJid(), 
 								geoPoint.getLatitudeE6(), 
-								geoPoint.getLongitudeE6() ));
+								geoPoint.getLongitudeE6(),
+								true));
 			}
 		}
 		

@@ -9,13 +9,15 @@ public class LocationInfo implements XMPPInfo {
 	private String Jid = null;
 	private int Latitude = Integer.MIN_VALUE;
 	private int Longitude = Integer.MIN_VALUE;
+	private boolean PlayerOnline = false;
 
 
-	public LocationInfo( String Jid, int Latitude, int Longitude ) {
+	public LocationInfo( String Jid, int Latitude, int Longitude, boolean PlayerOnline ) {
 		super();
 		this.Jid = Jid;
 		this.Latitude = Latitude;
 		this.Longitude = Longitude;
+		this.PlayerOnline = PlayerOnline;
 	}
 
 	public LocationInfo(){}
@@ -42,6 +44,9 @@ public class LocationInfo implements XMPPInfo {
 				}
 				else if (tagName.equals( "Longitude" ) ) {
 					this.Longitude = Integer.parseInt( parser.nextText() );
+				}
+				else if (tagName.equals( "PlayerOnline" ) ) {
+					this.PlayerOnline = Boolean.parseBoolean( parser.nextText() );
 				}
 				else
 					parser.next();
@@ -91,6 +96,10 @@ public class LocationInfo implements XMPPInfo {
 			.append( this.Longitude )
 			.append( "</Longitude>" );
 
+		sb.append( "<PlayerOnline>" )
+			.append( this.PlayerOnline )
+			.append( "</PlayerOnline>" );
+
 		return sb.toString();
 	}
 
@@ -118,6 +127,14 @@ public class LocationInfo implements XMPPInfo {
 
 	public void setLongitude( int Longitude ) {
 		this.Longitude = Longitude;
+	}
+
+	public boolean getPlayerOnline() {
+		return this.PlayerOnline;
+	}
+
+	public void setPlayerOnline( boolean PlayerOnline ) {
+		this.PlayerOnline = PlayerOnline;
 	}
 
 }

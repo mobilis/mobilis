@@ -31,7 +31,7 @@ public class UsedTicketsRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		UsedTicketsRequest clone = new UsedTicketsRequest(  );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

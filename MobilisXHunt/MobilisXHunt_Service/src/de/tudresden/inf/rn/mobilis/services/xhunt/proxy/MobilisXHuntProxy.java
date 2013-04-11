@@ -107,11 +107,11 @@ public class MobilisXHuntProxy {
 		return out;
 	}
 
-	public void Location( String toJid, List< LocationInfo > LocationInfos, IXMPPCallback< LocationResponse > callback ) {
+	public void Location( String toJid, List< LocationInfo > LocationInfos, boolean MrXOnline, IXMPPCallback< LocationResponse > callback ) {
 		if ( null == _bindingStub || null == callback )
 			return;
 
-		LocationRequest out = new LocationRequest( LocationInfos );
+		LocationRequest out = new LocationRequest( LocationInfos, MrXOnline );
 		out.setTo( toJid );
 
 		_bindingStub.sendXMPPBean( out, callback );

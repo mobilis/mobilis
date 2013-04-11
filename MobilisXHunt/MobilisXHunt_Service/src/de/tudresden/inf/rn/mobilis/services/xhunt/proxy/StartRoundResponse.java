@@ -31,7 +31,7 @@ public class StartRoundResponse extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		StartRoundResponse clone = new StartRoundResponse(  );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

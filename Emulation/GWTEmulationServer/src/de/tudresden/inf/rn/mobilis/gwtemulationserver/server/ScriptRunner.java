@@ -1,20 +1,13 @@
 package de.tudresden.inf.rn.mobilis.gwtemulationserver.server;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smackx.bytestreams.ibb.InBandBytestreamManager;
-import org.jivesoftware.smackx.bytestreams.ibb.InBandBytestreamManager.StanzaType;
 import org.jivesoftware.smackx.filetransfer.FileTransfer.Status;
 import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
@@ -22,7 +15,6 @@ import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
 import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
 import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 
-import de.tudresden.inf.rn.mobilis.gwtemulationserver.helper.FileHelper;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.CommandAck;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.CommandRequest;
 import de.tudresden.inf.rn.mobilis.gwtemulationserver.server.beans.LogRequest;
@@ -130,7 +122,7 @@ public class ScriptRunner extends XMLScriptExecutor {
 			System.err.println("Couldn't send StartCommand to " + sendTo);
 			session.getStatus().addNotFinishedCommand(emuCmd);
 		}
-		
+		System.out.println();
 		//emuConnection.getConnection().sendPacket(new BeanIQAdapter((XMPPBean)startReq));
 	}
 
@@ -265,6 +257,7 @@ public class ScriptRunner extends XMLScriptExecutor {
 			System.err.println("Couldn't send StopCommand to " + sendTo);
 			session.getStatus().addNotFinishedCommand(emuCmd);
 		}
+		System.out.println();
 		//emuConnection.getConnection().sendPacket(new BeanIQAdapter((XMPPBean)stopReq));
 	}
 
@@ -328,6 +321,7 @@ public class ScriptRunner extends XMLScriptExecutor {
 		
 		System.out.println("AppComand: method->" + methodName + ", to->" + sendTo);
 		BeanSenderReceiver<CommandRequest, CommandAck> bsr = new BeanSenderReceiver<CommandRequest, CommandAck>(emuConnection.getConnection());
+		bsr.setTimeout(40000);
 		XMPPBean result = bsr.exchange(commReq, new CommandAck(), 1);
 		
 		EmulationCommand emuCmd = new EmulationCommand(appNamespace, methodName, sendTo);
@@ -347,7 +341,7 @@ public class ScriptRunner extends XMLScriptExecutor {
 			System.err.println("Couldn't send AppComand to " + sendTo);
 			session.getStatus().addNotFinishedCommand(emuCmd);
 		}
-		
+		System.out.println();
 		//emuConnection.getConnection().sendPacket(new BeanIQAdapter((XMPPBean)commReq));
 		
 	}

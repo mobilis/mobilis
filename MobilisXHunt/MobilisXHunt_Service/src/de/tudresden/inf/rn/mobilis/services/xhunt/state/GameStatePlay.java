@@ -30,16 +30,17 @@ import de.tudresden.inf.rn.mobilis.services.xhunt.Connection;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Game;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Settings;
 import de.tudresden.inf.rn.mobilis.services.xhunt.XHunt;
+import de.tudresden.inf.rn.mobilis.services.xhunt.helper.EmptyCallback;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.XHuntPlayer;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.DepartureDataRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.DepartureDataResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationInfo;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayerExitRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayersResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.RoundStatusResponse;
+import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.SnapshotResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.StartRoundResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TargetRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TicketAmount;
@@ -57,11 +58,14 @@ public class GameStatePlay extends GameState{
 	/** The current SubGameState. */
 	private SubGameState mSubState;
 	
-	/** True, if not all player have reaches their targets. */
-	private boolean mWaitingForPlayersReachingTarget = false;
+	/* True, if not all player have reached their targets. */
+	//private boolean mWaitingForPlayersReachingTarget = false;
 	
 	/** The timer which polls the location of all players if ticks. */
 	private Timer mPollingTimer;
+	
+	/** Identifiers for the two different Substates, needed for letting Players rejoin after connection disturbances */
+	public static final int SUBSTATE_MRX = 1, SUBSTATE_AGENTS = 2;
 	
 	/** The class specific Logger object. */
 	private final static Logger LOGGER = Logger.getLogger(GameStatePlay.class.getCanonicalName());
@@ -83,6 +87,9 @@ public class GameStatePlay extends GameState{
 		
 		// Start polling of players locations
 		startLocationPolling();
+		
+		// check for connection interruptions
+		control.getConnection().startDelayedResultBeansTimer();
 	}
 	
 	/**
@@ -138,6 +145,7 @@ public class GameStatePlay extends GameState{
 			// refer it to the current SubGameState
 			mSubState.processPacket(inBean);
 		}
+		else if(inBean instanceof SnapshotResponse) {}
 		else {
 			inBean.errorType = "wait";
 			inBean.errorCondition = "unexpected-request";
@@ -196,10 +204,9 @@ public class GameStatePlay extends GameState{
 				return;
 			}
 			
-			// If all players have reached their target, switch to GameStateRoundMrX
-			if(game.areAllPlayersAtTarget()){
+			// If all players have reached their target and MrX is online, switch to GameStateRoundMrX
+			if(game.areAllPlayersAtTarget() && game.getMisterX().isOnline())
 				mSubState = new GameStateRoundMrX();
-			}
 		}
 	};
 	
@@ -208,6 +215,7 @@ public class GameStatePlay extends GameState{
 	 *
 	 * @param reason the game over reason
 	 */
+	@SuppressWarnings("unchecked")
 	private void setGameOver(String reason){
 		game.setGameIsOpen(false);
 		
@@ -222,11 +230,7 @@ public class GameStatePlay extends GameState{
 			control.getConnection().getProxy().GameOver( 
 					toJid, 
 					reason, 
-					new IXMPPCallback< GameOverResponse >() {
-						
-						@Override
-						public void invoke( GameOverResponse xmppBean ) {}
-					} );
+					new EmptyCallback());
 		}
 	}
 	
@@ -240,10 +244,17 @@ public class GameStatePlay extends GameState{
 		mPollingTimer.schedule(
 			new TimerTask() {
 				public void run() {
+					if(game.getGameState() instanceof GameStateGameOver)
+						mPollingTimer.cancel();
 					
 					// If there are not enough players available or Mr.X is gone, switch to 
 					// GameStateGameOver
-					if(game.getPlayers().size() < control.getSettings().getMinPlayers()
+					List<XHuntPlayer> availablePlayers = new ArrayList<XHuntPlayer>();
+					for(XHuntPlayer plr : game.getPlayers().values())
+						if (plr.isOnline())
+							availablePlayers.add(plr);
+					
+					if(availablePlayers.size() < control.getSettings().getMinPlayers()
 							|| game.getMisterX() == null){						
 						
 						setGameOver("Game over. Not enough players or Mr.X not available.");
@@ -258,7 +269,8 @@ public class GameStatePlay extends GameState{
 						if(!player.isMrx()){
 							infos.add(new LocationInfo(player.getJid(),
 									player.getGeoLocation().getLatitudeE6(),
-									player.getGeoLocation().getLongitudeE6()));
+									player.getGeoLocation().getLongitudeE6(),
+									player.isOnline()));
 						}
 						else{
 							playerMrX = player;
@@ -266,10 +278,13 @@ public class GameStatePlay extends GameState{
 					}
 					
 					// Send the locations of all agents to each agent
+					boolean mrXOnline = playerMrX != null ? playerMrX.isOnline() : false;
 					for ( String toJid : game.getAgentsJids() ) {
 						control.getConnection().getProxy().Location( 
 								toJid, 
-								infos, LocationCallback );
+								infos,
+								mrXOnline,
+								LocationCallback );
 					}
 					
 					// Add the location of Mr.X to the list of locations of the agents 
@@ -277,11 +292,14 @@ public class GameStatePlay extends GameState{
 					if(playerMrX != null){
 						infos.add(new LocationInfo(playerMrX.getJid(),
 								playerMrX.getGeoLocation().getLatitudeE6(),
-								playerMrX.getGeoLocation().getLongitudeE6()));
+								playerMrX.getGeoLocation().getLongitudeE6(),
+								playerMrX.isOnline()));
 						
 						control.getConnection().getProxy().Location( 
 								game.getMisterX().getJid(), 
-								infos, LocationCallback );
+								infos,
+								playerMrX.isOnline(),
+								LocationCallback );
 					}
 					
 		        }
@@ -307,6 +325,7 @@ public class GameStatePlay extends GameState{
 		/**
 		 * Instantiates a new GameStateRoundMrX.
 		 */
+		@SuppressWarnings("unchecked")
 		public GameStateRoundMrX(){
 			LOGGER.info("SubGameState: GameStateRoundMrX");
 			
@@ -324,8 +343,7 @@ public class GameStatePlay extends GameState{
 			else if(game.getRouteManagement().isPlayerUnmovable(game.getMisterX())){
 				setGameOver("End of game reached. Mr.X is out of tickets.");
 			}
-			// Else notify Mr.X about the start of the new round, including the new round number, 
-			// if he's visible to the agents and his amount of tickets
+			// Else send StartRoundIQ to Mr.X
 			else {
 				List<TicketAmount> ticketsMrX = new ArrayList< TicketAmount >();
 				for ( Map.Entry< Integer, Integer > entry : control.getSettings().getTicketsMrX().entrySet() ) {
@@ -337,11 +355,7 @@ public class GameStatePlay extends GameState{
 						game.getRound(), 
 						true, 
 						ticketsMrX, 
-						new IXMPPCallback< StartRoundResponse >() {
-							
-							@Override
-							public void invoke( StartRoundResponse xmppBean ) {}
-						} );
+						new EmptyCallback());
 			}
 		}
 		
@@ -350,10 +364,24 @@ public class GameStatePlay extends GameState{
 		 */
 		@Override
 		public void processPacket(XMPPBean inBean) {
+			// players shouldn't send target requests if they are still marked as offline
+			XHuntPlayer sender = game.getPlayerByJid(inBean.getFrom());
+			if(sender != null && !sender.isOnline()) {
+				inBean.errorType = "wait";
+				inBean.errorCondition = "unexpected-request";
+				inBean.errorText = "Player is still marked as offline";
+				
+				control.getConnection().sendXMPPBeanError(
+						inBean,
+						inBean
+				);	
+			}
 			
-			if( inBean instanceof TargetRequest ){
+			// normal case
+			else if( inBean instanceof TargetRequest ) {
 				handleTargetBean((TargetRequest) inBean);
 			}
+			
 			// Only TargetBean of Mr.X is supposed in here
 			else {
 				inBean.errorType = "wait";
@@ -410,8 +438,8 @@ public class GameStatePlay extends GameState{
 							else{
 								control.getConnection().getProxy().getBindingStub().sendXMPPBean( inBean.buildPlayerSynchronizationFault( null ) );
 								
-								// Try to synchronize Mr.X with actual server data
-								control.getConnection().handlePlayerNotReplies(playerMrX.getJid());
+								// Try to synchronize Mr.X with actual server data (sends Snapshots to him)
+								control.getConnection().disableNotRespondingPlayer(playerMrX.getJid());
 							}
 						}
 						// Target station is not reachable from Mr.Xs current station, respond an error
@@ -473,8 +501,12 @@ public class GameStatePlay extends GameState{
 		/**
 		 * Instantiates a new GameStateRoundAgents.
 		 */
+		@SuppressWarnings("unchecked")
 		public GameStateRoundAgents(){
 			LOGGER.info("SubGameState: GameStateRoundAgents");
+			
+			// set previously unavailable Agents to online if they returned
+			control.getConnection().setReturneesToOnline();
 			
 			// Reset targets of the agents
 			game.clearAgentTargets();
@@ -492,11 +524,7 @@ public class GameStatePlay extends GameState{
 						game.getRound(), 
 						game.showMisterX(),
 						tickets,
-						new IXMPPCallback< StartRoundResponse >() {
-							
-							@Override
-							public void invoke( StartRoundResponse xmppBean ) {}
-						} );
+						new EmptyCallback());
 			}
 		}
 		
@@ -505,11 +533,26 @@ public class GameStatePlay extends GameState{
 		 */
 		@Override
 		public void processPacket(XMPPBean inBean) {
+			// players shouldn't send target requests if they are still marked as offline
+			XHuntPlayer sender = game.getPlayerByJid(inBean.getFrom());
+			if(sender != null && !sender.isOnline()) {
+				inBean.errorType = "wait";
+				inBean.errorCondition = "unexpected-request";
+				inBean.errorText = "Player is marked as offline until start of next round";
+				
+				control.getConnection().sendXMPPBeanError(
+						inBean,
+						inBean
+				);	
+			}
 			
-			if( inBean instanceof TargetRequest ){
+			// normal case
+			else if( inBean instanceof TargetRequest ) {
 				handleTargetBean((TargetRequest) inBean);
 			}
-			else{
+			
+			// only TargetRequests allowed here
+			else {
 				inBean.errorType = "wait";
 				inBean.errorCondition = "unexpected-request";
 				inBean.errorText = "This request is not supportet at this game state";
@@ -566,8 +609,8 @@ public class GameStatePlay extends GameState{
 						else{
 							control.getConnection().getProxy().getBindingStub().sendXMPPBean( inBean.buildPlayerSynchronizationFault( null ) );
 							
-							// Try to synchronize agent with actual server data
-							control.getConnection().handlePlayerNotReplies(player.getJid());
+							// Try to synchronize agent with actual server data (sends Snapshots to him)
+							control.getConnection().disableNotRespondingPlayer(player.getJid());
 						}
 					}
 					else{
@@ -660,8 +703,13 @@ public class GameStatePlay extends GameState{
 				String gameOverReason = null;
 				
 				// check for game over conditions
+				List<XHuntPlayer> availablePlayers = new ArrayList<XHuntPlayer>();
+				for(XHuntPlayer plr : game.getPlayers().values())
+					if (plr.isOnline())
+						availablePlayers.add(plr);
+				
 				if(exitPlayer.isMrx()) gameOverReason = "Mr.X has left!";
-				else if(game.getPlayers().size() < control.getSettings().getMinPlayers())
+				else if(availablePlayers.size() < control.getSettings().getMinPlayers())
 					gameOverReason = "Not enough players to carry on with this game!";
 				
 				// If game over happens notify players
@@ -718,4 +766,11 @@ public class GameStatePlay extends GameState{
 				usedTickets );
 	}
 	
+	/**
+	 * Returns either {@link SUBSTATE_MRX} or {@link SUBSTATE_AGENTS}.
+	 * @return a final Integer value identifying the SubGameState.
+	 */
+	public int getSubGameStateID() {
+		return (mSubState instanceof GameStateRoundMrX) ? SUBSTATE_MRX : SUBSTATE_AGENTS;
+	}
 }

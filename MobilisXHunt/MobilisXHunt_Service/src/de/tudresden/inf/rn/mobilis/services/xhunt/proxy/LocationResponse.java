@@ -74,7 +74,7 @@ public class LocationResponse extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		LocationResponse clone = new LocationResponse( LocationInfo );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

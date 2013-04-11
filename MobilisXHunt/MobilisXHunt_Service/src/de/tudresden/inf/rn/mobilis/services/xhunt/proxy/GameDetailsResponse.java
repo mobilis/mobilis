@@ -104,7 +104,7 @@ public class GameDetailsResponse extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		GameDetailsResponse clone = new GameDetailsResponse( GameName, RequirePassword, CountRounds, StartTimer, PlayerNames, IsOpen );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

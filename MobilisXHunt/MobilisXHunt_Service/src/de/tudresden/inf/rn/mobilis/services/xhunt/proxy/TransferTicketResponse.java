@@ -31,7 +31,7 @@ public class TransferTicketResponse extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		TransferTicketResponse clone = new TransferTicketResponse(  );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

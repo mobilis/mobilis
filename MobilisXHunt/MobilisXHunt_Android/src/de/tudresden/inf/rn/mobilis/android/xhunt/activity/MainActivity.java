@@ -82,12 +82,12 @@ public class MainActivity extends Activity {
 			}
 			// If XHunt-Service is not available on Mobilis-Server, display a Toast
 			else if(msg.what == CODE_SERVICE_XHUNT_UNAVAILABLE){
-				Toast.makeText(MainActivity.this, "Server doesn't support XHunt service",
+				Toast.makeText(MainActivity.this, "No XHunt Service installed on Server",
 						Toast.LENGTH_SHORT).show();
 			}
 			// If Mobilis-Server doesn't respond, display a Toast
 			else if(msg.what == CODE_SERVER_RESPONSE_ERROR){
-				Toast.makeText(MainActivity.this, "Server sends Error result. Please check your settings",
+				Toast.makeText(MainActivity.this, "Server not found. Please check your settings!",
 						Toast.LENGTH_SHORT).show();
 			}
 		}
@@ -103,7 +103,7 @@ public class MainActivity extends Activity {
 			}
 			
 			// Notify user that XMPP is connected 
-			Toast.makeText(MainActivity.this, "XMPP connected", Toast.LENGTH_SHORT).show();	
+			Toast.makeText(MainActivity.this, "XMPP connection established", Toast.LENGTH_SHORT).show();	
 			mMxaProxy.getIQProxy().registerCallbacks();
 			
 			// Start game
@@ -115,8 +115,8 @@ public class MainActivity extends Activity {
     private Handler mXHuntServiceBoundHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
-			Toast.makeText(MainActivity.this, "Service Bound",
-	                Toast.LENGTH_SHORT).show();
+			//Toast.makeText(MainActivity.this, "Service Bound",
+	        //        Toast.LENGTH_SHORT).show();
 			mServiceConnector.getXHuntService().setGameState(new GameStateMain());
 			mMxaProxy = mServiceConnector.getXHuntService().getMXAProxy();	
 			
@@ -164,7 +164,7 @@ public class MainActivity extends Activity {
 				mMxaProxy.connect();
 			} catch (RemoteException e) {
 				Log.e(TAG, e.getMessage());
-				Toast.makeText(MainActivity.this, "ERROR: " + e.getLocalizedMessage(),
+				Toast.makeText(MainActivity.this, "Failed to connect to MXA: " + e.getLocalizedMessage(),
 						Toast.LENGTH_LONG).show();
 			}
 		}

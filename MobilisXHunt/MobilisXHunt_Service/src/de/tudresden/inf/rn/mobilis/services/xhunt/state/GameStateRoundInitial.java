@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Connection;
 import de.tudresden.inf.rn.mobilis.services.xhunt.Game;
 import de.tudresden.inf.rn.mobilis.services.xhunt.XHunt;
+import de.tudresden.inf.rn.mobilis.services.xhunt.helper.EmptyCallback;
 import de.tudresden.inf.rn.mobilis.services.xhunt.model.XHuntPlayer;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.AreasRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.CancelTimerRequest;
@@ -36,13 +37,13 @@ import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.CreateGameRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.DepartureDataRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.DepartureDataResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsRequest;
-import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationInfo;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.LocationResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayerExitRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.PlayersResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.RoundStatusResponse;
+import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.SnapshotResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.StartRoundResponse;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.TicketAmount;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
@@ -124,6 +125,7 @@ public class GameStateRoundInitial extends GameState{
 			// Just result of the player
 			control.getConnection().handleCallback( inBean );
 		}
+		else if(inBean instanceof SnapshotResponse) {}
 		// If no defined Bean was matched, respond an error to the requester
 		else {
 			inBean.errorType = "wait";
@@ -140,6 +142,7 @@ public class GameStateRoundInitial extends GameState{
 	/**
 	 * Dismiss the start timer for the agents.
 	 */
+	@SuppressWarnings("unchecked")
 	private void dismissStartTimerAgents(){
 		for(XHuntPlayer player : game.getAgents())
 			// If a player doesn't provide a location after timer dismissed, 
@@ -152,30 +155,19 @@ public class GameStateRoundInitial extends GameState{
 					setGameOver("Not enough players to carry on with this game!");
 				}
 				else{
-					sendPlayersBean("Player " + player.getName() + " can not provide a geo location and was kicked.", new IXMPPCallback< PlayersResponse >() {
-						
-						@Override
-						public void invoke( PlayersResponse xmppBean ) {
-							// Do nothing
-						}
-					});
+					sendPlayersBean("Player " + player.getName() + " can not provide a geo location and was kicked.", new EmptyCallback());
 				}
 			}
 		
 		// Tell the agents their nearest station to start at
-		sendRoundStatusBeanForAgents(new IXMPPCallback< RoundStatusResponse >() {
-			
-			@Override
-			public void invoke( RoundStatusResponse xmppBean ) {
-				// Do nothing
-			}
-		});
+		sendRoundStatusBeanForAgents(new EmptyCallback());
 		mIsStartTimerAgentsRunning = false;
 	}
 	
 	/**
 	 * Dismiss start timer for Mr.X.
 	 */
+	@SuppressWarnings("unchecked")
 	private void dismissStartTimerMrX(){
 		// If Mr.X doesn't provide a location after timer dismissed, 
 		// the game will be shutdown
@@ -184,13 +176,7 @@ public class GameStateRoundInitial extends GameState{
 		}
 		// Else tell Mr.X his nearest station to start at
 		else{			
-			sendRoundStatusBeanForMrX(new IXMPPCallback< RoundStatusResponse >() {
-				
-				@Override
-				public void invoke( RoundStatusResponse xmppBean ) {
-					// Do nothing
-				}
-			});
+			sendRoundStatusBeanForMrX(new EmptyCallback());
 		}
 		
 		mIsStartTimerMrxRunning = false;		
@@ -206,6 +192,7 @@ public class GameStateRoundInitial extends GameState{
 	 */
 	private IXMPPCallback< LocationResponse > LocationCallback = new IXMPPCallback< LocationResponse >() {
 		
+		@SuppressWarnings("unchecked")
 		@Override
 		public void invoke( LocationResponse inBean ) {
 			XHuntPlayer updatePlayer = null;
@@ -246,28 +233,21 @@ public class GameStateRoundInitial extends GameState{
 				updatePlayer.setReachedTarget(true);
 
 				if(updatePlayer.isMrx())
-					sendRoundStatusBeanForMrX(new IXMPPCallback< RoundStatusResponse >() {
-						
-						@Override
-						public void invoke( RoundStatusResponse xmppBean ) {}
-					});
+					sendRoundStatusBeanForMrX(new EmptyCallback());
 				else
-					sendRoundStatusBeanForAgents(new IXMPPCallback< RoundStatusResponse >() {
-						
-						@Override
-						public void invoke( RoundStatusResponse xmppBean ) {}
-					});
+					sendRoundStatusBeanForAgents(new EmptyCallback());
 			}
 			
 			// If each player has reach his target, stop polling locations in this GameState 
 			// and switch to GameStatePlay.
-			if(game.areAllPlayersAtTarget()){
+			if(game.areAllPlayersAtTarget() && game.getMisterX().isOnline()){
 				stopPollingLocations();
 				game.setGameState(new GameStatePlay(control, game));
 			}
 		}
 	};
 	
+	@SuppressWarnings("unchecked")
 	private void setGameOver(String reason){
 		game.setGameIsOpen(false);
 		
@@ -289,11 +269,7 @@ public class GameStateRoundInitial extends GameState{
 			control.getConnection().getProxy().GameOver( 
 					toJid, 
 					reason, 
-					new IXMPPCallback< GameOverResponse >() {
-						
-						@Override
-						public void invoke( GameOverResponse xmppBean ) {}
-					} );
+					new EmptyCallback());
 		}
 	}
 	
@@ -301,6 +277,7 @@ public class GameStateRoundInitial extends GameState{
 	 * Start initial round. This will send the StartRoundBean, which contains the 
 	 * the current round number, if Mr.X is visible and the amount of tickets.
 	 */
+	@SuppressWarnings("unchecked")
 	private void startInitialRound(){
 		// init and send tickets to mrx
 		if(game.getMisterX().getTicketsAmount().size() < 1)
@@ -316,11 +293,7 @@ public class GameStateRoundInitial extends GameState{
 				game.getRound(), 
 				true, 
 				ticketsMrX, 
-				new IXMPPCallback< StartRoundResponse >() {
-					
-					@Override
-					public void invoke( StartRoundResponse xmppBean ) {}
-				} );
+				new EmptyCallback());
 		
 		
 		// init and send tickets to agents
@@ -338,11 +311,7 @@ public class GameStateRoundInitial extends GameState{
 					game.getRound(), 
 					true, 
 					ticketsAgents, 
-					new IXMPPCallback< StartRoundResponse >() {
-						
-						@Override
-						public void invoke( StartRoundResponse xmppBean ) {}
-					} );
+					new EmptyCallback());
 		}
 		
 		
@@ -389,9 +358,11 @@ public class GameStateRoundInitial extends GameState{
 					// Collect the locations of all agents
 					for(XHuntPlayer player : game.getPlayers().values()){
 						if(!player.isMrx() && player.getGeoLocation()!=null){
-							infos.add(new LocationInfo(player.getJid(),
+							infos.add(new LocationInfo(
+									player.getJid(),
 									player.getGeoLocation().getLatitudeE6(),
-									player.getGeoLocation().getLongitudeE6()));
+									player.getGeoLocation().getLongitudeE6(),
+									player.isOnline()));
 						}
 						else{
 							playerMrX = player;
@@ -399,24 +370,32 @@ public class GameStateRoundInitial extends GameState{
 					}
 					
 					// Send the locations of all agents to each agent
+					boolean mrXOnline = playerMrX != null ? playerMrX.isOnline() : false;
 					for ( String toJid : game.getAgentsJids() ) {
 						control.getConnection().getProxy().Location( 
 								toJid, 
-								infos, LocationCallback );
+								infos,
+								mrXOnline,
+								LocationCallback );
 					}
 					
 					// Add the location of Mr.X to the list of locations of the agents 
 					// and send this list to Mr.X
 					if(playerMrX != null){
 						if (playerMrX.getGeoLocation()!=null) {
-							infos.add(new LocationInfo(playerMrX.getJid(),
+							infos.add(new LocationInfo(
+									playerMrX.getJid(),
 									playerMrX.getGeoLocation().getLatitudeE6(),
-									playerMrX.getGeoLocation().getLongitudeE6()));
+									playerMrX.getGeoLocation().getLongitudeE6(),
+									playerMrX.isOnline()));
 						}
 						
 						control.getConnection().getProxy().Location( 
 								game.getMisterX().getJid(), 
-								infos, LocationCallback );
+								infos,
+								playerMrX.isOnline(),
+								LocationCallback );
+						
 						System.out.println("GameStateRoundInitial Sending LocationRequests done");
 					}
 		        }

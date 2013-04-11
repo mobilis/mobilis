@@ -31,7 +31,7 @@ public class RoundStatusResponse extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		RoundStatusResponse clone = new RoundStatusResponse(  );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}

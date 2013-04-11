@@ -75,14 +75,13 @@ public class IQListener implements PacketListener{
 			XMPPBean xmppBean = control.getConnection().unpackBeanIQAdapter( (BeanIQAdapter)packet );
 	    		
     		// Check if the incoming packet is a JoinGameBean for a new spectator
-    		LOGGER.info("checking spectator: ");
     		if( xmppBean instanceof JoinGameRequest
     				&& xmppBean.getType()==XMPPBean.TYPE_SET
     				&& ((JoinGameRequest) xmppBean).getIsSpectator()) {
     			
     			// Save spectator in spectator list of service
     			control.addSpectator(xmppBean.getFrom());
-    			LOGGER.info("is spectator:");
+    			LOGGER.info("Spectator " + xmppBean.getFrom() + " added");
     			
     			// Send the result
     			control.getConnection().getProxy().getBindingStub().sendXMPPBean( 
@@ -106,18 +105,12 @@ public class IQListener implements PacketListener{
     			
     		// Else bean comes from an XHuntPlayer
     		} else {
-
-    			// Verify Bean
-	    		if(!control.getConnection().verifyIncomingBean(xmppBean)){
-	    			LOGGER.warning("!!!Bean not verified: " + xmppBean.getId());
-	    			
-	    		// If Bean was verified and is not of type ERROR, handle Bean in current 
-	    		// @see GameState
-	    		} else if(xmppBean.getType() != XMPPBean.TYPE_ERROR){
+	    		// If Bean was verified, handle Bean in current GameState
+	    		if(control.getConnection().verifyIncomingBean(xmppBean)) {
 	    			control.getActGame().processPacket(xmppBean);
 	    		}
 	    		// If Bean is of type ERROR it will be logged
-	    		else {
+	    		else if(xmppBean.getType() == XMPPBean.TYPE_ERROR) {
 	    			LOGGER.severe("ERROR: Bean of Type ERROR received: " 
 	    					+ "type: " + xmppBean.errorType  
 	    					+ " condition:" + xmppBean.errorCondition

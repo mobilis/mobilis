@@ -74,7 +74,7 @@ public class GameOverRequest extends XMPPBean {
 	@Override
 	public XMPPBean clone() {
 		GameOverRequest clone = new GameOverRequest( Reason );
-		clone.cloneBasicAttributes( clone );
+		this.cloneBasicAttributes( clone );
 
 		return clone;
 	}
