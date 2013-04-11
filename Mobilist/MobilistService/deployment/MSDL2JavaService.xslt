@@ -7,10 +7,10 @@
 	<xsl:output method="text" version="1.0" encoding="UTF-8" indent="yes"/>
 	
 	<!-- the output folder where the classes will be created. this folder has to be create before -->
-	<xsl:variable name="outputFolder" select="'build/client/'"/>
+	<xsl:variable name="outputFolder" select="'build/service/'"/>
 	
 	<!-- set package namespace if required. default = '' -->
-	<xsl:variable name="packageNamespace" select="'de.tudresden.inf.rn.mobilis.android.xhunt.clientstub'" />
+	<xsl:variable name="packageNamespace" select="'de.tudresden.inf.rn.mobilis.services.mobilist.proxy'" />
 	
 	<!-- path of the service name -->
 	<xsl:variable name="serviceName" select="/msdl:description/msdl:service/@name"/>
@@ -54,11 +54,11 @@
 	
 	<!-- generate proxy class -->
 	<xsl:apply-templates select="/" mode="generateProxyClass" /><xsl:value-of select="$newline" />	 
-	 
+	
 	<!-- creates incoming and outgoing interfaces -->
 	<xsl:apply-templates select="/" mode="generateIIncomingInterface" /><xsl:value-of select="$newline" />
 	<xsl:apply-templates select="/" mode="generateIOutgoingInterface" /><xsl:value-of select="$newline" />
-	 
+	
 	<!-- creates all specialized bean classes -->
 	<xsl:apply-templates select="/msdl:description/msdl:binding/msdl:operation" mode="generateTypeBeanClass" /><xsl:value-of select="$newline" />
 	
@@ -76,7 +76,7 @@
 		
 		<!-- creates a file with the filename -->
 		<xsl:result-document href="{$fileName}" >
-		
+						
 			<!-- if package namespace is set, write it at first into file -->
 			<xsl:if test="string-length($packageNamespace) > 0">
 				<xsl:text>package </xsl:text><xsl:value-of select="$packageNamespace" /><xsl:text>;</xsl:text>
@@ -85,14 +85,14 @@
 			
 			<xsl:text>import java.util.List;</xsl:text>
 			<xsl:text>import java.util.ArrayList;</xsl:text>
-		
+			
 			<!-- begin with class definition -->
 			<xsl:text>public class </xsl:text><xsl:value-of select="$className"/><xsl:text> {</xsl:text>
 				
 				<!-- create attribute _bindingStub -->
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
 				<xsl:text>private </xsl:text><xsl:value-of select="$IOutgoingInterfaceName" /><xsl:text> _bindingStub;</xsl:text>
-			
+				
 				<!-- create constructor -->
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" /><xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
 				<xsl:text>public </xsl:text><xsl:value-of select="$className" /><xsl:text>( </xsl:text><xsl:value-of select="$IOutgoingInterfaceName" /><xsl:text> bindingStub) {</xsl:text>
@@ -111,7 +111,7 @@
 				
 				<!-- for each which should be send, create a proxy method -->
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
-				<xsl:apply-templates select="/msdl:description/msdl:interface/msdl:operation[@pattern=$mepInOnly or @pattern=$mepOutIn or @pattern=$mepInOut]" mode="generateProxyMethod"/>
+				<xsl:apply-templates select="/msdl:description/msdl:interface/msdl:operation[@pattern=$mepOutOnly or @pattern=$mepOutIn or @pattern=$mepInOut]" mode="generateProxyMethod"/>
 				<xsl:value-of select="$newline" />
 				
 			<xsl:text>}</xsl:text>
@@ -124,7 +124,7 @@
 		<!-- Get operation name -->
 		<xsl:variable name="methodName" select="./@name" />
 		<!-- Get datatype of input class -->
-		<xsl:variable name="outClassName" select="substring-after(msdl:input/@element,':')" />
+		<xsl:variable name="outClassName" select="substring-after(msdl:output/@element,':')" />
 		
 		<xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
 		<xsl:text>public </xsl:text>
@@ -138,7 +138,7 @@
 		</xsl:choose>
 		<xsl:value-of select="$methodName" /><xsl:text>( String toJid</xsl:text>
 		
-		<xsl:if test="@pattern=$mepOutIn">
+		<xsl:if test="@pattern=$mepInOut">
 			<xsl:text>, String packetId</xsl:text>
 		</xsl:if>
 		
@@ -151,9 +151,9 @@
 		</xsl:if>
 		
 		<!-- Check if callback is required -->
-		<xsl:if test="@pattern=$mepInOut">
-			<!-- Looking for $mepInOut patterns-->
-			<xsl:variable name="inClassName" select="substring-after(msdl:output/@element,':')" />          
+		<xsl:if test="@pattern=$mepOutIn">
+			<!-- Looking for $mepOutIn patterns-->
+			<xsl:variable name="inClassName" select="substring-after(msdl:input/@element,':')" />          
 			<!-- If "out"-Element exists, create callback parameter with type; element attribute cannot be empty -->
 			<xsl:text>, </xsl:text><xsl:value-of select="$xmppCallbackInterfaceName" /><xsl:text>&lt; </xsl:text><xsl:value-of select="$inClassName" /><xsl:text> &gt;</xsl:text><xsl:text> callback</xsl:text>
 		</xsl:if>
@@ -162,7 +162,7 @@
 			<xsl:text>if ( null == _bindingStub</xsl:text>
 			
 			<!-- Check if callback is required -->
-			<xsl:if test="@pattern=$mepInOut">		
+			<xsl:if test="@pattern=$mepOutIn">		
 				<xsl:text> || null == callback</xsl:text>
 			</xsl:if>
 			<xsl:text> )</xsl:text>
@@ -184,7 +184,7 @@
 			<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
 			<xsl:text>out.setTo( toJid );</xsl:text>
 			
-			<xsl:if test="@pattern=$mepOutIn">
+			<xsl:if test="@pattern=$mepInOut">
 				<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
 				<xsl:text>out.setId( packetId );</xsl:text>
 			</xsl:if>
@@ -193,7 +193,7 @@
 			<xsl:text>_bindingStub.sendXMPPBean( out</xsl:text>
 			
 			<!-- Check if callback is required -->
-			<xsl:if test="@pattern = $mepInOut">
+			<xsl:if test="@pattern = $mepOutIn">
 				<xsl:text>, callback</xsl:text>
 			</xsl:if>
 			
@@ -222,7 +222,7 @@
 			</xsl:if>
 			
 			<xsl:value-of select="./@name" />
-				
+							
 			<xsl:if test="position() &lt; $i" >
 				<xsl:text>, </xsl:text>	
 			</xsl:if>
@@ -340,20 +340,20 @@
 			<xsl:value-of select="$newline" />
 
 			<!-- iterate each operation element in interface -->
-			<!-- Looking for $mepInOut, $mepOutOnly and $mepOutIn patterns-->
-			<xsl:for-each select="msdl:description/msdl:interface/msdl:operation[@pattern=$mepOutOnly or @pattern=$mepOutIn or @pattern=$mepInOut]" >
+			<!-- Looking for $mepInOut, $mepInOnly and $mepOutIn patterns-->
+			<xsl:for-each select="msdl:description/msdl:interface/msdl:operation[@pattern=$mepInOnly or @pattern=$mepOutIn or @pattern=$mepInOut]" >
 			
 				<!-- Get operation name -->
 				<xsl:variable name="methodName" select="./@name" />
 				<!-- Get datatype of output class -->
-				<xsl:variable name="inClassName" select="substring-after(msdl:output/@element,':')" />
+				<xsl:variable name="inClassName" select="substring-after(msdl:input/@element,':')" />
 				
 				<xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
 				
 				<xsl:choose>
-			        <!-- Looking for $mepOutIn patterns -->
-			        <xsl:when test="@pattern=$mepOutIn">
-						<!-- <xsl:variable name="outClassName" select="substring-after(msdl:input/@element,':')" />
+			        <!-- Looking for $mepInOut patterns -->
+			        <xsl:when test="@pattern=$mepInOut">
+						<!-- <xsl:variable name="outClassName" select="substring-after(msdl:output/@element,':')" />
 						<xsl:value-of select="$inClassName" /> -->
 						<xsl:value-of select="$xmppBeanClassName" />
 			        </xsl:when>
@@ -370,11 +370,11 @@
 				<xsl:value-of select="$newline" />
 				
 				<!-- If pattern is in-out an unknown XMPPError can be reponded (e.g. service unavailable) -->
-				<xsl:if test="@pattern = $mepInOut">
+				<xsl:if test="@pattern = $mepOutIn">
 					<xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
 					
 					<xsl:text>void on</xsl:text><xsl:value-of select="$methodName" /><xsl:text>Error</xsl:text>
-						<xsl:text>( </xsl:text><xsl:value-of select="substring-after(msdl:input/@element,':')" /><xsl:text> in);</xsl:text>
+						<xsl:text>( </xsl:text><xsl:value-of select="substring-after(msdl:output/@element,':')" /><xsl:text> in);</xsl:text>
 					<xsl:value-of select="$newline" />
 				</xsl:if>
 			
@@ -396,18 +396,18 @@
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
 			</xsl:if>
 			
-			<xsl:text>public interface </xsl:text><xsl:value-of select="$IOutgoingInterfaceName" /><xsl:text> {
+						<xsl:text>public interface </xsl:text><xsl:value-of select="$IOutgoingInterfaceName" /><xsl:text> {
 
 	void sendXMPPBean( XMPPBean out, IXMPPCallback&lt; ? extends XMPPBean &gt; callback );
 
 	void sendXMPPBean( XMPPBean out );
 
 }</xsl:text>
-						
+			
 				</xsl:result-document>
 			    </xsl:template>
-  
-	<!-- generates a XMPPInfo class of a type tag -->
+			
+  	<!-- generates a XMPPInfo class of a type tag -->
     <xsl:template match="xs:complexType" mode="generateTypeInfoClass" >
 		<xsl:variable name="namespace" select="./@xmpp:ident" /><!-- serviceNs + '#type:' + classname -->		
 		<xsl:variable name="typeInfoClassName" select="./@name" />
@@ -570,7 +570,7 @@
 						</xsl:apply-templates>
 						<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
 						
-						<xsl:if test="../@pattern = $mepOutIn and compare(name(),'msdl:output') = 0">
+						<xsl:if test="../@pattern = $mepInOut and compare(name(),'msdl:input') = 0">
 							<xsl:apply-templates select=".." mode="generateFaultFunctions" >
 								<xsl:with-param name="className" select="$typeBeanClassName" />
 							</xsl:apply-templates>
@@ -693,8 +693,8 @@
 				
 				if (tagName.equals(getChildElement())) {
 					parser.next();
-				}</xsl:text>					
-			
+				}</xsl:text>
+					
 			<!-- create a case for each property of the bean and parse/assign value -->
 			<xsl:for-each select="./xs:element">
 				<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
@@ -894,7 +894,7 @@
 			<xsl:text> );</xsl:text>
 			
 			<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
-			<xsl:text>this.cloneBasicAttributes( clone );</xsl:text>
+			<xsl:text>clone.cloneBasicAttributes( clone );</xsl:text>
 		
 			<xsl:value-of select="$newline" /><xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
 			<xsl:text>return clone;</xsl:text>
@@ -952,7 +952,7 @@
     				<xsl:apply-templates select="." mode="parseElementDatatype">
     					<xsl:with-param name="asSimple" select="1" />
     				</xsl:apply-templates>
-					<xsl:text> entry : this.</xsl:text><xsl:value-of select="./@name" /><xsl:text> ) {</xsl:text>
+					<xsl:text> entry : </xsl:text><xsl:value-of select="./@name" /><xsl:text> ) {</xsl:text>
 				
 				<xsl:choose>
 					<!-- if list consist of simple datatypes like int -->
@@ -972,7 +972,7 @@
 							<xsl:apply-templates select="." mode="parseElementDatatype">
 		    					<xsl:with-param name="asSimple" select="1" />
 		    				</xsl:apply-templates>
-						<xsl:text>.CHILD_ELEMENT + "&gt;" );</xsl:text>
+						<xsl:text>.CHILD_ELEMENT + "&gt;"</xsl:text>
 					</xsl:when>
 					
 					<!-- if list consist of XMPPInfo type -->
@@ -988,21 +988,21 @@
 						<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
 						<xsl:text>sb.append( "&lt;/</xsl:text>
 							<xsl:value-of select="./@name" />
-						<xsl:text>&gt;" );</xsl:text>
+						<xsl:text>&gt;"</xsl:text>
 					</xsl:otherwise>
 				</xsl:choose>
-
+				
+				<xsl:text> );</xsl:text>
 				
 				<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
 				<xsl:text>}</xsl:text>
 			</xsl:when>
 			
-			
 			<!-- Else if property is no list -->
 			<xsl:otherwise>
-				<xsl:text>sb.append( "&lt;</xsl:text>				
+				<xsl:text>sb.append( "&lt;</xsl:text>
 				<xsl:choose>
-					<!-- if property is of type XMPPInfo -->
+				<!-- if property is of type XMPPInfo -->
 					<xsl:when test="contains(./@type,'tns:')">
 						<xsl:text>" + this.</xsl:text><xsl:value-of select="./@name" /><xsl:text>.getChildElement() + "</xsl:text>
 					</xsl:when>
@@ -1042,7 +1042,7 @@
     <xsl:template match="msdl:interface/msdl:operation" mode="generateFaultFunctions">
     	<xsl:param name="className" />
     
-    	<xsl:for-each select="./msdl:infault" >
+    	<xsl:for-each select="./msdl:outfault" >
 			<xsl:variable name="faultRef" select="@ref" />
 			<xsl:apply-templates select="/msdl:description/msdl:binding/msdl:fault[@ref = $faultRef]" mode="generateFunctionBuildFault" >
 				<xsl:with-param name="className" select="$className" />
@@ -1088,13 +1088,13 @@
 	<xsl:value-of select="$newline" />
     </xsl:template>
     
-    <!-- generates all getters and setters -->
+<!-- generates all getters and setters -->
     <xsl:template match="xs:element" mode="generateGetSet" >
 		<!-- Getter -->
 		<xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
 		<xsl:text>public </xsl:text>
 			<xsl:apply-templates select="." mode="parseElementDatatype"/>
-		<xsl:text> get</xsl:text><xsl:value-of select="concat(translate(substring(./@name, 1, 1), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), substring(@name, 2))" /><xsl:text>() {</xsl:text>
+		<xsl:text> get</xsl:text><xsl:value-of select="concat(translate(substring(@name, 1, 1), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), substring(@name, 2))" /><xsl:text>() {</xsl:text>
 	
 			<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
 			<xsl:text>return this.</xsl:text><xsl:value-of select="./@name" /><xsl:text>;</xsl:text>
@@ -1104,7 +1104,7 @@
 		
 		<!-- Setter -->
 		<xsl:value-of select="$newline" /><xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
-		<xsl:text>public void set</xsl:text><xsl:value-of select="concat(translate(substring(./@name, 1, 1), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), substring(@name, 2))" /><xsl:text>( </xsl:text>
+		<xsl:text>public void set</xsl:text><xsl:value-of select="concat(translate(substring(@name, 1, 1), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), substring(@name, 2))" /><xsl:text>( </xsl:text>
 			<xsl:apply-templates select="." mode="parseElementDatatype"/><xsl:text> </xsl:text><xsl:value-of select="./@name" />
 		<xsl:text> ) {</xsl:text>
 	

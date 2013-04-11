@@ -19,10 +19,14 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.services.xhunt.state;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import de.tudresden.inf.rn.mobilis.services.xhunt.Game;
 import de.tudresden.inf.rn.mobilis.services.xhunt.XHunt;
+import de.tudresden.inf.rn.mobilis.services.xhunt.model.XHuntPlayer;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameDetailsRequest;
 import de.tudresden.inf.rn.mobilis.services.xhunt.proxy.GameOverResponse;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
@@ -60,10 +64,15 @@ public class GameStateGameOver extends GameState{
 	 * available.
 	 */
 	private void checkShutdownCondition(){
-		LOGGER.info("GameStateGameOver#checkShutdownCondition: "
-				+ "shutdown in gameOverState?: " + (game.getPlayers().size() == 0));
+		Set<XHuntPlayer> avlblPlayers = new HashSet<XHuntPlayer>();
+		for(Map.Entry<String, XHuntPlayer> entry : game.getPlayers().entrySet())
+			if(entry.getValue().isOnline())
+				avlblPlayers.add(entry.getValue());
 		
-		if(game.getPlayers().size() == 0){
+		LOGGER.info("GameStateGameOver#checkShutdownCondition: "
+				+ "shutdown in gameOverState?: " + (avlblPlayers.size() == 0));
+		
+		if(avlblPlayers.size() == 0){
 			try {
 				control.shutdown();
 			} catch (Exception e) {

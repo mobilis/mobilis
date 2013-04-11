@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/xpath-functions" 
-	xmlns:msdl="http://mobilis.inf.tu-dresden.de/msdl/" xmlns:xmpp="http://mobilis.inf.tu-dresden.de/xmpp/">
+<xsl:stylesheet
+	version="2.0"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:fn="http://www.w3.org/2005/xpath-functions" 
+	xmlns:msdl="http://mobilis.inf.tu-dresden.de/msdl/"
+	xmlns:xmpp="http://mobilis.inf.tu-dresden.de/xmpp/">
 	
 	<!-- prints indent like they are in code -->
 	<xsl:output method="text" version="1.0" encoding="UTF-8" indent="yes"/>
@@ -10,7 +14,7 @@
 	<xsl:variable name="outputFolder" select="'build/client/'"/>
 	
 	<!-- set package namespace if required. default = '' -->
-	<xsl:variable name="packageNamespace" select="'de.tudresden.inf.rn.mobilis.android.xhunt.clientstub'" />
+	<xsl:variable name="packageNamespace" select="'de.tudresden.inf.rn.mobilis.mobilist.clientstub'" />
 	
 	<!-- path of the service name -->
 	<xsl:variable name="serviceName" select="/msdl:description/msdl:service/@name"/>
@@ -894,7 +898,7 @@
 			<xsl:text> );</xsl:text>
 			
 			<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
-			<xsl:text>this.cloneBasicAttributes( clone );</xsl:text>
+			<xsl:text>clone.cloneBasicAttributes( clone );</xsl:text>
 		
 			<xsl:value-of select="$newline" /><xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
 			<xsl:text>return clone;</xsl:text>
