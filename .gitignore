@@ -6,3 +6,4 @@ gen/
 *.war
 *.ear
 Emulation/GWTEmulationServer/war/sessions
+DemoServices/TreasureHunt/dist
