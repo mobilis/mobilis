@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universit�t Dresden
+ * Copyright (C) 2010 Technische Universität Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,18 +30,39 @@ import org.jivesoftware.smack.Connection;
 public class MobilisServer extends SingleFrameApplication {
 	
 	protected MobilisServerView parentView;
+	private boolean gui = true;
+	
+	@Override
+	protected void initialize(String[] args) {
+		if (args.length > 0 && args[0].equals("-nogui")){
+			gui = false;
+			args[0] = "";
+		}
+		super.initialize(args);
+	}
 
     /**
      * At startup create and show the main frame of the application.
      * Also startup Mobilis Manager and associate with main frame.
      */
     @Override protected void startup() {
-    	parentView = new MobilisServerView(this);
-    	Connection.DEBUG_ENABLED = true;
-    	MobilisManager.getInstance().registerServerView(parentView);
-    	show(parentView);
-    	//Automatically startup the MobilsServer on application start
-    	parentView.getStartupButton().doClick();
+    	if (gui) {
+    		parentView = new MobilisServerView(this);
+    		Connection.DEBUG_ENABLED = true;
+    		MobilisManager.getInstance().registerServerView(parentView);
+    		show(parentView);
+    		//Automatically startup the MobilsServer on application start
+    		parentView.getStartupButton().doClick();
+    	} else {
+    		MobilisManager.getInstance().startup();
+    		Runtime.getRuntime().addShutdownHook(new Thread() {
+    			@Override
+    			public void run() {
+    				getApplication().shutdown();
+    				System.out.println("Server shut down!");
+    			}
+    		});
+    	}
     }
 
     /**
@@ -49,8 +70,10 @@ public class MobilisServer extends SingleFrameApplication {
      */
     @Override protected void shutdown() {
     	MobilisManager.getInstance().shutdown();
-    	MobilisManager.getInstance().unregisterServerView(parentView);
-    	super.shutdown();
+    	if (gui) {
+    		MobilisManager.getInstance().unregisterServerView(parentView);
+    		super.shutdown();
+    	}
     }
 
     /**
