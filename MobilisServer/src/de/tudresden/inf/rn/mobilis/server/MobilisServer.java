@@ -35,8 +35,11 @@ public class MobilisServer extends SingleFrameApplication {
 	@Override
 	protected void initialize(String[] args) {
 		if (args.length > 0 && args[0].equals("-nogui")){
-			gui = false;
-			args[0] = "";
+			for (String arg : args) {
+				if (arg.equals("-nogui")) {
+					gui = false;
+				}
+			}
 		}
 		super.initialize(args);
 	}
