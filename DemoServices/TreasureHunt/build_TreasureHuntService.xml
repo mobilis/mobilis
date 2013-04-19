@@ -4,7 +4,7 @@
 	<!-- Directory variables -->
 	<property name="src.dir" location="src" />
 	<!-- none: ""; separate entrylist by ':' -->
-	<property name="src.dirs.extern" value="basedir/../../MobilisServer/src:basedir/../../AndroidCEFX_Common/src:basedir/../../MobilisXMPP/src" />
+	<property name="src.dirs.extern" value="basedir/../../../MobilisServer/src:basedir/../../../MobilisXMPP/src" />
 	<property name="build.dir" location="build" />
 	<property name="dist.dir" location="dist" />
 	<property name="lib.dir" location="lib" />
@@ -22,7 +22,7 @@
 	<!-- all: "**/*.jar"; none: "none"; separate entrylist by ',' -->
 	<property name="required.libraries" value="none" />
 	<!-- all: "**/*.*"; none: "none"; separate entrylist by ',' -->
-	<property name="required.resources" value="none" />
+	<property name="required.resources" value="**/*.*" />
 	
 
 
@@ -37,9 +37,8 @@
 		<fileset dir="${lib.dir}" includes="**/*.jar" />
 		
 		<!-- Add external library dirs of all projects in ${src.dirs.extern} -->
-		<fileset dir="basedir/../../MobilisServer/libs" includes="**/*.jar" />
-		<fileset dir="basedir/../../AndroidCEFX_Common/lib" includes="**/*.jar" />
-		<fileset dir="basedir/../../MobilisXMPP/libs" includes="**/*.jar" />
+		<fileset dir="basedir/../../../MobilisServer/libs" includes="**/*.jar" />
+		<fileset dir="basedir/../../../MobilisXMPP/libs" includes="**/*.jar" />
 	</path>
 
 	<!-- Create classpath for libraries on jar-packing -->
@@ -61,7 +60,8 @@
 	<!-- Compile java code -->
 	<target name="compile" depends="makedir">
 		<javac srcdir="${src.dir}:${src.dirs.extern}" destdir="${build.dir}" 
-			classpathref="build.classpath" debug="on" nowarn="on" failonerror="false">
+			classpathref="build.classpath" debug="on" nowarn="on" failonerror="false"
+			encoding="ISO-8859-1">
 		</javac>
 
 	</target>
@@ -71,7 +71,7 @@
 	<target name="jar" depends="compile">
 		<jar jarfile="${dist.dir}\${jar.filename}">
 			<fileset dir="${build.dir}" includes="${root.packages}" />
-			<fileset dir="${src.dir}" includes="${root.packages},${msdl.filepath}/${msdl.filename}" />
+			<fileset dir="${src.dir}" includes="" />
 			<fileset dir="${basedir}" includes="${res.dir}/${required.resources}" />
 
 			<zipgroupfileset dir="${lib.dir}" includes="${required.libraries}" excludes="" />
