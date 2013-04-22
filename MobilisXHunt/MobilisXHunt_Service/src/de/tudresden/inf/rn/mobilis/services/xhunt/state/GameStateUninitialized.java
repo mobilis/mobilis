@@ -141,6 +141,13 @@ public class GameStateUninitialized extends GameState {
 		else 
 			errorText += " starttimer to low";
 		
+		if(inBean.getLocPollingInterval() > 0)
+			control.getSettings().setLocationPollingIntervalMillis(inBean.getLocPollingInterval());
+		else if(inBean.getLocPollingInterval() != Integer.MIN_VALUE)
+			errorText += " location update interval too low";
+		else if(inBean.getLocPollingInterval() == Integer.MIN_VALUE)
+			LOGGER.info("Client didn't send location polling interval (old version?); using default value");
+		
 		if(errorText.length() == 0){
 			for ( TicketAmount ticketAmount : inBean.getTicketsMrX().getTicketsMrX() ) {
 				control.getSettings().putTicketMrX(ticketAmount.getID(), ticketAmount.getAmount());

@@ -28,6 +28,13 @@
 			android:title="@string/newgame_edit_title_starttimer"
 			android:dialogTitle="@string/newgame_dialog_title_starttimer"
 			android:summary="@string/newgame_summary_starttimer" />
+		
+		<EditTextPreference 
+		    android:key="@string/bundle_key_newgame_pollinginterval"
+		    android:title="@string/newgame_edit_title_pollinginterval"
+		    android:dialogTitle="@string/newgame_dialog_title_pollinginterval"
+		    android:summary="@string/newgame_summary_pollinginterval"
+		     />
         
     </PreferenceCategory>
         

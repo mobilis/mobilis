@@ -341,7 +341,8 @@ public class GameStateRoundInitial extends GameState{
 	 * This will also update the locations on clientside of the players.
 	 */
 	private void startLocationPolling(long delay){
-		System.out.println("GameStateRoundInitial.startLocationPolling()");
+		LOGGER.info("Start polling locations. Interval = " + control.getSettings().getLocationPollingIntervalMillis() /1000
+				+ "sec; Delay = " + delay/1000 + "sec");
 		// Define and start the polling timer
 		if (mPollingTimer!=null) {
 			mPollingTimer.cancel();
@@ -396,12 +397,11 @@ public class GameStateRoundInitial extends GameState{
 								playerMrX.isOnline(),
 								LocationCallback );
 						
-						System.out.println("GameStateRoundInitial Sending LocationRequests done");
+						LOGGER.info("Sending LocationRequests done");
 					}
 		        }
 				// Timer will be start after 5000 ms
 		}, delay, control.getSettings().getLocationPollingIntervalMillis());
-		System.out.println("GameStateRoundInitial.startLocationPolling() end");
 	}
 	
 	/**
@@ -536,7 +536,6 @@ public class GameStateRoundInitial extends GameState{
 	
 	public void onStartRound( StartRoundResponse in ) {
 		// Confirm the start of the round
-		System.out.println("GameStateRoundInitial.onStartRound()");
 		/*for ( String toJid : game.getPlayers().keySet() ) {
 			control.getConnection().getProxy().Location( 
 					toJid, 
@@ -544,6 +543,5 @@ public class GameStateRoundInitial extends GameState{
 					LocationCallback);		
 		}*/
 		startLocationPolling(0);
-		System.out.println("GameStateRoundInitial.onStartRound() end");
 	}
 }

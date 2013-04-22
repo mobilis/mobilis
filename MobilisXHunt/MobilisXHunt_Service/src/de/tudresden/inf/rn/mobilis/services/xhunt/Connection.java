@@ -109,9 +109,6 @@ public class Connection {
 	/** The Timer for periodically sending Snapshots to unavailable Players. */
 	private Timer mSendSnapshotsTimer;
 	
-	/** The waiting timeout in milliseconds for a XMPPBean of type result. */
-	private long mResultBeansTimeoutMillis = 10 * 1000;
-	
 	/** The limit for delayed result-XMPPBeans. This number determines, how often 
 	 * a result-XMPPBean can miss the mResultBeansTimeoutMillis before the 
 	 * XMPP-user is declared as not replying. */
@@ -365,10 +362,10 @@ public class Connection {
 			}
 			
 			// check if a result-XMPPBean has exceeded the timeout for one waiting period
-			if(currentTime > (entry.getValue().TimeStamp + mResultBeansTimeoutMillis)){		
+			if(currentTime > (entry.getValue().TimeStamp + mController.getSettings().getLocationPollingIntervalMillis())){		
 				
-				// check if a result-XMPPBean has exceeded the maximum number of delay periods
-				if(entry.getValue().DelayedPeriods > mLimitForDelayedPeriods) {
+				// check if a result-XMPPBean has reached the maximum number of delay periods
+				if(entry.getValue().DelayedPeriods >= mLimitForDelayedPeriods) {
 					
 					// check whether player really is offline or if he already sent newer beans
 					if(!entry.getValue().playerGaveSignOfLive) {
@@ -862,7 +859,10 @@ public class Connection {
 					else
 						checkForDelayedResultBeans();
 		        }
-		}, mResultBeansTimeoutMillis, mResultBeansTimeoutMillis);
+		},
+		// use same Interval as the location poller
+		mController.getSettings().getLocationPollingIntervalMillis(),
+		mController.getSettings().getLocationPollingIntervalMillis());
 	}
 	
 	/**

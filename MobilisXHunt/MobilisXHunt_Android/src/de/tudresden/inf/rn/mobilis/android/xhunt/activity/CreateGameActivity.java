@@ -108,6 +108,9 @@ public class CreateGameActivity extends PreferenceActivity {
 	/** The textfield to configure the start timer for Mr.X. */
 	private EditTextPreference mEditStartTimer;
 	
+	/** The textfield to configure the location polling interval for the server. */
+	private EditTextPreference mEditPollingInterval;
+	
 	/** The map(ticketId, seekbar with amount of tickets) 
 	 * contains the tickets for Mr.X. */
 	private HashMap<Integer, SeekBarPreference> mPrefTicketsMrX 
@@ -215,7 +218,8 @@ public class CreateGameActivity extends PreferenceActivity {
 		
 		//FIXME: should be optimized
 		int rounds = 10;
-		int starttimer = 240000;
+		int starttimer = 15;
+		int locPollInterval = 10;
 		int minplayers = 1;
 		int maxplayers = 6;
 		
@@ -223,6 +227,7 @@ public class CreateGameActivity extends PreferenceActivity {
 		try{
 			rounds = Integer.valueOf(mSharedPrefHelper.getValue(getKeyRounds()));
 			starttimer = Integer.valueOf(mSharedPrefHelper.getValue(getKeyStartTimer()));
+			locPollInterval = Integer.valueOf(mSharedPrefHelper.getValue(getKeyPollingInterval()));
 			minplayers = Integer.valueOf(mSharedPrefHelper.getValue(getKeyMinPlayers()));
 			maxplayers = Integer.valueOf(mSharedPrefHelper.getValue(getKeyMaxPlayers()));
 		}
@@ -265,7 +270,8 @@ public class CreateGameActivity extends PreferenceActivity {
 				rounds,				
 				minplayers,
 				maxplayers,
-				starttimer,
+				starttimer * 1000,
+				locPollInterval * 1000,
 				new TicketsMrX( ticketsMrX ),
 				new TicketsAgents( ticketsAgents ), 
 				_createGameCallback );
@@ -411,6 +417,15 @@ public class CreateGameActivity extends PreferenceActivity {
 	}
 	
 	/**
+	 * Gets the key of the location polling interval.
+	 * 
+	 * @return the key of the location polling interval
+	 */
+	private String getKeyPollingInterval() {
+		return getResources().getString(R.string.bundle_key_newgame_pollinginterval);
+	}
+	
+	/**
 	 * Initialize all UI elements from resources.
 	 */
 	private void initComponents() {
@@ -425,6 +440,8 @@ public class CreateGameActivity extends PreferenceActivity {
 				getKeyMaxPlayers());
 		mEditStartTimer = (EditTextPreference)getPreferenceScreen().findPreference(
 				getKeyStartTimer());
+		mEditPollingInterval = (EditTextPreference)getPreferenceScreen().findPreference(
+				getKeyPollingInterval());
 		
 		updateSummaries();
 
@@ -488,7 +505,14 @@ public class CreateGameActivity extends PreferenceActivity {
 				.getString(R.string.bundle_key_newgame_starttimer)) == null){
 			mSharedPrefHelper.setValue(
 					getResources().getString(R.string.bundle_key_newgame_starttimer),
-					"" + 1*15*1000);
+					"" + 15);
+		}
+		
+		if(mSharedPrefHelper.getValue(getResources()
+				.getString(R.string.bundle_key_newgame_pollinginterval)) == null){
+			mSharedPrefHelper.setValue(
+					getResources().getString(R.string.bundle_key_newgame_pollinginterval),
+					"" + 10);
 		}
 		
 		mServiceConnector.getXHuntService().getSharedPrefHelper().save();
@@ -498,14 +522,14 @@ public class CreateGameActivity extends PreferenceActivity {
 	 * Load area information.
 	 * Not really needed anymore, because now using parseAreasXml(), but Server still expects an Area Request.
 	 */
-	private void loadAreaInformation() {
+	/*private void loadAreaInformation() {
 
 		//mRemoteLoadingDialog.setLoadingText("Requesting Area information.\n\n     Please wait...");
 		mRemoteLoadingDialog.setLoadingText("Going to Lobby...");
 		mRemoteLoadingDialog.run();
 		
 		mMxaProxy.getIQProxy().getProxy().Areas( mMxaProxy.getIQProxy().getGameServiceJid(), _areaCallback );
-	}
+	}*/
 
 	
 	/* (non-Javadoc)
@@ -608,23 +632,21 @@ public class CreateGameActivity extends PreferenceActivity {
 			mEditMinPlayers.setSummary(mSharedPrefHelper.getValue(mEditMinPlayers.getKey()));
 		if (mEditRounds != null)
 			mEditRounds.setSummary(mSharedPrefHelper.getValue(mEditRounds.getKey()));
+		if (mEditPollingInterval != null)
+			mEditPollingInterval.setSummary(mSharedPrefHelper.getValue(mEditPollingInterval.getKey()));
 		if (mEditStartTimer != null) {
-			mEditStartTimer.setSummary(mSharedPrefHelper.getValue(mEditStartTimer.getKey()));
+			mEditStartTimer.setSummary(mSharedPrefHelper.getValue(mEditStartTimer.getKey()));	
 			
-			String startTimerVal = mSharedPrefHelper.getValue(getKeyStartTimer());
+			// add unit information
+			String startTimerVal = mSharedPrefHelper.getValue(getKeyStartTimer());	
+			if(startTimerVal != null)
+				mEditStartTimer.setSummary(startTimerVal + "sec");
+			else mEditStartTimer.setSummary("not set");
 			
-			if(startTimerVal != null){
-				try{
-					mEditStartTimer.setSummary((Integer.valueOf(startTimerVal) / 1000) + "sec");
-				}
-				catch (NumberFormatException e){
-					mEditStartTimer.setSummary(startTimerVal);
-				}
-			}
-			else{
-				mEditStartTimer.setSummary(startTimerVal);
-			}	
-			
+			String locPollVal = mSharedPrefHelper.getValue(getKeyPollingInterval());
+			if(locPollVal != null)
+				mEditPollingInterval.setSummary(locPollVal + "sec");
+			else mEditPollingInterval.setSummary("not set");
 		}
 	}
 	

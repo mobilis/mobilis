@@ -239,6 +239,7 @@ public class GameStatePlay extends GameState{
 	 * This will also update the locations on clientside of the players.
 	 */
 	private void startLocationPolling(){
+		LOGGER.info("Start polling locations. Interval = " + control.getSettings().getLocationPollingIntervalMillis() /1000 + "sec");
 		// Define and start the polling timer
 		mPollingTimer = new Timer();
 		mPollingTimer.schedule(

@@ -13,11 +13,12 @@ public class CreateGameRequest extends XMPPBean {
 	private int MinPlayers = Integer.MIN_VALUE;
 	private int MaxPlayers = Integer.MIN_VALUE;
 	private int StartTimer = Integer.MIN_VALUE;
+	private int LocPollingInterval = Integer.MIN_VALUE;
 	private TicketsMrX TicketsMrX = new TicketsMrX();
 	private TicketsAgents TicketsAgents = new TicketsAgents();
 
 
-	public CreateGameRequest( int AreaId, String GameName, String GamePassword, int CountRounds, int MinPlayers, int MaxPlayers, int StartTimer, TicketsMrX TicketsMrX, TicketsAgents TicketsAgents ) {
+	public CreateGameRequest( int AreaId, String GameName, String GamePassword, int CountRounds, int MinPlayers, int MaxPlayers, int StartTimer, int LocPollingInterval, TicketsMrX TicketsMrX, TicketsAgents TicketsAgents ) {
 		super();
 		this.AreaId = AreaId;
 		this.GameName = GameName;
@@ -26,6 +27,7 @@ public class CreateGameRequest extends XMPPBean {
 		this.MinPlayers = MinPlayers;
 		this.MaxPlayers = MaxPlayers;
 		this.StartTimer = StartTimer;
+		this.LocPollingInterval = LocPollingInterval;
 		this.TicketsMrX = TicketsMrX;
 		this.TicketsAgents = TicketsAgents;
 
@@ -70,6 +72,9 @@ public class CreateGameRequest extends XMPPBean {
 				else if (tagName.equals( "StartTimer" ) ) {
 					this.StartTimer = Integer.parseInt( parser.nextText() );
 				}
+				else if (tagName.equals( "LocPollingInterval" ) ) {
+					this.LocPollingInterval = Integer.parseInt( parser.nextText() );
+				}
 				else if (tagName.equals( TicketsMrX.CHILD_ELEMENT ) ) {
 					this.TicketsMrX.fromXML( parser );
 				}
@@ -113,7 +118,7 @@ public class CreateGameRequest extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		CreateGameRequest clone = new CreateGameRequest( AreaId, GameName, GamePassword, CountRounds, MinPlayers, MaxPlayers, StartTimer, TicketsMrX, TicketsAgents );
+		CreateGameRequest clone = new CreateGameRequest( AreaId, GameName, GamePassword, CountRounds, MinPlayers, MaxPlayers, StartTimer, LocPollingInterval, TicketsMrX, TicketsAgents );
 		this.cloneBasicAttributes( clone );
 
 		return clone;
@@ -150,6 +155,10 @@ public class CreateGameRequest extends XMPPBean {
 		sb.append( "<StartTimer>" )
 			.append( this.StartTimer )
 			.append( "</StartTimer>" );
+
+		sb.append( "<LocPollingInterval>" )
+			.append( this.LocPollingInterval )
+			.append( "</LocPollingInterval>" );
 
 		sb.append( "<" + this.TicketsMrX.getChildElement() + ">" )
 			.append( this.TicketsMrX.toXML() )
@@ -239,6 +248,14 @@ public class CreateGameRequest extends XMPPBean {
 
 	public void setStartTimer( int StartTimer ) {
 		this.StartTimer = StartTimer;
+	}
+
+	public int getLocPollingInterval() {
+		return this.LocPollingInterval;
+	}
+
+	public void setLocPollingInterval( int LocPollingInterval ) {
+		this.LocPollingInterval = LocPollingInterval;
 	}
 
 	public TicketsMrX getTicketsMrX() {

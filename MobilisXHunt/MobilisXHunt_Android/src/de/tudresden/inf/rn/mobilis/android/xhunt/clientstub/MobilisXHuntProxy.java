@@ -40,11 +40,11 @@ public class MobilisXHuntProxy {
 		return out;
 	}
 
-	public XMPPBean CreateGame( String toJid, int AreaId, String GameName, String GamePassword, int CountRounds, int MinPlayers, int MaxPlayers, int StartTimer, TicketsMrX TicketsMrX, TicketsAgents TicketsAgents, IXMPPCallback< CreateGameResponse > callback ) {
+	public XMPPBean CreateGame( String toJid, int AreaId, String GameName, String GamePassword, int CountRounds, int MinPlayers, int MaxPlayers, int StartTimer, int LocPollingInterval, TicketsMrX TicketsMrX, TicketsAgents TicketsAgents, IXMPPCallback< CreateGameResponse > callback ) {
 		if ( null == _bindingStub || null == callback )
 			return null;
 
-		CreateGameRequest out = new CreateGameRequest( AreaId, GameName, GamePassword, CountRounds, MinPlayers, MaxPlayers, StartTimer, TicketsMrX, TicketsAgents );
+		CreateGameRequest out = new CreateGameRequest( AreaId, GameName, GamePassword, CountRounds, MinPlayers, MaxPlayers, StartTimer, LocPollingInterval, TicketsMrX, TicketsAgents );
 		out.setTo( toJid );
 
 		_bindingStub.sendXMPPBean( out, callback );
@@ -120,17 +120,6 @@ public class MobilisXHuntProxy {
 		_bindingStub.sendXMPPBean( out, callback );
 
 		return out;
-	}
-	
-	public void PlayerExitResponse(String toJid, String packetId) {
-		if ( null == _bindingStub )
-			return;
-		
-		PlayerExitResponse out = new PlayerExitResponse();
-		out.setTo(toJid);
-		out.setId(packetId);
-		
-		_bindingStub.sendXMPPBean(out);
 	}
 
 	public void Players( String toJid, String packetId ) {

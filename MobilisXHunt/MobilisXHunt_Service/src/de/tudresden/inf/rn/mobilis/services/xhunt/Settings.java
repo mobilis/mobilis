@@ -68,7 +68,7 @@ public class Settings {
 	
 	/** The location polling interval in milliseconds.
 	 * This delay is used as a kind of ping as well. */
-	private int locationPollingIntervalMillis = 15000;
+	private int locationPollingIntervalMillis = 10000;
 	
 	/** The Constant TICKET_ID_SUGGESTION used to identify a
 	 * players suggestion. */

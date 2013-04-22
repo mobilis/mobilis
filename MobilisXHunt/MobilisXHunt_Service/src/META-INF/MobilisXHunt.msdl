@@ -36,6 +36,7 @@
 						<xs:element name="MinPlayers" type="xs:int" />
 						<xs:element name="MaxPlayers" type="xs:int" />
 						<xs:element name="StartTimer" type="xs:int" />
+						<xs:element name="LocPollingInterval" type="xs:int" />
 						<xs:element name="TicketsMrX" type="tns:TicketsMrX" />
 						<xs:element name="TicketsAgents" type="tns:TicketsAgents" />
 					</xs:sequence>
