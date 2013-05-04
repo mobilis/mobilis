@@ -8,7 +8,7 @@
 	<property name="build.dir" location="build" />
 	<property name="dist.dir" location="dist" />
 	<property name="lib.dir" location="lib" />
-	<property name="res.dir" value="" />
+	<property name="res.dir" value="resource" />
 
 	<!-- Meta information variables -->
 	<property name="service.package" value="de.tudresden.inf.rn.mobilis.services.mobilist" />
@@ -18,11 +18,11 @@
 
 	<!-- Jar archive variables -->
 	<property name="jar.filename" value="MobilistService_v1.jar" />
-	<property name="root.packages" value="de/tudresden/inf/rn/mobilis/services/**/*.*" />
+	<property name="root.packages" value="de/tudresden/inf/rn/mobilis/services/mobilist/**/*.*" />
 	<!-- all: "**/*.jar"; none: "none"; separate entrylist by ',' -->
 	<property name="required.libraries" value="none" />
 	<!-- all: "**/*.*"; none: "none"; separate entrylist by ',' -->
-	<property name="required.resources" value="none" />
+	<property name="required.resources" value="**/*.*" />
 	
 
 
@@ -71,8 +71,7 @@
 	<target name="jar" depends="compile">
 		<jar jarfile="${dist.dir}\${jar.filename}">
 			<fileset dir="${build.dir}" includes="${root.packages}" />
-			<fileset dir="${src.dir}" includes="
-" />
+			<fileset dir="${src.dir}" includes="" />
 			<fileset dir="${basedir}" includes="${res.dir}/${required.resources}" />
 
 			<zipgroupfileset dir="${lib.dir}" includes="${required.libraries}" excludes="" />

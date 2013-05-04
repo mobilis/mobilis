@@ -4,10 +4,6 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 public interface IMobilistIncoming {
 
-	XMPPBean onAddListEntry( AddListEntryRequest in );
-
-	XMPPBean onRemoveListEntry( RemoveListEntryRequest in );
-
-	XMPPBean onGetListEntry( GetListEntryRequest in );
+	XMPPBean onPing( PingRequest in );
 
 }

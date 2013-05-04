@@ -7,136 +7,41 @@
 	xmlns:mns="http://mobilis.inf.tu-dresden.de/Mobilist"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://mobilis.inf.tu-dresden.de/msdl/ http://mobilis.inf.tu-dresden.de/msdl.xsd ">
+	
 	<msdl:types>
 		<xs:schema targetNamespace="http://mobilis.inf.tu-dresden.de/Mobilist">
-			<xs:element name="AddListEntryRequest">
+			<xs:element name="PingRequest">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="listEntryTitle" type="xs:string" />
-						<xs:element name="listEntryContent" type="xs:string" />
-						<xs:element name="listEntryDueDate" type="xs:long" minOccurs="0" />
+						<xs:element name="content" type="xs:string" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="AddListEntryResponse">
+			<xs:element name="PingResponse">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="listEntry" type="mns:ListEntry" />
+						<xs:element name="content" type="xs:string" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="RemoveListEntryRequest">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="listEntryID" type="xs:string" />
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="GetListResponse">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="listEntry" type="mns:ListEntry" maxOccurs="unbounded" />
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="GetListEntryRequest">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="listEntryID" type="xs:string" />
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="GetListEntryResponse">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="listEntry" type="mns:ListEntry" />
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="AddListEntryFault">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="errorCode" type="xs:int" />
-						<xs:element name="errorText" type="xs:string" />
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="RemoveListEntryFault">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="errorCode" type="xs:int" />
-						<xs:element name="errorText" type="xs:string" />
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="GetListEntryFault">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="errorCode" type="xs:int" />
-						<xs:element name="errorText" type="xs:string" />
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:complexType name="ListEntry">
-					<xs:sequence>
-						<xs:element name="listEntryID" type="xs:string" />
-						<xs:element name="listEntryTitle" type="xs:string" />
-						<xs:element name="listEntryContent" type="xs:string" />
-						<xs:element name="listEntryDueDate" type="xs:long" />
-					</xs:sequence>
-				</xs:complexType>
 		</xs:schema>
 	</msdl:types>
+	
 	<msdl:interface name="MobilistInterface">
-		<msdl:fault name="AddListEntryFault" element="mns:AddListEntryFault" />
-		<msdl:fault name="RemoveListEntryFault" element="mns:RemoveListEntryFault" />
-		<msdl:fault name="GetListEntryFault" element="mns:GetListEntryFault" />
-		<msdl:operation name="AddListEntry" pattern="http://www.w3.org/ns/wsdl/in-out">
-			<msdl:input element="mns:AddListEntryRequest" />
-			<msdl:output element="mns:AddListEntryResponse" />
-			<msdl:outfault ref="mns:AddListEntryFault" />
-		</msdl:operation>
-		<msdl:operation name="RemoveListEntry" pattern="http://www.w3.org/ns/wsdl/in-out">
-			<msdl:input element="mns:RemoveListEntryRequest" />
-			<msdl:output element="mns:RemoveListEntryResponse" />
-			<msdl:outfault ref="mns:RemoveListEntryFault" />
-		</msdl:operation>
-		<msdl:operation name="GetListEntry" pattern="http://www.w3.org/ns/wsdl/in-out">
-			<msdl:input element="mns:GetListEntryRequest" />
-			<msdl:output element="mns:GetListEntryResponse" />
-			<msdl:outfault ref="mns:GetListEntryFault" />
-		</msdl:operation>
-		<msdl:operation name="GetList" pattern="http://www.w3.org/ns/wsdl/out-only">
-			<msdl:output element="mns:GetListResponse" />
+		<msdl:operation name="Ping" pattern="http://www.w3.org/ns/wsdl/in-out">
+			<msdl:input element="mns:PingRequest" />
+			<msdl:output element="mns:PingResponse" />
 		</msdl:operation>
 	</msdl:interface>
+	
 	<msdl:binding name="MobilistBinding" interface="mns:MobilistInterface"
 		type="http://mobilis.inf.tu-dresden.de/xmpp/">
-		<msdl:fault ref="mns:AddListEntryFault" xmpp:errortype="modify"
-			xmpp:errorcondition="not-acceptable" xmpp:errortext="List entry couldn't be added" />
-		<msdl:fault ref="mns:RemoveListEntryFault" xmpp:errortype="modify"
-			xmpp:errorcondition="not-acceptable" xmpp:errortext="List entry couldn't be removed" />
-		<msdl:fault ref="mns:GetListEntryFault" xmpp:errortype="modify"
-			xmpp:errorcondition="not-acceptable" xmpp:errortext="List entry couldn't be retrieved" />
-		<msdl:operation ref="mns:AddListEntry" xmpp:ident="mobilist:iq:addlistentry">
-			<msdl:input xmpp:type="set" />
-			<msdl:output xmpp:type="result" />
-			<msdl:outfault ref="mns:AddListEntryFault" />
-		</msdl:operation>
-		<msdl:operation ref="mns:RemoveListEntry" xmpp:ident="mobilist:iq:removelistentry">
-			<msdl:input xmpp:type="set" />
-			<msdl:output xmpp:type="result" />
-			<msdl:outfault ref="mns:RemoveListEntryFault" />
-		</msdl:operation>
-		<msdl:operation ref="mns:GetListEntry" xmpp:ident="mobilist:iq:getlistentry">
+		<msdl:operation ref="mns:Ping" xmpp:ident="mobilist:iq:ping">
 			<msdl:input xmpp:type="get" />
-			<msdl:output xmpp:type="result" />
-			<msdl:outfault ref="mns:GetListEntryFault" />
-		</msdl:operation>
-		<msdl:operation ref="mns:GetList" xmpp:ident="mobilist:iq:getlist">
 			<msdl:output xmpp:type="result" />
 		</msdl:operation>
 	</msdl:binding>
+	
 	<msdl:service name="Mobilist" interface="mns:MobilistInterface"
 		ident="http://mobilis.inf.tu-dresden.de#services/MobilistService"
 		version="1">
