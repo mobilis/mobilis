@@ -492,6 +492,16 @@ public class XMPPRemoteService extends Service {
 
 							msg2.setData(b);
 
+						} catch (IllegalStateException e) {
+							msg2.arg1 = ConstMXA.MSG_STATUS_ERROR;
+							Bundle b = msg2.getData();
+							String errorMessage = e.getMessage();
+							if (e.getCause() != null && e.getCause().getMessage() != null) {
+								errorMessage += e.getCause().getMessage();
+							}
+							b.putString(ConstMXA.EXTRA_ERROR_MESSAGE, errorMessage);
+							
+							msg2.setData(b);
 						}
 
 						// // get roster, some entries may already have been
