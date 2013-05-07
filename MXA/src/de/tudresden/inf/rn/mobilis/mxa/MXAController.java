@@ -27,11 +27,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.ServiceInfo;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.util.Log;
 
 /**
@@ -125,7 +121,7 @@ public class MXAController implements ServiceConnection {
 	}
 	
 	/**
-	 * Checks whether the XMPP connection parameters have already been set.
+	 * Checks whether the mandatory XMPP connection parameters have already been set.
 	 * Doesn't check for correctness of data.
 	 * @return <code>true</code> if XMPP connection parameters are all set,
 	 * 		<code>false</code> otherwise.
@@ -144,4 +140,77 @@ public class MXAController implements ServiceConnection {
 	public void setSharedPreferences(SharedPreferences mSharedPreferences) {
 		this.mSharedPreferences = mSharedPreferences;
 	}
+	
+	public void setHost(String host) {
+		if (mSharedPreferences != null) {
+			mSharedPreferences.edit().putString("pref_host", host).commit();
+		}
+	}
+	
+	public void setPort(int port) {
+		if (mSharedPreferences != null) {
+			mSharedPreferences.edit().putInt("pref_port", port).commit();
+		}
+	}
+	
+	public void setService(String service) {
+		if (mSharedPreferences != null) {
+			mSharedPreferences.edit().putString("pref_service", service).commit();
+		}
+	}
+	
+	public void setUsername(String username) {
+		if (mSharedPreferences != null) {
+			mSharedPreferences.edit().putString("pref_xmpp_user", username).commit();
+		}
+	}
+	
+	public void setResource(String resource) {
+		if (mSharedPreferences != null) {
+			mSharedPreferences.edit().putString("pref_resource", resource).commit();
+		}
+	}
+	
+	public void setPassword(String password) {
+		if (mSharedPreferences != null) {
+			mSharedPreferences.edit().putString("pref_xmpp_password", password).commit();
+		}
+	}
+	
+	public void setLostTimeout(String lostTimeout) {
+		if (mSharedPreferences != null) {
+			mSharedPreferences.edit().putString("pref_xmpp_lost_timeout", lostTimeout).commit();
+		}
+	}
+	
+	public void setRetryCount(String retryCount) {
+		if (mSharedPreferences != null) {
+			mSharedPreferences.edit().putString("pref_xmpp_retry_count", retryCount).commit();
+		}
+	}
+	
+	public void setRetryTimeout(String retryTimeout) {
+		if (mSharedPreferences != null) {
+			mSharedPreferences.edit().putString("pref_xmpp_retry_timeout", retryTimeout).commit();
+		}
+	}
+	
+	public void setIntervalPacket(String intervalPacket) {
+		if (mSharedPreferences != null) {
+			mSharedPreferences.edit().putString("pref_xmpp_interval_packet", intervalPacket).commit();
+		}
+	}
+	
+	public void setEncryption(boolean encryption) {
+		if (mSharedPreferences != null) {
+			mSharedPreferences.edit().putBoolean("pref_xmpp_encryption", encryption).commit();
+		}
+	}
+	
+	public void setCompression(boolean compression) {
+		if (mSharedPreferences != null) {
+			mSharedPreferences.edit().putBoolean("pref_xmpp_compression", compression).commit();
+		}
+	}
+	
 }
