@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2009 Technische Universität Dresden
+ * Copyright (C) 2009 Technische Universitï¿½t Dresden
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ package de.tudresden.inf.rn.mobilis.mxa.provider;
 
 import java.util.HashMap;
 
-import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -43,7 +42,7 @@ import de.tudresden.inf.rn.mobilis.mxa.ConstMXA.MessageItems;
 /**
  * @author Istvan Koren
  */
-public class MessageProvider extends ContentProvider {
+public class MessageProvider extends DynamicContentProvider {
 
 	private static final String TAG = "MessageProvider";
 
@@ -169,7 +168,7 @@ public class MessageProvider extends ContentProvider {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		long rowId = db.insert(MESSAGES_TABLE_NAME, MessageItems.BODY, values);
 		if (rowId > 0) {
-			Uri noteUri = ContentUris.withAppendedId(MessageItems.CONTENT_URI,
+			Uri noteUri = ContentUris.withAppendedId(MessageItems.contentUri,
 					rowId);
 			getContext().getContentResolver().notifyChange(noteUri, null);
 			return noteUri;
@@ -185,6 +184,7 @@ public class MessageProvider extends ContentProvider {
 	 */
 	@Override
 	public boolean onCreate() {
+		super.onCreate();
 		mOpenHelper = new DatabaseHelper(getContext());
 		return true;
 	}
@@ -331,9 +331,6 @@ public class MessageProvider extends ContentProvider {
 
 	static {
 		sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		sUriMatcher.addURI(ConstMXA.MESSAGE_AUTHORITY, "messageitems", MESSAGES);
-		sUriMatcher.addURI(ConstMXA.MESSAGE_AUTHORITY, "messageitems/#",
-				MESSAGE_ID);
 
 		sMessagesProjectionMap = new HashMap<String, String>();
 		sMessagesProjectionMap.put(MessageItems._ID, MessageItems._ID);
@@ -347,6 +344,13 @@ public class MessageProvider extends ContentProvider {
 		sMessagesProjectionMap.put(MessageItems.READ, MessageItems.READ);
 		sMessagesProjectionMap.put(MessageItems.TYPE, MessageItems.TYPE);
 		sMessagesProjectionMap.put(MessageItems.STATUS, MessageItems.STATUS);
+	}
+	
+	@Override
+	public void loadUriMatcherAuthority() {
+		sUriMatcher.addURI(ConstMXA.messageAuthority, "messageitems", MESSAGES);
+		sUriMatcher.addURI(ConstMXA.messageAuthority, "messageitems/#",
+				MESSAGE_ID);
 	}
 
 }

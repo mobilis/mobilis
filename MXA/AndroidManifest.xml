@@ -23,34 +23,19 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
 
     <application
-        android:icon="@drawable/icon"
-        android:label="@string/app_name" >
-        <activity
-            android:name=".activities.MainActivity"
-            android:icon="@drawable/icon"
-            android:launchMode="singleInstance"
-            android:screenOrientation="portrait" >
-            <intent-filter>
-                <action android:name="de.tudresden.inf.rn.mobilis.mxa.SERVICEMONITOR" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+        android:icon="@drawable/mxa_icon"
+        android:label="@string/mxa_app_name" >
 
         <service
-            android:name="XMPPRemoteService"
+            android:name="de.tudresden.inf.rn.mobilis.mxa.XMPPRemoteService"
             android:enabled="true"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="de.tudresden.inf.rn.mobilis.mxa.IXMPPService" >
-                </action>
-            </intent-filter>
+            android:exported="false" >
         </service>
 
         <activity
-            android:name=".activities.PreferencesClient"
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.PreferencesClient"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="false" >
             <intent-filter>
                 <action android:name="de.tudresden.inf.rn.mobilis.mxa.PREFERENCES" >
                 </action>
@@ -63,54 +48,33 @@
         </activity>
 
         <provider
-            android:name=".provider.RosterProvider"
-            android:authorities="de.tudresden.inf.rn.mobilis.mxa.provider.roster" >
+            android:name="de.tudresden.inf.rn.mobilis.mxa.provider.RosterProvider"
+            android:authorities="de.tudresden.inf.rn.mobilis.mxa.provider.roster" android:exported="false" >
         </provider>
+
         <provider
-            android:name=".provider.MessageProvider"
-            android:authorities="de.tudresden.inf.rn.mobilis.mxa.provider.messages" >
+            android:name="de.tudresden.inf.rn.mobilis.mxa.provider.MessageProvider"
+            android:authorities="de.tudresden.inf.rn.mobilis.mxa.provider.messages" android:exported="false">
         </provider>
-
+        
         <activity
-            android:name=".activities.Setup"
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.FileChooserActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.Setup"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activities.SetupBasics"
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.SetupBasics"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activities.Welcome"
-            android:screenOrientation="portrait" >
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" >
-                </category>
-
-                <action android:name="android.intent.action.MAIN" >
-                </action>
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".activities.SetupComplete"
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.SetupComplete"
             android:screenOrientation="portrait" >
         </activity>
-        <activity
-            android:name=".activities.FileChooserActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name=".activities.StatisticsActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name=".activities.JIDSelectionActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
-            <intent-filter>
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <action android:name="de.tudresden.inf.rn.mobilis.mxa.JIDSELECTION" />
-            </intent-filter>
-        </activity>
+        
     </application>
 
 </manifest>

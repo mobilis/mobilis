@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2009 Technische Universität Dresden
+ * Copyright (C) 2009 Technische Universitï¿½t Dresden
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ServiceInfo;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -39,7 +43,7 @@ public class MXAController implements ServiceConnection {
 	private static MXAController instance;
 	private IXMPPService mXMPPService = null;
 	private MXAListener mListener;
-	private Context mContext;
+	private SharedPreferences mSharedPreferences;
 
 	private MXAController() {
 	};
@@ -50,13 +54,16 @@ public class MXAController implements ServiceConnection {
 		}
 		return instance;
 	}
-
+	
 	public void connectMXA(Context ctx, MXAListener listener) {
+		if (mSharedPreferences == null) {
+			return;
+		}
+		
 		mListener = listener;
-		mContext = ctx;
 
 		if (mXMPPService == null) {
-			Intent i = new Intent(IXMPPService.class.getName());
+			Intent i = new Intent(ctx, XMPPRemoteService.class);
 			ctx.startService(i);
 			ctx.bindService(i, instance, 0);
 		} else {
@@ -66,18 +73,10 @@ public class MXAController implements ServiceConnection {
 			}
 		}
 	}
-	
-//	public void disconnectMXA() {
-//		if (mXMPPService != null) {
-//			try {
-//				if (mXMPPService.isConnected()) {
-//					mContext.unbindService(instance);				
-//				}
-//			} catch (RemoteException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
+
+	public void disconnectMXA(Context ctx) {
+		ctx.unbindService(instance);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -123,5 +122,26 @@ public class MXAController implements ServiceConnection {
 
 	public IXMPPService getXMPPService() {
 		return mXMPPService;
+	}
+	
+	/**
+	 * Checks whether the XMPP connection parameters have already been set.
+	 * Doesn't check for correctness of data.
+	 * @return <code>true</code> if XMPP connection parameters are all set,
+	 * 		<code>false</code> otherwise.
+	 */
+	public boolean checkSetupDone() {
+		return mSharedPreferences.contains("pref_host") 
+				&& mSharedPreferences.contains("pref_service") 
+				&& mSharedPreferences.contains("pref_xmpp_user") 
+				&& mSharedPreferences.contains("pref_xmpp_password");
+	}
+
+	public SharedPreferences getSharedPreferences() {
+		return mSharedPreferences;
+	}
+
+	public void setSharedPreferences(SharedPreferences mSharedPreferences) {
+		this.mSharedPreferences = mSharedPreferences;
 	}
 }

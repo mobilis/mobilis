@@ -26,7 +26,6 @@ package de.tudresden.inf.rn.mobilis.mxa.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -50,7 +49,6 @@ import de.tudresden.inf.rn.mobilis.mxa.IXMPPService;
 import de.tudresden.inf.rn.mobilis.mxa.MXAController;
 import de.tudresden.inf.rn.mobilis.mxa.MXAListener;
 import de.tudresden.inf.rn.mobilis.mxa.R;
-import de.tudresden.inf.rn.mobilis.mxa.XMPPRemoteService;
 
 /**
  * Displays the activity for typing in the XMPP ID and its password.
@@ -75,17 +73,22 @@ public class SetupBasics extends Activity implements OnClickListener,
 	
 	//dialogs during testing
 	private ProgressDialog mProgressDialog;
-	private AlertDialog mAlertDialog;
 	
 	private boolean mMxaConnected=false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.setup_basics);
+		setContentView(R.layout.mxa_setup_basics);
 
 		// initialize members for UI elements.
 		initResourceRefs();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		MXAController.get().disconnectMXA(this);
+		super.onDestroy();
 	}
 
 	// ==========================================================
@@ -123,9 +126,7 @@ public class SetupBasics extends Activity implements OnClickListener,
 				// no default settings available, show Preference Activity
 				//no, we do some clever things her
 				//reworked code, just try the settings
-				mPreferences = getSharedPreferences(
-						ConstMXA.MXA_PREFERENCES,
-						Context.MODE_PRIVATE);
+				mPreferences = MXAController.get().getSharedPreferences();
 
 				SharedPreferences.Editor editor = mPreferences.edit();
 
@@ -225,7 +226,7 @@ public class SetupBasics extends Activity implements OnClickListener,
 	 * @return
 	 */
 	private Server findServerForDomain(String domain) {
-		XmlResourceParser xml = getResources().getXml(R.xml.servers);
+		XmlResourceParser xml = getResources().getXml(R.xml.mxa_servers);
 		int xmlEventType;
 		Server server = null;
 		try {
@@ -316,8 +317,7 @@ public class SetupBasics extends Activity implements OnClickListener,
 
 	@Override
 	public void onMXADisconnected() {
-		// TODO Auto-generated method stub
-		
+		Log.d(TAG, "MXA disconnected");
 	}
 	
 	private Handler guiHandler= new Handler(){

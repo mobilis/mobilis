@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2009 Technische Universität Dresden
+ * Copyright (C) 2009 Technische Universitï¿½t Dresden
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -175,7 +175,7 @@ public class SessionMobilityService extends Service {
 		public void sendMessageHistory(String jid, long startFrom) throws RemoteException {
 			ForwardedStateExtension fse = new ForwardedStateExtension();
 			Cursor c = mXMPPService.getContentResolver().query(
-					MessageItems.CONTENT_URI, null,
+					MessageItems.contentUri, null,
 					MessageItems.DATE_SENT + ">=" + startFrom, null,
 					MessageItems.DEFAULT_SORT_ORDER);
 			while (c.moveToNext()) {
@@ -375,7 +375,7 @@ public class SessionMobilityService extends Service {
 							sb.append(msg.getProperty("stamp"));
 							sb.append("'");
 							Cursor c = mXMPPService.getContentResolver().query(
-									MessageItems.CONTENT_URI, null,
+									MessageItems.contentUri, null,
 									sb.toString(), null,
 									MessageItems.DEFAULT_SORT_ORDER);
 							if (!c.moveToFirst()) {
@@ -398,7 +398,7 @@ public class SessionMobilityService extends Service {
 								// just save non empty messages
 								if (msg.getBody() != null) {
 									Uri uri = mXMPPService.getContentResolver()
-											.insert(MessageItems.CONTENT_URI,
+											.insert(MessageItems.contentUri,
 													values);
 									Log.i(TAG,
 											"saved state forwarded message to URI "

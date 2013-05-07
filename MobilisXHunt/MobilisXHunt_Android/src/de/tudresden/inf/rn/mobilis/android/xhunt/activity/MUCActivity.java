@@ -195,7 +195,7 @@ public class MUCActivity extends Activity{
 	 */
 	private void initMessageHistory() {
 		// Get a cursor to all messages to the user
-		msgCursor = getContentResolver().query(MessageItems.CONTENT_URI,
+		msgCursor = getContentResolver().query(MessageItems.contentUri,
 				null, null, null, MessageItems.DEFAULT_SORT_ORDER);
 		// Start to manage the cursor
 		startManagingCursor(msgCursor);

@@ -24,6 +24,7 @@
 package de.tudresden.inf.rn.mobilis.android.xhunt.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,6 +42,8 @@ import de.tudresden.inf.rn.mobilis.android.xhunt.model.GameState;
 import de.tudresden.inf.rn.mobilis.android.xhunt.proxy.MXAProxy;
 import de.tudresden.inf.rn.mobilis.android.xhunt.service.ServiceConnector;
 import de.tudresden.inf.rn.mobilis.android.xhunt.ui.DialogRemoteLoading;
+import de.tudresden.inf.rn.mobilis.mxa.MXAController;
+import de.tudresden.inf.rn.mobilis.mxa.activities.Setup;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
@@ -202,7 +205,11 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				if(mMxaProxy != null){
+				if (!MXAController.get().checkSetupDone()) {
+					Toast.makeText(MainActivity.this, MainActivity.this.getResources().getString(R.string.main_toast_xmpp_setup_needed), Toast.LENGTH_SHORT).show();
+					Intent xmppSetupIntent = new Intent(MainActivity.this, Setup.class);
+					startActivity(xmppSetupIntent);
+				} else if (mMxaProxy != null) {
 					mMxaProxy.getIQProxy().updateServerJid();
 					
 					if(!mMxaProxy.isConnected())
@@ -271,6 +278,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        MXAController.get().setSharedPreferences(getSharedPreferences("de.tudresden.inf.rn.mobilis.android.xhunt.mxa", Context.MODE_PRIVATE));
+        
 		initComponents();
 		bindXHuntService();
 	}

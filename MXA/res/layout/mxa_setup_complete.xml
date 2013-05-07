@@ -5,23 +5,16 @@
 		android:layout_width="fill_parent" android:orientation="vertical">
 		<TextView android:layout_height="wrap_content"
 			android:layout_width="fill_parent" android:textSize="20sp"
-			android:textColor="?android:attr/textColorPrimary" android:id="@+id/setup_txt_welcome"
-			android:text="@string/setup_welcome"></TextView>
+			android:textColor="?android:attr/textColorPrimary" android:id="@+id/setup_complete_txt_conclusion" android:text="@string/mxa_setup_complete_conclusion"></TextView>
 		<View android:layout_width="fill_parent" android:layout_height="0px"
 			android:layout_weight="1"></View>
 		<RelativeLayout android:layout_width="fill_parent"
 			android:layout_height="54dip" android:background="@android:drawable/bottom_bar">
-			<Button android:layout_centerVertical="true"
-				android:layout_height="wrap_content" android:layout_width="wrap_content"
-				android:id="@+id/setup_btn_manual"
-				android:text="@string/setup_btn_manual" android:minWidth="100sp"
-				android:layout_alignParentLeft="true"></Button>
+			
 			<Button android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:minWidth="100sp"
-				android:drawableRight="@drawable/button_indicator_next"
 				android:layout_alignParentRight="true"
-				android:layout_centerVertical="true" android:id="@+id/setup_btn_next"
-				android:text="@string/setup_btn_next"></Button>
+				android:layout_centerVertical="true" android:text="@string/mxa_setup_btn_close" android:id="@+id/setup_complete_btn_close"></Button>
 		
 </RelativeLayout>
 	</LinearLayout>

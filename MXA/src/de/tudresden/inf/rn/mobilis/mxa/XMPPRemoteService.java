@@ -100,6 +100,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ProviderInfo;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
@@ -115,7 +118,6 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import de.tudresden.inf.rn.mobilis.mxa.ConstMXA.MessageItems;
 import de.tudresden.inf.rn.mobilis.mxa.ConstMXA.RosterItems;
-import de.tudresden.inf.rn.mobilis.mxa.activities.MainActivity;
 import de.tudresden.inf.rn.mobilis.mxa.callbacks.IChatStateCallback;
 import de.tudresden.inf.rn.mobilis.mxa.callbacks.IConnectionCallback;
 import de.tudresden.inf.rn.mobilis.mxa.callbacks.IXMPPIQCallback;
@@ -123,6 +125,8 @@ import de.tudresden.inf.rn.mobilis.mxa.callbacks.IXMPPMessageCallback;
 import de.tudresden.inf.rn.mobilis.mxa.parcelable.XMPPIQ;
 import de.tudresden.inf.rn.mobilis.mxa.parcelable.XMPPMessage;
 import de.tudresden.inf.rn.mobilis.mxa.parcelable.XMPPPresence;
+import de.tudresden.inf.rn.mobilis.mxa.provider.DynamicContentProvider;
+import de.tudresden.inf.rn.mobilis.mxa.provider.ProviderRegistry;
 import de.tudresden.inf.rn.mobilis.mxa.services.filetransfer.FileTransferService;
 import de.tudresden.inf.rn.mobilis.mxa.services.filetransfer.IFileTransferService;
 import de.tudresden.inf.rn.mobilis.mxa.services.messagecarbons.ForwardedExtension;
@@ -241,9 +245,7 @@ public class XMPPRemoteService extends Service {
 		xmppReadWorker.start();
 
 		// read in preferences
-		mPreferences = getSharedPreferences(
-				"de.tudresden.inf.rn.mobilis.mxa_preferences",
-				Context.MODE_PRIVATE);
+		mPreferences = MXAController.get().getSharedPreferences();
 		// initialize IQ executor
 		mWriteExecutor = Executors.newCachedThreadPool();
 
@@ -272,8 +274,30 @@ public class XMPPRemoteService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
+		prepareContentProviderUris();
+		
 		stopNotification();
 		instance = this;
+	}
+	
+	private void prepareContentProviderUris() {
+		try {
+			ProviderInfo[] providers = getPackageManager().getPackageInfo(XMPPRemoteService.this.getPackageName(), PackageManager.GET_PROVIDERS).providers;
+			for (ProviderInfo provider : providers) {
+				if (provider.name.equals("de.tudresden.inf.rn.mobilis.mxa.provider.RosterProvider")) {
+					ConstMXA.rosterAuthority = provider.authority;
+				} else if (provider.name.equals("de.tudresden.inf.rn.mobilis.mxa.provider.MessageProvider")) {
+					ConstMXA.messageAuthority = provider.authority;
+				}
+			}
+			
+			for (DynamicContentProvider provider : ProviderRegistry.get()) {
+				provider.loadUriMatcherAuthority();
+			}
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -443,7 +467,7 @@ public class XMPPRemoteService extends Service {
 
 							// delete all entries in the RosterProvider
 							getContentResolver().delete(
-									ConstMXA.RosterItems.CONTENT_URI, "1",
+									ConstMXA.RosterItems.contentUri, "1",
 									new String[] {});
 							// get Roster from server
 							final Roster r = XMPPRemoteService.this.mConn
@@ -777,34 +801,25 @@ public class XMPPRemoteService extends Service {
 	private void showConnectionNotification() {
 		if (RUN_IN_FOREGROUND) {
 			Notification note = new NotificationCompat.Builder(this)
-					.setContentTitle(getString(R.string.sb_txt_title))
-					.setContentText(getString(R.string.sb_txt_text))
-					.setSmallIcon(R.drawable.stat_notify_chat).build();
+					.setContentTitle(getString(R.string.mxa_sb_txt_title))
+					.setContentText(getString(R.string.mxa_sb_txt_text))
+					.setSmallIcon(R.drawable.mxa_stat_notify_chat).build();
 
-			Intent i = new Intent(this, MainActivity.class);
-
-			i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-					| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-			PendingIntent pi = PendingIntent.getActivity(this, 0, i, 0);
-
-			note.setLatestEventInfo(this, getString(R.string.sb_txt_title),
-					getString(R.string.sb_txt_text), pi);
 			note.flags |= Notification.FLAG_NO_CLEAR;
 
 			startForeground(NOTIFICATION_ID, note);
 		} else {
 			NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-			Notification status = new Notification(R.drawable.stat_notify_chat,
-					getString(R.string.sb_txt_text), System.currentTimeMillis());
+			Notification status = new Notification(R.drawable.mxa_stat_notify_chat,
+					getString(R.string.mxa_sb_txt_text), System.currentTimeMillis());
 			status.setLatestEventInfo(XMPPRemoteService.this,
-					getString(R.string.sb_txt_title),
-					getString(R.string.sb_txt_text), PendingIntent.getActivity(
+					getString(R.string.mxa_sb_txt_title),
+					getString(R.string.mxa_sb_txt_text), PendingIntent.getActivity(
 							XMPPRemoteService.this, 0, new Intent(
 									ConstMXA.INTENT_SERVICEMONITOR), 0));
 			status.flags |= Notification.FLAG_ONGOING_EVENT;
-			status.icon = R.drawable.stat_notify_chat;
+			status.icon = R.drawable.mxa_stat_notify_chat;
 			nm.notify(XMPPSERVICE_STATUS, status);
 		}
 	}
@@ -995,7 +1010,7 @@ public class XMPPRemoteService extends Service {
 				values.put(MessageItems.STATUS, "sent");
 
 				Log.i(TAG, "saving chat message");
-				getContentResolver().insert(MessageItems.CONTENT_URI, values);
+				getContentResolver().insert(MessageItems.contentUri, values);
 
 				// send via XMPP
 				if (mConn.isAuthenticated()) {
@@ -1259,7 +1274,7 @@ public class XMPPRemoteService extends Service {
 					// just save non empty messages
 					if (m.getBody() != null) {
 						Uri uri = getContentResolver().insert(
-								MessageItems.CONTENT_URI, values);
+								MessageItems.contentUri, values);
 						// Log.i(TAG, "saved chat message to " +
 						// uri.toString());
 
@@ -1327,7 +1342,7 @@ public class XMPPRemoteService extends Service {
 					values.put(MessageItems.STATUS, "received");
 
 					Uri uri = getContentResolver().insert(
-							MessageItems.CONTENT_URI, values);
+							MessageItems.contentUri, values);
 					Log.i(TAG, "saved groupchat message to " + uri.toString());
 				} else if (m.getType().equals(
 						org.jivesoftware.smack.packet.Message.Type.error)) {
@@ -1498,7 +1513,7 @@ public class XMPPRemoteService extends Service {
 			final ContentResolver cr = XMPPRemoteService.this
 					.getContentResolver();
 			ContentValues[] cvs = getFromStrings(entries);
-			cr.bulkInsert(ConstMXA.RosterItems.CONTENT_URI, cvs);
+			cr.bulkInsert(ConstMXA.RosterItems.contentUri, cvs);
 		}
 
 		@Override
@@ -1515,7 +1530,7 @@ public class XMPPRemoteService extends Service {
 					first = false;
 				sb.append(ConstMXA.RosterItems.XMPP_ID + "='" + e + "'");
 			}
-			cr.delete(ConstMXA.RosterItems.CONTENT_URI, sb.toString(), null);
+			cr.delete(ConstMXA.RosterItems.contentUri, sb.toString(), null);
 
 		}
 
@@ -1531,7 +1546,7 @@ public class XMPPRemoteService extends Service {
 						+ cvs[i].getAsString(RosterItems.XMPP_ID) + "' AND "
 						+ RosterItems.RESSOURCE + "='"
 						+ cvs[i].getAsString(RosterItems.RESSOURCE) + "' ";
-				cr.update(ConstMXA.RosterItems.CONTENT_URI, cvs[i],
+				cr.update(ConstMXA.RosterItems.contentUri, cvs[i],
 						whereClause, null);
 				i++;
 			}
@@ -1547,7 +1562,7 @@ public class XMPPRemoteService extends Service {
 					+ cv.getAsString(RosterItems.XMPP_ID) + "' AND "
 					+ RosterItems.RESSOURCE + "='"
 					+ cv.getAsString(RosterItems.RESSOURCE) + "' ";
-			cr.update(ConstMXA.RosterItems.CONTENT_URI, cv, whereClause, null);
+			cr.update(ConstMXA.RosterItems.contentUri, cv, whereClause, null);
 			// Log.v(TAG,"presence changed: "+presence.getFrom());
 		}
 

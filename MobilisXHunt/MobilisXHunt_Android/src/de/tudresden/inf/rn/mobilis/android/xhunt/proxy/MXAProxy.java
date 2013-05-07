@@ -370,7 +370,7 @@ public class MXAProxy implements MXAListener {
 			final Handler resultHandler, final String filter) {
 		// create a cursor for the chat messages which arrives in MXA
 		final Cursor msgCursor = activity.getContentResolver().query(
-				MessageItems.CONTENT_URI, null, null, null,
+				MessageItems.contentUri, null, null, null,
 				MessageItems.DEFAULT_SORT_ORDER);
 		activity.startManagingCursor(msgCursor);
 

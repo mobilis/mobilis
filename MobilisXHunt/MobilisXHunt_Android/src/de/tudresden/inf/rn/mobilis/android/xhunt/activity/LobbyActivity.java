@@ -663,7 +663,7 @@ public class LobbyActivity extends Activity {
 		
 		// delete old chat messages from internal database
 		int cntMsgsDeleted = getContentResolver().delete(
-				MessageItems.CONTENT_URI,
+				MessageItems.contentUri,
 				null,
 				null);
 		Log.i(TAG, cntMsgsDeleted + " old chat messages deleted");

@@ -32,6 +32,10 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_LOGS" />
+    
+    <!-- MXA permissions -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
 
     <application
         android:icon="@drawable/xhuntlogo"
@@ -113,6 +117,59 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.tudresden.inf.rn.mobilis.android.xhunt.activity.MainActivity" />
         </activity>
+        
+        <!-- MXA activities and services -->
+        
+        <service
+            android:name="de.tudresden.inf.rn.mobilis.mxa.XMPPRemoteService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
+
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.PreferencesClient"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="de.tudresden.inf.rn.mobilis.mxa.PREFERENCES" >
+                </action>
+
+                <category android:name="android.intent.category.PREFERENCE" >
+                </category>
+                <category android:name="android.intent.category.DEFAULT" >
+                </category>
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="de.tudresden.inf.rn.mobilis.mxa.provider.RosterProvider"
+            android:authorities="de.tudresden.inf.rn.mobilis.mxa.provider.roster.xhunt"
+            android:exported="false" >
+        </provider>
+        <provider
+            android:name="de.tudresden.inf.rn.mobilis.mxa.provider.MessageProvider"
+            android:authorities="de.tudresden.inf.rn.mobilis.mxa.provider.messages.xhunt" 
+            android:exported="false">
+        </provider>
+        
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.FileChooserActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.Setup"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.SetupBasics"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.SetupComplete"
+            android:screenOrientation="portrait" >
+        </activity>
+
     </application>
 
 </manifest>

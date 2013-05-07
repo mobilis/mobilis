@@ -117,7 +117,7 @@ public class MessageCarbonsService extends Service {
 							// just save non empty messages
 							if (msg.getBody() != null) {
 								Uri uri = mXMPPService.getContentResolver()
-										.insert(MessageItems.CONTENT_URI,
+										.insert(MessageItems.contentUri,
 												values);
 								Log.i(TAG, "saved forwarded message to URI "
 										+ uri.getPath());

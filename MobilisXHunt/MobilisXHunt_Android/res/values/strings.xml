@@ -41,7 +41,8 @@
     <string name="main_button_profile_title">Profile</string>
     <string name="main_button_exit_title">Exit</string>
     <string name="main_button_version_title">Version</string>
-    <string name="lobby_button_invite_title">Connect Kiosk</string>
+    <string name="main_toast_xmpp_setup_needed">XMPP setup is not yet done. Let\'s get this done first!</string>
+    <string name="lobby_button_invite_title">Connect to Kiosk</string>
     <string name="lobby_button_ready_title">Ready</string>
     <string name="muc_button_send_title">Send</string>
     <string name="muc_editor_hint_title">Type in here</string>

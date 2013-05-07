@@ -47,7 +47,7 @@ public class SetupComplete extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		setContentView(R.layout.setup_complete);
+		setContentView(R.layout.mxa_setup_complete);
 		
 		// initialize members for UI elements.
 		initResourceRefs();
@@ -66,10 +66,6 @@ public class SetupComplete extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		if (v == mBtnClose) {
 			// TODO close assistant
-			
-			Intent i = new Intent(this, Welcome.class);
-			i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(i);
 			finish();
 		}
 	}

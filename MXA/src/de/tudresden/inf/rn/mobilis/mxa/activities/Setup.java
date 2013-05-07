@@ -58,7 +58,7 @@ public class Setup extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		setContentView(R.layout.setup);
+		setContentView(R.layout.mxa_setup);
 
 		// initialize members for UI elements.
 		initResourceRefs();

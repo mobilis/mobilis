@@ -11,37 +11,11 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa.callbacks"/>
-        <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa.services.servicediscovery"/>
-        <file path="/MXA/src/de/tudresden/inf/rn/mobilis/mxa/IXMPPService.aidl"/>
-        <file path="/MXA/src/de/tudresden/inf/rn/mobilis/mxa/services/serverlessmessaging/IServerlessMessagingService.aidl"/>
-        <javaElement handleIdentifier="=MobilisXMPP/src&lt;de.tudresden.inf.rn.mobilis.xmpp.beans.coordination{MobilisServiceDiscoveryBean.java"/>
-        <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa.services.pubsub"/>
-        <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa.services.multiuserchat"/>
-        <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa{IXMPPService.java"/>
-        <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa.services.filetransfer"/>
-        <file path="/MXA/src/de/tudresden/inf/rn/mobilis/mxa/services/pubsub/IPubSubService.aidl"/>
         <javaElement handleIdentifier="=MobilisXMPP/src&lt;de.tudresden.inf.rn.mobilis.xmpp.beans{XMPPInfo.java"/>
-        <javaElement handleIdentifier="=MXA/src&lt;de.tudresden.inf.rn.mobilis.mxa{MXAListener.java"/>
-        <javaElement handleIdentifier="=MXA/src&lt;android.os"/>
-        <javaElement handleIdentifier="=MXA/src&lt;de.tudresden.inf.rn.mobilis.mxa.services.callbacks"/>
-        <javaElement handleIdentifier="=MXA/src&lt;de.tudresden.inf.rn.mobilis.mxa.parcelable"/>
-        <javaElement handleIdentifier="=MobilisXMPP/src&lt;de.tudresden.inf.rn.mobilis.xmpp.beans{XMPPBean.java"/>
-        <javaElement handleIdentifier="=MXA/src&lt;de.tudresden.inf.rn.mobilis.mxa.services.parcelable"/>
-        <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa.services.messagecarbons"/>
         <javaElement handleIdentifier="=MobilisXMPP/src&lt;de.tudresden.inf.rn.mobilis.xmpp.beans{XMPPUtil.java"/>
-        <javaElement handleIdentifier="=MXA/src&lt;de.tudresden.inf.rn.mobilis.mxa.callbacks"/>
-        <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa.services.callbacks"/>
-        <file path="/MXA/src/de/tudresden/inf/rn/mobilis/mxa/services/filetransfer/IFileTransferService.aidl"/>
-        <file path="/MXA/src/de/tudresden/inf/rn/mobilis/mxa/services/sessionmobility/ISessionMobilityService.aidl"/>
-        <file path="/MXA/src/de/tudresden/inf/rn/mobilis/mxa/services/servicediscovery/IServiceDiscoveryService.aidl"/>
-        <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa.services.serverlessmessaging"/>
-        <file path="/MXA/src/de/tudresden/inf/rn/mobilis/mxa/services/multiuserchat/IMultiUserChatService.aidl"/>
-        <javaElement handleIdentifier="=MXA/gen&lt;de.tudresden.inf.rn.mobilis.mxa.services.sessionmobility"/>
         <javaElement handleIdentifier="=MobilisXMPP/src&lt;de.tudresden.inf.rn.mobilis.xmpp.beans.coordination{MobilisServiceInfo.java"/>
         <javaElement handleIdentifier="=MobilisXMPP/src&lt;de.tudresden.inf.rn.mobilis.xmpp.beans.coordination{CreateNewServiceInstanceBean.java"/>
-        <javaElement handleIdentifier="=MXA/src&lt;de.tudresden.inf.rn.mobilis.mxa{MXAController.java"/>
-        <file path="/MXA/src/de/tudresden/inf/rn/mobilis/mxa/services/messagecarbons/IMessageCarbonsService.aidl"/>
-        <javaElement handleIdentifier="=MXA/src&lt;de.tudresden.inf.rn.mobilis.mxa{ConstMXA.java"/>
+        <javaElement handleIdentifier="=MobilisXMPP/src&lt;de.tudresden.inf.rn.mobilis.xmpp.beans.coordination{MobilisServiceDiscoveryBean.java"/>
+        <javaElement handleIdentifier="=MobilisXMPP/src&lt;de.tudresden.inf.rn.mobilis.xmpp.beans{XMPPBean.java"/>
     </selectedElements>
 </jardesc>

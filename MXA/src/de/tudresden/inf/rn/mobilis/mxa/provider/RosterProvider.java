@@ -24,10 +24,6 @@ package de.tudresden.inf.rn.mobilis.mxa.provider;
 
 import java.util.HashMap;
 
-import de.tudresden.inf.rn.mobilis.mxa.ConstMXA;
-import de.tudresden.inf.rn.mobilis.mxa.ConstMXA.RosterItems;
-
-import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -40,11 +36,13 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
+import de.tudresden.inf.rn.mobilis.mxa.ConstMXA;
+import de.tudresden.inf.rn.mobilis.mxa.ConstMXA.RosterItems;
 
 /**
  * @author Istvan Koren
  */
-public class RosterProvider extends ContentProvider {
+public class RosterProvider extends DynamicContentProvider {
 
 	private static final String TAG = "RosterProvider";
 
@@ -167,7 +165,7 @@ public class RosterProvider extends ContentProvider {
 				.getAsString(RosterItems.XMPP_ID), initialValues
 				.getAsString(RosterItems.RESSOURCE));
 		if (id > -1) {
-			Uri updateUri = Uri.withAppendedPath(RosterItems.CONTENT_URI,
+			Uri updateUri = Uri.withAppendedPath(RosterItems.contentUri,
 					String.valueOf(id));
 			update(updateUri, initialValues, null, null);
 			return updateUri;
@@ -179,7 +177,7 @@ public class RosterProvider extends ContentProvider {
 		//SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		long rowId = db.insert(ROSTER_TABLE_NAME, RosterItems.XMPP_ID, values);
 		if (rowId > 0) {
-			Uri itemUri = ContentUris.withAppendedId(RosterItems.CONTENT_URI,
+			Uri itemUri = ContentUris.withAppendedId(RosterItems.contentUri,
 					rowId);
 			getContext().getContentResolver().notifyChange(itemUri, null);
 			return itemUri;
@@ -195,6 +193,7 @@ public class RosterProvider extends ContentProvider {
 	 */
 	@Override
 	public boolean onCreate() {
+		super.onCreate();
 		mOpenHelper = new DatabaseHelper(getContext());
 		return true;
 	}
@@ -379,10 +378,10 @@ public class RosterProvider extends ContentProvider {
 		int id = -1;
 		Cursor c;
 		if (ressource==null)
-			c= query(RosterItems.CONTENT_URI, null, RosterItems.XMPP_ID
+			c= query(RosterItems.contentUri, null, RosterItems.XMPP_ID
 				+ "='" + xmppId + "'", null, null);
 		else
-			c= query(RosterItems.CONTENT_URI, null, RosterItems.XMPP_ID
+			c= query(RosterItems.contentUri, null, RosterItems.XMPP_ID
 					+ "='" + xmppId + "'"+"AND "+RosterItems.RESSOURCE+"='"+ressource+"'", null, null);
 		if (c.moveToFirst())
 			id = c.getInt(c.getColumnIndex(RosterItems._ID));
@@ -394,9 +393,6 @@ public class RosterProvider extends ContentProvider {
 
 	static {
 		sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		sUriMatcher.addURI(ConstMXA.ROSTER_AUTHORITY, "rosteritems", ROSTER);
-		sUriMatcher.addURI(ConstMXA.ROSTER_AUTHORITY, "rosteritems/#",
-				ROSTER_ID);
 
 		sRosterProjectionMap = new HashMap<String, String>();
 		sRosterProjectionMap.put(RosterItems._ID, RosterItems._ID);
@@ -410,6 +406,13 @@ public class RosterProvider extends ContentProvider {
 				RosterItems.UPDATED_DATE);
 		sRosterProjectionMap.put(RosterItems.RESSOURCE,
 				RosterItems.RESSOURCE);
+	}
+	
+	@Override
+	public void loadUriMatcherAuthority() {
+		sUriMatcher.addURI(ConstMXA.rosterAuthority, "rosteritems", ROSTER);
+		sUriMatcher.addURI(ConstMXA.rosterAuthority, "rosteritems/#",
+				ROSTER_ID);
 	}
 
 }

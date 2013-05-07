@@ -1,4 +1,5 @@
 /**
+
  * Copyright (C) 2009 Technische Universit�t Dresden
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -98,7 +99,7 @@ public class ConstMXA {
 	// ==========================================================
 	// Preferences uris
 	// ==========================================================
-	public static final String MXA_PREFERENCES = "de.tudresden.inf.rn.mobilis.mxa_preferences";
+//	public static final String MXA_PREFERENCES = "de.tudresden.inf.rn.mobilis.mxa_preferences";
 	
 	// ==========================================================
 	// IQ Database Table for storing lost packets
@@ -122,7 +123,7 @@ public class ConstMXA {
 	// Message provider
 	// ==========================================================
 
-	public static final String MESSAGE_AUTHORITY = "de.tudresden.inf.rn.mobilis.mxa.provider.messages";
+	public static String messageAuthority = "de.tudresden.inf.rn.mobilis.mxa.provider.messages";
 	
 	// ==========================================================
 	// Multi User Chat
@@ -148,17 +149,17 @@ public class ConstMXA {
 		/**
 		 * The content:// style URL for this table
 		 */
-		public static final Uri CONTENT_URI = Uri.parse("content://"
-				+ MESSAGE_AUTHORITY + "/messageitems");
+		public static Uri contentUri = Uri.parse("content://"
+				+ messageAuthority + "/messageitems");
 
 		/**
-		 * The MIME type of {@link #CONTENT_URI} providing a directory of
+		 * The MIME type of {@link #contentUri} providing a directory of
 		 * message items.
 		 */
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.mxa.message";
 
 		/**
-		 * The MIME type of a {@link #CONTENT_URI} sub-directory of a single
+		 * The MIME type of a {@link #contentUri} sub-directory of a single
 		 * message item.
 		 */
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.mxa.message";
@@ -237,7 +238,7 @@ public class ConstMXA {
 	// Roster provider
 	// ==========================================================
 
-	public static final String ROSTER_AUTHORITY = "de.tudresden.inf.rn.mobilis.mxa.provider.roster";
+	public static String rosterAuthority = "de.tudresden.inf.rn.mobilis.mxa.provider.roster";
 
 	/**
 	 * Roster table
@@ -259,17 +260,17 @@ public class ConstMXA {
 		/**
 		 * The content:// style URL for this table
 		 */
-		public static final Uri CONTENT_URI = Uri.parse("content://"
-				+ ROSTER_AUTHORITY + "/rosteritems");
+		public static Uri contentUri = Uri.parse("content://"
+				+ rosterAuthority + "/rosteritems");
 
 		/**
-		 * The MIME type of {@link #CONTENT_URI} providing a directory of roster
+		 * The MIME type of {@link #contentUri} providing a directory of roster
 		 * items.
 		 */
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.mxa.roster";
 
 		/**
-		 * The MIME type of a {@link #CONTENT_URI} sub-directory of a single
+		 * The MIME type of a {@link #contentUri} sub-directory of a single
 		 * roster item.
 		 */
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.mxa.roster";
