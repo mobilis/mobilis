@@ -278,7 +278,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MXAController.get().setSharedPreferences(getSharedPreferences("de.tudresden.inf.rn.mobilis.android.xhunt.mxa", Context.MODE_PRIVATE));
+        MXAController.get().setSharedPreferencesName(this,"de.tudresden.inf.rn.mobilis.android.xhunt.mxa");
         
 		initComponents();
 		bindXHuntService();

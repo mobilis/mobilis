@@ -40,6 +40,7 @@ public class MXAController implements ServiceConnection {
 	private IXMPPService mXMPPService = null;
 	private MXAListener mListener;
 	private SharedPreferences mSharedPreferences;
+	private String sharedPreferencesName;
 
 	private MXAController() {
 	};
@@ -137,8 +138,9 @@ public class MXAController implements ServiceConnection {
 		return mSharedPreferences;
 	}
 
-	public void setSharedPreferences(SharedPreferences mSharedPreferences) {
-		this.mSharedPreferences = mSharedPreferences;
+	public void setSharedPreferencesName(Context ctx, String sharedPreferencesName) {
+		this.sharedPreferencesName = sharedPreferencesName;
+		this.mSharedPreferences = ctx.getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE);
 	}
 	
 	/**
@@ -260,5 +262,9 @@ public class MXAController implements ServiceConnection {
 			mSharedPreferences.edit().putBoolean("pref_xmpp_compression", compression).commit();
 		}
 	}
-	
+
+	public String getSharedPreferencesName() {
+		return sharedPreferencesName;
+	}
+
 }
