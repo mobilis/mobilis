@@ -141,72 +141,120 @@ public class MXAController implements ServiceConnection {
 		this.mSharedPreferences = mSharedPreferences;
 	}
 	
+	/**
+	 * Sets the XMPP host address (mandatory).
+	 * @param host
+	 */
 	public void setHost(String host) {
 		if (mSharedPreferences != null) {
 			mSharedPreferences.edit().putString("pref_host", host).commit();
 		}
 	}
 	
+	/**
+	 * Sets the XMPP host port (optional).
+	 * @param port
+	 */
 	public void setPort(int port) {
 		if (mSharedPreferences != null) {
 			mSharedPreferences.edit().putInt("pref_port", port).commit();
 		}
 	}
 	
+	/**
+	 * Sets the XMPP service name (in most cases identical to the host name, mandatory).
+	 * @param service
+	 */
 	public void setService(String service) {
 		if (mSharedPreferences != null) {
 			mSharedPreferences.edit().putString("pref_service", service).commit();
 		}
 	}
 	
+	/**
+	 * Sets the XMPP user name (mandatory).
+	 * @param username
+	 */
 	public void setUsername(String username) {
 		if (mSharedPreferences != null) {
 			mSharedPreferences.edit().putString("pref_xmpp_user", username).commit();
 		}
 	}
 	
+	/**
+	 * Sets the XMPP resource (optional).
+	 * @param resource
+	 */
 	public void setResource(String resource) {
 		if (mSharedPreferences != null) {
 			mSharedPreferences.edit().putString("pref_resource", resource).commit();
 		}
 	}
 	
+	/**
+	 * Sets the XMPP password (mandatory).
+	 * @param password
+	 */
 	public void setPassword(String password) {
 		if (mSharedPreferences != null) {
 			mSharedPreferences.edit().putString("pref_xmpp_password", password).commit();
 		}
 	}
 	
+	/**
+	 * Sets the timeout after which MXA shall give up retrying to send a packet (optional).
+	 * @param lostTimeout in minutes
+	 */
 	public void setLostTimeout(String lostTimeout) {
 		if (mSharedPreferences != null) {
 			mSharedPreferences.edit().putString("pref_xmpp_lost_timeout", lostTimeout).commit();
 		}
 	}
 	
+	/**
+	 * Sets the total count of resend trials for one packet (optional).
+	 * @param retryCount
+	 */
 	public void setRetryCount(String retryCount) {
 		if (mSharedPreferences != null) {
 			mSharedPreferences.edit().putString("pref_xmpp_retry_count", retryCount).commit();
 		}
 	}
 	
+	/**
+	 * Sets the timeout interval between two trials to send an IQ (optional).
+	 * @param retryTimeout in seconds
+	 */
 	public void setRetryTimeout(String retryTimeout) {
 		if (mSharedPreferences != null) {
 			mSharedPreferences.edit().putString("pref_xmpp_retry_timeout", retryTimeout).commit();
 		}
 	}
 	
+	/**
+	 * Sets the timeout for packet sending (optional).
+	 * @param intervalPacket
+	 */
 	public void setIntervalPacket(String intervalPacket) {
 		if (mSharedPreferences != null) {
 			mSharedPreferences.edit().putString("pref_xmpp_interval_packet", intervalPacket).commit();
 		}
 	}
 	
+	/**
+	 * Activate/deactivate XMPP encryption (optional).
+	 * @param encryption
+	 */
 	public void setEncryption(boolean encryption) {
 		if (mSharedPreferences != null) {
 			mSharedPreferences.edit().putBoolean("pref_xmpp_encryption", encryption).commit();
 		}
 	}
 	
+	/**
+	 * Activate/deactivate XMPP compression (optional).
+	 * @param compression
+	 */
 	public void setCompression(boolean compression) {
 		if (mSharedPreferences != null) {
 			mSharedPreferences.edit().putBoolean("pref_xmpp_compression", compression).commit();
