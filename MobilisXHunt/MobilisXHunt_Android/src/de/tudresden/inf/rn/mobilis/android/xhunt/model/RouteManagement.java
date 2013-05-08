@@ -561,7 +561,10 @@ public class RouteManagement {
 						}
 						else if (tagName.equals("Route")) {
 							Route r = getRouteFromAttributes(parser);
-							this.mAreaRoutes.put(r.getId(), r);
+							int stationCount = r.getStationIds().size();
+							if (stationCount > 1) {
+								this.mAreaRoutes.put(r.getId(), r);
+							}
 							parser.next();
 						}
 						else

@@ -7,6 +7,7 @@ encoding//src/de/tudresden/inf/rn/mobilis/android/xhunt/activity/SettingsActivit
 encoding//src/de/tudresden/inf/rn/mobilis/android/xhunt/activity/XHuntMapActivity.java=UTF-8
 encoding//src/de/tudresden/inf/rn/mobilis/android/xhunt/helper/SharedPrefHelper.java=UTF-8
 encoding//src/de/tudresden/inf/rn/mobilis/android/xhunt/model/Route.java=UTF-8
+encoding//src/de/tudresden/inf/rn/mobilis/android/xhunt/model/RouteManagement.java=UTF-8
 encoding//src/de/tudresden/inf/rn/mobilis/android/xhunt/proxy/MXAProxy.java=UTF-8
 encoding//src/de/tudresden/inf/rn/mobilis/android/xhunt/ui/PanelInfoBottom.java=UTF-8
 encoding//src/de/tudresden/inf/rn/mobilis/android/xhunt/ui/PanelInfoTop.java=UTF-8
