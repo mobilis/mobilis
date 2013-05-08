@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<msdl:description targetNamespace="http://mobilis.inf.tu-dresden.de/AService"
+	xmlns:msdl="http://mobilis.inf.tu-dresden.de/msdl/" xmlns:xmpp="http://mobilis.inf.tu-dresden.de/xmpp/"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://mobilis.inf.tu-dresden.de/AService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://mobilis.inf.tu-dresden.de/msdl/ http://mobilis.inf.tu-dresden.de/msdl.xsd ">
+	<msdl:types>
+		<xs:schema targetNamespace="http://mobilis.inf.tu-dresden.de/AService">
+			<xs:complexType name="AComplexType">
+				<xs:sequence>
+					<xs:element name="intAttr" type="xs:int" />
+					<xs:element name="stringAttr" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="AnotherComplexType">
+				<xs:sequence>
+					<xs:element name="intAttr" type="xs:int" />
+					<xs:element name="anotherIntAttr" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="AMessage">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="stringAttr" type="xs:string"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ASimpleIQRequest" />
+			<xs:element name="ASimpleIQResponse" />
+			<xs:element name="AComplexIQRequest">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="complexAttr" type="tns:AComplexType" minOccurs="0"
+							maxOccurs="unbounded" />
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="booleanAttr" type="xs:boolean" />
+					</xs:sequence>
+				</xs:complexType>
+			<xs:element name="AComplexIQResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="complexAttr" type="tns:AnotherComplexType" minOccurs="0"
+							maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+	</msdl:types>
+	
+	<msdl:interface name="AServiceInterface">
+		<msdl:fault name="AFault" />
+		<msdl:operation name="AOperation" pattern="http://www.w3.org/ns/wsdl/in-out">
+			<msdl:input element="tns:ASimpleRequest" />
+			<msdl:output element="tns:ASimpleResponse" />
+			<msdl:outfault ref="tns:AFault"/>
+		</msdl:operation>
+		<msdl:operation name="AnotherOperation" pattern="http://www.w3.org/ns/wsdl/out-in">
+			<msdl:input element="tns:AComplexResponse" />
+			<msdl:output element="tns:AComplexRequest" />
+		</msdl:operation>
+		<msdl:operation name="ASimpleOperation" pattern="http://www.w3.org/ns/wsdl/in-only">
+			<msdl:input element="tns:AMessage" />
+		</msdl:operation>
+	</msdl:interface>
+	
+	<msdl:binding name="AServiceBinding" interface="tns:AServiceInterface"
+		type="http://mobilis.inf.tu-dresden.de/xmpp/">
+		<msdl:fault ref="tns:AFault" xmpp:errortype="cancel"
+			xmpp:errorcondition="not-allowed"
+			xmpp:errortext="Some error has happened!" />
+		<msdl:operation ref="tns:AOperation" xmpp:ident="yourservicename:iq:aoperation">
+			<msdl:input xmpp:type="get" />
+			<msdl:output xmpp:type="result" />
+			<msdl:outfault ref="tns:AFault" />
+		</msdl:operation>
+		<msdl:operation ref="tns:AnotherOperation" xmpp:ident="yourservicename:iq:anotheroperation">
+			<msdl:input xmpp:type="set" />
+			<msdl:output xmpp:type="result" />
+		</msdl:operation>
+		<msdl:operation ref="tns:ASimpleOperation" xmpp:ident="yourservicename:iq:asimpleoperation">
+			<msdl:input xmpp:type="chat"/>
+		</msdl:operation>	
+	</msdl:binding>
+	
+	<msdl:service name="AService" interface="tns:AServiceInterface"
+		ident="http://application.package.name#services/AService"
+		version="1">
+		<msdl:endpoint name="AServiceEndpoint" binding="tns:AServiceBinding" />
+		<msdl:dependencies />
+	</msdl:service>
+</msdl:description>
