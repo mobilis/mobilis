@@ -1,0 +1,517 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7915200F17203EE100AB33F0 /* MobiListEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 7915200E17203EE100AB33F0 /* MobiListEntry.m */; };
+		79152012172040D400AB33F0 /* MobiList.m in Sources */ = {isa = PBXBuildFile; fileRef = 79152011172040D400AB33F0 /* MobiList.m */; };
+		79152015172047E900AB33F0 /* MobiListStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 79152014172047E900AB33F0 /* MobiListStore.m */; };
+		791520171720521F00AB33F0 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 791520161720521F00AB33F0 /* libxml2.dylib */; };
+		791520191720522D00AB33F0 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 791520181720522D00AB33F0 /* Security.framework */; };
+		7915201B1720523100AB33F0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7915201A1720523100AB33F0 /* CFNetwork.framework */; };
+		7915201D1720524100AB33F0 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7915201C1720524100AB33F0 /* libresolv.dylib */; };
+		7972141217212C7300D63C38 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7972141117212C7300D63C38 /* libiconv.dylib */; };
+		79768E8D171AD42800F5DDA1 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79768E8C171AD42800F5DDA1 /* UIKit.framework */; };
+		79768E8F171AD42800F5DDA1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79768E8E171AD42800F5DDA1 /* Foundation.framework */; };
+		79768E91171AD42800F5DDA1 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79768E90171AD42800F5DDA1 /* CoreGraphics.framework */; };
+		79768E97171AD42800F5DDA1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 79768E95171AD42800F5DDA1 /* InfoPlist.strings */; };
+		79768E99171AD42800F5DDA1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 79768E98171AD42800F5DDA1 /* main.m */; };
+		79768E9D171AD42800F5DDA1 /* MobiAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 79768E9C171AD42800F5DDA1 /* MobiAppDelegate.m */; };
+		79768E9F171AD42800F5DDA1 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 79768E9E171AD42800F5DDA1 /* Default.png */; };
+		79768EA1171AD42800F5DDA1 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 79768EA0171AD42800F5DDA1 /* Default@2x.png */; };
+		79768EA3171AD42800F5DDA1 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 79768EA2171AD42800F5DDA1 /* Default-568h@2x.png */; };
+		7999F6AA171D658E00B74031 /* Button.png in Resources */ = {isa = PBXBuildFile; fileRef = 7999F6A6171D658E00B74031 /* Button.png */; };
+		7999F6AB171D658E00B74031 /* Button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7999F6A7171D658E00B74031 /* Button@2x.png */; };
+		7999F6AC171D658E00B74031 /* ButtonHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = 7999F6A8171D658E00B74031 /* ButtonHighlighted.png */; };
+		7999F6AD171D658E00B74031 /* ButtonHighlighted@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7999F6A9171D658E00B74031 /* ButtonHighlighted@2x.png */; };
+		7999F6B2171D730000B74031 /* light_toast.png in Resources */ = {isa = PBXBuildFile; fileRef = 7999F6B1171D72FF00B74031 /* light_toast.png */; };
+		7999F6B5171D7DDA00B74031 /* add.png in Resources */ = {isa = PBXBuildFile; fileRef = 7999F6B3171D7DDA00B74031 /* add.png */; };
+		7999F6B6171D7DDA00B74031 /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = 7999F6B4171D7DDA00B74031 /* settings.png */; };
+		7999F6BA171D84BE00B74031 /* XMPPSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7999F6B8171D84BE00B74031 /* XMPPSettingsViewController.m */; };
+		7999F6BB171D84BE00B74031 /* XMPPSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7999F6B9171D84BE00B74031 /* XMPPSettingsViewController.xib */; };
+		7999F6BF171D86CD00B74031 /* ListDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7999F6BD171D86CC00B74031 /* ListDetailViewController.m */; };
+		7999F6C0171D86CD00B74031 /* ListDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7999F6BE171D86CD00B74031 /* ListDetailViewController.xib */; };
+		7999F6C5171DAB3A00B74031 /* TodoListEntryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7999F6C4171DAB3A00B74031 /* TodoListEntryCell.m */; };
+		7999F6C7171DAB5F00B74031 /* TodoListEntryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7999F6C6171DAB5F00B74031 /* TodoListEntryCell.xib */; };
+		79AE3B851735AF1C000A5CA8 /* mobilist-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 79AE3B841735AF1C000A5CA8 /* mobilist-icon.png */; };
+		79AE3B871735AF22000A5CA8 /* mobilist-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 79AE3B861735AF22000A5CA8 /* mobilist-icon@2x.png */; };
+		79BA8D351726C73B007FB4B3 /* TodoListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 79BA8D341726C73B007FB4B3 /* TodoListCell.xib */; };
+		79BA8D381726C784007FB4B3 /* TodoListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 79BA8D371726C784007FB4B3 /* TodoListCell.m */; };
+		79BA8D3B17290423007FB4B3 /* TodoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 79BA8D3A17290423007FB4B3 /* TodoListViewController.m */; };
+		79BA8D3F172AF3D2007FB4B3 /* EntryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 79BA8D3D172AF3D2007FB4B3 /* EntryDetailViewController.m */; };
+		79BA8D40172AF3D2007FB4B3 /* EntryDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 79BA8D3E172AF3D2007FB4B3 /* EntryDetailViewController.xib */; };
+		79BA8D47172B17B0007FB4B3 /* text_view_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 79BA8D45172B17B0007FB4B3 /* text_view_background.png */; };
+		79BA8D48172B17B0007FB4B3 /* text_view_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 79BA8D46172B17B0007FB4B3 /* text_view_background@2x.png */; };
+		79E7273317266958003DC9F2 /* libMXi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 79E7273217266958003DC9F2 /* libMXi.a */; };
+		79FF6A7E171D3C2F00A3202F /* bit-tile-blue.gif in Resources */ = {isa = PBXBuildFile; fileRef = 79FF6A7D171D3C2F00A3202F /* bit-tile-blue.gif */; };
+		79FF6A87171D3E3000A3202F /* DashboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 79FF6A85171D3E3000A3202F /* DashboardViewController.m */; };
+		79FF6A88171D3E3000A3202F /* DashboardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 79FF6A86171D3E3000A3202F /* DashboardViewController.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		7915200D17203EE100AB33F0 /* MobiListEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobiListEntry.h; sourceTree = "<group>"; };
+		7915200E17203EE100AB33F0 /* MobiListEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobiListEntry.m; sourceTree = "<group>"; };
+		79152010172040D400AB33F0 /* MobiList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobiList.h; sourceTree = "<group>"; };
+		79152011172040D400AB33F0 /* MobiList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobiList.m; sourceTree = "<group>"; };
+		79152013172047E900AB33F0 /* MobiListStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobiListStore.h; sourceTree = "<group>"; };
+		79152014172047E900AB33F0 /* MobiListStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobiListStore.m; sourceTree = "<group>"; };
+		791520161720521F00AB33F0 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		791520181720522D00AB33F0 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		7915201A1720523100AB33F0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		7915201C1720524100AB33F0 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
+		7972141117212C7300D63C38 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
+		79768E89171AD42800F5DDA1 /* Mobilist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobilist.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		79768E8C171AD42800F5DDA1 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		79768E8E171AD42800F5DDA1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		79768E90171AD42800F5DDA1 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		79768E94171AD42800F5DDA1 /* Mobilist_iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Mobilist_iOS-Info.plist"; sourceTree = "<group>"; };
+		79768E96171AD42800F5DDA1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		79768E98171AD42800F5DDA1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		79768E9A171AD42800F5DDA1 /* Mobilist_iOS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Mobilist_iOS-Prefix.pch"; sourceTree = "<group>"; };
+		79768E9B171AD42800F5DDA1 /* MobiAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MobiAppDelegate.h; sourceTree = "<group>"; };
+		79768E9C171AD42800F5DDA1 /* MobiAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MobiAppDelegate.m; sourceTree = "<group>"; };
+		79768E9E171AD42800F5DDA1 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		79768EA0171AD42800F5DDA1 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		79768EA2171AD42800F5DDA1 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		7999F6A6171D658E00B74031 /* Button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Button.png; sourceTree = "<group>"; };
+		7999F6A7171D658E00B74031 /* Button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Button@2x.png"; sourceTree = "<group>"; };
+		7999F6A8171D658E00B74031 /* ButtonHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ButtonHighlighted.png; sourceTree = "<group>"; };
+		7999F6A9171D658E00B74031 /* ButtonHighlighted@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ButtonHighlighted@2x.png"; sourceTree = "<group>"; };
+		7999F6B1171D72FF00B74031 /* light_toast.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = light_toast.png; sourceTree = "<group>"; };
+		7999F6B3171D7DDA00B74031 /* add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add.png; sourceTree = "<group>"; };
+		7999F6B4171D7DDA00B74031 /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
+		7999F6B7171D84BE00B74031 /* XMPPSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMPPSettingsViewController.h; sourceTree = "<group>"; };
+		7999F6B8171D84BE00B74031 /* XMPPSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMPPSettingsViewController.m; sourceTree = "<group>"; };
+		7999F6B9171D84BE00B74031 /* XMPPSettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = XMPPSettingsViewController.xib; sourceTree = "<group>"; };
+		7999F6BC171D86CC00B74031 /* ListDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListDetailViewController.h; sourceTree = "<group>"; };
+		7999F6BD171D86CC00B74031 /* ListDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListDetailViewController.m; sourceTree = "<group>"; };
+		7999F6BE171D86CD00B74031 /* ListDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ListDetailViewController.xib; sourceTree = "<group>"; };
+		7999F6C3171DAB3A00B74031 /* TodoListEntryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TodoListEntryCell.h; sourceTree = "<group>"; };
+		7999F6C4171DAB3A00B74031 /* TodoListEntryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TodoListEntryCell.m; sourceTree = "<group>"; };
+		7999F6C6171DAB5F00B74031 /* TodoListEntryCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TodoListEntryCell.xib; sourceTree = "<group>"; };
+		79AE3B841735AF1C000A5CA8 /* mobilist-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "mobilist-icon.png"; path = "../mobilist-icon.png"; sourceTree = "<group>"; };
+		79AE3B861735AF22000A5CA8 /* mobilist-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "mobilist-icon@2x.png"; path = "../mobilist-icon@2x.png"; sourceTree = "<group>"; };
+		79BA8D341726C73B007FB4B3 /* TodoListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TodoListCell.xib; sourceTree = "<group>"; };
+		79BA8D361726C784007FB4B3 /* TodoListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TodoListCell.h; sourceTree = "<group>"; };
+		79BA8D371726C784007FB4B3 /* TodoListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TodoListCell.m; sourceTree = "<group>"; };
+		79BA8D3917290423007FB4B3 /* TodoListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TodoListViewController.h; sourceTree = "<group>"; };
+		79BA8D3A17290423007FB4B3 /* TodoListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TodoListViewController.m; sourceTree = "<group>"; };
+		79BA8D3C172AF3D2007FB4B3 /* EntryDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntryDetailViewController.h; sourceTree = "<group>"; };
+		79BA8D3D172AF3D2007FB4B3 /* EntryDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EntryDetailViewController.m; sourceTree = "<group>"; };
+		79BA8D3E172AF3D2007FB4B3 /* EntryDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EntryDetailViewController.xib; sourceTree = "<group>"; };
+		79BA8D45172B17B0007FB4B3 /* text_view_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = text_view_background.png; sourceTree = "<group>"; };
+		79BA8D46172B17B0007FB4B3 /* text_view_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "text_view_background@2x.png"; sourceTree = "<group>"; };
+		79E7273217266958003DC9F2 /* libMXi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMXi.a; path = "../MXi/build/Release-iphoneos/libMXi.a"; sourceTree = "<group>"; };
+		79FF6A7D171D3C2F00A3202F /* bit-tile-blue.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "bit-tile-blue.gif"; sourceTree = "<group>"; };
+		79FF6A84171D3E3000A3202F /* DashboardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DashboardViewController.h; sourceTree = "<group>"; };
+		79FF6A85171D3E3000A3202F /* DashboardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DashboardViewController.m; sourceTree = "<group>"; };
+		79FF6A86171D3E3000A3202F /* DashboardViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DashboardViewController.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		79768E86171AD42800F5DDA1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79E7273317266958003DC9F2 /* libMXi.a in Frameworks */,
+				7972141217212C7300D63C38 /* libiconv.dylib in Frameworks */,
+				7915201D1720524100AB33F0 /* libresolv.dylib in Frameworks */,
+				7915201B1720523100AB33F0 /* CFNetwork.framework in Frameworks */,
+				791520191720522D00AB33F0 /* Security.framework in Frameworks */,
+				791520171720521F00AB33F0 /* libxml2.dylib in Frameworks */,
+				79768E8D171AD42800F5DDA1 /* UIKit.framework in Frameworks */,
+				79768E8F171AD42800F5DDA1 /* Foundation.framework in Frameworks */,
+				79768E91171AD42800F5DDA1 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		79768E80171AD42800F5DDA1 = {
+			isa = PBXGroup;
+			children = (
+				79768E92171AD42800F5DDA1 /* Mobilist_iOS */,
+				79768E8B171AD42800F5DDA1 /* Frameworks */,
+				79768E8A171AD42800F5DDA1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		79768E8A171AD42800F5DDA1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				79768E89171AD42800F5DDA1 /* Mobilist.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		79768E8B171AD42800F5DDA1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				79E7273217266958003DC9F2 /* libMXi.a */,
+				7972141117212C7300D63C38 /* libiconv.dylib */,
+				7915201C1720524100AB33F0 /* libresolv.dylib */,
+				7915201A1720523100AB33F0 /* CFNetwork.framework */,
+				791520181720522D00AB33F0 /* Security.framework */,
+				791520161720521F00AB33F0 /* libxml2.dylib */,
+				79768E8C171AD42800F5DDA1 /* UIKit.framework */,
+				79768E8E171AD42800F5DDA1 /* Foundation.framework */,
+				79768E90171AD42800F5DDA1 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		79768E92171AD42800F5DDA1 /* Mobilist_iOS */ = {
+			isa = PBXGroup;
+			children = (
+				79FF6A79171C411300A3202F /* Model */,
+				79FF6A78171C410A00A3202F /* Controller */,
+				79FF6A77171C410200A3202F /* View */,
+				79768E93171AD42800F5DDA1 /* Supporting Files */,
+			);
+			path = Mobilist_iOS;
+			sourceTree = "<group>";
+		};
+		79768E93171AD42800F5DDA1 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				7999F6A5171D657500B74031 /* Images */,
+				79768E94171AD42800F5DDA1 /* Mobilist_iOS-Info.plist */,
+				79768E95171AD42800F5DDA1 /* InfoPlist.strings */,
+				79768E98171AD42800F5DDA1 /* main.m */,
+				79768E9A171AD42800F5DDA1 /* Mobilist_iOS-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		7999F6A5171D657500B74031 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				79AE3B861735AF22000A5CA8 /* mobilist-icon@2x.png */,
+				79AE3B841735AF1C000A5CA8 /* mobilist-icon.png */,
+				79BA8D45172B17B0007FB4B3 /* text_view_background.png */,
+				79BA8D46172B17B0007FB4B3 /* text_view_background@2x.png */,
+				7999F6B3171D7DDA00B74031 /* add.png */,
+				7999F6B4171D7DDA00B74031 /* settings.png */,
+				7999F6B1171D72FF00B74031 /* light_toast.png */,
+				79768E9E171AD42800F5DDA1 /* Default.png */,
+				79768EA0171AD42800F5DDA1 /* Default@2x.png */,
+				79768EA2171AD42800F5DDA1 /* Default-568h@2x.png */,
+				7999F6A6171D658E00B74031 /* Button.png */,
+				7999F6A7171D658E00B74031 /* Button@2x.png */,
+				7999F6A8171D658E00B74031 /* ButtonHighlighted.png */,
+				7999F6A9171D658E00B74031 /* ButtonHighlighted@2x.png */,
+				79FF6A7D171D3C2F00A3202F /* bit-tile-blue.gif */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
+		79BA8D321726C6AF007FB4B3 /* ListEntry */ = {
+			isa = PBXGroup;
+			children = (
+				79BA8D3E172AF3D2007FB4B3 /* EntryDetailViewController.xib */,
+				7999F6C3171DAB3A00B74031 /* TodoListEntryCell.h */,
+				7999F6C4171DAB3A00B74031 /* TodoListEntryCell.m */,
+				7999F6C6171DAB5F00B74031 /* TodoListEntryCell.xib */,
+			);
+			name = ListEntry;
+			sourceTree = "<group>";
+		};
+		79BA8D331726C6BD007FB4B3 /* List */ = {
+			isa = PBXGroup;
+			children = (
+				7999F6BE171D86CD00B74031 /* ListDetailViewController.xib */,
+				79BA8D341726C73B007FB4B3 /* TodoListCell.xib */,
+				79BA8D361726C784007FB4B3 /* TodoListCell.h */,
+				79BA8D371726C784007FB4B3 /* TodoListCell.m */,
+			);
+			name = List;
+			sourceTree = "<group>";
+		};
+		79FF6A77171C410200A3202F /* View */ = {
+			isa = PBXGroup;
+			children = (
+				79BA8D331726C6BD007FB4B3 /* List */,
+				79BA8D321726C6AF007FB4B3 /* ListEntry */,
+				7999F6B9171D84BE00B74031 /* XMPPSettingsViewController.xib */,
+				79FF6A86171D3E3000A3202F /* DashboardViewController.xib */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		79FF6A78171C410A00A3202F /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				79768E9B171AD42800F5DDA1 /* MobiAppDelegate.h */,
+				79768E9C171AD42800F5DDA1 /* MobiAppDelegate.m */,
+				79FF6A84171D3E3000A3202F /* DashboardViewController.h */,
+				79FF6A85171D3E3000A3202F /* DashboardViewController.m */,
+				79BA8D3917290423007FB4B3 /* TodoListViewController.h */,
+				79BA8D3A17290423007FB4B3 /* TodoListViewController.m */,
+				7999F6B7171D84BE00B74031 /* XMPPSettingsViewController.h */,
+				7999F6B8171D84BE00B74031 /* XMPPSettingsViewController.m */,
+				7999F6BC171D86CC00B74031 /* ListDetailViewController.h */,
+				7999F6BD171D86CC00B74031 /* ListDetailViewController.m */,
+				79BA8D3C172AF3D2007FB4B3 /* EntryDetailViewController.h */,
+				79BA8D3D172AF3D2007FB4B3 /* EntryDetailViewController.m */,
+			);
+			name = Controller;
+			sourceTree = "<group>";
+		};
+		79FF6A79171C411300A3202F /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				7915200D17203EE100AB33F0 /* MobiListEntry.h */,
+				7915200E17203EE100AB33F0 /* MobiListEntry.m */,
+				79152010172040D400AB33F0 /* MobiList.h */,
+				79152011172040D400AB33F0 /* MobiList.m */,
+				79152013172047E900AB33F0 /* MobiListStore.h */,
+				79152014172047E900AB33F0 /* MobiListStore.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		79768E88171AD42800F5DDA1 /* Mobilist */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 79768EA6171AD42800F5DDA1 /* Build configuration list for PBXNativeTarget "Mobilist" */;
+			buildPhases = (
+				79768E85171AD42800F5DDA1 /* Sources */,
+				79768E86171AD42800F5DDA1 /* Frameworks */,
+				79768E87171AD42800F5DDA1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Mobilist;
+			productName = Mobilist_iOS;
+			productReference = 79768E89171AD42800F5DDA1 /* Mobilist.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		79768E81171AD42800F5DDA1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = Mobi;
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "TU Dresden";
+			};
+			buildConfigurationList = 79768E84171AD42800F5DDA1 /* Build configuration list for PBXProject "Mobilist_iOS" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 79768E80171AD42800F5DDA1;
+			productRefGroup = 79768E8A171AD42800F5DDA1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				79768E88171AD42800F5DDA1 /* Mobilist */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		79768E87171AD42800F5DDA1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79768E97171AD42800F5DDA1 /* InfoPlist.strings in Resources */,
+				79768E9F171AD42800F5DDA1 /* Default.png in Resources */,
+				79768EA1171AD42800F5DDA1 /* Default@2x.png in Resources */,
+				79768EA3171AD42800F5DDA1 /* Default-568h@2x.png in Resources */,
+				79FF6A7E171D3C2F00A3202F /* bit-tile-blue.gif in Resources */,
+				79FF6A88171D3E3000A3202F /* DashboardViewController.xib in Resources */,
+				7999F6AA171D658E00B74031 /* Button.png in Resources */,
+				7999F6AB171D658E00B74031 /* Button@2x.png in Resources */,
+				7999F6AC171D658E00B74031 /* ButtonHighlighted.png in Resources */,
+				7999F6AD171D658E00B74031 /* ButtonHighlighted@2x.png in Resources */,
+				7999F6B2171D730000B74031 /* light_toast.png in Resources */,
+				7999F6B5171D7DDA00B74031 /* add.png in Resources */,
+				7999F6B6171D7DDA00B74031 /* settings.png in Resources */,
+				7999F6BB171D84BE00B74031 /* XMPPSettingsViewController.xib in Resources */,
+				7999F6C0171D86CD00B74031 /* ListDetailViewController.xib in Resources */,
+				7999F6C7171DAB5F00B74031 /* TodoListEntryCell.xib in Resources */,
+				79BA8D351726C73B007FB4B3 /* TodoListCell.xib in Resources */,
+				79BA8D40172AF3D2007FB4B3 /* EntryDetailViewController.xib in Resources */,
+				79BA8D47172B17B0007FB4B3 /* text_view_background.png in Resources */,
+				79BA8D48172B17B0007FB4B3 /* text_view_background@2x.png in Resources */,
+				79AE3B851735AF1C000A5CA8 /* mobilist-icon.png in Resources */,
+				79AE3B871735AF22000A5CA8 /* mobilist-icon@2x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		79768E85171AD42800F5DDA1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79768E99171AD42800F5DDA1 /* main.m in Sources */,
+				79768E9D171AD42800F5DDA1 /* MobiAppDelegate.m in Sources */,
+				79FF6A87171D3E3000A3202F /* DashboardViewController.m in Sources */,
+				7999F6BA171D84BE00B74031 /* XMPPSettingsViewController.m in Sources */,
+				7999F6BF171D86CD00B74031 /* ListDetailViewController.m in Sources */,
+				7999F6C5171DAB3A00B74031 /* TodoListEntryCell.m in Sources */,
+				7915200F17203EE100AB33F0 /* MobiListEntry.m in Sources */,
+				79152012172040D400AB33F0 /* MobiList.m in Sources */,
+				79152015172047E900AB33F0 /* MobiListStore.m in Sources */,
+				79BA8D381726C784007FB4B3 /* TodoListCell.m in Sources */,
+				79BA8D3B17290423007FB4B3 /* TodoListViewController.m in Sources */,
+				79BA8D3F172AF3D2007FB4B3 /* EntryDetailViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		79768E95171AD42800F5DDA1 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				79768E96171AD42800F5DDA1 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		79768EA4171AD42800F5DDA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		79768EA5171AD42800F5DDA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		79768EA7171AD42800F5DDA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Mobilist_iOS/Mobilist_iOS-Prefix.pch";
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
+				INFOPLIST_FILE = "Mobilist_iOS/Mobilist_iOS-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		79768EA8171AD42800F5DDA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Mobilist_iOS/Mobilist_iOS-Prefix.pch";
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
+				INFOPLIST_FILE = "Mobilist_iOS/Mobilist_iOS-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		79768E84171AD42800F5DDA1 /* Build configuration list for PBXProject "Mobilist_iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				79768EA4171AD42800F5DDA1 /* Debug */,
+				79768EA5171AD42800F5DDA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		79768EA6171AD42800F5DDA1 /* Build configuration list for PBXNativeTarget "Mobilist" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				79768EA7171AD42800F5DDA1 /* Debug */,
+				79768EA8171AD42800F5DDA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 79768E81171AD42800F5DDA1 /* Project object */;
+}
