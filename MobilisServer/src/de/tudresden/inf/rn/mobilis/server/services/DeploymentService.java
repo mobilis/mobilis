@@ -167,83 +167,8 @@ public class DeploymentService extends MobilisService {
 								_expectedUploads.remove( request.getRequestor() );
 							}
 		
-							// Add a new uploaded service as a pending service which is
-							// waiting for installation
-							ServiceContainer serviceContainer = new ServiceContainer( incomingFile );
-							MobilisManager.getInstance().addPendingService(
-									serviceContainer );
-							
-							if (inf.autoDeploy) {
-								try {
-									// install
-									serviceContainer.install();
-									message += "\n***" + serviceContainer.getServiceNamespace() + " version " + serviceContainer.getServiceVersion() + "***";
-									if ( serviceContainer.getContainerState() == ServiceContainerState.INSTALLED ) {
-										MobilisManager.getInstance().addServiceContainer( serviceContainer );
-
-										MobilisManager.getInstance().removePendingServiceByFileName(
-												incomingFile.getName() );
-										message += "\nService installation successful.";
-
-									} else {
-										message += "\nInstallation failed: Couldn't move service from pending to regular.";
-
-										MobilisManager.getLogger().log( Level.WARNING, message );
-									}
-
-									
-									// configure
-									DoubleKeyMap< String, String, Object > configuration = new DoubleKeyMap< String, String, Object >(
-											false );
-									
-									// use data from admins agent / default if nothing was set
-									
-									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "name",
-											serviceContainer.getServiceName() );
-									
-									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "mode",
-											inf.singleMode?"single":"multi" );
-									
-									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "port",
-											getAgent().getSettingString( "port" ) );
-									
-									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username",
-											getAgent().getSettingString( "username" ) );
-									
-									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "host",
-											getAgent().getSettingString( "host" ) );
-									
-									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "start",
-											"ondemand" );
-									
-									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "description",
-											serviceContainer.getServiceName() );
-									
-									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "service",
-												getAgent().getSettingString( "service" ) );
-									
-									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "resource",
-											serviceContainer.getServiceName() );
-									
-									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "type",
-											"de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent" );
-									
-									configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password",
-												getAgent().getSettingString( "password" ) );
-									serviceContainer.configure(configuration);
-									message += "\nService configuration successful.";
-									
-									// register
-									serviceContainer.register();
-									message += "\nService registration successful.";
-								} catch (InstallServiceException e) {
-									message += "\n" + e.getMessage();
-									e.printStackTrace();
-								} catch (RegisterServiceException e) {
-									message += "\n" + e.getMessage();
-									e.printStackTrace();
-								}
-							}
+							message += MobilisManager.getInstance().installAndConfigureAndRegisterServiceFromFile(
+									incomingFile, inf.autoDeploy, inf.singleMode, "deployment");
 						} else if ( message.equals("") || message == null ) {
 							message = "Unknown failure while uploading file";
 						}
@@ -255,12 +180,13 @@ public class DeploymentService extends MobilisService {
 						sendServiceUploadConclusionBeanSET( request.getRequestor(), transmissionSuccessful,
 								incomingFile.getName(), message );
 					}
+
 				});
 				t.start();
 			}
 		} );
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 

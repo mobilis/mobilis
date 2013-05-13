@@ -22,6 +22,11 @@ package de.tudresden.inf.rn.mobilis.server;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,6 +54,8 @@ import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainer;
 import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainerState;
 import de.tudresden.inf.rn.mobilis.server.deployment.event.ContainerStateEvent;
 import de.tudresden.inf.rn.mobilis.server.deployment.event.IContainerStateChangedListener;
+import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceException;
+import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceException;
 import de.tudresden.inf.rn.mobilis.server.persistency.IORPersistenceImplementor;
 import de.tudresden.inf.rn.mobilis.server.persistency.PIDerby;
 import de.tudresden.inf.rn.mobilis.server.persistency.PIHibernate;
@@ -435,6 +442,24 @@ public class MobilisManager {
 				getLogger().severe("Couldn't register service: " + serviceName);
 			}
 		}
+		
+		// bootstrap service instances from services.txt
+		Path serviceFilePath = Paths.get("services.txt");
+		if (Files.exists(serviceFilePath)) {
+			try {
+				List<String> serviceFileNamesAndModes = Files.readAllLines(serviceFilePath, Charset.defaultCharset());
+				for (String fileNameAndMode : serviceFileNamesAndModes) {
+					String[] fileNameAndModeSplit = fileNameAndMode.split(";");
+					String fileName = "service/" + fileNameAndModeSplit[0];
+					String mode = fileNameAndModeSplit[1];
+					boolean singleMode = mode.equals("single");
+					installAndConfigureAndRegisterServiceFromFile(new File(fileName), true, singleMode, "deployment");
+				}
+			} catch (IOException e) {
+				System.err.println("Couldn't read from services.txt!");
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void startup() {
@@ -486,6 +511,7 @@ public class MobilisManager {
 					mAgents.clear();
 				}
 				synchronized(mServices) {
+					persistServices();
 					mServices.clear();
 				}
 				synchronized(mConfiguration) {
@@ -513,6 +539,27 @@ public class MobilisManager {
 	
 	// ===== New functionality to handle dynamic deployment by ServiceContainers ===== \\
 	
+	/**
+	 * Stores all currently installed services in a file so that they
+	 * can be reinstalled during the next application start.
+	 */
+	private void persistServices() {
+		try {
+			Path path = Paths.get("services.txt");
+			Files.deleteIfExists(path);
+			List<String> serviceInfos = new ArrayList<String>();
+			
+			List<ServiceContainer> serviceContainers = _serviceContainers.getListOfAllValues();
+			for (ServiceContainer container : serviceContainers) {
+				serviceInfos.add(container.getJarFile().getAbsoluteFile().getName() + ";" + container.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "mode"));
+			}
+			Files.write(path, serviceInfos, Charset.defaultCharset(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+		} catch (IOException e) {
+			System.err.println("Couldn't create services.txt!");
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Path to temporary dir to extract files like msdl or resources.
 	 */
@@ -801,4 +848,102 @@ public class MobilisManager {
 			}
 		}
 	};
+	
+	/**
+	 * Creates a new service container with the data in the file and adds it to pending services.
+	 * If autoDeploy is <code>true</code> the service is also installed, configured and registered.
+	 * The mode (single or multi) may be set via the singleMode parameter.
+	 * Default values for the agent are read from an alrady existing agent specified in defaultValueAgent (e.g. deployment, coordinator). 
+	 * @param serviceJar
+	 * @param autoDeploy
+	 * @param singleMode
+	 * @param defaultValueAgent
+	 * @return
+	 * 		A human readable message describing the outcome of the operation. You may forward this to
+	 * 		the user who issued the command.
+	 */
+	public String installAndConfigureAndRegisterServiceFromFile(File serviceJar, boolean autoDeploy, boolean singleMode, String defaultValueAgent) {
+		String message = "";
+		
+		// Add a new uploaded service as a pending service which is
+		// waiting for installation
+		ServiceContainer serviceContainer = new ServiceContainer( serviceJar );
+		MobilisManager.getInstance().addPendingService(
+				serviceContainer );
+		
+		if (autoDeploy) {
+			try {
+				// install
+				serviceContainer.install();
+				message += "\n***" + serviceContainer.getServiceNamespace() + " version " + serviceContainer.getServiceVersion() + "***";
+				if ( serviceContainer.getContainerState() == ServiceContainerState.INSTALLED ) {
+					MobilisManager.getInstance().addServiceContainer( serviceContainer );
+
+					MobilisManager.getInstance().removePendingServiceByFileName(
+							serviceJar.getName() );
+					message += "\nService installation successful.";
+
+				} else {
+					message += "\nInstallation failed: Couldn't move service from pending to regular.";
+
+					MobilisManager.getLogger().log( Level.WARNING, message );
+				}
+
+				
+				// configure
+				DoubleKeyMap< String, String, Object > configuration = new DoubleKeyMap< String, String, Object >(
+						false );
+				
+				// use data from deployment agent / default if nothing was set
+				
+				MobilisAgent deploymentAgent = getAgent(defaultValueAgent);
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "name",
+						serviceContainer.getServiceName() );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "mode",
+						singleMode?"single":"multi" );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "port",
+						deploymentAgent.getSettingString( "port" ) );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username",
+						deploymentAgent.getSettingString( "username" ) );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "host",
+						deploymentAgent.getSettingString( "host" ) );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "start",
+						"ondemand" );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "description",
+						serviceContainer.getServiceName() );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "service",
+						deploymentAgent.getSettingString( "service" ) );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "resource",
+						serviceContainer.getServiceName() );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "type",
+						"de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent" );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password",
+						deploymentAgent.getSettingString( "password" ) );
+				serviceContainer.configure(configuration);
+				message += "\nService configuration successful.";
+				
+				// register
+				serviceContainer.register();
+				message += "\nService registration successful.";
+			} catch (InstallServiceException e) {
+				message += "\n" + e.getMessage();
+				e.printStackTrace();
+			} catch (RegisterServiceException e) {
+				message += "\n" + e.getMessage();
+				e.printStackTrace();
+			}
+		}
+		return message;
+	}
 }
