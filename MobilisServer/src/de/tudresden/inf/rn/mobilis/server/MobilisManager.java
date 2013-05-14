@@ -65,6 +65,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
 
 public class MobilisManager {
 
+	private static final String PERSISTED_SERVICES_FILE_PATH = "service/services.txt";
 	public final static String discoNamespace = Mobilis.NAMESPACE;	
 	public final static String discoServicesNode = discoNamespace + "#services";
 //	// all services
@@ -444,7 +445,7 @@ public class MobilisManager {
 		}
 		
 		// bootstrap service instances from services.txt
-		Path serviceFilePath = Paths.get("services.txt");
+		Path serviceFilePath = Paths.get(PERSISTED_SERVICES_FILE_PATH);
 		if (Files.exists(serviceFilePath)) {
 			try {
 				List<String> serviceFileNamesAndModes = Files.readAllLines(serviceFilePath, Charset.defaultCharset());
@@ -545,7 +546,7 @@ public class MobilisManager {
 	 */
 	private void persistServices() {
 		try {
-			Path path = Paths.get("services.txt");
+			Path path = Paths.get(PERSISTED_SERVICES_FILE_PATH);
 			Files.deleteIfExists(path);
 			List<String> serviceInfos = new ArrayList<String>();
 			
