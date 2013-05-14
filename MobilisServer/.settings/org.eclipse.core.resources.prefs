@@ -2,5 +2,6 @@ eclipse.preferences.version=1
 encoding//src/de/tudresden/inf/rn/mobilis/server/MobilisManager.java=UTF-8
 encoding//src/de/tudresden/inf/rn/mobilis/server/MobilisServer.java=UTF-8
 encoding//src/de/tudresden/inf/rn/mobilis/server/deployment/container/ServiceContainer.java=UTF-8
+encoding//src/de/tudresden/inf/rn/mobilis/server/services/CoordinatorService.java=UTF-8
 encoding//src/de/tudresden/inf/rn/mobilis/xmpp/server/BeanIQAdapter.java=UTF-8
 encoding/MobilisServer.launch=UTF-8
