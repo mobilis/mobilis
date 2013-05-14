@@ -282,6 +282,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 				agent.startup();
 				_runningServiceInstances.put(mobilisService.getAgent()
 						.getFullJid(), mobilisService);
+				MobilisManager.getInstance().addAgent(agent);
 			} catch (XMPPException e) {
 				e.printStackTrace();
 				try {

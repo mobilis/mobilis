@@ -56,6 +56,7 @@ import de.tudresden.inf.rn.mobilis.server.deployment.event.ContainerStateEvent;
 import de.tudresden.inf.rn.mobilis.server.deployment.event.IContainerStateChangedListener;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceException;
+import de.tudresden.inf.rn.mobilis.server.deployment.exception.StartNewServiceInstanceException;
 import de.tudresden.inf.rn.mobilis.server.persistency.IORPersistenceImplementor;
 import de.tudresden.inf.rn.mobilis.server.persistency.PIDerby;
 import de.tudresden.inf.rn.mobilis.server.persistency.PIHibernate;
@@ -511,8 +512,10 @@ public class MobilisManager {
 					}
 					mAgents.clear();
 				}
-				synchronized(mServices) {
+				synchronized (_serviceContainers) {
 					persistServices();
+				}
+				synchronized(mServices) {
 					mServices.clear();
 				}
 				synchronized(mConfiguration) {
@@ -539,6 +542,12 @@ public class MobilisManager {
 	
 	
 	// ===== New functionality to handle dynamic deployment by ServiceContainers ===== \\
+	
+	public void addAgent(MobilisAgent agent) {
+		synchronized (mAgents) {
+			mAgents.put(agent.getIdent(), agent);
+		}
+	}
 	
 	/**
 	 * Stores all currently installed services in a file so that they
@@ -853,8 +862,10 @@ public class MobilisManager {
 	/**
 	 * Creates a new service container with the data in the file and adds it to pending services.
 	 * If autoDeploy is <code>true</code> the service is also installed, configured and registered.
-	 * The mode (single or multi) may be set via the singleMode parameter.
-	 * Default values for the agent are read from an alrady existing agent specified in defaultValueAgent (e.g. deployment, coordinator). 
+	 * The mode (single or multi) can be set via the singleMode parameter. If you choose single, then
+	 * the service will be automatically started for you.
+	 * Default values for the agent are read from an alrady existing agent specified in 
+	 * defaultValueAgent (e.g. deployment, coordinator). 
 	 * @param serviceJar
 	 * @param autoDeploy
 	 * @param singleMode
@@ -894,8 +905,6 @@ public class MobilisManager {
 				// configure
 				DoubleKeyMap< String, String, Object > configuration = new DoubleKeyMap< String, String, Object >(
 						false );
-				
-				// use data from deployment agent / default if nothing was set
 				
 				MobilisAgent deploymentAgent = getAgent(defaultValueAgent);
 				
@@ -937,11 +946,18 @@ public class MobilisManager {
 				// register
 				serviceContainer.register();
 				message += "\nService registration successful.";
+				
+				if (singleMode) {
+					serviceContainer.startNewServiceInstance();
+				}
 			} catch (InstallServiceException e) {
 				message += "\n" + e.getMessage();
 				e.printStackTrace();
 			} catch (RegisterServiceException e) {
 				message += "\n" + e.getMessage();
+				e.printStackTrace();
+			} catch (StartNewServiceInstanceException e) {
+				System.err.println("Couldn't start service instance of service " + serviceContainer.getServiceName());
 				e.printStackTrace();
 			}
 		}
