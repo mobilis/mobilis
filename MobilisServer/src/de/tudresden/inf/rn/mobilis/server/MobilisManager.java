@@ -199,7 +199,7 @@ public class MobilisManager {
 	public List<Item> getNodeItems() {
     	List<Item> items = new LinkedList<Item>();
     	for (MobilisAgent agent: this.mAgents.values())
-    		items.add( new Item(agent.getJid()) );
+    		items.add( new Item(agent.getFullJid()) );
     	return items;
     }
 
