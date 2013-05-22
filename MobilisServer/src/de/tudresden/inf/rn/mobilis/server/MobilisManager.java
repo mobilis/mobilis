@@ -639,10 +639,16 @@ public class MobilisManager {
 	 *  from service version.
 	 * 
 	 * @param namespace the namespace of the service containers
-	 * @return a collection of service containers
+	 * @return a collection of service containers or <code>null</code> if there
+	 * 		this there is no service container with this namespace
 	 */
 	public Collection<ServiceContainer> getAllServiceContainers(String namespace){		
-		return _serviceContainers.getSubKeyValueMap( namespace ).values();
+		Map<Integer, ServiceContainer> subKeyValueMap = _serviceContainers.getSubKeyValueMap( namespace );
+		if (subKeyValueMap == null) {
+			return null;
+		} else {
+			return subKeyValueMap.values();
+		}
 	}
 	
 	/**

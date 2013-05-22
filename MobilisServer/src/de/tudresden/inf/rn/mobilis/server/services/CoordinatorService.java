@@ -21,6 +21,7 @@ package de.tudresden.inf.rn.mobilis.server.services;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -131,7 +132,7 @@ public class CoordinatorService extends MobilisService {
     	String from = bean.getFrom();
 		String to = bean.getTo();
 			
-		MobilisServiceDiscoveryBean beanAnswer=null;
+		MobilisServiceDiscoveryBean beanAnswer = null;
 		
 		if (maintenanceMode) {
 			//The MobilisServer is currently in maintenance mode.
@@ -200,20 +201,23 @@ public class CoordinatorService extends MobilisService {
 			beanAnswer = new MobilisServiceDiscoveryBean(null);
 			
 			// query all ServiceContainers which are available
-			for ( ServiceContainer container : MobilisManager.getInstance().getAllServiceContainers( bean.serviceNamespace ) ) {
-				// filter collected ServiceContainers by active(registered) containers
-				if(container.getContainerState() == ServiceContainerState.ACTIVE){
-					// add service to list if no version is requested or if the version of the service matches the required version
-					if(bean.serviceVersion < 0 || container.getServiceVersion() == bean.serviceVersion){
-						for ( Map.Entry< String, MobilisService> entity : container.getRunningServiceInstances().entrySet() ) {
-							// create a service information entry
-							MobilisServiceInfo serviceInfo = new MobilisServiceInfo();
-							serviceInfo.setServiceNamespace( container.getServiceNamespace() );
-							serviceInfo.setVersion( "" + container.getServiceVersion() );
-							serviceInfo.setJid( entity.getKey() );
-							serviceInfo.setServiceName( entity.getValue().getName() );
-							
-							beanAnswer.addDiscoveredService(serviceInfo);
+			Collection<ServiceContainer> serviceContainers = MobilisManager.getInstance().getAllServiceContainers( bean.serviceNamespace );
+			if (serviceContainers != null) {
+				for ( ServiceContainer container : serviceContainers ) {
+					// filter collected ServiceContainers by active(registered) containers
+					if(container.getContainerState() == ServiceContainerState.ACTIVE){
+						// add service to list if no version is requested or if the version of the service matches the required version
+						if(bean.serviceVersion < 0 || container.getServiceVersion() == bean.serviceVersion){
+							for ( Map.Entry< String, MobilisService> entity : container.getRunningServiceInstances().entrySet() ) {
+								// create a service information entry
+								MobilisServiceInfo serviceInfo = new MobilisServiceInfo();
+								serviceInfo.setServiceNamespace( container.getServiceNamespace() );
+								serviceInfo.setVersion( "" + container.getServiceVersion() );
+								serviceInfo.setJid( entity.getKey() );
+								serviceInfo.setServiceName( entity.getValue().getName() );
+								
+								beanAnswer.addDiscoveredService(serviceInfo);
+							}
 						}
 					}
 				}
