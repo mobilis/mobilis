@@ -503,7 +503,9 @@ public class MobilisManager {
 		synchronized(mStarted) {
 			if (mStarted) {
 				synchronized(mAgents) {
-					for (String key : mAgents.keySet()) {
+					String[] agentsArray = mAgents.keySet().toArray(new String[0]);
+					for (int i = 0; i < agentsArray.length; i++) {
+						String key = agentsArray[i];
 						try {
 							mAgents.get(key).shutdown();
 						} catch (XMPPException e) {
@@ -546,6 +548,24 @@ public class MobilisManager {
 	public void addAgent(MobilisAgent agent) {
 		synchronized (mAgents) {
 			mAgents.put(agent.getIdent(), agent);
+		}
+	}
+	
+	public void notifyOfServiceShutdown(MobilisService service) {
+		synchronized (mServices) {
+			mServices.remove(service.getIdent());
+		}
+	}
+	
+	public void notifyOfAgentShutdown(MobilisAgent agent) {
+		synchronized (mAgents) {
+			mAgents.remove(agent.getIdent());
+		}
+	}
+	
+	public void notifyOfServiceContainerUninstall(ServiceContainer container) {
+		synchronized (_serviceContainers) {
+			_serviceContainers.remove(container.getServiceNamespace(), container.getServiceVersion());
 		}
 	}
 	

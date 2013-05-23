@@ -482,11 +482,13 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			// shutdown all runnning serice instances
 			this.shutDownAllServiceInstances();
 
+			MobilisManager.getInstance().notifyOfServiceContainerUninstall(this);
 			// reset container parameters
 			this.resetContainer();
 
 			// state == uninstalled
 			changeContainerState(ServiceContainerState.UNINSTALLED);
+			
 
 			MobilisManager
 					.getLogger()

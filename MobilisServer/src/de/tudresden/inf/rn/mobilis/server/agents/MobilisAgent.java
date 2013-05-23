@@ -294,6 +294,8 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 
 		// logging
 		MobilisManager.getLogger().info("Mobilis Agent (" + getIdent() + ") shut down.");
+		
+		MobilisManager.getInstance().notifyOfAgentShutdown(this);
 	}
 
 	public void registerService(MobilisService service) {

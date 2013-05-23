@@ -110,6 +110,8 @@ public abstract class MobilisService implements PacketListener, NodeInformationP
 			
 			mAgent.getConnection().disconnect();			
 		}
+		
+		MobilisManager.getInstance().notifyOfServiceShutdown(this);
     }
     
     // getter + setter methods
