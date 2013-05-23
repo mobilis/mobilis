@@ -903,9 +903,22 @@ public class MobilisManager {
 	public String installAndConfigureAndRegisterServiceFromFile(File serviceJar, boolean autoDeploy, boolean singleMode, String defaultValueAgent) {
 		String message = "";
 		
+		// check if service is already installed and uninstall if necessary
+		ServiceContainer serviceContainer = new ServiceContainer( serviceJar );
+		try {
+			serviceContainer.extractServiceContainerConfig();
+		} catch (InstallServiceException e) {
+			message += "\n" + e.getMessage();
+			e.printStackTrace();
+			return message;
+		}		
+		ServiceContainer oldServiceContainer = getServiceContainer(serviceContainer.getServiceNamespace(), serviceContainer.getServiceVersion());
+		if (oldServiceContainer != null) {
+			oldServiceContainer.uninstall();
+		}
+		
 		// Add a new uploaded service as a pending service which is
 		// waiting for installation
-		ServiceContainer serviceContainer = new ServiceContainer( serviceJar );
 		MobilisManager.getInstance().addPendingService(
 				serviceContainer );
 		

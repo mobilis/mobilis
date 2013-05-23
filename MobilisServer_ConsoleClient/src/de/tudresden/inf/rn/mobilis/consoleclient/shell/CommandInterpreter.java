@@ -26,6 +26,7 @@ import de.tudresden.inf.rn.mobilis.consoleclient.Controller;
 import de.tudresden.inf.rn.mobilis.consoleclient.bean.TemplateBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.RegisterServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UninstallServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanSenderReceiver;
@@ -164,6 +165,23 @@ public class CommandInterpreter {
 		
 		_controller.getConnection()
 			.sendXMPPBean( bean );
+	}
+	
+	/**
+	 * Uninstalls a service.
+	 * 
+	 * @param namespace
+	 * 		The namespace of the service to uninstall.
+	 * @param version
+	 * 		The version of the service to uninstall.
+	 */
+	public void uninstallService(String namespace, int version) {
+		UninstallServiceBean uibean = new UninstallServiceBean(namespace, version);
+
+		uibean.setTo(_controller.getSettings().getMobilisAdminJid());
+		uibean.setType(XMPPBean.TYPE_SET);
+
+		_controller.getConnection().sendXMPPBean(uibean);
 	}
 	
 

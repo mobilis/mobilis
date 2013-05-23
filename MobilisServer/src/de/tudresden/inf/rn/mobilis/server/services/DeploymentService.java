@@ -20,16 +20,11 @@ import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
-import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainer;
-import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainerState;
-import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceException;
-import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileUploadInformation;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanHelper;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;

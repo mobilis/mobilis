@@ -36,8 +36,6 @@ import org.jivesoftware.smackx.packet.DiscoverItems.Item;
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.Mobilis;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
 
 public abstract class MobilisService implements PacketListener, NodeInformationProvider {	  
 
@@ -102,13 +100,7 @@ public abstract class MobilisService implements PacketListener, NodeInformationP
 		if (!selfSuicideMode) {
 			selfSuicideMode = true;
 			String fullJid = getAgent().getFullJid();
-			String jid = fullJid.split("/")[0];
-			StopServiceInstanceBean bean = new StopServiceInstanceBean(fullJid);
-			
-			bean.setTo(jid + "/Coordinator");
-			getAgent().getConnection().sendPacket(new BeanIQAdapter(bean));
-			
-			mAgent.getConnection().disconnect();			
+			MobilisManager.getInstance().getServiceContainer(getNamespace(), getVersion()).shutdownServiceInstance(fullJid);
 		}
 		
 		MobilisManager.getInstance().notifyOfServiceShutdown(this);
