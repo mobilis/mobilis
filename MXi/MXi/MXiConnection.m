@@ -39,6 +39,8 @@
  */
 
 - (void)xmppStreamDidConnect:(XMPPStream* )sender {
+	NSLog(@"Connected");
+	
 	NSError* error = nil;
 	[xmppStream authenticateWithPassword:password error:&error];
 }
@@ -100,7 +102,9 @@
 		return YES;
 	}
 	
-	[xmppStream setMyJID:[XMPPJID jidWithString:jabberID]];
+	XMPPJID* jid = [XMPPJID jidWithString:jabberID];
+	[xmppStream setMyJID:jid];
+	[xmppStream setHostName:[jid domain]];
 	
 	NSError* error = nil;
 	if (![xmppStream connect:&error]) {
@@ -125,7 +129,7 @@
 	[xmppStream sendElement:message];
 }
 
-- (void)send:(DDXMLElement *)element {
+- (void)send:(NSXMLElement *)element {
 	NSLog(@"Sent: %@", [element prettyXMLString]);
 	
 	[xmppStream sendElement:element];
