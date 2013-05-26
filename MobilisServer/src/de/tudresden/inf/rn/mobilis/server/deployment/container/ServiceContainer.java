@@ -98,6 +98,10 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	/** The container state changed listeners. */
 	protected EventListenerList _containerStateChangedListeners = new EventListenerList();
 
+	private boolean configExtracted = false;
+
+	private JarClassLoader jarClassLoader;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -282,6 +286,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 				agent.startup();
 				_runningServiceInstances.put(mobilisService.getAgent()
 						.getFullJid(), mobilisService);
+				MobilisManager.getInstance().addAgent(agent);
 			} catch (XMPPException e) {
 				e.printStackTrace();
 				try {
@@ -378,90 +383,113 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	public void install() throws InstallServiceException {
 		if (_containerState == ServiceContainerState.UNINSTALLED
 				|| _containerState == ServiceContainerState.INSTALLED) {
-			JarClassLoader jarClassLoader = new JarClassLoader();
-			String msdlFilepath = null;
-			String serviceFilePath = null;
-
 			try {
-				// read msdl file from manifest of jar file
-				jarClassLoader.addFilePathAbsolute(_jarFile.getAbsolutePath());
-				// Read MSDL file location from MANIFEST.MF
-				msdlFilepath = FileHelper.getJarManifestValue(_jarFile,
-						MANIFEST_MSDLFILE_KEY);
-
-				// If MSDL was not found at described location, query whole jar
-				// archive for a msdl file and use the first match
-				if (null == msdlFilepath) {
-					List<String> msdlFiles = FileHelper.getJarFiles(_jarFile,
-							".msdl");
-
-					if (msdlFiles.size() > 0) {
-						msdlFilepath = msdlFiles.get(0);
-					} else {
-						throw new InstallServiceException(
-								"Cannot find MSDL file in jar archive.");
-					}
+				if (!configExtracted) {
+					extractServiceContainerConfig();
 				}
-
-				// Load MSDL file from jar archive and cache it localy in temp
-				// directory using the name of the jar archive extended by .msdl
-				_msdlFile = FileHelper.createFileFromInputStream(
-						jarClassLoader.getResourceAsStream(msdlFilepath),
-						MobilisManager.DIRECTORY_TEMP_PATH + File.separator
-								+ _jarFile.getName() + ".msdl");
-
-				// if msdl was not found, throw InstallServiceException
-				if (null == _msdlFile)
-					throw new InstallServiceException(
-							"Result of MSDL file was NULL while loading from jar archive.");
-				else
-					MobilisManager.getLogger().log(Level.INFO,
-							String.format("MSDL found"));
-
-				// TODO: validate MSDL file against schema
-
-				// read service namespace, version and name from msdl file
-				_serviceNamespace = MSDLReader.getServiceNamespace(_msdlFile);
-				_serviceVersion = MSDLReader.getServiceVersion(_msdlFile);
-				_serviceName = MSDLReader.getServiceName(_msdlFile);
-
-				MobilisManager.getLogger().log(
-						Level.INFO,
-						String.format("MSDL properties read (ns="
-								+ _serviceNamespace + "; version="
-								+ _serviceVersion + ")"));
-
-				// read path of the MobilisService class from manifest of jar
-				// file
-				serviceFilePath = FileHelper.getJarManifestValue(_jarFile,
-						MANIFEST_SERVICECLASS_KEY);
-
-				// generate template class of service to instantiate service
-				// instance
-				_serviceClassTemplate = jarClassLoader
-						.loadClass(serviceFilePath);
-
-				MobilisManager.getLogger().log(Level.INFO,
-						"Service class template created.");
-
+				
 				// Switch ContainerState to INSTALLED if everything goes right
 				changeContainerState(ServiceContainerState.INSTALLED);
-
+				
 				MobilisManager
-						.getLogger()
-						.log(Level.INFO,
-								String.format(
-										"Service [ %s ] version [ %d ] sucessfully installed.",
-										_serviceNamespace, _serviceVersion));
-			} catch (UnsupportedClassVersionError e) {
-				throw new InstallServiceException(e.getMessage());
-			} catch (MalformedURLException e) {
-				throw new InstallServiceException(e.getMessage());
-			} catch (IOException e) {
-				throw new InstallServiceException(e.getMessage());
-			} catch (ClassNotFoundException e) {
-				throw new InstallServiceException(e.getMessage());
+				.getLogger()
+				.log(Level.INFO,
+						String.format(
+								"Service [ %s ] version [ %d ] sucessfully installed.",
+								_serviceNamespace, _serviceVersion));
+			} catch (InstallServiceException e) {
+				throw e;
 			}
+		}
+	}
+
+	public void extractServiceContainerConfig() throws InstallServiceException {
+		if (jarClassLoader == null) {
+			jarClassLoader = new JarClassLoader();
+		}
+		String msdlFilepath = null;
+		String serviceFilePath = null;
+
+		try {
+			// read msdl file from manifest of jar file
+			jarClassLoader.addFilePathAbsolute(_jarFile.getAbsolutePath());
+			// Read MSDL file location from MANIFEST.MF
+			msdlFilepath = FileHelper.getJarManifestValue(_jarFile,
+					MANIFEST_MSDLFILE_KEY);
+
+			// If MSDL was not found at described location, query whole jar
+			// archive for a msdl file and use the first match
+			if (null == msdlFilepath) {
+				List<String> msdlFiles = FileHelper.getJarFiles(_jarFile,
+						".msdl");
+
+				if (msdlFiles.size() > 0) {
+					msdlFilepath = msdlFiles.get(0);
+				} else {
+					jarClassLoader.close();
+					throw new InstallServiceException(
+							"Cannot find MSDL file in jar archive.");
+				}
+			}
+
+			// Load MSDL file from jar archive and cache it localy in temp
+			// directory using the name of the jar archive extended by .msdl
+			_msdlFile = FileHelper.createFileFromInputStream(
+					jarClassLoader.getResourceAsStream(msdlFilepath),
+					MobilisManager.DIRECTORY_TEMP_PATH + File.separator
+							+ _jarFile.getName() + ".msdl");
+
+			// if msdl was not found, throw InstallServiceException
+			if (null == _msdlFile) {
+				jarClassLoader.close();
+				throw new InstallServiceException(
+						"Result of MSDL file was NULL while loading from jar archive.");
+			}
+			else
+				MobilisManager.getLogger().log(Level.INFO,
+						String.format("MSDL found"));
+
+			// TODO: validate MSDL file against schema
+
+			// read service namespace, version and name from msdl file
+			_serviceNamespace = MSDLReader.getServiceNamespace(_msdlFile);
+			_serviceVersion = MSDLReader.getServiceVersion(_msdlFile);
+			_serviceName = MSDLReader.getServiceName(_msdlFile);
+
+			MobilisManager.getLogger().log(
+					Level.INFO,
+					String.format("MSDL properties read (ns="
+							+ _serviceNamespace + "; version="
+							+ _serviceVersion + ")"));
+
+			// read path of the MobilisService class from manifest of jar
+			// file
+			serviceFilePath = FileHelper.getJarManifestValue(_jarFile,
+					MANIFEST_SERVICECLASS_KEY);
+
+			// generate template class of service to instantiate service
+			// instance
+			_serviceClassTemplate = jarClassLoader
+					.loadClass(serviceFilePath);
+			
+			MobilisManager.getLogger().log(Level.INFO,
+					"Service class template created.");
+
+			configExtracted  = true;
+		} catch (UnsupportedClassVersionError e) {
+			throw new InstallServiceException(e.getMessage());
+		} catch (MalformedURLException e) {
+			throw new InstallServiceException(e.getMessage());
+		} catch (IOException e) {
+			throw new InstallServiceException(e.getMessage());
+		} catch (ClassNotFoundException e) {
+			try {
+				jarClassLoader.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			throw new InstallServiceException(e.getMessage());
 		}
 	}
 
@@ -481,11 +509,22 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			// shutdown all runnning serice instances
 			this.shutDownAllServiceInstances();
 
+			MobilisManager.getInstance().notifyOfServiceContainerUninstall(this);
 			// reset container parameters
 			this.resetContainer();
 
+			if (jarClassLoader != null) {
+				try {
+					jarClassLoader.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 			// state == uninstalled
 			changeContainerState(ServiceContainerState.UNINSTALLED);
+			
 
 			MobilisManager
 					.getLogger()

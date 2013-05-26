@@ -274,12 +274,8 @@ public class CommandShell {
 				// 2 parameters: namespace, version
 				if ( inputArray.length > 2 ) {
 					int version = Integer.parseInt( inputArray[2] );
-					UninstallServiceBean uibean = new UninstallServiceBean( inputArray[1], version );
-
-					uibean.setTo( _controller.getSettings().getMobilisAdminJid() );
-					uibean.setType( XMPPBean.TYPE_SET );
-
-					_controller.getConnection().sendXMPPBean( uibean );
+					String namespace = inputArray[1];
+					_commandInterpreter.uninstallService(namespace, version);
 				} else {
 					_controller.getLog().writeToConsole(
 							"Missing parameter for command <" + input + ">" );

@@ -52,9 +52,8 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 
 	private String mIdentifier;
 	private Connection mConnection = null;
-	private String mJid = null;
-	private String resource = null;
-
+	private String fullJid = null;
+	
 	private final Set<MobilisService> mServices = Collections.synchronizedSet(new HashSet<MobilisService>());
 	private final Map<String, Object> mDefaultSettings = Collections.synchronizedMap(new HashMap<String, Object>());
 
@@ -106,7 +105,6 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 	
 	public MobilisAgent(String ident, boolean loadConfig, String resource) {
 		mIdentifier = ident;
-		this.resource=resource;
 		
 		if (loadConfig) {
 			try {
@@ -193,16 +191,22 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		}
 		mConnection.connect();
 
+		String username = null;
 		String password = null;
 		String resource = null;
 
 		synchronized (mDefaultSettings) {
-			mJid = mDefaultSettings.get("username") + "@" + mDefaultSettings.get("service");
+			username = (String)mDefaultSettings.get("username");
 			password = (String)mDefaultSettings.get("password");
 			resource = (String)mDefaultSettings.get("resource");
+			
+			if (username != null && service != null && resource != null) {
+				fullJid = username + "@" + service + "/" + resource;
+			}
 		}
 
-		mConnection.login(mJid, password, resource);
+		
+		mConnection.login(username, password, resource);
 		mConnection.addConnectionListener(this);
 
 		ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(mConnection);
@@ -290,6 +294,8 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 
 		// logging
 		MobilisManager.getLogger().info("Mobilis Agent (" + getIdent() + ") shut down.");
+		
+		MobilisManager.getInstance().notifyOfAgentShutdown(this);
 	}
 
 	public void registerService(MobilisService service) {
@@ -317,21 +323,13 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 	public Connection getConnection() {
 		return mConnection;
 	}
-
-	/**
-	 * Returns the bare jid of the session agent.
-	 * @return String
-	 */
-	public String getJid() {
-		return mJid;
-	}
 	
 	/**
 	 * Returns the full jid of the session agent.
 	 * @return String
 	 */
 	public String getFullJid() {
-		return getJid() + "/" + getResource();
+		return fullJid;
 	}
 	
 	/**
