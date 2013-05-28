@@ -86,7 +86,7 @@
     </target>
               	
   	<target name="create_run_jar">
-  	        <jar destfile="build/MobilisServer.jar" filesetmanifest="mergewithoutmain">
+  	        <jar destfile="build/mobilisserver.jar" filesetmanifest="mergewithoutmain">
   	            <manifest>
   	                <attribute name="Main-Class" value="de.tudresden.inf.rn.mobilis.server.MobilisServer"/>
   	                <attribute name="Class-Path" value="."/>
