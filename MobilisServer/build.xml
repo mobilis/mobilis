@@ -1,111 +1,116 @@
-<?xml version="1.0" encoding="ISO-8859-2"?>
-
-<project name="MobilisServer" default="release" basedir=".">
-
-	<!--
-		- some variables declaring important directories and names for the
-		tasks
-	-->
-	<target name="init">
-
-		<property name="project.filename" value="MobilisServer" />
-		<property name="main.class" value="de.tudresden.inf.rn.mobilis.server.MobilisServer" />
-		<property name="manifest" value="MANIFEST.MF" />			<!-- manifest-file's name -->
-		<property name="src.dir" value="src" />					<!-- directory containing the sources -->
-		<property name="build.dir" value="bin" />					<!-- build directory of the .classes -->
-		<property name="dist.dir" value="release" />				<!-- build directory of the .classes -->
-		<property name="build.jar" value="${dist.dir}/${project.filename}.jar" />	<!-- jar-file's name -->
-		<property name="resources.dir" value="res" />					<!-- directory containing images ... -->
-		<property name="lib.dir" value="libs" />					<!-- directory of libraries -->
-
-		<property name="javadoc.dir" value="doc" />				<!-- directory of the javadocs -->
-		<property name="javadoc.zip" value="${project.filename}-javadoc.zip" />			<!-- name of javadoc-archive -->
-		<property name="javadoc.pkg" value="de.*" /> 		<!-- packages to consider for javadocs, separated by commas -->
-		<property name="javadoc.head" value="Mobilis Server - Documentation" />
-		<property name="javadoc.title" value="Mobilis Server - Documentation" />
-
-		<!--
-			<path id="classpath"> <fileset dir="${lib.dir}" includes="**/*.jar"/>
-			<pathelement location="${basedir}/${build.dir}"/> </path>
-		-->
-
-		<!-- Add all the jar files in lib folder to the class path -->
-		<path id="classpath">
-			<fileset dir="${lib.dir}" includes="**/*.jar" />
-		</path>
-
-	</target>
-
-	<!--
-	 - Delete old build and dist directories
-	-->
-	<target name="clear" description="Delete old build and dist directories">
-		<delete dir="${build.dir}" />
-		<delete dir="${dist.dir}" />
-	</target>
-
-	<!--
-	 - Delete old javadoc directory
-	-->
-	<target name="cleardoc" description="Delete old javadoc directory">
-		<delete dir="${javadoc.dir}" />
-	</target>
-
-	<!--
-		- compiles the project into build.dir and copies all .properties files
-		- and other resources (images, ...) into the build directory
-	-->
-	<target name="compile" depends="init,clear">
-		<mkdir dir="${build.dir}" />
-		<javac srcdir="${src.dir}/" destdir="${build.dir}" classpathref="classpath">
-			<include name="**/*.java" />
-			<exclude name="**/package.html" />
-		</javac>
-		<copy todir="${build.dir}">
-			<fileset dir="${src.dir}" includes="**/*.properties" />
-			<fileset dir="${resources.dir}" />
-		</copy>
-	</target>
-
-
-	<!--
-		- creates an executable jar-file. This is done via firstly compiling
-		the - project, decompressing all libs in lib.dir into build.dir
-		afterwards and - finally compressing all files in build.dir into
-		build.jar.
-	-->
-	<target depends="compile" name="release">
-
-		<unjar dest="${build.dir}">
-			<fileset dir="${lib.dir}">
-				<include name="**/*.jar" />
-			</fileset>
-		</unjar>
-
-		<mkdir dir="${dist.dir}" />
-		<jar compress="true" destfile="${build.jar}">
-			<fileset dir="${build.dir}" />
-			<manifest>
-				<attribute name="Main-Class" value="${main.class}" />
-				<attribute name="Class-Path" value="${classpath}" />
-			</manifest>
-		</jar>
-
-	</target>
-
-	<!--
-		- builds the javadoc-api of all packages in javadoc.pkg into
-		javadoc.dir. - furthermore it creates a compressed version of the
-		api-specification in - javadoc.zip
-	-->
-	<target name="javadoc" depends="init,cleardoc">
-		<mkdir dir="${javadoc.dir}" />
-		<javadoc packagenames="${javadoc.pkg}" header="${javadoc.head}"
-			windowtitle="${javadoc.title}" sourcepath="${src.dir}" classpathref="classpath"
-			destdir="${javadoc.dir}" author="true" version="false" use="false">
-			<!-- additionalparam="-linksource"> -->
-			<link href="http://java.sun.com/javase/6/docs/api/" />
-		</javadoc>
-	</target>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="MobilisServer">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../../../Applications/eclipse"/>
+    <property name="MobilisXMPP.location" value="../MobilisXMPP"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.7"/>
+    <property name="source" value="1.7"/>
+    <path id="EAR Libraries.libraryclasspath"/>
+    <path id="MobilisXMPP.classpath">
+        <pathelement location="${MobilisXMPP.location}/bin"/>
+        <path refid="EAR Libraries.libraryclasspath"/>
+        <pathelement location="${MobilisXMPP.location}/libs/smack-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+        <pathelement location="${MobilisXMPP.location}/libs/smack-bosh-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+        <pathelement location="${MobilisXMPP.location}/libs/smackx-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+        <pathelement location="${MobilisXMPP.location}/libs/smackx-debug-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+        <pathelement location="${MobilisXMPP.location}/libs/smackx-jingle-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+    </path>
+    <path id="MobilisServer.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="libs/swing-worker-1.1.jar"/>
+        <pathelement location="libs/appframework-1.0.3.jar"/>
+        <pathelement location="libs/commons-beanutils.jar"/>
+        <pathelement location="libs/commons-collections-3.2.1.jar"/>
+        <pathelement location="libs/commons-lang-2.4.jar"/>
+        <pathelement location="libs/commons-logging-1.1.1.jar"/>
+        <pathelement location="libs/jdom.jar"/>
+        <pathelement location="libs/mysql-connector-java-5.1.10-bin.jar"/>
+        <pathelement location="libs/hibernate-annotations.jar"/>
+        <pathelement location="libs/hibernate-entitymanager.jar"/>
+        <pathelement location="libs/hibernate3.jar"/>
+        <pathelement location="libs/hibernate-commons-annotations.jar"/>
+        <pathelement location="libs/hibernate-core.jar"/>
+        <path refid="MobilisXMPP.classpath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall">
+        <ant antfile="build.xml" dir="${MobilisXMPP.location}" inheritAll="false" target="clean"/>
+    </target>
+    <target depends="build-subprojects,build-project,create_run_jar" name="build"/>
+    <target name="build-subprojects">
+        <ant antfile="build.xml" dir="${MobilisXMPP.location}" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="MobilisServer.classpath"/>
+        </javac>
+    </target>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="MobilisServer">
+        <java classname="de.tudresden.inf.rn.mobilis.server.MobilisServer" failonerror="true" fork="yes">
+            <classpath refid="MobilisServer.classpath"/>
+        </java>
+    </target>
+              	
+  	<target name="create_run_jar">
+  	        <jar destfile="build/MobilisServer.jar" filesetmanifest="mergewithoutmain">
+  	            <manifest>
+  	                <attribute name="Main-Class" value="de.tudresden.inf.rn.mobilis.server.MobilisServer"/>
+  	                <attribute name="Class-Path" value="."/>
+  	            </manifest>
+  	            <fileset dir="bin"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisServer/libs/swing-worker-1.1.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisServer/libs/appframework-1.0.3.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisServer/libs/commons-beanutils.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisServer/libs/commons-collections-3.2.1.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisServer/libs/commons-lang-2.4.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisServer/libs/commons-logging-1.1.1.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisServer/libs/jdom.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisServer/libs/mysql-connector-java-5.1.10-bin.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisServer/libs/hibernate-annotations.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisServer/libs/hibernate-entitymanager.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisServer/libs/hibernate3.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisServer/libs/hibernate-commons-annotations.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisServer/libs/hibernate-core.jar"/>
+  	            <fileset dir="../MobilisXMPP/bin"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smack-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smack-bosh-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smackx-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smackx-debug-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smackx-jingle-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+  	        </jar>
+  	    </target>          	
 </project>
-
