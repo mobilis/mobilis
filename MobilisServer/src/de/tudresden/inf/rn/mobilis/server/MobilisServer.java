@@ -58,14 +58,14 @@ public class MobilisServer extends SingleFrameApplication {
     		parentView.getStartupButton().doClick();
     	} else {
     		MobilisManager.getInstance().startup();
-    		Runtime.getRuntime().addShutdownHook(new Thread() {
-    			@Override
-    			public void run() {
-    				getApplication().shutdown();
-    				System.out.println("Server shut down!");
-    			}
-    		});
     	}
+    	Runtime.getRuntime().addShutdownHook(new Thread() {
+    		@Override
+    		public void run() {
+    			getApplication().shutdown();
+    			System.out.println("Server shut down!");
+    		}
+    	});
     }
 
     /**
