@@ -15,7 +15,7 @@
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="libs/smackx-debug-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/smackx-jingle-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/Java SE 7 (MacOS X Default)">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
