@@ -6,8 +6,7 @@
 //  Copyright (c) 2013 TU Dresden. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "XMPP.h"
+#import "MXi.h"
 
 @protocol PresenceDelegate <NSObject>
 
@@ -40,7 +39,8 @@
 			  stanzaDelegate:(id<StanzaDelegate> )aStanzaDelegate;
 
 - (void)sendTestMessageWithContent:(NSString* )content to:(NSString* )to;
-- (void)send:(NSXMLElement* )element;
+- (void)sendElement:(NSXMLElement* )element;
+- (void)sendBean:(MXiBean<MXiOutgoingBean>* )bean;
 
 - (BOOL)reconnectWithJabberID:(NSString* ) aJabberID
 					 password:(NSString* )aPassword;

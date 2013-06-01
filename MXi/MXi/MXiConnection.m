@@ -129,10 +129,14 @@
 	[xmppStream sendElement:message];
 }
 
-- (void)send:(NSXMLElement *)element {
+- (void)sendElement:(NSXMLElement *)element {
 	NSLog(@"Sent: %@", [element prettyXMLString]);
 	
 	[xmppStream sendElement:element];
+}
+
+- (void)sendBean:(MXiBean<MXiOutgoingBean> *)bean {
+	[self sendElement:[MXiBeanToXML beanToXML:bean]];
 }
 
 - (void)disconnect {

@@ -167,6 +167,22 @@
 		797C04DE171C24EC00B40FFC /* stringprep.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0435171C231C00B40FFC /* stringprep.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04E3171C266700B40FFC /* libidn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 797C04E2171C266700B40FFC /* libidn.a */; };
 		797C04E6171C30A100B40FFC /* RFImageToDataTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0470171C23B900B40FFC /* RFImageToDataTransformer.m */; };
+		79A4DD7E175A22FC00E6BDE4 /* MXiBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */; };
+		79A4DD7F175A22FC00E6BDE4 /* MXiBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		79A4DD80175A22FC00E6BDE4 /* MXiBean.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */; };
+		79A4DD81175A22FC00E6BDE4 /* MXiBean.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */; };
+		79A4DD84175A55AC00E6BDE4 /* MXiOutgoingBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD82175A55AC00E6BDE4 /* MXiOutgoingBean.h */; };
+		79A4DD85175A55AC00E6BDE4 /* MXiOutgoingBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD82175A55AC00E6BDE4 /* MXiOutgoingBean.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		79A4DD8E175A5D2700E6BDE4 /* MXiBeanToXML.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD8C175A5D2700E6BDE4 /* MXiBeanToXML.h */; };
+		79A4DD8F175A5D2700E6BDE4 /* MXiBeanToXML.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD8C175A5D2700E6BDE4 /* MXiBeanToXML.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		79A4DD90175A5D2700E6BDE4 /* MXiBeanToXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD8D175A5D2700E6BDE4 /* MXiBeanToXML.m */; };
+		79A4DD91175A5D2700E6BDE4 /* MXiBeanToXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD8D175A5D2700E6BDE4 /* MXiBeanToXML.m */; };
+		79A4DD94175A5FD300E6BDE4 /* MXiIQTypeLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD92175A5FD300E6BDE4 /* MXiIQTypeLookup.h */; };
+		79A4DD95175A5FD300E6BDE4 /* MXiIQTypeLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD92175A5FD300E6BDE4 /* MXiIQTypeLookup.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		79A4DD96175A5FD300E6BDE4 /* MXiIQTypeLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD93175A5FD300E6BDE4 /* MXiIQTypeLookup.m */; };
+		79A4DD97175A5FD300E6BDE4 /* MXiIQTypeLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD93175A5FD300E6BDE4 /* MXiIQTypeLookup.m */; };
+		79A4DD99175A6B4700E6BDE4 /* MXiIncomingBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD98175A6B4700E6BDE4 /* MXiIncomingBean.h */; };
+		79A4DD9A175A6B4700E6BDE4 /* MXiIncomingBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD98175A6B4700E6BDE4 /* MXiIncomingBean.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		79F3945017200551003F348C /* MXiConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 79F3944E17200551003F348C /* MXiConnection.h */; };
 		79F3945117200551003F348C /* MXiConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 79F3944E17200551003F348C /* MXiConnection.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		79F3945217200551003F348C /* MXiConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 79F3944F17200551003F348C /* MXiConnection.m */; };
@@ -282,6 +298,14 @@
 		797C04D9171C23DF00B40FFC /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		797C04DB171C23E700B40FFC /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/usr/lib/libresolv.dylib; sourceTree = DEVELOPER_DIR; };
 		797C04E2171C266700B40FFC /* libidn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libidn.a; path = libidn/x86_64/libidn.a; sourceTree = "<group>"; };
+		79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiBean.h; sourceTree = "<group>"; };
+		79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiBean.m; sourceTree = "<group>"; };
+		79A4DD82175A55AC00E6BDE4 /* MXiOutgoingBean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiOutgoingBean.h; sourceTree = "<group>"; };
+		79A4DD8C175A5D2700E6BDE4 /* MXiBeanToXML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiBeanToXML.h; sourceTree = "<group>"; };
+		79A4DD8D175A5D2700E6BDE4 /* MXiBeanToXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiBeanToXML.m; sourceTree = "<group>"; };
+		79A4DD92175A5FD300E6BDE4 /* MXiIQTypeLookup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiIQTypeLookup.h; sourceTree = "<group>"; };
+		79A4DD93175A5FD300E6BDE4 /* MXiIQTypeLookup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiIQTypeLookup.m; sourceTree = "<group>"; };
+		79A4DD98175A6B4700E6BDE4 /* MXiIncomingBean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiIncomingBean.h; sourceTree = "<group>"; };
 		79F3944E17200551003F348C /* MXiConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiConnection.h; sourceTree = "<group>"; };
 		79F3944F17200551003F348C /* MXiConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiConnection.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -368,9 +392,17 @@
 		794491AA17199564000D53ED /* MXi */ = {
 			isa = PBXGroup;
 			children = (
+				794491B117199564000D53ED /* MXi.h */,
 				79F3944E17200551003F348C /* MXiConnection.h */,
 				79F3944F17200551003F348C /* MXiConnection.m */,
-				794491B117199564000D53ED /* MXi.h */,
+				79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */,
+				79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */,
+				79A4DD82175A55AC00E6BDE4 /* MXiOutgoingBean.h */,
+				79A4DD98175A6B4700E6BDE4 /* MXiIncomingBean.h */,
+				79A4DD8C175A5D2700E6BDE4 /* MXiBeanToXML.h */,
+				79A4DD8D175A5D2700E6BDE4 /* MXiBeanToXML.m */,
+				79A4DD92175A5FD300E6BDE4 /* MXiIQTypeLookup.h */,
+				79A4DD93175A5FD300E6BDE4 /* MXiIQTypeLookup.m */,
 				794491AB17199564000D53ED /* Supporting Files */,
 			);
 			path = MXi;
@@ -648,6 +680,11 @@
 				797C04DD171C24EC00B40FFC /* idn-int.h in Headers */,
 				797C04DE171C24EC00B40FFC /* stringprep.h in Headers */,
 				79F3945017200551003F348C /* MXiConnection.h in Headers */,
+				79A4DD7E175A22FC00E6BDE4 /* MXiBean.h in Headers */,
+				79A4DD84175A55AC00E6BDE4 /* MXiOutgoingBean.h in Headers */,
+				79A4DD8E175A5D2700E6BDE4 /* MXiBeanToXML.h in Headers */,
+				79A4DD94175A5FD300E6BDE4 /* MXiIQTypeLookup.h in Headers */,
+				79A4DD99175A6B4700E6BDE4 /* MXiIncomingBean.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -700,6 +737,11 @@
 				797C04D2171C23B900B40FFC /* XMPPIDTracker.h in Headers */,
 				797C04D6171C23B900B40FFC /* XMPPSRVResolver.h in Headers */,
 				797C0438171C231D00B40FFC /* stringprep.h in Headers */,
+				79A4DD7F175A22FC00E6BDE4 /* MXiBean.h in Headers */,
+				79A4DD85175A55AC00E6BDE4 /* MXiOutgoingBean.h in Headers */,
+				79A4DD8F175A5D2700E6BDE4 /* MXiBeanToXML.h in Headers */,
+				79A4DD95175A5FD300E6BDE4 /* MXiIQTypeLookup.h in Headers */,
+				79A4DD9A175A6B4700E6BDE4 /* MXiIncomingBean.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -818,6 +860,9 @@
 				797C04D7171C23B900B40FFC /* XMPPSRVResolver.m in Sources */,
 				797C04E6171C30A100B40FFC /* RFImageToDataTransformer.m in Sources */,
 				79F3945217200551003F348C /* MXiConnection.m in Sources */,
+				79A4DD80175A22FC00E6BDE4 /* MXiBean.m in Sources */,
+				79A4DD90175A5D2700E6BDE4 /* MXiBeanToXML.m in Sources */,
+				79A4DD96175A5FD300E6BDE4 /* MXiIQTypeLookup.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -861,6 +906,9 @@
 				797C04D4171C23B900B40FFC /* XMPPIDTracker.m in Sources */,
 				797C04D8171C23B900B40FFC /* XMPPSRVResolver.m in Sources */,
 				79F3945317200551003F348C /* MXiConnection.m in Sources */,
+				79A4DD81175A22FC00E6BDE4 /* MXiBean.m in Sources */,
+				79A4DD91175A5D2700E6BDE4 /* MXiBeanToXML.m in Sources */,
+				79A4DD97175A5FD300E6BDE4 /* MXiIQTypeLookup.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
