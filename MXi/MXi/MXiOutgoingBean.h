@@ -11,6 +11,5 @@
 @protocol MXiOutgoingBean <NSObject>
 
 - (NSXMLElement* )payloadToXML;
-- (NSDictionary* )beanAttributes;
 
 @end

@@ -23,7 +23,9 @@ typedef enum beanTypes {
 @property (nonatomic, strong) NSString* elementName;
 @property (nonatomic, strong) NSString* iqNamespace;
 
+- (id) init;
 - (id) initWithElementName:(NSString* )theElementName
-			   iqNamespace:(NSString* )theIqNamespace;
+			   iqNamespace:(NSString* )theIqNamespace
+				  beanType:(BeanType )theBeanType;
 
 @end

@@ -17,13 +17,6 @@
 		[beanElement addChild:[outBean payloadToXML]];
 	}
 	
-	NSDictionary* attrs = [outBean beanAttributes];
-	if (attrs) {
-		[attrs enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL* stop) {
-			[beanElement addAttributeWithName:key stringValue:obj];
-		}];
-	}
-	
 	NSXMLElement* iq = [NSXMLElement elementWithName:@"iq" xmlns:[outBean iqNamespace]];
 	[iq addAttributeWithName:@"to" stringValue:[[outBean to] full]];
 	[iq addAttributeWithName:@"from" stringValue:[[outBean from] full]];

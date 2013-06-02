@@ -13,19 +13,21 @@
 @synthesize beanId, beanType, to, from, elementName, iqNamespace;
 
 - (id)initWithElementName:(NSString *)theElementName
-			  iqNamespace:(NSString *)theIqNamespace {
+			  iqNamespace:(NSString *)theIqNamespace
+				 beanType:(BeanType)theBeanType {
 	self = [super init];
 	
 	if (self) {
 		elementName = theElementName;
 		iqNamespace = theIqNamespace;
+		beanType = theBeanType;
 	}
 	
 	return self;
 }
 
 - (id)init {
-	[NSException raise:@"Wrong initializer" format:@"Use initWithElementName:iqNamespace:"];
+	[NSException raise:@"Wrong initializer" format:@"Use initWithElementName:iqNamespace:beanType: or init of subtype"];
 	return nil;
 }
 

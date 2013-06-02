@@ -136,6 +136,9 @@
 }
 
 - (void)sendBean:(MXiBean<MXiOutgoingBean> *)bean {
+	[bean setFrom:[XMPPJID jidWithString:[self jabberID]]];
+	[bean setTo:[XMPPJID jidWithString:@"mobilis@mymac.box/Mobilist_v1#1"]];
+	
 	[self sendElement:[MXiBeanToXML beanToXML:bean]];
 }
 
