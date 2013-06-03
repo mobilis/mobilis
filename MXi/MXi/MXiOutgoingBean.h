@@ -10,6 +10,6 @@
 
 @protocol MXiOutgoingBean <NSObject>
 
-- (NSXMLElement* )payloadToXML;
+- (NSXMLElement* )toXML;
 
 @end

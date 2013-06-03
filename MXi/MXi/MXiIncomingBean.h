@@ -11,6 +11,6 @@
 
 @protocol MXiIncomingBean <NSObject>
 
-- (MXiBean* )xmlToPayload;
+- (void)fromXML:(NSXMLElement* )xml;
 
 @end

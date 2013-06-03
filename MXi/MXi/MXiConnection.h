@@ -8,35 +8,22 @@
 
 #import "MXi.h"
 
-@protocol PresenceDelegate <NSObject>
-
-- (void)didAuthenticate;
-- (void)didDisconnectWithError:(NSError* )error;
-- (void)didFailToAuthenticate:(NSXMLElement* )error;
-
-@end
-
-@protocol StanzaDelegate <NSObject>
-
-- (void)didReceiveMessage:(XMPPMessage* )message;
-- (BOOL)didReceiveIQ:(XMPPIQ* )iq;
-- (void)didReceivePresence:(XMPPPresence* )presence;
-- (void)didReceiveError:(NSXMLElement* )error;
-
-@end
-
 @interface MXiConnection : NSObject
 
 @property (nonatomic, retain) NSString* jabberID;
 @property (nonatomic, retain) NSString* password;
 @property (nonatomic, readonly) XMPPStream* xmppStream;
-@property (nonatomic, strong) id<PresenceDelegate> presenceDelegate;
-@property (nonatomic, strong) id<StanzaDelegate> stanzaDelegate;
+@property (nonatomic, strong) id<MXiPresenceDelegate> presenceDelegate;
+@property (nonatomic, strong) id<MXiStanzaDelegate> stanzaDelegate;
+@property (nonatomic, strong) id<MXiBeanDelegate> beanDelegate;
+@property (nonatomic, strong) NSArray* incomingBeanPrototypes;
 
 + (id)connectionWithJabberID:(NSString* )aJabberID
 					password:(NSString* )aPassword
-			presenceDelegate:(id<PresenceDelegate> )aPresenceDelegate
-			  stanzaDelegate:(id<StanzaDelegate> )aStanzaDelegate;
+			presenceDelegate:(id<MXiPresenceDelegate> )aPresenceDelegate
+			  stanzaDelegate:(id<MXiStanzaDelegate> )aStanzaDelegate
+				beanDelegate:(id<MXiBeanDelegate> )aBeanDelegate
+   listeningForIncomingBeans:(NSArray* )theIncomingBeanPrototypes;
 
 - (void)sendTestMessageWithContent:(NSString* )content to:(NSString* )to;
 - (void)sendElement:(NSXMLElement* )element;

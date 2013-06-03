@@ -11,17 +11,22 @@
 
 @implementation MXiConnection
 
-@synthesize jabberID, password, xmppStream, presenceDelegate, stanzaDelegate;
+@synthesize jabberID, password, xmppStream, presenceDelegate, stanzaDelegate, beanDelegate, incomingBeanPrototypes;
 
 + (id)connectionWithJabberID:(NSString *)aJabberID
 					password:(NSString *)aPassword
-			presenceDelegate:(id<PresenceDelegate> )aPresenceDelegate
-			  stanzaDelegate:(id<StanzaDelegate> )aStanzaDelegate {
+			presenceDelegate:(id<MXiPresenceDelegate> )aPresenceDelegate
+			  stanzaDelegate:(id<MXiStanzaDelegate> )aStanzaDelegate
+				beanDelegate:(id<MXiBeanDelegate>)aBeanDelegate
+   listeningForIncomingBeans:(NSArray *)theIncomingBeanPrototypes {
 	MXiConnection* connection = [[MXiConnection alloc] init];
+	
 	[connection setJabberID:aJabberID];
 	[connection setPassword:aPassword];
 	[connection setPresenceDelegate:aPresenceDelegate];
 	[connection setStanzaDelegate:aStanzaDelegate];
+	[connection setBeanDelegate:aBeanDelegate];
+	[connection setIncomingBeanPrototypes:theIncomingBeanPrototypes];
 	
 	[connection setupStream];
 	[connection connect];
@@ -39,8 +44,6 @@
  */
 
 - (void)xmppStreamDidConnect:(XMPPStream* )sender {
-	NSLog(@"Connected");
-	
 	NSError* error = nil;
 	[xmppStream authenticateWithPassword:password error:&error];
 }
@@ -60,7 +63,21 @@
 }
 
 - (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq {
-	return [stanzaDelegate didReceiveIQ:iq];
+	BOOL success = [stanzaDelegate didReceiveIQ:iq];
+	
+	for (MXiBean<MXiIncomingBean>* prototype in incomingBeanPrototypes) {
+		if ([[prototype elementName] isEqualToString:[[iq childElement] name]] &&
+				[[prototype iqNamespace] isEqualToString:[[iq childElement] xmlns]] &&
+				[[MXiIQTypeLookup stringValueForIQType:[prototype beanType]]
+					isEqualToString:[iq attributeStringValueForName:@"type"]]) {
+			// parse the iq data into the bean object
+			[MXiBeanConverter beanFromIQ:iq intoBean:prototype];
+			// inform the app about this incoming bean
+			[beanDelegate didReceiveBean:prototype];
+		}
+	}
+	
+	return success;
 }
 
 - (void)xmppStream:(XMPPStream *)sender didReceiveMessage:(XMPPMessage *)message {
@@ -139,7 +156,7 @@
 	[bean setFrom:[XMPPJID jidWithString:[self jabberID]]];
 	[bean setTo:[XMPPJID jidWithString:@"mobilis@mymac.box/Mobilist_v1#1"]];
 	
-	[self sendElement:[MXiBeanToXML beanToXML:bean]];
+	[self sendElement:[MXiBeanConverter beanToIQ:bean]];
 }
 
 - (void)disconnect {
