@@ -46,7 +46,7 @@ public abstract class MobilisService implements PacketListener, NodeInformationP
     private Map<String, Object> mDefaultSettings;
     
     private String _serviceName = null;
-	private boolean selfSuicideMode = false;
+	private boolean suicideMode = false;
     
     public MobilisService() {
 		mUserSettings = Collections.synchronizedMap(new HashMap<String, Map<String, Object>>());
@@ -93,17 +93,17 @@ public abstract class MobilisService implements PacketListener, NodeInformationP
 		// packet listener
 		mAgent.getConnection().removePacketListener(this);
 		
-		// logging
-		MobilisManager.getLogger().info("Mobilis Service (" + getNamespace() + ") shut down.");
-		
 		// TODO: setting a boolean is a quickfix for service shutdown behavior (see MO-8) 
-		if (!selfSuicideMode) {
-			selfSuicideMode = true;
+		if (!suicideMode) {
+			suicideMode = true;
 			String fullJid = getAgent().getFullJid();
-			MobilisManager.getInstance().getServiceContainer(getNamespace(), getVersion()).shutdownServiceInstance(fullJid);
+			MobilisManager.getInstance().getServiceContainerByRunningInstanceJid(fullJid).shutdownServiceInstance(fullJid);
 		}
 		
 		MobilisManager.getInstance().notifyOfServiceShutdown(this);
+
+		// logging
+		MobilisManager.getLogger().info("Mobilis Service (" + getNamespace() + ") shut down.");
     }
     
     // getter + setter methods
