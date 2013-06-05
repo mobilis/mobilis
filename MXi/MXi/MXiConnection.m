@@ -11,10 +11,11 @@
 
 @implementation MXiConnection
 
-@synthesize jabberID, password, xmppStream, presenceDelegate, stanzaDelegate, beanDelegate, incomingBeanPrototypes;
+@synthesize jabberID, password, hostName, xmppStream, presenceDelegate, stanzaDelegate, beanDelegate, incomingBeanPrototypes;
 
 + (id)connectionWithJabberID:(NSString *)aJabberID
 					password:(NSString *)aPassword
+					hostName:(NSString* )aHostName
 			presenceDelegate:(id<MXiPresenceDelegate> )aPresenceDelegate
 			  stanzaDelegate:(id<MXiStanzaDelegate> )aStanzaDelegate
 				beanDelegate:(id<MXiBeanDelegate>)aBeanDelegate
@@ -23,6 +24,7 @@
 	
 	[connection setJabberID:aJabberID];
 	[connection setPassword:aPassword];
+	[connection setHostName:aHostName];
 	[connection setPresenceDelegate:aPresenceDelegate];
 	[connection setStanzaDelegate:aStanzaDelegate];
 	[connection setBeanDelegate:aBeanDelegate];
@@ -33,7 +35,8 @@
 	return connection;
 }
 
-- (BOOL)reconnectWithJabberID:(NSString *)aJabberID password:(NSString *)aPassword {
+- (BOOL)reconnectWithJabberID:(NSString *)aJabberID
+					 password:(NSString *)aPassword {
 	[self setJabberID:aJabberID];
 	[self setPassword:aPassword];
 	return [self connect];
@@ -66,8 +69,8 @@
 	BOOL success = [stanzaDelegate didReceiveIQ:iq];
 	
 	for (MXiBean<MXiIncomingBean>* prototype in incomingBeanPrototypes) {
-		if ([[prototype elementName] isEqualToString:[[iq childElement] name]] &&
-				[[prototype iqNamespace] isEqualToString:[[iq childElement] xmlns]] &&
+		if ([[[prototype class] elementName] isEqualToString:[[iq childElement] name]] &&
+				[[[prototype class] iqNamespace] isEqualToString:[[iq childElement] xmlns]] &&
 				[[MXiIQTypeLookup stringValueForIQType:[prototype beanType]]
 					isEqualToString:[iq attributeStringValueForName:@"type"]]) {
 			// parse the iq data into the bean object
@@ -121,7 +124,7 @@
 	
 	XMPPJID* jid = [XMPPJID jidWithString:jabberID];
 	[xmppStream setMyJID:jid];
-	[xmppStream setHostName:[jid domain]];
+	[xmppStream setHostName:[self hostName]];
 	
 	NSError* error = nil;
 	if (![xmppStream connect:&error]) {

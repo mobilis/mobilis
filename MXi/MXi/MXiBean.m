@@ -10,16 +10,12 @@
 
 @implementation MXiBean : NSObject
 
-@synthesize beanId, beanType, to, from, elementName, iqNamespace;
+@synthesize beanId, beanType, to, from;
 
-- (id)initWithElementName:(NSString *)theElementName
-			  iqNamespace:(NSString *)theIqNamespace
-				 beanType:(BeanType)theBeanType {
+- (id)initWithBeanType:(BeanType)theBeanType {
 	self = [super init];
 	
 	if (self) {
-		elementName = theElementName;
-		iqNamespace = theIqNamespace;
 		beanType = theBeanType;
 	}
 	
@@ -28,6 +24,14 @@
 
 - (id)init {
 	[NSException raise:@"Wrong initializer" format:@"Use initWithElementName:iqNamespace:beanType: or init of subtype"];
+	return nil;
+}
+
++ (NSString* )elementName {
+	return nil;
+}
+
++ (NSString* )iqNamespace {
 	return nil;
 }
 

@@ -20,12 +20,13 @@ typedef enum beanTypes {
 @property (nonatomic, strong) XMPPJID* from;
 @property (nonatomic) BeanType beanType;
 
-@property (nonatomic, strong) NSString* elementName;
-@property (nonatomic, strong) NSString* iqNamespace;
+//@property (nonatomic, strong) NSString* elementName;
+//@property (nonatomic, strong) NSString* iqNamespace;
 
 - (id) init;
-- (id) initWithElementName:(NSString* )theElementName
-			   iqNamespace:(NSString* )theIqNamespace
-				  beanType:(BeanType )theBeanType;
+- (id) initWithBeanType:(BeanType )theBeanType;
+
++ (NSString* )elementName;
++ (NSString* )iqNamespace;
 
 @end
