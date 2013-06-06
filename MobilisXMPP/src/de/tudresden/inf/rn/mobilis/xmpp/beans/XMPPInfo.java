@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2010 Technische Universität Dresden
+ * Copyright (C) 2010 Technische UniversitÃ¤t Dresden
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.io.Serializable;
 import org.xmlpull.v1.XmlPullParser;
 
 /**
- * @author Benjamin Söllner, Robert Lübke
+ * @author Benjamin SÃ¶llner, Robert LÃ¼bke
  */
 public interface XMPPInfo extends Serializable {
 	/**
