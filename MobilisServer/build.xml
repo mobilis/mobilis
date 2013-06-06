@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. --><project basedir="." default="build" name="MobilisServer">
+<project basedir="." default="build" name="MobilisServer">
     <property environment="env"/>
-    <property name="ECLIPSE_HOME" value="../../../../../../Applications/eclipse"/>
     <property name="MobilisXMPP.location" value="../MobilisXMPP"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.7"/>
@@ -66,19 +61,6 @@
             <classpath refid="MobilisServer.classpath"/>
         </javac>
     </target>
-    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
-        <copy todir="${ant.library.dir}">
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </copy>
-        <unzip dest="${ant.library.dir}">
-            <patternset includes="jdtCompilerAdapter.jar"/>
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </unzip>
-    </target>
-    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
-        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
-        <antcall target="build"/>
-    </target>
     <target name="MobilisServer">
         <java classname="de.tudresden.inf.rn.mobilis.server.MobilisServer" failonerror="true" fork="yes">
             <classpath refid="MobilisServer.classpath"/>
@@ -105,12 +87,12 @@
   	            <zipfileset excludes="META-INF/*.SF" src="libs/hibernate3.jar"/>
   	            <zipfileset excludes="META-INF/*.SF" src="libs/hibernate-commons-annotations.jar"/>
   	            <zipfileset excludes="META-INF/*.SF" src="libs/hibernate-core.jar"/>
-  	            <fileset dir="../MobilisXMPP/bin"/>
-  	            <zipfileset excludes="META-INF/*.SF" src="../MobilisXMPP/libs/smack-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
-  	            <zipfileset excludes="META-INF/*.SF" src="../MobilisXMPP/libs/smack-bosh-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
-  	            <zipfileset excludes="META-INF/*.SF" src="../MobilisXMPP/libs/smackx-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
-  	            <zipfileset excludes="META-INF/*.SF" src="../MobilisXMPP/libs/smackx-debug-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
-  	            <zipfileset excludes="META-INF/*.SF" src="../MobilisXMPP/libs/smackx-jingle-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+  	            <fileset dir="${MobilisXMPP.location}/bin"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="${MobilisXMPP.location}/libs/smack-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="${MobilisXMPP.location}/libs/smack-bosh-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="${MobilisXMPP.location}/libs/smackx-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="${MobilisXMPP.location}/libs/smackx-debug-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+  	            <zipfileset excludes="META-INF/*.SF" src="${MobilisXMPP.location}/libs/smackx-jingle-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
   	        </jar>
   	    </target>          	
 </project>
