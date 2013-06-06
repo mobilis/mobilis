@@ -69,14 +69,14 @@
                 <attribute name="Main-Class" value="de.tudresden.inf.rn.mobilis.consoleclient.XMPPConsoleClient"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
-            <fileset dir="/Users/sven/cvs/git/mobilis/MobilisServer_ConsoleClient/bin"/>
-            <fileset dir="/Users/sven/cvs/git/mobilis/MXJ/bin"/>
-            <fileset dir="/Users/sven/cvs/git/mobilis/MobilisXMPP/bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smack-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smack-bosh-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smackx-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smackx-debug-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smackx-jingle-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+            <fileset dir="bin"/>
+            <fileset dir="${MXJ.location}/bin"/>
+            <fileset dir="${MobilisXMPP.location}/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="${MobilisXMPP.location}/libs/smack-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${MobilisXMPP.location}/libs/smack-bosh-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${MobilisXMPP.location}/libs/smackx-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${MobilisXMPP.location}/libs/smackx-debug-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${MobilisXMPP.location}/libs/smackx-jingle-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
         </jar>
     </target>
 </project>
