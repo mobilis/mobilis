@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project MobilisServer_ConsoleClient">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="dest/ConsoleClient.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="de.tudresden.inf.rn.mobilis.consoleclient.XMPPConsoleClient"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="/Users/sven/cvs/git/mobilis/MobilisServer_ConsoleClient/bin"/>
+            <fileset dir="/Users/sven/cvs/git/mobilis/MXJ/bin"/>
+            <fileset dir="/Users/sven/cvs/git/mobilis/MobilisXMPP/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smack-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smack-bosh-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smackx-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smackx-debug-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/sven/cvs/git/mobilis/MobilisXMPP/libs/smackx-jingle-3.2.2-ijaeckel-jar-with-dependencies.jar"/>
+        </jar>
+    </target>
+</project>

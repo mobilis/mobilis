@@ -5,7 +5,13 @@
               directory with the processing instruction <?eclipse.ant.import?>
               as the first entry and export the buildfile again. --><project basedir="." default="build" name="MobilisXMPP">
     <property environment="env"/>
-    <property name="ECLIPSE_HOME" value="../../../../../../Applications/eclipse"/>
+    <property name="GeoTwitterService.location" value="../../geotwitter/GeoTwitterService"/>
+    <property name="MXJ.location" value="../MXJ"/>
+    <property name="MobilisServer.location" value="../MobilisServer"/>
+    <property name="MobilisServer_ConsoleClient.location" value="../MobilisServer_ConsoleClient"/>
+    <property name="PowerAssistantServiceBeans.location" value="../../mobsda/PowerAssistantServiceBeans"/>
+    <property name="PowerAssistantServiceClientBeans.location" value="../../mobsda/PowerAssistantServiceClientBeans"/>
+    <property name="TreasureHunt.location" value="../DemoServices/TreasureHunt"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.7"/>
     <property name="source" value="1.7"/>
@@ -35,22 +41,25 @@
     <target name="build-subprojects"/>
     <target depends="init" name="build-project">
         <echo message="${ant.project.name}: ${ant.file}"/>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}" encoding="ISO-8859-1">
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
             <classpath refid="MobilisXMPP.classpath"/>
         </javac>
     </target>
-    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
-        <copy todir="${ant.library.dir}">
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </copy>
-        <unzip dest="${ant.library.dir}">
-            <patternset includes="jdtCompilerAdapter.jar"/>
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </unzip>
-    </target>
-    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
-        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
-        <antcall target="build"/>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+        <ant antfile="build.xml" dir="${GeoTwitterService.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${GeoTwitterService.location}" inheritAll="false" target="build"/>
+        <ant antfile="build.xml" dir="${MXJ.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${MXJ.location}" inheritAll="false" target="build"/>
+        <ant antfile="build.xml" dir="${MobilisServer.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${MobilisServer.location}" inheritAll="false" target="build"/>
+        <ant antfile="build.xml" dir="${MobilisServer_ConsoleClient.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${MobilisServer_ConsoleClient.location}" inheritAll="false" target="build"/>
+        <ant antfile="build.xml" dir="${PowerAssistantServiceBeans.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${PowerAssistantServiceBeans.location}" inheritAll="false" target="build"/>
+        <ant antfile="build.xml" dir="${PowerAssistantServiceClientBeans.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${PowerAssistantServiceClientBeans.location}" inheritAll="false" target="build"/>
+        <ant antfile="build.xml" dir="${TreasureHunt.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${TreasureHunt.location}" inheritAll="false" target="build"/>
     </target>
 </project>
