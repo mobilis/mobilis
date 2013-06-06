@@ -46,6 +46,9 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.jivesoftware.smack.AccountManager;
+import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.packet.DiscoverItems.Item;
 
@@ -940,6 +943,12 @@ public class MobilisManager {
 					MobilisManager.getLogger().log( Level.WARNING, message );
 				}
 
+				//Inband Registration of a new XMPP Account for the New Service
+				String serviceName=serviceContainer.getServiceName();
+				String username = getAgent(defaultValueAgent).getSettingString("username") + "." +serviceContainer.getServiceName() + ".v" + serviceContainer.getServiceVersion();
+				String password = serviceContainer.getServiceName()+2;
+				
+				inBandRegistration(serviceName, username, password, getAgent(defaultValueAgent).getSettingString( "host" ).toString());
 				
 				// configure
 				DoubleKeyMap< String, String, Object > configuration = new DoubleKeyMap< String, String, Object >(
@@ -957,7 +966,7 @@ public class MobilisManager {
 						deploymentAgent.getSettingString( "port" ) );
 				
 				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username",
-						deploymentAgent.getSettingString( "username" ) );
+						username );
 				
 				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "host",
 						deploymentAgent.getSettingString( "host" ) );
@@ -978,7 +987,7 @@ public class MobilisManager {
 						"de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent" );
 				
 				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password",
-						deploymentAgent.getSettingString( "password" ) );
+						password );
 				serviceContainer.configure(configuration);
 				message += "\nService configuration successful.";
 				
@@ -1001,5 +1010,31 @@ public class MobilisManager {
 			}
 		}
 		return message;
+	}
+	
+	/**
+	 * Method creates a new XMPP Account with the given Service Name on the given Host
+	 * @param serviceName
+	 * @param host
+	 * @return
+	 */
+	private boolean inBandRegistration(String serviceName, String username,String password, String host){
+		Connection connection = new XMPPConnection(host);
+		try {
+			connection.connect();
+		} catch (XMPPException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		AccountManager accountManager=new AccountManager(connection);
+	      try {
+	        accountManager.createAccount(username, password);
+	    } catch (XMPPException e1) {
+	        // TODO Auto-generated catch block
+	        System.out.println("Account für " + serviceName + " konnte nicht angelegt werden");
+	        return false;
+	    }
+	     System.out.println("Account für " + serviceName + " wurde erfolgreich angelegt");
+	     return true;
 	}
 }
