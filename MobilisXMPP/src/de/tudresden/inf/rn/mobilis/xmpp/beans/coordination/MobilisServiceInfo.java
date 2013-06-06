@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2010 Technische Universität Dresden
+ * Copyright (C) 2010 Technische UniversitÃ¤t Dresden
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
 /**
  * 
- * @author Robert Lübke
+ * @author Robert LÃ¼bke
  */
 public class MobilisServiceInfo implements XMPPInfo, Cloneable {
 

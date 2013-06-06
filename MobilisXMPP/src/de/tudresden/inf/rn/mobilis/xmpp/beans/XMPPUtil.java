@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2010 Technische Universität Dresden
+ * Copyright (C) 2010 Technische UniversitÃ¤t Dresden
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 package de.tudresden.inf.rn.mobilis.xmpp.beans;
 
 /**
- * @author Benjamin Söllner
+ * @author Benjamin SÃ¶llner
  */
 public class XMPPUtil {
 
