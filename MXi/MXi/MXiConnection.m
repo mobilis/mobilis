@@ -13,8 +13,8 @@
 
 @synthesize jabberID, password, hostName, xmppStream, presenceDelegate, stanzaDelegate, beanDelegate, incomingBeanPrototypes;
 
-+ (id)connectionWithJabberID:(NSString *)aJabberID
-					password:(NSString *)aPassword
++ (id)connectionWithJabberID:(NSString* )aJabberID
+					password:(NSString* )aPassword
 					hostName:(NSString* )aHostName
 			presenceDelegate:(id<MXiPresenceDelegate> )aPresenceDelegate
 			  stanzaDelegate:(id<MXiStanzaDelegate> )aStanzaDelegate
@@ -22,9 +22,14 @@
    listeningForIncomingBeans:(NSArray *)theIncomingBeanPrototypes {
 	MXiConnection* connection = [[MXiConnection alloc] init];
 	
-	[connection setJabberID:aJabberID];
+	XMPPJID* tempJid = [XMPPJID jidWithString:aJabberID];
+	[connection setJabberID:tempJid];
 	[connection setPassword:aPassword];
-	[connection setHostName:aHostName];
+	if (aHostName) {
+		[connection setHostName:aHostName];
+	} else {
+		[connection setHostName:[tempJid domain]];
+	}
 	[connection setPresenceDelegate:aPresenceDelegate];
 	[connection setStanzaDelegate:aStanzaDelegate];
 	[connection setBeanDelegate:aBeanDelegate];
@@ -37,7 +42,7 @@
 
 - (BOOL)reconnectWithJabberID:(NSString *)aJabberID
 					 password:(NSString *)aPassword {
-	[self setJabberID:aJabberID];
+	[self setJabberID:[XMPPJID jidWithString:aJabberID]];
 	[self setPassword:aPassword];
 	return [self connect];
 }
@@ -122,8 +127,7 @@
 		return YES;
 	}
 	
-	XMPPJID* jid = [XMPPJID jidWithString:jabberID];
-	[xmppStream setMyJID:jid];
+	[xmppStream setMyJID:jabberID];
 	[xmppStream setHostName:[self hostName]];
 	
 	NSError* error = nil;
@@ -143,7 +147,7 @@
 	NSXMLElement *message = [NSXMLElement elementWithName:@"message"];
 	[message addAttributeWithName:@"type" stringValue:@"chat"];
 	[message addAttributeWithName:@"to" stringValue:to];
-	[message addAttributeWithName:@"from" stringValue:jabberID];
+	[message addAttributeWithName:@"from" stringValue:[jabberID full]];
 	[message addChild:body];
 	
 	[xmppStream sendElement:message];
@@ -156,7 +160,7 @@
 }
 
 - (void)sendBean:(MXiBean<MXiOutgoingBean> *)bean {
-	[bean setFrom:[XMPPJID jidWithString:[self jabberID]]];
+	[bean setFrom:jabberID];
 	[bean setTo:[XMPPJID jidWithString:@"mobilis@mymac.box/Mobilist_v1#1"]];
 	
 	[self sendElement:[MXiBeanConverter beanToIQ:bean]];

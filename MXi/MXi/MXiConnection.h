@@ -10,7 +10,7 @@
 
 @interface MXiConnection : NSObject
 
-@property (nonatomic, retain) NSString* jabberID;
+@property (nonatomic, retain) XMPPJID* jabberID;
 @property (nonatomic, retain) NSString* password;
 @property (nonatomic, strong) NSString* hostName;
 @property (nonatomic, readonly) XMPPStream* xmppStream;
