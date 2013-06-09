@@ -945,9 +945,9 @@ public class MobilisManager {
 
 				//Inband Registration of a new XMPP Account for the New Service
 				String serviceName=serviceContainer.getServiceName();
-				String username = getAgent(defaultValueAgent).getSettingString("username") + "." +serviceContainer.getServiceName() + ".v" + serviceContainer.getServiceVersion();
-				String password = serviceContainer.getServiceName()+2;
-				
+				String username = serviceContainer.getServiceName().toLowerCase();
+				String password = serviceContainer.getServiceName().toLowerCase();
+				System.out.println(username  + " "  + password);
 				inBandRegistration(serviceName, username, password, getAgent(defaultValueAgent).getSettingString( "host" ).toString());
 				
 				// configure
