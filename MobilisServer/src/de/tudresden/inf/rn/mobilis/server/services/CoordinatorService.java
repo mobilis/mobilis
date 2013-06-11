@@ -31,6 +31,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
@@ -420,5 +421,11 @@ public class CoordinatorService extends MobilisService {
 		MobilisManager.getLogger().log(Level.INFO ,"FileTransfer=" + transfer.getStreamID() + " successful=" + transferSuccessful);
 		
 		return transferSuccessful;
+	}
+
+	@Override
+	public List<PacketExtension> getNodePacketExtensions() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

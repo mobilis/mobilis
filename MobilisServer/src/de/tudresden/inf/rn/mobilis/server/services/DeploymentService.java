@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -12,6 +13,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
@@ -336,6 +338,12 @@ public class DeploymentService extends MobilisService {
 			getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
 		}
 
+	}
+
+	@Override
+	public List<PacketExtension> getNodePacketExtensions() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

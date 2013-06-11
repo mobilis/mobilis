@@ -29,13 +29,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jivesoftware.smack.BOSHConfiguration;
-import org.jivesoftware.smack.BOSHConnection;
+//import org.jivesoftware.smack.BOSHConfiguration;
+//import org.jivesoftware.smack.BOSHConnection;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smackx.NodeInformationProvider;
 import org.jivesoftware.smackx.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
@@ -182,8 +183,9 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		}
 
 		if (mDefaultSettings.get("conType") != null && mDefaultSettings.get("conType").equals("bosh")) {
-			BOSHConfiguration connConfig = new BOSHConfiguration(false, host, port, "/http-bind/", service);
-			mConnection = new BOSHConnection(connConfig);
+			//BOSHConfiguration connConfig = new BOSHConfiguration(false, host, port, "/http-bind/", service);
+			//mConnection = new BOSHConnection(connConfig);
+			System.out.println("BOSH is not supported by Smack 3.3 .");
 		} else {
 			// default: XMPP connection
 			ConnectionConfiguration connConfig = new ConnectionConfiguration(host, port, service);
@@ -435,5 +437,11 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		// TODO Auto-generated method stub
 		// The connection has reconnected successfully to the server.
 		MobilisManager.getLogger().info("MobilisAgent (" + getIdent() + ") reconnected successfully to the server.");
+	}
+
+	@Override
+	public List<PacketExtension> getNodePacketExtensions() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
