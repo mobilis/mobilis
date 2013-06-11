@@ -32,6 +32,8 @@ import java.util.logging.Level;
 
 import javax.swing.event.EventListenerList;
 
+import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
@@ -502,7 +504,11 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	public void uninstall() {
 		if (_containerState == ServiceContainerState.INSTALLED
 				|| _containerState == ServiceContainerState.ACTIVE) {
-
+			//delete xmppaccount of Service
+			String host = MobilisManager.getInstance().getAgent("deployment").getConnection().getHost();
+			String username =(String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username");
+			String password = (String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password");
+			System.out.println(host+username+password);
 			// at first unregister service if it is registered
 			this.unregister();
 
@@ -511,6 +517,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 
 			MobilisManager.getInstance().notifyOfServiceContainerUninstall(this);
 			// reset container parameters
+			
 			this.resetContainer();
 
 			if (jarClassLoader != null) {
@@ -525,6 +532,26 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			// state == uninstalled
 			changeContainerState(ServiceContainerState.UNINSTALLED);
 			
+			Connection con = new XMPPConnection(host);
+			try {
+				con.connect();
+				try {
+					con.login(username, password);
+					try {
+						con.getAccountManager().deleteAccount();
+						con.disconnect();
+					} catch (XMPPException e1) {
+						System.out.println("Can't delete Account! Reason: " + e1.getMessage());
+					}
+				} catch (XMPPException e2) {
+					// TODO Auto-generated catch block
+					System.out.println("ARG");
+				}
+			} catch (XMPPException e3) {
+				// TODO Auto-generated catch block
+				e3.printStackTrace();
+			}
+			System.out.println("Account erfolgreich gelöscht");
 
 			MobilisManager
 					.getLogger()

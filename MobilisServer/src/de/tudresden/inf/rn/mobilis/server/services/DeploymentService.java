@@ -8,7 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.PacketListener;
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
@@ -49,6 +52,8 @@ public class DeploymentService extends MobilisService {
 	 */
 	private Map< String, FileUploadInformation > _expectedUploads = Collections
 			.synchronizedMap( new HashMap< String, FileUploadInformation >() );
+
+	private Roster runtimeRoster;
 
 	// public void log( String str ) {
 	// System.out.println( "[" + _dateFormatter.format(
@@ -165,7 +170,7 @@ public class DeploymentService extends MobilisService {
 							}
 		
 							message += MobilisManager.getInstance().installAndConfigureAndRegisterServiceFromFile(
-									incomingFile, inf.autoDeploy, inf.singleMode, "deployment");
+									incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null);
 						} else if ( message.equals("") || message == null ) {
 							message = "Unknown failure while uploading file";
 						}
@@ -248,7 +253,7 @@ public class DeploymentService extends MobilisService {
 	@Override
 	public void startup( MobilisAgent agent ) throws Exception {
 		super.startup( agent );
-
+		getRoster(agent);
 		// _dateFormatter = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss:SSS" );
 
 		checkServiceUploadFolder();
@@ -344,6 +349,28 @@ public class DeploymentService extends MobilisService {
 	public List<PacketExtension> getNodePacketExtensions() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	private void getRoster(MobilisAgent agent){
+		
+		Connection connection = agent.getConnection();
+		
+		
+		runtimeRoster = connection.getRoster();
+		
+		//if not already existing, generate standard security group for uploading files
+		if(runtimeRoster.getGroup("deploy")==null){
+			runtimeRoster.createGroup("deploy");
+		}
+		
+			
+		System.out.println("Runtimes Roster");
+		System.out.println("Rostergruppen:" + runtimeRoster.getGroups().toString());
+		for (RosterEntry rEntry : runtimeRoster.getEntries()){
+			System.out.println("Rostereintrag: " + rEntry + " Gruppen: " + rEntry.getGroups().toString());
+		}
+		
+
 	}
 
 }

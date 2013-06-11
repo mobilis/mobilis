@@ -27,6 +27,9 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.RosterGroup;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
@@ -56,7 +59,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
  *
  */
 public class CoordinatorService extends MobilisService {
-
+	private Roster discoveryRoster;
 	private int serviceVersion = 1;
 	private Map<String, Map<String, Object>> serviceSettings;
 	/**
@@ -89,7 +92,7 @@ public class CoordinatorService extends MobilisService {
 	
 	public void startup(MobilisAgent agent) throws Exception {
 		super.startup(agent);
-		
+		getRoster(agent);
 		_fileTransferManager = new FileTransferManager(agent.getConnection());
 		FileTransferNegotiator.setServiceEnabled(agent.getConnection(), true);
 	}
@@ -427,5 +430,29 @@ public class CoordinatorService extends MobilisService {
 	public List<PacketExtension> getNodePacketExtensions() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	
+	
+	private void getRoster(MobilisAgent agent){
+		
+		Connection connection = agent.getConnection();
+		
+		
+		discoveryRoster = connection.getRoster();
+		
+		if(discoveryRoster.getGroup("runtimes")==null){
+			discoveryRoster.createGroup("runtimes");
+		}
+		System.out.println("Discovery Roster");
+		System.out.println("Rostergruppen:");
+		for (RosterGroup rGroup : discoveryRoster.getGroups()){
+			System.out.println(rGroup.getName() + " - Eintraege:" +  rGroup.getEntries().toString());
+		}
+		for (RosterEntry rEntry : discoveryRoster.getEntries()){
+			System.out.println("Rostereintrag: " + rEntry);
+		}
+		
+
 	}
 }

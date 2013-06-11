@@ -460,8 +460,10 @@ public class MobilisManager {
 					String[] fileNameAndModeSplit = fileNameAndMode.split(";");
 					String fileName = "service/" + fileNameAndModeSplit[0];
 					String mode = fileNameAndModeSplit[1];
+					String username = fileNameAndModeSplit[2];
+					String password = fileNameAndModeSplit[3];
 					boolean singleMode = mode.equals("single");
-					installAndConfigureAndRegisterServiceFromFile(new File(fileName), true, singleMode, "deployment");
+					installAndConfigureAndRegisterServiceFromFile(new File(fileName), true, singleMode, "deployment", username, password);
 				}
 			} catch (IOException e) {
 				System.err.println("Couldn't read from services.txt!");
@@ -488,7 +490,6 @@ public class MobilisManager {
 						}
 					}
 				}
-				getRoster(getAgent("coordinator"));
 				mStarted = true;
 				synchronized(mServerViews) {
 					for (MobilisView view : mServerViews) {
@@ -519,7 +520,7 @@ public class MobilisManager {
 							getLogger().severe("Couldn't shutdown agent: " + key);
 						}
 					}
-					mAgents.clear();
+					//mAgents.clear();
 				}
 				synchronized (_serviceContainers) {
 					persistServices();
@@ -588,7 +589,7 @@ public class MobilisManager {
 			
 			List<ServiceContainer> serviceContainers = _serviceContainers.getListOfAllValues();
 			for (ServiceContainer container : serviceContainers) {
-				serviceInfos.add(container.getJarFile().getAbsoluteFile().getName() + ";" + container.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "mode"));
+				serviceInfos.add(container.getJarFile().getAbsoluteFile().getName() + ";" + container.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "mode") + ";" + container.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username") + ";" + container.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password"));
 			}
 			Files.write(path, serviceInfos, Charset.defaultCharset(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
 		} catch (IOException e) {
@@ -907,7 +908,7 @@ public class MobilisManager {
 	 * 		A human readable message describing the outcome of the operation. You may forward this to
 	 * 		the user who issued the command.
 	 */
-	public String installAndConfigureAndRegisterServiceFromFile(File serviceJar, boolean autoDeploy, boolean singleMode, String defaultValueAgent) {
+	public String installAndConfigureAndRegisterServiceFromFile(File serviceJar, boolean autoDeploy, boolean singleMode, String defaultValueAgent, String username, String password) {
 		String message = "";
 		
 		// check if service is already installed and uninstall if necessary
@@ -947,12 +948,14 @@ public class MobilisManager {
 					MobilisManager.getLogger().log( Level.WARNING, message );
 				}
 
-				//Inband Registration of a new XMPP Account for the New Service
-				String serviceName=serviceContainer.getServiceName();
-				String username = getAgent(defaultValueAgent).getSettingString( "username" ).toString() + "." + serviceContainer.getServiceName().toLowerCase();
-				String password = serviceContainer.getServiceName().toLowerCase();
+				//Inband Registration of a new XMPP Account just for new uploaded Services
+				if((username == null) && (password==null)){
+					String serviceName=serviceContainer.getServiceName();
+					username = getAgent(defaultValueAgent).getSettingString( "username" ).toString() + "." + serviceContainer.getServiceName().toLowerCase();
+					password = serviceContainer.getServiceName().toLowerCase();
+					inBandRegistration(serviceName, username, password, getAgent(defaultValueAgent).getSettingString( "host" ).toString());
+				}
 				System.out.println(username  + " "  + password);
-				inBandRegistration(serviceName, username, password, getAgent(defaultValueAgent).getSettingString( "host" ).toString());
 				
 				// configure
 				DoubleKeyMap< String, String, Object > configuration = new DoubleKeyMap< String, String, Object >(
@@ -1042,22 +1045,6 @@ public class MobilisManager {
 	     System.out.println("Account für " + serviceName + " wurde erfolgreich angelegt");
 	     connection.disconnect();
 	     return true;
-	}
-	
-	private Roster serverRoster;
-	
-	private void getRoster(MobilisAgent agent){
-		
-		Connection connection = agent.getConnection();
-		
-		
-		serverRoster = connection.getRoster();
-		
-		for (RosterEntry rEntry : serverRoster.getEntries()){
-			System.out.println("Rostereintrag: " + rEntry);
-		}
-		
-
 	}
 
 }
