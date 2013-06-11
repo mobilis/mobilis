@@ -48,6 +48,9 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.RosterListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.packet.DiscoverItems.Item;
@@ -485,6 +488,7 @@ public class MobilisManager {
 						}
 					}
 				}
+				getRoster(getAgent("coordinator"));
 				mStarted = true;
 				synchronized(mServerViews) {
 					for (MobilisView view : mServerViews) {
@@ -945,7 +949,7 @@ public class MobilisManager {
 
 				//Inband Registration of a new XMPP Account for the New Service
 				String serviceName=serviceContainer.getServiceName();
-				String username = serviceContainer.getServiceName().toLowerCase();
+				String username = getAgent(defaultValueAgent).getSettingString( "username" ).toString() + "." + serviceContainer.getServiceName().toLowerCase();
 				String password = serviceContainer.getServiceName().toLowerCase();
 				System.out.println(username  + " "  + password);
 				inBandRegistration(serviceName, username, password, getAgent(defaultValueAgent).getSettingString( "host" ).toString());
@@ -1031,10 +1035,29 @@ public class MobilisManager {
 	        accountManager.createAccount(username, password);
 	    } catch (XMPPException e1) {
 	        // TODO Auto-generated catch block
-	        System.out.println("Account für " + serviceName + " konnte nicht angelegt werden");
+	    	System.out.println("Account für " + serviceName + " konnte nicht angelegt werden:\n" + e1.getMessage());
+	    	connection.disconnect();
 	        return false;
 	    }
 	     System.out.println("Account für " + serviceName + " wurde erfolgreich angelegt");
+	     connection.disconnect();
 	     return true;
 	}
+	
+	private Roster serverRoster;
+	
+	private void getRoster(MobilisAgent agent){
+		
+		Connection connection = agent.getConnection();
+		
+		
+		serverRoster = connection.getRoster();
+		
+		for (RosterEntry rEntry : serverRoster.getEntries()){
+			System.out.println("Rostereintrag: " + rEntry);
+		}
+		
+
+	}
+
 }
