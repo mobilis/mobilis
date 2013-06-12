@@ -12,11 +12,13 @@ import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.RosterGroup;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
@@ -25,6 +27,8 @@ import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
+import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainer;
+import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileUploadInformation;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
@@ -168,9 +172,31 @@ public class DeploymentService extends MobilisService {
 							synchronized ( _expectedUploads ) {
 								_expectedUploads.remove( request.getRequestor() );
 							}
-		
+							
 							message += MobilisManager.getInstance().installAndConfigureAndRegisterServiceFromFile(
 									incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null);
+							
+							//get servicename from serviceContainer for creating Rostergroup
+							ServiceContainer serviceContainer = new ServiceContainer( incomingFile );
+							try {
+								serviceContainer.extractServiceContainerConfig();
+							} catch (InstallServiceException e) {
+							}
+							
+							//create RosterGroup with GroupName=(serviceName+serviceVersion) as Security Group and add uploading User to group
+							RosterGroup rg = runtimeRoster.getGroup(serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
+							if(rg==null){	
+								rg = runtimeRoster.createGroup(serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
+							}
+							String jid = StringUtils.parseBareAddress(request.getRequestor());
+							try {
+								rg.addEntry(runtimeRoster.getEntry(jid));
+							} catch (XMPPException e) {
+								System.out.println("Couldn't add user to Rostergroup. Reason: " + e.getMessage());
+								e.printStackTrace();
+							}
+							
+							
 						} else if ( message.equals("") || message == null ) {
 							message = "Unknown failure while uploading file";
 						}
@@ -325,20 +351,28 @@ public class DeploymentService extends MobilisService {
 		 */
 		private void handlePrepareServiceUploadBean( PrepareServiceUploadBean inBean ) {
 			XMPPBean outBean = null;
+			
+			// If user is in the deploy security rostergroup of the runtime, proceed. Else send not authorized error.
+			if(runtimeRoster.getGroup("deploy").contains(inBean.getFrom())){
+				// if no name was set, respond an error
+				if ( null == inBean.Filename || inBean.Filename.length() < 1 ) {
+					outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
+							"File name is null or empty." );
+				} else {
+					// store information in expected upload collection
+					synchronized ( _expectedUploads ) {
+						_expectedUploads.put( inBean.getFrom(), new FileUploadInformation(inBean.Filename, inBean.autoDeploy, inBean.singleMode) );
+					}
 
-			// if no name was set, respond an error
-			if ( null == inBean.Filename || inBean.Filename.length() < 1 ) {
-				outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
-						"File name is null or empty." );
-			} else {
-				// store information in expected upload collection
-				synchronized ( _expectedUploads ) {
-					_expectedUploads.put( inBean.getFrom(), new FileUploadInformation(inBean.Filename, inBean.autoDeploy, inBean.singleMode) );
+					outBean = BeanHelper
+							.CreateResultBean( inBean, new PrepareServiceUploadBean( true ) );
 				}
-
-				outBean = BeanHelper
-						.CreateResultBean( inBean, new PrepareServiceUploadBean( true ) );
 			}
+			else{
+				outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
+						("User " + inBean.getFrom() + " is not authorized to upload files to runtime " + inBean.getTo() + "!") );
+			}
+			
 
 			getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
 		}

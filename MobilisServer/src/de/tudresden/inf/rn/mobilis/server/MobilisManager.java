@@ -955,7 +955,6 @@ public class MobilisManager {
 					password = serviceContainer.getServiceName().toLowerCase();
 					inBandRegistration(serviceName, username, password, getAgent(defaultValueAgent).getSettingString( "host" ).toString());
 				}
-				System.out.println(username  + " "  + password);
 				
 				// configure
 				DoubleKeyMap< String, String, Object > configuration = new DoubleKeyMap< String, String, Object >(

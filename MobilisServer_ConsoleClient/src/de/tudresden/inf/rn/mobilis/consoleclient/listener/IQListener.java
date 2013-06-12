@@ -23,6 +23,7 @@ package de.tudresden.inf.rn.mobilis.consoleclient.listener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
+import org.xmlpull.v1.XmlPullParserException;
 
 import de.tudresden.inf.rn.mobilis.consoleclient.Controller;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
@@ -83,6 +84,7 @@ public class IQListener implements PacketListener {
 			XMPPBean inBean = ( (BeanIQAdapter)arg0 ).getBean();
 
 			if ( inBean.getType() == XMPPBean.TYPE_ERROR ) {
+				_controller.getLog().writeToConsole(inBean.errorText);
 				_controller.getLog().writeErrorToConsole(
 						String.format( "Incoming IQ of type error:%s", ( (IQ)arg0 ).toXML()
 								.replaceAll( "<", "\n<" ) ) );
@@ -101,7 +103,7 @@ public class IQListener implements PacketListener {
 						sb.append( "Service upload: Negotiating Stream...\nFilename=" ).append( cBean.FileName );
 					}
 					else{
-						sb.append( "Service uplaod failed." );
+						sb.append( "Service upload failed." );
 					}
 					
 					if( null != cBean.Message ){

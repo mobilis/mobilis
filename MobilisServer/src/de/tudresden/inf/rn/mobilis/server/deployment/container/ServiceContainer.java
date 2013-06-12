@@ -508,7 +508,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			String host = MobilisManager.getInstance().getAgent("deployment").getConnection().getHost();
 			String username =(String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username");
 			String password = (String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password");
-			System.out.println(host+username+password);
+			
 			// at first unregister service if it is registered
 			this.unregister();
 
@@ -545,13 +545,12 @@ public class ServiceContainer implements IServiceContainerTransitions,
 					}
 				} catch (XMPPException e2) {
 					// TODO Auto-generated catch block
-					System.out.println("ARG");
 				}
 			} catch (XMPPException e3) {
 				// TODO Auto-generated catch block
 				e3.printStackTrace();
 			}
-			System.out.println("Account erfolgreich gelöscht");
+			System.out.println("Account " + username + " erfolgreich gelöscht");
 
 			MobilisManager
 					.getLogger()
