@@ -513,17 +513,19 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			
 			//delete Rostergroup of the Service
 			RosterGroup rg = MobilisManager.getInstance().getRuntimeRoster().getGroup(this.getServiceName()+this.getServiceVersion());
-			System.out.println(rg.getName());
+			//System.out.println(rg.getName());
 			
-			for(RosterEntry rEntry : rg.getEntries()){
-				try {
-					rg.removeEntry(rEntry);
-				} catch (XMPPException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			if(rg!=null){
+				for(RosterEntry rEntry : rg.getEntries()){
+					try {
+						rg.removeEntry(rEntry);
+					} catch (XMPPException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
+				MobilisManager.getInstance().getRuntimeRoster().getGroups().remove(rg);
 			}
-			MobilisManager.getInstance().getRuntimeRoster().getGroups().remove(rg);
 			
 			// at first unregister service if it is registered
 			this.unregister();
