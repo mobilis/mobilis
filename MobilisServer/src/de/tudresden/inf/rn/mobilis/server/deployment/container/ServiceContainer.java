@@ -33,6 +33,8 @@ import java.util.logging.Level;
 import javax.swing.event.EventListenerList;
 
 import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.RosterGroup;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
@@ -508,6 +510,20 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			String host = MobilisManager.getInstance().getAgent("deployment").getConnection().getHost();
 			String username =(String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username");
 			String password = (String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password");
+			
+			//delete Rostergroup of the Service
+			RosterGroup rg = MobilisManager.getInstance().getRuntimeRoster().getGroup(this.getServiceName()+this.getServiceVersion());
+			System.out.println(rg.getName());
+			
+			for(RosterEntry rEntry : rg.getEntries()){
+				try {
+					rg.removeEntry(rEntry);
+				} catch (XMPPException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			MobilisManager.getInstance().getRuntimeRoster().getGroups().remove(rg);
 			
 			// at first unregister service if it is registered
 			this.unregister();
