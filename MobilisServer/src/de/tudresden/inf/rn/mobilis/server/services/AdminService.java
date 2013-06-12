@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.jivesoftware.smack.PacketListener;
+import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.util.StringUtils;
 
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
@@ -21,6 +23,7 @@ import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceEx
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.UpdateServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.AdministrationBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.ConfigureServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.InstallServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.RegisterServiceBean;
@@ -156,24 +159,50 @@ public class AdminService extends MobilisService {
 
 			if ( packet instanceof BeanIQAdapter ) {
 				XMPPBean inBean = ( (BeanIQAdapter)packet ).getBean();
-
-				if ( inBean instanceof InstallServiceBean ) {
-					handleInstallServiceBean( (InstallServiceBean)inBean );
-				} else if ( inBean instanceof ConfigureServiceBean ) {
-					handleConfigureServiceBean( (ConfigureServiceBean)inBean );
-				} else if ( inBean instanceof RegisterServiceBean ) {
-					handleRegisterServiceBean( (RegisterServiceBean)inBean );
-				} else if ( inBean instanceof UnregisterServiceBean ) {
-					handleUnregisterServiceBean( (UnregisterServiceBean)inBean );
-				} else if ( inBean instanceof UninstallServiceBean ) {
-					handleUninstallServiceBean( (UninstallServiceBean)inBean );
-				} else if ( inBean instanceof UpdateServiceBean ) {
-					handleUpdateServiceBean( (UpdateServiceBean)inBean );
-				} else {
+				
+				//alle AdministrationBeans haben die Felder ServiceNamespace + ServiceVersion die für den Abgleich der Berechtigung nötig sind
+				if ( inBean instanceof AdministrationBean){
+					System.out.println(((AdministrationBean) inBean).ServiceNamespace+((AdministrationBean) inBean).ServiceVersion);
+					
+					//check userpermission from Rostergroup
+					Boolean permission = checkServiceModifyPermission(((AdministrationBean) inBean).ServiceNamespace, ((AdministrationBean) inBean).ServiceVersion, inBean.getFrom());
+					System.out.println("Modifizierungserlaubnis? " + permission);
+					
+					
+					//if user has no permission handle as error
+					if(!permission){
+						handlePermissionError((AdministrationBean) inBean);
+					} else if ( inBean instanceof InstallServiceBean ) {
+						handleInstallServiceBean( (InstallServiceBean)inBean );
+					} else if ( inBean instanceof ConfigureServiceBean ) {
+						handleConfigureServiceBean( (ConfigureServiceBean)inBean );
+					} else if ( inBean instanceof RegisterServiceBean ) {
+						handleRegisterServiceBean( (RegisterServiceBean)inBean );
+					} else if ( inBean instanceof UnregisterServiceBean ) {
+						handleUnregisterServiceBean( (UnregisterServiceBean)inBean );
+					} else if ( inBean instanceof UninstallServiceBean ) {
+						handleUninstallServiceBean( (UninstallServiceBean)inBean );
+					} else if ( inBean instanceof UpdateServiceBean ) {
+						handleUpdateServiceBean( (UpdateServiceBean)inBean );
+					} 
+				
+				}else {
 					handleUnknownBean( inBean );
 				}
 			}
 		}
+
+		private void handlePermissionError(AdministrationBean inBean) {
+			XMPPBean outBean = null;
+			
+			// generate error bean
+			outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
+					("User " + StringUtils.parseBareAddress(inBean.getFrom()) + " is not authorized to change Service " + inBean.ServiceNamespace + " with the Version " + inBean.ServiceVersion + "!") );
+			
+			getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
+		}
+			
+
 
 		/**
 		 * Handle error bean.
@@ -505,7 +534,21 @@ public class AdminService extends MobilisService {
 		}
 
 	}
-
+	
+	private boolean checkServiceModifyPermission(String namespace, int version, String from){
+		String serviceName = MobilisManager.getInstance().getServiceContainer(namespace, version).getServiceName();
+		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
+		
+		//Gruppe mit Dienstnamen und Version aus Roster holen
+		if(runtimeRoster.getGroup(serviceName+version)!=null){
+			//In Gruppe schauen ob requestNutzer in Security Gruppe ist
+			if(runtimeRoster.getGroup(serviceName+version).getEntry(StringUtils.parseBareAddress(from))!=null){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	@Override
 	public List<PacketExtension> getNodePacketExtensions() {
 		// TODO Auto-generated method stub

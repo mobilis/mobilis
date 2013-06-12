@@ -1018,6 +1018,25 @@ public class MobilisManager {
 		return message;
 	}
 	
+	private Roster runtimeRoster;
+	private Roster discoveryRoster;
+	
+	public Roster getRuntimeRoster() {
+		return runtimeRoster;
+	}
+
+	public void setRuntimeRoster(Roster runtimeRoster) {
+		this.runtimeRoster = runtimeRoster;
+	}
+
+	public Roster getDiscoveryRoster() {
+		return discoveryRoster;
+	}
+
+	public void setDiscoveryRoster(Roster discoveryRoster) {
+		this.discoveryRoster = discoveryRoster;
+	}
+
 	/**
 	 * Method creates a new XMPP Account with the given Service Name on the given Host
 	 * @param serviceName

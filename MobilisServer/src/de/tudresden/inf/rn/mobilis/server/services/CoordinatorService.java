@@ -59,7 +59,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
  *
  */
 public class CoordinatorService extends MobilisService {
-	private Roster discoveryRoster;
+	
 	private int serviceVersion = 1;
 	private Map<String, Map<String, Object>> serviceSettings;
 	/**
@@ -439,7 +439,8 @@ public class CoordinatorService extends MobilisService {
 		Connection connection = agent.getConnection();
 		
 		
-		discoveryRoster = connection.getRoster();
+		Roster discoveryRoster = connection.getRoster();
+		MobilisManager.getInstance().setDiscoveryRoster(discoveryRoster);
 		
 		if(discoveryRoster.getGroup("runtimes")==null){
 			discoveryRoster.createGroup("runtimes");

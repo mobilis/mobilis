@@ -5,7 +5,7 @@ import org.xmlpull.v1.XmlPullParser;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.Mobilis;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
-public class RegisterServiceBean extends XMPPBean {
+public class RegisterServiceBean extends AdministrationBean {
 
 	private static final long serialVersionUID = 1L;
 	public static final String NAMESPACE = Mobilis.NAMESPACE + "#XMPPBeans:admin:RegisterService";

@@ -57,7 +57,7 @@ public class DeploymentService extends MobilisService {
 	private Map< String, FileUploadInformation > _expectedUploads = Collections
 			.synchronizedMap( new HashMap< String, FileUploadInformation >() );
 
-	private Roster runtimeRoster;
+	
 
 	// public void log( String str ) {
 	// System.out.println( "[" + _dateFormatter.format(
@@ -182,6 +182,8 @@ public class DeploymentService extends MobilisService {
 								serviceContainer.extractServiceContainerConfig();
 							} catch (InstallServiceException e) {
 							}
+							
+							Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
 							
 							//create RosterGroup with GroupName=(serviceName+serviceVersion) as Security Group and add uploading User to group
 							RosterGroup rg = runtimeRoster.getGroup(serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
@@ -353,7 +355,7 @@ public class DeploymentService extends MobilisService {
 			XMPPBean outBean = null;
 			
 			// If user is in the deploy security rostergroup of the runtime, proceed. Else send not authorized error.
-			if(runtimeRoster.getGroup("deploy").contains(inBean.getFrom())){
+			if(MobilisManager.getInstance().getRuntimeRoster().getGroup("deploy").contains(inBean.getFrom())){
 				// if no name was set, respond an error
 				if ( null == inBean.Filename || inBean.Filename.length() < 1 ) {
 					outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
@@ -370,7 +372,7 @@ public class DeploymentService extends MobilisService {
 			}
 			else{
 				outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
-						("User " + inBean.getFrom() + " is not authorized to upload files to runtime " + inBean.getTo() + "!") );
+						("User " + StringUtils.parseBareAddress(inBean.getFrom()) + " is not authorized to upload files to runtime " + inBean.getTo() + "!") );
 			}
 			
 
@@ -390,7 +392,8 @@ public class DeploymentService extends MobilisService {
 		Connection connection = agent.getConnection();
 		
 		
-		runtimeRoster = connection.getRoster();
+		Roster runtimeRoster = connection.getRoster();
+		MobilisManager.getInstance().setRuntimeRoster(runtimeRoster);
 		
 		//if not already existing, generate standard security group for uploading files
 		if(runtimeRoster.getGroup("deploy")==null){

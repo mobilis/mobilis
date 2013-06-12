@@ -23,7 +23,6 @@ package de.tudresden.inf.rn.mobilis.consoleclient.listener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
-import org.xmlpull.v1.XmlPullParserException;
 
 import de.tudresden.inf.rn.mobilis.consoleclient.Controller;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;

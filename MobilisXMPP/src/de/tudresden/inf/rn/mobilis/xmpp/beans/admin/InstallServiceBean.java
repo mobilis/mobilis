@@ -5,7 +5,7 @@ import org.xmlpull.v1.XmlPullParser;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.Mobilis;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
-public class InstallServiceBean extends XMPPBean {
+public class InstallServiceBean extends AdministrationBean {
 
 	private static final long serialVersionUID = -3517043825474566387L;
 	
