@@ -231,7 +231,13 @@ public class AdminService extends MobilisService {
 			boolean installationSuccessful = false;
 			String message = null;
 			InstallServiceBean responseBean = new InstallServiceBean();
-			Boolean deployAllowed = true;
+			
+			
+			//MANUELL INSTALLATION DISABLED
+			//bei container.install() wird standardmäßig der defaultAgent der Runtime verwendet. Das führt dann bei einem uninstall des Service zum löschen des Runtime XMPP Accounts.
+			//Um manuelles installieren wieder zu ermöglichen sind sehr umfangreiche Änderungen nötig. Daher wird diese Methode der Dienstinstalltion bis auf weiteres deaktiviert.
+			
+			/*Boolean deployAllowed = true;
 			// If user is in the deploy security rostergroup of the runtime, proceed. Else send not authorized error.
 			if(!MobilisManager.getInstance().getRuntimeRoster().getGroup("deploy").contains(inBean.getFrom())){
 				responseBean = (InstallServiceBean) BeanHelper.CreateErrorBean( inBean, "deploy", "not-acceptable",
@@ -349,7 +355,11 @@ public class AdminService extends MobilisService {
 					MobilisManager.getLogger().log( Level.WARNING,
 							"Service installation error: " + responseBean.toXML() );
 				}
-			}
+			}*/
+			
+			
+			responseBean = (InstallServiceBean)BeanHelper.CreateErrorBean( inBean, "install", "not-acceptable",
+					"Command INSTALL is not supported any longer, please use SEND instead!");
 			getAgent().getConnection().sendPacket( new BeanIQAdapter( responseBean ) );
 		}
 
