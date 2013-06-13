@@ -8,6 +8,8 @@ import java.util.logging.Level;
 
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterGroup;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
@@ -22,6 +24,7 @@ import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceExc
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.UpdateServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
+import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileUploadInformation;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.AdministrationBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.ConfigureServiceBean;
@@ -30,6 +33,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.RegisterServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UninstallServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UnregisterServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UpdateServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanHelper;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
@@ -162,10 +166,11 @@ public class AdminService extends MobilisService {
 				
 				//alle AdministrationBeans haben die Felder ServiceNamespace + ServiceVersion die für den Abgleich der Berechtigung nötig sind
 				if ( inBean instanceof AdministrationBean){
-					System.out.println(((AdministrationBean) inBean).ServiceNamespace+((AdministrationBean) inBean).ServiceVersion);
+					System.out.println("TEST:"+((AdministrationBean) inBean).ServiceNamespace+((AdministrationBean) inBean).ServiceVersion);
 					
 					//check userpermission from Rostergroup
-					Boolean permission = checkServiceModifyPermission(((AdministrationBean) inBean).ServiceNamespace, ((AdministrationBean) inBean).ServiceVersion, inBean.getFrom());
+					Boolean permission = false;
+					permission = checkServiceModifyPermission(((AdministrationBean) inBean).ServiceNamespace, ((AdministrationBean) inBean).ServiceVersion, inBean.getFrom());
 					System.out.println("Modifizierungserlaubnis? " + permission);
 					
 					
@@ -197,7 +202,7 @@ public class AdminService extends MobilisService {
 			
 			// generate error bean
 			outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
-					("User " + StringUtils.parseBareAddress(inBean.getFrom()) + " is not authorized to change Service " + inBean.ServiceNamespace + " with the Version " + inBean.ServiceVersion + "!") );
+					("User " + StringUtils.parseBareAddress(inBean.getFrom()) + " is not authorized to modify service " + inBean.ServiceNamespace + " version " + inBean.ServiceVersion + "!") );
 			
 			getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
 		}
@@ -226,78 +231,125 @@ public class AdminService extends MobilisService {
 			boolean installationSuccessful = false;
 			String message = null;
 			InstallServiceBean responseBean = new InstallServiceBean();
-
-			// get previously uploaded service via DeploymentService
-			ServiceContainer container = MobilisManager.getInstance().getPendingServiceByFileName(
-					inBean.FileName );
-
-			// Look for previously installed service containers
-			if ( null == container ) {
-				container = MobilisManager.getInstance().getServiceContainerByFileName(
-						inBean.FileName );
+			Boolean deployAllowed = true;
+			// If user is in the deploy security rostergroup of the runtime, proceed. Else send not authorized error.
+			if(!MobilisManager.getInstance().getRuntimeRoster().getGroup("deploy").contains(inBean.getFrom())){
+				responseBean = (InstallServiceBean) BeanHelper.CreateErrorBean( inBean, "deploy", "not-acceptable",
+						("User " + StringUtils.parseBareAddress(inBean.getFrom()) + " is not authorized to deploy services on runtime " + inBean.getTo() + "!") );
+				deployAllowed = false;
 			}
-
-			// Look for all Jar-Archives in service folder
-			if ( null == container ) {
-				File jarFile = getExistingJarFile( UPLOADED_SERVICE_DICTIONARY_PATH,
+			
+			//enter if installing user is in deploy group
+			if(deployAllowed){
+				
+				
+				// get previously uploaded service via DeploymentService
+				ServiceContainer container = MobilisManager.getInstance().getPendingServiceByFileName(
 						inBean.FileName );
 
-				if ( null != jarFile ) {
-					container = new ServiceContainer( jarFile );
+				
+				// Look for previously installed service containers
+				if ( null == container ) {
+					container = MobilisManager.getInstance().getServiceContainerByFileName(
+							inBean.FileName );
 				}
-			}
-
-			try {
-				if ( null != container ) {
-					container.install();
-
-					// if installation was successful remove service from
-					// pending services and add it to all service containers
-					if ( container.getContainerState() == ServiceContainerState.INSTALLED ) {
-						MobilisManager.getInstance().addServiceContainer( container );
-
-						MobilisManager.getInstance().removePendingServiceByFileName(
-								inBean.FileName );
-
-						installationSuccessful = true;
-					} else {
-						message = "Installation failed: Couldn't move service from pending to regular.";
-
-						MobilisManager.getLogger().log( Level.WARNING, message );
+	
+				// Look for all Jar-Archives in service folder
+				if ( null == container ) {
+					File jarFile = getExistingJarFile( UPLOADED_SERVICE_DICTIONARY_PATH,
+							inBean.FileName );
+	
+					if ( null != jarFile ) {
+						container = new ServiceContainer( jarFile );
 					}
-
-					// create response
-					responseBean = (InstallServiceBean)BeanHelper.CreateResultBean( inBean,
-							responseBean );
-					responseBean.InstallationSucessful = installationSuccessful;
-					responseBean.ServiceNamespace = container.getServiceNamespace();
-					responseBean.ServiceVersion = container.getServiceVersion();
-					responseBean.Message = message;
-				} else {
-					responseBean = (InstallServiceBean)BeanHelper
-							.CreateErrorBean(
-									inBean,
-									"cancel",
-									"item-not-found",
-									"Service archive not found. Please upload service archive in jar-format via DeploymentService first." );
-
-					MobilisManager.getLogger().log( Level.WARNING,
-							"Service installation problem: " + responseBean.toXML() );
 				}
-			} catch ( NumberFormatException e ) {
-				responseBean = (InstallServiceBean)BeanHelper.CreateErrorBean( inBean, "modify",
-						"bad-request", "Service installation error: " + e.getMessage() );
-
-				MobilisManager.getLogger().log( Level.WARNING,
-						"Service installation error: " + responseBean.toXML() );
-			} catch ( InstallServiceException e ) {
-				responseBean = (InstallServiceBean)BeanHelper.CreateErrorBean( inBean, "wait",
-						"internal-server-error", "Service installation error: " + e.getMessage() );
-
-				MobilisManager.getLogger().log( Level.WARNING,
-						"Service installation error: " + responseBean.toXML() );
+				
+				
+				
+				try {
+					if ( null != container ) {
+						ServiceContainer tempContainer = container;
+						tempContainer.extractServiceContainerConfig();
+						String servicename = tempContainer.getServiceName();
+						int version = tempContainer.getServiceVersion();
+						tempContainer = null;
+						System.out.println("install: " + servicename + version);
+						Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
+						RosterGroup rg = runtimeRoster.getGroup(servicename+version);
+						Boolean modifyAllowed = true;
+						
+						//if rostergroup not null, service must be already existing
+						if(rg!=null){
+							//check if rostergroup contains requesting user
+							modifyAllowed = rg.contains(StringUtils.parseBareAddress(inBean.getFrom()));
+						} else {
+							//if rostergroup doesn't exist, create it and add requesting user
+							rg = runtimeRoster.createGroup(servicename+version);
+							try {
+								rg.addEntry(runtimeRoster.getEntry(StringUtils.parseBareAddress(inBean.getFrom())));
+							} catch (XMPPException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+						
+						//reinstall just if allowed for requesting user
+						if(modifyAllowed){
+							container.install();
+		
+							// if installation was successful remove service from
+							// pending services and add it to all service containers
+							if ( container.getContainerState() == ServiceContainerState.INSTALLED ) {
+								MobilisManager.getInstance().addServiceContainer( container );
+		
+								MobilisManager.getInstance().removePendingServiceByFileName(
+										inBean.FileName );
+		
+								installationSuccessful = true;
+							} else {
+								message = "Installation failed: Couldn't move service from pending to regular.";
+		
+								MobilisManager.getLogger().log( Level.WARNING, message );
+							}
+		
+							// create response
+							responseBean = (InstallServiceBean)BeanHelper.CreateResultBean( inBean,
+									responseBean );
+							responseBean.InstallationSucessful = installationSuccessful;
+							responseBean.ServiceNamespace = container.getServiceNamespace();
+							responseBean.ServiceVersion = container.getServiceVersion();
+							responseBean.Message = message;
+						} else {
+							//if modify is not allowed create Error Bean with Reason information
+							responseBean = (InstallServiceBean) BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
+									("User " + StringUtils.parseBareAddress(inBean.getFrom()) + " is not authorized to modify service" + container.getServiceNamespace() + " version " + container.getServiceVersion() + "!") );
+						}
+						
+					} else {
+						responseBean = (InstallServiceBean)BeanHelper
+								.CreateErrorBean(
+										inBean,
+										"cancel",
+										"item-not-found",
+										"Service archive not found. Please upload service archive in jar-format via DeploymentService first." );
+	
+						MobilisManager.getLogger().log( Level.WARNING,
+								"Service installation problem: " + responseBean.toXML() );
+					}
+				} catch ( NumberFormatException e ) {
+					responseBean = (InstallServiceBean)BeanHelper.CreateErrorBean( inBean, "modify",
+							"bad-request", "Service installation error: " + e.getMessage() );
+	
+					MobilisManager.getLogger().log( Level.WARNING,
+							"Service installation error: " + responseBean.toXML() );
+				} catch ( InstallServiceException e ) {
+					responseBean = (InstallServiceBean)BeanHelper.CreateErrorBean( inBean, "wait",
+							"internal-server-error", "Service installation error: " + e.getMessage() );
+	
+					MobilisManager.getLogger().log( Level.WARNING,
+							"Service installation error: " + responseBean.toXML() );
+				}
 			}
-
 			getAgent().getConnection().sendPacket( new BeanIQAdapter( responseBean ) );
 		}
 
@@ -492,7 +544,7 @@ public class AdminService extends MobilisService {
 		private void handleUpdateServiceBean( UpdateServiceBean inBean ) {
 			UpdateServiceBean responseBean = new UpdateServiceBean();
 			ServiceContainer container = MobilisManager.getInstance().getServiceContainer(
-					inBean.OldServiceNamespace, inBean.OldServiceVersion );
+					inBean.ServiceNamespace, inBean.ServiceVersion );
 
 			if ( null != container ) {
 				// look for jar file to update the old one
@@ -536,17 +588,23 @@ public class AdminService extends MobilisService {
 	}
 	
 	private boolean checkServiceModifyPermission(String namespace, int version, String from){
-		String serviceName = MobilisManager.getInstance().getServiceContainer(namespace, version).getServiceName();
+		String serviceName ="";
 		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
-		
+		if(namespace!=null && version>0){
+			serviceName = MobilisManager.getInstance().getServiceContainer(namespace, version).getServiceName();
+		}
 		//Gruppe mit Dienstnamen und Version aus Roster holen
+		//wenn gruppe existiert, existiert dienst
 		if(runtimeRoster.getGroup(serviceName+version)!=null){
 			//In Gruppe schauen ob requestNutzer in Security Gruppe ist
 			if(runtimeRoster.getGroup(serviceName+version).getEntry(StringUtils.parseBareAddress(from))!=null){
 				return true;
+			} else {
+				return false;
 			}
 		}
-		return false;
+		//wenn gruppe nicht existiert, existiert dienst nicht. keine beschränkung für dienstzugriff
+		return true;
 	}
 	
 	@Override

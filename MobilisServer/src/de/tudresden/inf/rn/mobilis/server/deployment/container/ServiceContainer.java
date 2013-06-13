@@ -506,25 +506,25 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	public void uninstall() {
 		if (_containerState == ServiceContainerState.INSTALLED
 				|| _containerState == ServiceContainerState.ACTIVE) {
+			
 			//delete xmppaccount of Service
 			String host = MobilisManager.getInstance().getAgent("deployment").getConnection().getHost();
 			String username =(String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username");
 			String password = (String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password");
 			
-			//delete Rostergroup of the Service
+			//delete existing Rostergroup of the Service
 			RosterGroup rg = MobilisManager.getInstance().getRuntimeRoster().getGroup(this.getServiceName()+this.getServiceVersion());
-			//System.out.println(rg.getName());
-			
 			if(rg!=null){
 				for(RosterEntry rEntry : rg.getEntries()){
 					try {
+						
 						rg.removeEntry(rEntry);
 					} catch (XMPPException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
-				MobilisManager.getInstance().getRuntimeRoster().getGroups().remove(rg);
+				rg=null;
 			}
 			
 			// at first unregister service if it is registered
@@ -550,6 +550,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			// state == uninstalled
 			changeContainerState(ServiceContainerState.UNINSTALLED);
 			
+			//delete XMPP Account of Service
 			Connection con = new XMPPConnection(host);
 			try {
 				con.connect();

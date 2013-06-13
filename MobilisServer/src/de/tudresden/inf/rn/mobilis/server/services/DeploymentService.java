@@ -172,30 +172,38 @@ public class DeploymentService extends MobilisService {
 							synchronized ( _expectedUploads ) {
 								_expectedUploads.remove( request.getRequestor() );
 							}
-							
-							message += MobilisManager.getInstance().installAndConfigureAndRegisterServiceFromFile(
-									incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null);
-							
 							//get servicename from serviceContainer for creating Rostergroup
 							ServiceContainer serviceContainer = new ServiceContainer( incomingFile );
 							try {
 								serviceContainer.extractServiceContainerConfig();
 							} catch (InstallServiceException e) {
 							}
-							
 							Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
-							
-							//create RosterGroup with GroupName=(serviceName+serviceVersion) as Security Group and add uploading User to group
 							RosterGroup rg = runtimeRoster.getGroup(serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
-							if(rg==null){	
-								rg = runtimeRoster.createGroup(serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
-							}
 							String jid = StringUtils.parseBareAddress(request.getRequestor());
-							try {
-								rg.addEntry(runtimeRoster.getEntry(jid));
-							} catch (XMPPException e) {
-								System.out.println("Couldn't add user to Rostergroup. Reason: " + e.getMessage());
-								e.printStackTrace();
+							
+							//if roustergroup for service doesn't exist installing new service is allowed for all deploy users
+							if(rg==null){
+								message += MobilisManager.getInstance().installAndConfigureAndRegisterServiceFromFile(
+										incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null);
+								//create RosterGroup with GroupName=(serviceName+serviceVersion) as Security Group and add uploading User to group
+								rg = runtimeRoster.createGroup(serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
+								try {
+									rg.addEntry(runtimeRoster.getEntry(jid));
+								} catch (XMPPException e) {
+									System.out.println("Couldn't add user to Rostergroup. Reason: " + e.getMessage());
+									e.printStackTrace();
+								}
+							}
+							else{
+								//if rostergroup for service exist, check if request user is in that group. if not, he isn't authorized upload and change service
+								if(rg.getEntry(jid)==null){
+									message += "\n[Service not installed]: User " + jid + " is not authorized to change the already installed service " + serviceContainer.getServiceName() + " version " + serviceContainer.getServiceVersion();
+								}
+								else{
+									message += MobilisManager.getInstance().installAndConfigureAndRegisterServiceFromFile(
+											incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null);
+								}
 							}
 							
 							
