@@ -508,7 +508,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 				|| _containerState == ServiceContainerState.ACTIVE) {
 			
 			//delete xmppaccount of Service
-			String host = MobilisManager.getInstance().getAgent("deployment").getConnection().getHost();
+			String host = (String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "host");
 			String username =(String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username");
 			String password = (String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password");
 			
