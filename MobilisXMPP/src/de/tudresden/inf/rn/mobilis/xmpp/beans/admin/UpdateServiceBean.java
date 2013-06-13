@@ -14,8 +14,8 @@ public class UpdateServiceBean extends AdministrationBean {
 	
 	// SET
 	public String FileName = null;
-	public String OldServiceNamespace = null;
-	public int OldServiceVersion = -1;
+//	public String ServiceNamespace = null;
+//	public int ServiceVersion = -1;
 	
 	// RESULT
 	public String NewServiceNamespace = null;
@@ -37,8 +37,8 @@ public class UpdateServiceBean extends AdministrationBean {
 		super();
 		
 		this.FileName = fileName;
-		this.OldServiceNamespace = oldServiceNamespace;
-		this.OldServiceVersion = oldServiceVersion;
+		this.ServiceNamespace = oldServiceNamespace;
+		this.ServiceVersion = oldServiceVersion;
 	}
 	
 	// RESULT
@@ -59,7 +59,7 @@ public class UpdateServiceBean extends AdministrationBean {
 	public UpdateServiceBean clone() {
 		UpdateServiceBean clone =
 			null != this.FileName
-				? new UpdateServiceBean( this.FileName, this.OldServiceNamespace, this.OldServiceVersion )
+				? new UpdateServiceBean( this.FileName, this.ServiceNamespace, this.ServiceVersion )
 				: new UpdateServiceBean( this.NewServiceNamespace, this.NewServiceVersion );
 		
 		clone = (UpdateServiceBean) cloneBasicAttributes(clone);
@@ -80,9 +80,9 @@ public class UpdateServiceBean extends AdministrationBean {
 				} else if (tagName.equals(_xmlTag_FileName)) {
 					this.FileName = parser.nextText();
 				} else if (tagName.equals(_xmlTag_OldServiceNamespace)) {
-					this.OldServiceNamespace = parser.nextText();
+					this.ServiceNamespace = parser.nextText();
 				} else if (tagName.equals(_xmlTag_OldServiceVersion)) {
-					this.OldServiceVersion = Integer.parseInt( parser.nextText() );
+					this.ServiceVersion = Integer.parseInt( parser.nextText() );
 				} else if (tagName.equals(_xmlTag_NewServiceNamespace)) {
 					this.NewServiceNamespace = parser.nextText();
 				} else if (tagName.equals(_xmlTag_NewServiceVersion)) {
@@ -127,11 +127,11 @@ public class UpdateServiceBean extends AdministrationBean {
 				.append("</" + _xmlTag_FileName + ">");
 			
 			sb.append("<" + _xmlTag_OldServiceNamespace + ">")
-				.append(this.OldServiceNamespace)
+				.append(this.ServiceNamespace)
 				.append("</" + _xmlTag_OldServiceNamespace + ">");
 		
 			sb.append("<" + _xmlTag_OldServiceVersion + ">")
-				.append(this.OldServiceVersion)
+				.append(this.ServiceVersion)
 				.append("</" + _xmlTag_OldServiceVersion + ">");
 		}
 		else{		

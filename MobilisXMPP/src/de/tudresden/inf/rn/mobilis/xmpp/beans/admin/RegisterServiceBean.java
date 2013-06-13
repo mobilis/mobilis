@@ -12,8 +12,8 @@ public class RegisterServiceBean extends AdministrationBean {
 	public static final String CHILD_ELEMENT = "register";
 	
 	// SET
-	public String ServiceNamespace = null;
-	public int ServiceVersion = -1;
+//	public String ServiceNamespace = null;
+//	public int ServiceVersion = -1;
 	
 	// RESULT
 	public boolean RegistrationSuccessful = false;

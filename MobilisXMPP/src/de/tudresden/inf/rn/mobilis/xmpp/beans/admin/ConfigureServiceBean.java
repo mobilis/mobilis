@@ -15,8 +15,8 @@ public class ConfigureServiceBean extends AdministrationBean {
 	// SET
 	public AgentConfigInfo AgentConfig = null;
 //	public ServiceConfigInfo ServiceConfig = null;
-	public String ServiceNamespace = null;
-	public int ServiceVersion = -1;
+//	public String ServiceNamespace = null;
+//	public int ServiceVersion = -1;
 	
 	// RESULT
 	

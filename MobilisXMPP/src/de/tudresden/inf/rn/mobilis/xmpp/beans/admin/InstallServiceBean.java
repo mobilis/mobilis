@@ -7,8 +7,12 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 public class InstallServiceBean extends AdministrationBean {
 
-	private static final long serialVersionUID = -3517043825474566387L;
 	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String NAMESPACE = Mobilis.NAMESPACE + "#XMPPBeans:admin:installService";
 	public static final String CHILD_ELEMENT = "installService";
 	
@@ -18,8 +22,8 @@ public class InstallServiceBean extends AdministrationBean {
 	// RESULT
 	public boolean InstallationSucessful = false;
 	public String Message = null;
-	public String ServiceNamespace = null;
-	public int ServiceVersion = -1;
+//	public String ServiceNamespace = null;
+//	public int ServiceVersion = -1;
 	
 	private String _xmlTag_FileName = "filename";
 	private String _xmlTag_InstallationSuccessful = "installationsuccessful";

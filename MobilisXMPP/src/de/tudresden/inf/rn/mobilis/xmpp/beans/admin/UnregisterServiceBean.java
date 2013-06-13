@@ -12,8 +12,8 @@ public class UnregisterServiceBean extends AdministrationBean {
 	public static final String CHILD_ELEMENT = "unregister";
 	
 	// SET
-	public String ServiceNamespace = null;
-	public int ServiceVersion = -1;
+//	public String ServiceNamespace = null;
+//	public int ServiceVersion = -1;
 	
 	// RESULT
 	
