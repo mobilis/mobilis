@@ -920,7 +920,9 @@ public class MobilisManager {
 		}		
 		ServiceContainer oldServiceContainer = getServiceContainer(serviceContainer.getServiceNamespace(), serviceContainer.getServiceVersion());
 		if (oldServiceContainer != null) {
+			reinstalling = true;
 			oldServiceContainer.uninstall();
+			reinstalling = false;
 		}
 		
 		// Add a new uploaded service as a pending service which is
@@ -1018,7 +1020,17 @@ public class MobilisManager {
 	
 	private Roster runtimeRoster;
 	private Roster discoveryRoster;
+	private Boolean reinstalling = false;
 	
+	
+	public Boolean getReinstalling() {
+		return reinstalling;
+	}
+
+	public void setReinstalling(Boolean reinstalling) {
+		this.reinstalling = reinstalling;
+	}
+
 	public Roster getRuntimeRoster() {
 		return runtimeRoster;
 	}

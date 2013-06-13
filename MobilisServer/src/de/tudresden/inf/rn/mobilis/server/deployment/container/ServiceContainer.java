@@ -512,21 +512,22 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			String username =(String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username");
 			String password = (String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password");
 			
-			//delete existing Rostergroup of the Service
-			RosterGroup rg = MobilisManager.getInstance().getRuntimeRoster().getGroup(this.getServiceName()+this.getServiceVersion());
-			if(rg!=null){
-				for(RosterEntry rEntry : rg.getEntries()){
-					try {
-						
-						rg.removeEntry(rEntry);
-					} catch (XMPPException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+			//delete existing Rostergroup of the Service, but not if Service is just getting reinstalled
+			if(!MobilisManager.getInstance().getReinstalling()){
+				RosterGroup rg = MobilisManager.getInstance().getRuntimeRoster().getGroup(this.getServiceName()+this.getServiceVersion());
+				if(rg!=null){
+					for(RosterEntry rEntry : rg.getEntries()){
+						try {
+							
+							rg.removeEntry(rEntry);
+						} catch (XMPPException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
+					rg=null;
 				}
-				rg=null;
 			}
-			
 			// at first unregister service if it is registered
 			this.unregister();
 
