@@ -186,7 +186,7 @@ public class DeploymentService extends MobilisService {
 							//if roustergroup for service doesn't exist installing new service is allowed for all deploy users
 							if(rg==null){
 								message += MobilisManager.getInstance().installAndConfigureAndRegisterServiceFromFile(
-										incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null);
+										incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null, false);
 								//create RosterGroup with GroupName=(serviceName+serviceVersion) as Security Group and add uploading User to group
 								rg = runtimeRoster.createGroup(serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
 								try {
@@ -203,7 +203,7 @@ public class DeploymentService extends MobilisService {
 								}
 								else{
 									message += MobilisManager.getInstance().installAndConfigureAndRegisterServiceFromFile(
-											incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null);
+											incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null, false);
 								}
 							}
 							

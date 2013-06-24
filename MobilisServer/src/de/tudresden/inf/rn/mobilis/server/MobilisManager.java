@@ -463,7 +463,7 @@ public class MobilisManager {
 					String username = fileNameAndModeSplit[2];
 					String password = fileNameAndModeSplit[3];
 					boolean singleMode = mode.equals("single");
-					installAndConfigureAndRegisterServiceFromFile(new File(fileName), true, singleMode, "deployment", username, password);
+					installAndConfigureAndRegisterServiceFromFile(new File(fileName), true, singleMode, "deployment", username, password, true);
 				}
 			} catch (IOException e) {
 				System.err.println("Couldn't read from services.txt!");
@@ -908,7 +908,7 @@ public class MobilisManager {
 	 * 		A human readable message describing the outcome of the operation. You may forward this to
 	 * 		the user who issued the command.
 	 */
-	public String installAndConfigureAndRegisterServiceFromFile(File serviceJar, boolean autoDeploy, boolean singleMode, String defaultValueAgent, String username, String password) {
+	public String installAndConfigureAndRegisterServiceFromFile(File serviceJar, boolean autoDeploy, boolean singleMode, String defaultValueAgent, String username, String password, Boolean serverRestart) {
 		String message = "";
 		
 		// check if service is already installed and uninstall if necessary
@@ -959,6 +959,7 @@ public class MobilisManager {
 				}
 				
 				//add service jid to runtime roster
+				if(!serverRestart){
 				String[] groups = {"services"};
 				try {
 					runtimeRoster.createEntry(username + "@" + getAgent(defaultValueAgent).getSettingString( "host" ).toString(), username, groups);
@@ -985,7 +986,8 @@ public class MobilisManager {
 				
 				//diese Stelle müsste noch etwas sicherer gemacht werden. Der Roster des Dienstes sollte am besten nur seine Presence an seinen Runtime Server und die Discovery Server schicken
 				serviceRoster.setSubscriptionMode(SubscriptionMode.accept_all);
-				
+				serviceCon.disconnect();
+				}
 				// configure
 				DoubleKeyMap< String, String, Object > configuration = new DoubleKeyMap< String, String, Object >(
 						false );
@@ -1034,7 +1036,7 @@ public class MobilisManager {
 				if (singleMode) {
 					serviceContainer.startNewServiceInstance();
 				}
-				serviceCon.disconnect();
+				
 			} catch (InstallServiceException e) {
 				message += "\n" + e.getMessage();
 				e.printStackTrace();
