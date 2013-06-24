@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.Roster.SubscriptionMode;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.RosterGroup;
 import org.jivesoftware.smack.XMPPException;
@@ -401,6 +402,7 @@ public class DeploymentService extends MobilisService {
 		
 		
 		Roster runtimeRoster = connection.getRoster();
+		runtimeRoster.setSubscriptionMode(SubscriptionMode.accept_all);
 		MobilisManager.getInstance().setRuntimeRoster(runtimeRoster);
 		
 		//if not already existing, generate standard security group for uploading files

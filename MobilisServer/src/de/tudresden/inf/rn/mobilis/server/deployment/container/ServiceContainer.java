@@ -33,6 +33,7 @@ import java.util.logging.Level;
 import javax.swing.event.EventListenerList;
 
 import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.RosterGroup;
 import org.jivesoftware.smack.XMPPConnection;
@@ -507,10 +508,20 @@ public class ServiceContainer implements IServiceContainerTransitions,
 		if (_containerState == ServiceContainerState.INSTALLED
 				|| _containerState == ServiceContainerState.ACTIVE) {
 			
-			//delete xmppaccount of Service
+			//delete xmppaccount of Service: Step 1
 			String host = (String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "host");
 			String username =(String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username");
 			String password = (String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password");
+			Connection con = new XMPPConnection(host);
+			
+			//delete xmpp service account in runtime roster
+			Roster rr = MobilisManager.getInstance().getRuntimeRoster();
+			try {
+				rr.removeEntry(rr.getEntry(username + "@" + host));
+			} catch (XMPPException e4) {
+				// TODO Auto-generated catch block
+				e4.printStackTrace();
+			}
 			
 			//delete existing Rostergroup of the Service, but not if Service is just getting reinstalled
 			if(!MobilisManager.getInstance().getReinstalling()){
@@ -551,25 +562,32 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			// state == uninstalled
 			changeContainerState(ServiceContainerState.UNINSTALLED);
 			
-			//delete XMPP Account of Service
-			Connection con = new XMPPConnection(host);
-			try {
-				con.connect();
+			
+			//delete XMPP Account of Service: Step 2
+			if(!con.isConnected()){
 				try {
-					con.login(username, password);
-					try {
-						con.getAccountManager().deleteAccount();
-						con.disconnect();
-					} catch (XMPPException e1) {
-						System.out.println("Can't delete Account! Reason: " + e1.getMessage());
-					}
-				} catch (XMPPException e2) {
+					
+					con.connect();
+				}	catch (XMPPException e3) {
 					// TODO Auto-generated catch block
 				}
-			} catch (XMPPException e3) {
-				// TODO Auto-generated catch block
-				e3.printStackTrace();
 			}
+			if(!con.isAuthenticated()){
+				try {
+					
+					con.login(username, password);
+				}	catch (XMPPException e2) {
+					// TODO Auto-generated catch block
+					System.out.println("ARG2");
+				}
+			}
+			try {
+					con.getAccountManager().deleteAccount();
+					con.disconnect();
+			} catch (XMPPException e1) {
+						System.out.println("Can't delete Account! Reason: " + e1.getMessage());
+			}
+				
 			System.out.println("Account " + username + " erfolgreich gelöscht");
 
 			MobilisManager

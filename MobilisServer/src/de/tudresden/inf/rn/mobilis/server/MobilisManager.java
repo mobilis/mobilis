@@ -49,8 +49,10 @@ import org.jdom.input.SAXBuilder;
 import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.Roster.SubscriptionMode;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.packet.DiscoverItems.Item;
 
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
@@ -956,6 +958,34 @@ public class MobilisManager {
 					inBandRegistration(serviceName, username, password, getAgent(defaultValueAgent).getSettingString( "host" ).toString());
 				}
 				
+				//add service jid to runtime roster
+				String[] groups = {"services"};
+				try {
+					runtimeRoster.createEntry(username + "@" + getAgent(defaultValueAgent).getSettingString( "host" ).toString(), username, groups);
+				} catch (XMPPException e) {
+					// TODO Auto-generated catch block
+					System.out.println("User " + username + "couldnt add to roster cause:" + e.getMessage());
+				}
+				
+				//add runtime jid to service roster
+				Connection serviceCon = new XMPPConnection((String) getAgent(defaultValueAgent).getSettingString( "host" ));
+				try {
+					serviceCon.connect();
+				} catch (XMPPException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					serviceCon.login(username, password);
+				} catch (XMPPException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Roster serviceRoster = serviceCon.getRoster();
+				
+				//diese Stelle müsste noch etwas sicherer gemacht werden. Der Roster des Dienstes sollte am besten nur seine Presence an seinen Runtime Server und die Discovery Server schicken
+				serviceRoster.setSubscriptionMode(SubscriptionMode.accept_all);
+				
 				// configure
 				DoubleKeyMap< String, String, Object > configuration = new DoubleKeyMap< String, String, Object >(
 						false );
@@ -1004,6 +1034,7 @@ public class MobilisManager {
 				if (singleMode) {
 					serviceContainer.startNewServiceInstance();
 				}
+				serviceCon.disconnect();
 			} catch (InstallServiceException e) {
 				message += "\n" + e.getMessage();
 				e.printStackTrace();

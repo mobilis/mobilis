@@ -166,14 +166,11 @@ public class AdminService extends MobilisService {
 				
 				//alle AdministrationBeans haben die Felder ServiceNamespace + ServiceVersion die für den Abgleich der Berechtigung nötig sind
 				if ( inBean instanceof AdministrationBean){
-					System.out.println("TEST:"+((AdministrationBean) inBean).ServiceNamespace+((AdministrationBean) inBean).ServiceVersion);
-					
-					//check userpermission from Rostergroup
+										
+					//check user permission from Rostergroup
 					Boolean permission = false;
 					permission = checkServiceModifyPermission(((AdministrationBean) inBean).ServiceNamespace, ((AdministrationBean) inBean).ServiceVersion, inBean.getFrom());
-					System.out.println("Modifizierungserlaubnis? " + permission);
-					
-					
+										
 					//if user has no permission handle as error
 					if(!permission){
 						handlePermissionError((AdministrationBean) inBean);
