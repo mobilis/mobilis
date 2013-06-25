@@ -22,6 +22,7 @@ package de.tudresden.inf.rn.mobilis.server.services;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -35,9 +36,13 @@ import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
+import org.jivesoftware.smackx.packet.DiscoverInfo;
+import org.jivesoftware.smackx.packet.DiscoverInfo.Feature;
 
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
@@ -135,7 +140,37 @@ public class CoordinatorService extends MobilisService {
     	Connection c = this.mAgent.getConnection();
     	String from = bean.getFrom();
 		String to = bean.getTo();
+		
+
+		
+		//Discovery by looking into the Roster
+		
+		//Roster und Rostergruppe der registrierten Dienste holen
+		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
+		RosterGroup rg = runtimeRoster.getGroup("services");
+		
+		//alle Einträge der Dienste Rostergruppe durchsuchen
+		for(RosterEntry entry : rg.getEntries()){
 			
+			//Für jeden Eintrag die verbundenen Ressourcen (FullJID) holen und anschließend für jede Ressource die DiscoveryInfo durch den EntityCapManager (EntityCapabilities anstelle einer Service Discovery)
+			for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
+			{
+			  String fullJIDofService =  iter.next().getFrom();
+			  DiscoverInfo dInfo = EntityCapsManager.getDiscoverInfoByUser(fullJIDofService);
+			  String caps="";
+			 
+			  //Alle Feature vars eines DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
+			  for ( Iterator<Feature> infos  = dInfo.getFeatures(); infos.hasNext(); ){
+				  String s = infos.next().getVar();
+				  if (s.contains("urn:mobilis:service:")){
+					  caps += s;
+				  }
+			  }
+			  System.out.println("Service unter: " + fullJIDofService + "capabilities" + caps);
+			}
+			
+		}
+		
 		MobilisServiceDiscoveryBean beanAnswer = null;
 		
 		if (maintenanceMode) {

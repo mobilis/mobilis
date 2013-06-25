@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -20,11 +21,14 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
 import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
 import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
 import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
+import org.jivesoftware.smackx.packet.DiscoverInfo;
+import org.jivesoftware.smackx.packet.DiscoverInfo.Feature;
 
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
@@ -400,11 +404,18 @@ public class DeploymentService extends MobilisService {
 		
 		Connection connection = agent.getConnection();
 		
-		
+		//
+		EntityCapsManager capsManager = EntityCapsManager.getInstanceFor(connection);
+		capsManager.updateLocalEntityCaps();
+		DiscoverInfo info = EntityCapsManager.getDiscoverInfoByUser("mruntime1@philipp-pc/Deployment");
+		Iterator<Feature> iter = info.getFeatures();
+		while(iter.hasNext()){
+			System.out.println(iter.next().getVar());
+		}
 		Roster runtimeRoster = connection.getRoster();
 		runtimeRoster.setSubscriptionMode(SubscriptionMode.accept_all);
 		MobilisManager.getInstance().setRuntimeRoster(runtimeRoster);
-		
+		MobilisManager.getInstance().setCapsManager(capsManager);
 		//if not already existing, generate standard security group for uploading files
 		if(runtimeRoster.getGroup("deploy")==null){
 			runtimeRoster.createGroup("deploy");

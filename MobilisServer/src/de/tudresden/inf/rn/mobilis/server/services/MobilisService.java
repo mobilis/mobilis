@@ -260,7 +260,7 @@ public abstract class MobilisService implements PacketListener, NodeInformationP
 		return _serviceVersion;
 	}
 	
-	protected void setVersion(int version){
+	public void setVersion(int version){
 		_serviceVersion = version;
 	}
     

@@ -39,6 +39,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smackx.NodeInformationProvider;
 import org.jivesoftware.smackx.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.jivesoftware.smackx.packet.DiscoverItems;
 
@@ -54,6 +55,7 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 	private String mIdentifier;
 	private Connection mConnection = null;
 	private String fullJid = null;
+	private EntityCapsManager capsMaganger;
 	
 	private final Set<MobilisService> mServices = Collections.synchronizedSet(new HashSet<MobilisService>());
 	private final Map<String, Object> mDefaultSettings = Collections.synchronizedMap(new HashMap<String, Object>());
@@ -212,7 +214,10 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		mConnection.addConnectionListener(this);
 
 		ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(mConnection);
-
+		capsMaganger = EntityCapsManager.getInstanceFor(mConnection);
+		capsMaganger.enableEntityCaps();
+		sdm.setEntityCapsManager(capsMaganger);
+		
 		// Set on every established connection that this client supports the Mobilis
 		// protocol. This information will be used when another client tries to
 		// discover whether this client supports Mobilis or not.
@@ -221,6 +226,11 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		} catch (Exception e) {
 			MobilisManager.getLogger().warning("Problem with ServiceDiscoveryManager: " + e.getMessage());
 		}
+		for(MobilisService ms : mServices){
+			sdm.addFeature("urn:mobilis:service:"+ ms.getName() + ":" + ms.getVersion());
+			System.out.println("Setze Service Version" + ms.getVersion());
+		}
+		capsMaganger.updateLocalEntityCaps();
 
 		synchronized(mServices) {
 			for (MobilisService ms : mServices) {

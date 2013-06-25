@@ -249,7 +249,8 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			} catch (Exception e) {
 				throw new StartNewServiceInstanceException(e.getMessage());
 			}
-
+			mobilisService.setVersion(this.getServiceVersion());
+			mobilisService.setName(this.getServiceName());
 			// Get an XMPP resource for the new agent, that is not already in
 			// use.
 			String agentIdent = this.getAgentId();
@@ -514,17 +515,20 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			String password = (String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password");
 			Connection con = new XMPPConnection(host);
 			
-			//delete xmpp service account in runtime roster
-			Roster rr = MobilisManager.getInstance().getRuntimeRoster();
-			try {
-				rr.removeEntry(rr.getEntry(username + "@" + host));
-			} catch (XMPPException e4) {
-				// TODO Auto-generated catch block
-				e4.printStackTrace();
-			}
+
 			
 			//delete existing Rostergroup of the Service, but not if Service is just getting reinstalled
 			if(!MobilisManager.getInstance().getReinstalling()){
+				
+				//delete xmpp service account in runtime roster
+				Roster rr = MobilisManager.getInstance().getRuntimeRoster();
+				try {
+					rr.removeEntry(rr.getEntry(username + "@" + host));
+				} catch (XMPPException e4) {
+					// TODO Auto-generated catch block
+					e4.printStackTrace();
+				}
+				
 				RosterGroup rg = MobilisManager.getInstance().getRuntimeRoster().getGroup(this.getServiceName()+this.getServiceVersion());
 				if(rg!=null){
 					for(RosterEntry rEntry : rg.getEntries()){

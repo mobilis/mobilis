@@ -53,6 +53,7 @@ import org.jivesoftware.smack.Roster.SubscriptionMode;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
 import org.jivesoftware.smackx.packet.DiscoverItems.Item;
 
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
@@ -983,7 +984,7 @@ public class MobilisManager {
 					e.printStackTrace();
 				}
 				Roster serviceRoster = serviceCon.getRoster();
-				
+				System.out.println("Version : " + serviceContainer.getServiceVersion());
 				//diese Stelle müsste noch etwas sicherer gemacht werden. Der Roster des Dienstes sollte am besten nur seine Presence an seinen Runtime Server und die Discovery Server schicken
 				serviceRoster.setSubscriptionMode(SubscriptionMode.accept_all);
 				serviceCon.disconnect();
@@ -1054,8 +1055,16 @@ public class MobilisManager {
 	private Roster runtimeRoster;
 	private Roster discoveryRoster;
 	private Boolean reinstalling = false;
+	private EntityCapsManager capsManager;
 	
-	
+	public EntityCapsManager getCapsManager() {
+		return capsManager;
+	}
+
+	public void setCapsManager(EntityCapsManager capsManager) {
+		this.capsManager = capsManager;
+	}
+
 	public Boolean getReinstalling() {
 		return reinstalling;
 	}
