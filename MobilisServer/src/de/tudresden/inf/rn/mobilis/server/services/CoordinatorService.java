@@ -148,29 +148,31 @@ public class CoordinatorService extends MobilisService {
 		//Roster und Rostergruppe der registrierten Dienste holen
 		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
 		RosterGroup rg = runtimeRoster.getGroup("services");
-		
-		//alle Einträge der Dienste Rostergruppe durchsuchen
-		for(RosterEntry entry : rg.getEntries()){
-			
-			//Für jeden Eintrag die verbundenen Ressourcen (FullJID) holen und anschließend für jede Ressource die DiscoveryInfo durch den EntityCapManager (EntityCapabilities anstelle einer Service Discovery)
-			for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
-			{
-			  String fullJIDofService =  iter.next().getFrom();
-			  DiscoverInfo dInfo = EntityCapsManager.getDiscoverInfoByUser(fullJIDofService);
-			  String caps="";
-			 
-			  //Alle Feature vars eines DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
-			  for ( Iterator<Feature> infos  = dInfo.getFeatures(); infos.hasNext(); ){
-				  String s = infos.next().getVar();
-				  if (s.contains("urn:mobilis:service:")){
-					  caps += s;
+		if(rg != null){
+			//alle Einträge der Dienste Rostergruppe durchsuchen
+			for(RosterEntry entry : rg.getEntries()){
+				
+				//Für jeden Eintrag die verbundenen Ressourcen (FullJID) holen und anschließend für jede Ressource die DiscoveryInfo durch den EntityCapManager (EntityCapabilities anstelle einer Service Discovery)
+				for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
+				{
+				  String fullJIDofService =  iter.next().getFrom();
+				  DiscoverInfo dInfo = EntityCapsManager.getDiscoverInfoByUser(fullJIDofService);
+				  String caps="";
+				 
+				  //Alle Feature vars des DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
+				  if(dInfo != null){
+					  for ( Iterator<Feature> infos  = dInfo.getFeatures(); infos.hasNext(); ){
+						  String s = infos.next().getVar();
+						  if (s.contains("urn:mobilis:service:")){
+							  caps += s;
+						  }
+					  }
+					  System.out.println("Service unter: " + fullJIDofService + " capabilities: " + caps);
 				  }
-			  }
-			  System.out.println("Service unter: " + fullJIDofService + "capabilities" + caps);
+				}
+				
 			}
-			
 		}
-		
 		MobilisServiceDiscoveryBean beanAnswer = null;
 		
 		if (maintenanceMode) {

@@ -1037,6 +1037,15 @@ public class MobilisManager {
 				if (singleMode) {
 					serviceContainer.startNewServiceInstance();
 				}
+				else {
+					try {
+						this.getAgent(serviceContainer.getAgentId()).startup();
+					} catch (XMPPException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
 				
 			} catch (InstallServiceException e) {
 				message += "\n" + e.getMessage();
