@@ -407,11 +407,11 @@ public class DeploymentService extends MobilisService {
 		//
 		EntityCapsManager capsManager = EntityCapsManager.getInstanceFor(connection);
 		capsManager.updateLocalEntityCaps();
-		DiscoverInfo info = EntityCapsManager.getDiscoverInfoByUser("mruntime1@philipp-pc/Deployment");
-		Iterator<Feature> iter = info.getFeatures();
-		while(iter.hasNext()){
-			System.out.println(iter.next().getVar());
-		}
+//		DiscoverInfo info = EntityCapsManager.getDiscoverInfoByUser("mruntime1@philipp-pc/Deployment");
+//		Iterator<Feature> iter = info.getFeatures();
+//		while(iter.hasNext()){
+//			System.out.println(iter.next().getVar());
+//		}
 		Roster runtimeRoster = connection.getRoster();
 		runtimeRoster.setSubscriptionMode(SubscriptionMode.accept_all);
 		MobilisManager.getInstance().setRuntimeRoster(runtimeRoster);
