@@ -479,17 +479,17 @@ public class CoordinatorService extends MobilisService {
 		Roster discoveryRoster = connection.getRoster();
 		MobilisManager.getInstance().setDiscoveryRoster(discoveryRoster);
 		
-		if(discoveryRoster.getGroup("runtimes")==null){
-			discoveryRoster.createGroup("runtimes");
-		}
-		System.out.println("Discovery Roster");
-		System.out.println("Rostergruppen:");
-		for (RosterGroup rGroup : discoveryRoster.getGroups()){
-			System.out.println(rGroup.getName() + " - Eintraege:" +  rGroup.getEntries().toString());
-		}
-		for (RosterEntry rEntry : discoveryRoster.getEntries()){
-			System.out.println("Rostereintrag: " + rEntry);
-		}
+//		if(discoveryRoster.getGroup("runtimes")==null){
+//			discoveryRoster.createGroup("runtimes");
+//		}
+//		System.out.println("Discovery Roster");
+//		System.out.println("Rostergruppen:");
+//		for (RosterGroup rGroup : discoveryRoster.getGroups()){
+//			System.out.println(rGroup.getName() + " - Eintraege:" +  rGroup.getEntries().toString());
+//		}
+//		for (RosterEntry rEntry : discoveryRoster.getEntries()){
+//			System.out.println("Rostereintrag: " + rEntry);
+//		}
 		
 
 	}

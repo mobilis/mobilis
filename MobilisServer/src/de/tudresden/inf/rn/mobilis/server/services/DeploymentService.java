@@ -39,6 +39,7 @@ import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileUploadInformatio
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.runtimeprotocol.PublishNewService;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanHelper;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
@@ -199,6 +200,7 @@ public class DeploymentService extends MobilisService {
 									System.out.println("Couldn't add user to Rostergroup. Reason: " + e.getMessage());
 									e.printStackTrace();
 								}
+								sendPublishNewServiceBeanSET("dummyjid@dummy.org");
 							}
 							else{
 								//if rostergroup for service exist, check if request user is in that group. if not, he isn't authorized upload and change service
@@ -240,10 +242,10 @@ public class DeploymentService extends MobilisService {
 	protected void registerPacketListener() {
 		XMPPBean prepareServiceUploadBean = new PrepareServiceUploadBean();
 		XMPPBean serviceUploadConclusionBean = new ServiceUploadConclusionBean();
-
+		XMPPBean publishNewServiceBean = new PublishNewService();
 		( new BeanProviderAdapter( prepareServiceUploadBean ) ).addToProviderManager();
 		( new BeanProviderAdapter( serviceUploadConclusionBean ) ).addToProviderManager();
-
+		( new BeanProviderAdapter( publishNewServiceBean ) ).addToProviderManager();
 		IQListener iqListener = new IQListener();
 		PacketTypeFilter locFil = new PacketTypeFilter( IQ.class );
 		getAgent().getConnection().addPacketListener( iqListener, locFil );
@@ -270,7 +272,26 @@ public class DeploymentService extends MobilisService {
 
 		getAgent().getConnection().sendPacket( new BeanIQAdapter( bean ) );
 	}
-
+	
+	/**
+	 * Sends the newServiceJID to another Runtime for adding it to their ServiceDiscovery Roster
+	 * @param recipientJIDOfRuntime
+	 * @param newServiceJID
+	 */
+	private void sendPublishNewServiceBeanSET(String newServiceJID){
+		PublishNewService bean = new PublishNewService(newServiceJID);
+		
+		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
+		RosterGroup rg = runtimeRoster.getGroup("runtimes");
+		
+		for(RosterEntry entry : rg.getEntries()){
+			String recipientJIDOfRuntime = entry.getUser() + "/Deployment";
+			bean.setTo(recipientJIDOfRuntime);
+			bean.setType(XMPPBean.TYPE_SET);
+			getAgent().getConnection().sendPacket( new BeanIQAdapter( bean ) );
+		}
+		
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -340,6 +361,10 @@ public class DeploymentService extends MobilisService {
 				} else if ( inBean instanceof ServiceUploadConclusionBean
 						&& inBean.getType() == XMPPBean.TYPE_RESULT ) {
 					// Do nothing, just ack
+				} else if ( inBean instanceof PublishNewService
+						&& inBean.getType() == XMPPBean.TYPE_SET ) {
+						PublishNewService pnsBean = (PublishNewService) inBean;
+						System.out.println("Neuer Service unter: " + pnsBean.getNewServiceJID() + " veröffentlich von: " + pnsBean.getFrom());
 				} else {
 					handleUnknownBean( inBean );
 				}
@@ -407,11 +432,7 @@ public class DeploymentService extends MobilisService {
 		//
 		EntityCapsManager capsManager = EntityCapsManager.getInstanceFor(connection);
 		capsManager.updateLocalEntityCaps();
-//		DiscoverInfo info = EntityCapsManager.getDiscoverInfoByUser("mruntime1@philipp-pc/Deployment");
-//		Iterator<Feature> iter = info.getFeatures();
-//		while(iter.hasNext()){
-//			System.out.println(iter.next().getVar());
-//		}
+
 		Roster runtimeRoster = connection.getRoster();
 		runtimeRoster.setSubscriptionMode(SubscriptionMode.accept_all);
 		MobilisManager.getInstance().setRuntimeRoster(runtimeRoster);
@@ -421,12 +442,11 @@ public class DeploymentService extends MobilisService {
 			runtimeRoster.createGroup("deploy");
 		}
 		
-			
-		System.out.println("Runtimes Roster");
-		System.out.println("Rostergruppen:" + runtimeRoster.getGroups().toString());
-		for (RosterEntry rEntry : runtimeRoster.getEntries()){
-			System.out.println("Rostereintrag: " + rEntry + " Gruppen: " + rEntry.getGroups().toString());
-		}
+//		System.out.println("Runtimes Roster");
+//		System.out.println("Rostergruppen:" + runtimeRoster.getGroups().toString());
+//		for (RosterEntry rEntry : runtimeRoster.getEntries()){
+//			System.out.println("Rostereintrag: " + rEntry + " Gruppen: " + rEntry.getGroups().toString());
+//		}
 		
 
 	}

@@ -228,7 +228,6 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		}
 		for(MobilisService ms : mServices){
 			sdm.addFeature("urn:mobilis:service:"+ ms.getName() + ":" + ms.getVersion());
-			System.out.println("Setze Service Version" + ms.getVersion());
 		}
 		capsMaganger.updateLocalEntityCaps();
 
