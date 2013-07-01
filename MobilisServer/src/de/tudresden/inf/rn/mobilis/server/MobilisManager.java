@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -464,7 +465,7 @@ public class MobilisManager {
 					String username = fileNameAndModeSplit[2];
 					String password = fileNameAndModeSplit[3];
 					boolean singleMode = mode.equals("single");
-					installAndConfigureAndRegisterServiceFromFile(new File(fileName), true, singleMode, "deployment", username, password, true);
+					installAndConfigureAndRegisterServiceFromFile(new File(fileName), true, singleMode, "deployment", username, password, true, null);
 				}
 			} catch (IOException e) {
 				System.err.println("Couldn't read from services.txt!");
@@ -909,7 +910,8 @@ public class MobilisManager {
 	 * 		A human readable message describing the outcome of the operation. You may forward this to
 	 * 		the user who issued the command.
 	 */
-	public String installAndConfigureAndRegisterServiceFromFile(File serviceJar, boolean autoDeploy, boolean singleMode, String defaultValueAgent, String username, String password, Boolean serverRestart) {
+	public String installAndConfigureAndRegisterServiceFromFile(File serviceJar, boolean autoDeploy, boolean singleMode,
+			String defaultValueAgent, String username, String password, Boolean serverRestart, java.util.Date date) {
 		String message = "";
 		
 		// check if service is already installed and uninstall if necessary
@@ -960,10 +962,12 @@ public class MobilisManager {
 				}
 				
 				//add service jid to runtime roster
+				String newServiceJID = username + "@" + getAgent(defaultValueAgent).getSettingString( "host" ).toString();
+				newServiceJIDs.put(date, newServiceJID);
 				if(!serverRestart){
 				String[] groups = {"services"};
 				try {
-					runtimeRoster.createEntry(username + "@" + getAgent(defaultValueAgent).getSettingString( "host" ).toString(), username, groups);
+					runtimeRoster.createEntry(newServiceJID, username, groups);
 				} catch (XMPPException e) {
 					// TODO Auto-generated catch block
 					System.out.println("User " + username + "couldnt add to roster cause:" + e.getMessage());
@@ -1066,6 +1070,13 @@ public class MobilisManager {
 	private Boolean reinstalling = false;
 	private EntityCapsManager capsManager;
 	
+	//this Map is needed for pulling new ServiceJids created in the installAndConfigureAndRegisterServiceFromFile Method by the DiscoveryService:
+	//Long Version: DiscoveryService calls installAndConfigureAndRegisterServiceFromFile(), but has no idea what the JID of the new Service will be, cause the jid is build out
+	//of the ServiceName and the name part of the Runtime JID. The ServiceName is hide in the ServiceContainer until its first unpack in the installAndConfigureAndRegisterServiceFromFile Method.
+	//When deployment service is calling this method it creates a Date key for the special call which identifies the depending newServiceJID. With that key, the deployment service can pull the created newServiceJID
+	//from this map.
+	private HashMap<java.util.Date,String> newServiceJIDs = new HashMap<>();
+	
 	public EntityCapsManager getCapsManager() {
 		return capsManager;
 	}
@@ -1097,7 +1108,10 @@ public class MobilisManager {
 	public void setDiscoveryRoster(Roster discoveryRoster) {
 		this.discoveryRoster = discoveryRoster;
 	}
-
+	
+	public String getNewServiceJIDByDate(java.util.Date date){
+		return newServiceJIDs.remove(date);
+	}
 	/**
 	 * Method creates a new XMPP Account with the given Service Name on the given Host
 	 * @param serviceName

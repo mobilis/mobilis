@@ -3,6 +3,7 @@ package de.tudresden.inf.rn.mobilis.server.services;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -187,11 +188,11 @@ public class DeploymentService extends MobilisService {
 							Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
 							RosterGroup rg = runtimeRoster.getGroup(serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
 							String jid = StringUtils.parseBareAddress(request.getRequestor());
-							
+							Date date = new Date();
 							//if roustergroup for service doesn't exist installing new service is allowed for all deploy users
 							if(rg==null){
 								message += MobilisManager.getInstance().installAndConfigureAndRegisterServiceFromFile(
-										incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null, false);
+										incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null, false, date);
 								//create RosterGroup with GroupName=(serviceName+serviceVersion) as Security Group and add uploading User to group
 								rg = runtimeRoster.createGroup(serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
 								try {
@@ -200,7 +201,7 @@ public class DeploymentService extends MobilisService {
 									System.out.println("Couldn't add user to Rostergroup. Reason: " + e.getMessage());
 									e.printStackTrace();
 								}
-								sendPublishNewServiceBeanSET("dummyjid@dummy.org");
+								sendPublishNewServiceBeanSET(MobilisManager.getInstance().getNewServiceJIDByDate(date));
 							}
 							else{
 								//if rostergroup for service exist, check if request user is in that group. if not, he isn't authorized upload and change service
@@ -209,7 +210,7 @@ public class DeploymentService extends MobilisService {
 								}
 								else{
 									message += MobilisManager.getInstance().installAndConfigureAndRegisterServiceFromFile(
-											incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null, false);
+											incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null, false, null);
 								}
 							}
 							
