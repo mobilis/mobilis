@@ -365,7 +365,7 @@ public class DeploymentService extends MobilisService {
 				} else if ( inBean instanceof PublishNewService
 						&& inBean.getType() == XMPPBean.TYPE_SET ) {
 						PublishNewService pnsBean = (PublishNewService) inBean;
-						System.out.println("Neuer Service unter: " + pnsBean.getNewServiceJID() + " veröffentlich von: " + pnsBean.getFrom());
+						System.out.println(new Date().toString() + "Neuer Service unter: " + pnsBean.getNewServiceJID() + " veröffentlich von: " + pnsBean.getFrom());
 				} else {
 					handleUnknownBean( inBean );
 				}
