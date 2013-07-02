@@ -97,7 +97,6 @@ public class CoordinatorService extends MobilisService {
 	
 	public void startup(MobilisAgent agent) throws Exception {
 		super.startup(agent);
-		getRoster(agent);
 		_fileTransferManager = new FileTransferManager(agent.getConnection());
 		FileTransferNegotiator.setServiceEnabled(agent.getConnection(), true);
 	}
@@ -155,8 +154,9 @@ public class CoordinatorService extends MobilisService {
 				//Für jeden Eintrag die verbundenen Ressourcen (FullJID) holen und anschließend für jede Ressource die DiscoveryInfo durch den EntityCapManager (EntityCapabilities anstelle einer Service Discovery)
 				for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
 				{
-				  String fullJIDofService =  iter.next().getFrom();
-				  DiscoverInfo dInfo;
+					Presence presence = iter.next();
+					String fullJIDofService =  presence.getFrom();
+					DiscoverInfo dInfo;
 					try {
 						dInfo = MobilisManager.getInstance().getServiceDiscoveryManager().discoverInfo(fullJIDofService);
 						String caps="";
@@ -474,29 +474,5 @@ public class CoordinatorService extends MobilisService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
-	
-	private void getRoster(MobilisAgent agent){
-		
-		Connection connection = agent.getConnection();
-		
-		
-		Roster discoveryRoster = connection.getRoster();
-		MobilisManager.getInstance().setDiscoveryRoster(discoveryRoster);
-		
-//		if(discoveryRoster.getGroup("runtimes")==null){
-//			discoveryRoster.createGroup("runtimes");
-//		}
-//		System.out.println("Discovery Roster");
-//		System.out.println("Rostergruppen:");
-//		for (RosterGroup rGroup : discoveryRoster.getGroups()){
-//			System.out.println(rGroup.getName() + " - Eintraege:" +  rGroup.getEntries().toString());
-//		}
-//		for (RosterEntry rEntry : discoveryRoster.getEntries()){
-//			System.out.println("Rostereintrag: " + rEntry);
-//		}
-		
 
-	}
 }

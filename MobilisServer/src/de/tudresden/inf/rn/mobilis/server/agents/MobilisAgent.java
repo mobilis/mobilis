@@ -56,6 +56,7 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 	private Connection mConnection = null;
 	private String fullJid = null;
 	private EntityCapsManager capsMaganger;
+	private ServiceDiscoveryManager sdm;
 	
 	private final Set<MobilisService> mServices = Collections.synchronizedSet(new HashSet<MobilisService>());
 	private final Map<String, Object> mDefaultSettings = Collections.synchronizedMap(new HashMap<String, Object>());
@@ -213,7 +214,7 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		mConnection.login(username, password, resource);
 		mConnection.addConnectionListener(this);
 
-		ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(mConnection);
+		sdm = ServiceDiscoveryManager.getInstanceFor(mConnection);
 		capsMaganger = EntityCapsManager.getInstanceFor(mConnection);
 		capsMaganger.enableEntityCaps();
 		sdm.setEntityCapsManager(capsMaganger);
