@@ -107,10 +107,12 @@ public class PublishNewServiceBean extends XMPPBean {
 	public String payloadToXML() {
 		String childElement = MobilisServiceInfo.CHILD_ELEMENT;
 		
-		StringBuilder sb = new StringBuilder()
-				.append("<").append(childElement).append(" ");
+		StringBuilder sb = new StringBuilder();
+				
 		if (getType() == XMPPBean.TYPE_SET) {
+			sb.append("<").append(childElement).append(" ");
 			if (this.newServiceJID!=null) sb.append("newservicejid=\"").append(this.newServiceJID).append("\" ");
+			sb.append(" />");
 		}
 		
 		if (getType() == XMPPBean.TYPE_RESULT) {
@@ -119,7 +121,7 @@ public class PublishNewServiceBean extends XMPPBean {
 			.append("</" + _xmlTag_AcceptAddService + ">");	
 		}
 		
-		sb.append(" />");				
+					
 		
 		return sb.toString();
 	}
