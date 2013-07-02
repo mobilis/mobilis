@@ -6,7 +6,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.Mobilis;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
 
-public class PublishNewService extends XMPPBean {
+public class PublishNewServiceBean extends XMPPBean {
 
 	/**
 	 * 
@@ -20,7 +20,7 @@ public class PublishNewService extends XMPPBean {
 	/*
 	 * Constructor to send a Result
 	 */
-	public PublishNewService() {
+	public PublishNewServiceBean() {
 		super();
 		this.type=XMPPBean.TYPE_RESULT;
 	}
@@ -28,7 +28,7 @@ public class PublishNewService extends XMPPBean {
 	/*
 	 * Constructor for publish a new Service to another Runtimes Discovery
 	 */
-	public PublishNewService(String newServiceJID){
+	public PublishNewServiceBean(String newServiceJID){
 		super();
 		this.newServiceJID = newServiceJID;
 		this.type=XMPPBean.TYPE_SET;
@@ -37,7 +37,7 @@ public class PublishNewService extends XMPPBean {
 	/*
 	 * Constructor for occuring Errors while trying to publish a new Service 
 	 */
-	public PublishNewService(String errorType, String errorCondition,
+	public PublishNewServiceBean(String errorType, String errorCondition,
 			String errorText) {
 		super(errorType, errorCondition, errorText);
 	}
@@ -77,19 +77,19 @@ public class PublishNewService extends XMPPBean {
 
 	@Override
 	public String getChildElement() {
-		return PublishNewService.CHILD_ELEMENT;
+		return PublishNewServiceBean.CHILD_ELEMENT;
 	}
 
 	@Override
 	public String getNamespace() {
-		return PublishNewService.NAMESPACE;
+		return PublishNewServiceBean.NAMESPACE;
 	}
 
 	@Override
-	public PublishNewService clone() {
-		PublishNewService twin = new PublishNewService(newServiceJID);		
+	public PublishNewServiceBean clone() {
+		PublishNewServiceBean twin = new PublishNewServiceBean(newServiceJID);		
 				
-		twin = (PublishNewService) cloneBasicAttributes(twin);
+		twin = (PublishNewServiceBean) cloneBasicAttributes(twin);
 		return twin;
 	}
 
