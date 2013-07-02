@@ -156,19 +156,25 @@ public class CoordinatorService extends MobilisService {
 				for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
 				{
 				  String fullJIDofService =  iter.next().getFrom();
-				  DiscoverInfo dInfo = EntityCapsManager.getDiscoverInfoByUser(fullJIDofService);
-				  String caps="";
-				 
-				  //Alle Feature vars des DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
-				  if(dInfo != null){
-					  for ( Iterator<Feature> infos  = dInfo.getFeatures(); infos.hasNext(); ){
-						  String s = infos.next().getVar();
-						  if (s.contains("urn:mobilis:service:")){
-							  caps += s;
+				  DiscoverInfo dInfo;
+					try {
+						dInfo = MobilisManager.getInstance().getServiceDiscoveryManager().discoverInfo(fullJIDofService);
+						String caps="";
+						 
+						  //Alle Feature vars des DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
+						  if(dInfo != null){
+							  for ( Iterator<Feature> infos  = dInfo.getFeatures(); infos.hasNext(); ){
+								  String s = infos.next().getVar();
+								  if (s.contains("urn:mobilis:service:")){
+									  caps += s;
+								  }
+							  }
+							  System.out.println("Service unter: " + fullJIDofService + " capabilities: " + caps);
 						  }
-					  }
-					  System.out.println("Service unter: " + fullJIDofService + " capabilities: " + caps);
-				  }
+					} catch (XMPPException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				
 			}

@@ -23,6 +23,7 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smackx.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
 import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
@@ -460,7 +461,10 @@ public class DeploymentService extends MobilisService {
 
 		EntityCapsManager capsManager = EntityCapsManager.getInstanceFor(connection);
 		capsManager.updateLocalEntityCaps();
-
+		ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(connection);
+		sdm.setEntityCapsManager(capsManager);
+		MobilisManager.getInstance().setServiceDiscoveryManager(sdm);
+		
 		Roster runtimeRoster = connection.getRoster();
 		runtimeRoster.setSubscriptionMode(SubscriptionMode.accept_all);
 		MobilisManager.getInstance().setRuntimeRoster(runtimeRoster);

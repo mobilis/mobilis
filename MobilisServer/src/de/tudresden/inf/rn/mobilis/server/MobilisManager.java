@@ -54,6 +54,7 @@ import org.jivesoftware.smack.Roster.SubscriptionMode;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smackx.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
 import org.jivesoftware.smackx.packet.DiscoverItems.Item;
 
@@ -1071,7 +1072,18 @@ public class MobilisManager {
 	private Roster discoveryRoster;
 	private Boolean reinstalling = false;
 	private EntityCapsManager capsManager;
+	private ServiceDiscoveryManager serviceDiscoveryManager;
 	
+	
+	public ServiceDiscoveryManager getServiceDiscoveryManager() {
+		return serviceDiscoveryManager;
+	}
+
+	public void setServiceDiscoveryManager(
+			ServiceDiscoveryManager serviceDiscoveryManager) {
+		this.serviceDiscoveryManager = serviceDiscoveryManager;
+	}
+
 	//this Map is needed for pulling new ServiceJids created in the installAndConfigureAndRegisterServiceFromFile Method by the DiscoveryService:
 	//Long Version: DiscoveryService calls installAndConfigureAndRegisterServiceFromFile(), but has no idea what the JID of the new Service will be, cause the jid is build out
 	//of the ServiceName and the name part of the Runtime JID. The ServiceName is hide in the ServiceContainer until its first unpack in the installAndConfigureAndRegisterServiceFromFile Method.
