@@ -16,13 +16,23 @@ public class PublishNewServiceBean extends XMPPBean {
 	public static final String CHILD_ELEMENT = "publishNewService";
 	
 	public String newServiceJID;
+	public boolean successfullyAddedService;
+	private String _xmlTag_AcceptAddService = "acceptAddService";
+	
+	/*
+	 * Empty Constructor
+	 */
+	public PublishNewServiceBean() {
+		super();
+	}
 	
 	/*
 	 * Constructor to send a Result
 	 */
-	public PublishNewServiceBean() {
+	public PublishNewServiceBean(boolean successfullyAddedService) {
 		super();
 		this.type=XMPPBean.TYPE_RESULT;
+		this.successfullyAddedService = successfullyAddedService;
 	}
 	
 	/*
@@ -99,9 +109,16 @@ public class PublishNewServiceBean extends XMPPBean {
 		
 		StringBuilder sb = new StringBuilder()
 				.append("<").append(childElement).append(" ");
-				
-		if (this.newServiceJID!=null) sb.append("newservicejid=\"").append(this.newServiceJID).append("\" ");
-						
+		if (getType() == XMPPBean.TYPE_SET) {
+			if (this.newServiceJID!=null) sb.append("newservicejid=\"").append(this.newServiceJID).append("\" ");
+		}
+		
+		if (getType() == XMPPBean.TYPE_RESULT) {
+			sb.append("<" + _xmlTag_AcceptAddService + ">")
+			.append(this.successfullyAddedService)
+			.append("</" + _xmlTag_AcceptAddService + ">");	
+		}
+		
 		sb.append(" />");				
 		
 		return sb.toString();

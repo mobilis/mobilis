@@ -570,7 +570,6 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			//delete XMPP Account of Service: Step 2
 			if(!con.isConnected()){
 				try {
-					
 					con.connect();
 				}	catch (XMPPException e3) {
 					// TODO Auto-generated catch block
@@ -578,7 +577,6 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			}
 			if(!con.isAuthenticated()){
 				try {
-					
 					con.login(username, password);
 				}	catch (XMPPException e2) {
 					// TODO Auto-generated catch block

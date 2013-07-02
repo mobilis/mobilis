@@ -963,7 +963,9 @@ public class MobilisManager {
 				
 				//add service jid to runtime roster
 				String newServiceJID = username + "@" + getAgent(defaultValueAgent).getSettingString( "host" ).toString();
-				newServiceJIDs.put(date, newServiceJID);
+				if(date!=null){
+					newServiceJIDs.put(date, newServiceJID);
+				}
 				if(!serverRestart){
 				String[] groups = {"services"};
 				try {
