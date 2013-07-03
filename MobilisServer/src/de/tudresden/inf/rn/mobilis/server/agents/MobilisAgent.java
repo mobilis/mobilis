@@ -284,11 +284,16 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(mConnection);
 
 		// ServiceDiscovery (feature) http://rn.inf.tu-dresden.de/mobilis
-		try {
-			sdm.removeFeature(MobilisManager.discoNamespace);
-		} catch (Exception e) {
-			MobilisManager.getLogger().warning("Problem with ServiceDiscoveryManager: " + e.getMessage());
-		}
+
+		//not used anymore. Cause of introduction of Entity Caps, the capManager sends new presence if features
+		//have changed. If the updated presence send by the entity caps manager received clients after 
+		//the unaivailable presence send by the shutdown sequence, it could result in online presence 
+		//state on distant clients while node is offline.
+//		try {
+//			sdm.removeFeature(MobilisManager.discoNamespace);
+//		} catch (Exception e) {
+//			MobilisManager.getLogger().warning("Problem with ServiceDiscoveryManager: " + e.getMessage());
+//		}
 
 		// ServiceDiscovery (info+items) http://rn.inf.tu-dresden.de/mobilis#services
 		try {
