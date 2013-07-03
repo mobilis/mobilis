@@ -1045,8 +1045,15 @@ public class MobilisManager {
 					serviceContainer.startNewServiceInstance();
 				}
 				else {
+					//starts a single disovery agent for the new service. It is necessary for discovering services on other runtimes, 
+					//that have no instances running. it provides the service information by telling other runtimes his entity capabilities and presence
 					try {
-						this.getAgent(serviceContainer.getAgentId()).startup();
+						String aId = serviceContainer.getAgentId();
+						MobilisAgent ma = this.getAgent(aId);
+						mAgents.put(aId, ma);
+						ma.setDiscoName(serviceContainer.getServiceName());
+						ma.setDiscoVer(Integer.toString((serviceContainer.getServiceVersion())));
+						ma.startup();
 					} catch (XMPPException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

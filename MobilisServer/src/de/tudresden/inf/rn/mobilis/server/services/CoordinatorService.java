@@ -169,7 +169,7 @@ public class CoordinatorService extends MobilisService {
 							  if(dInfo != null){
 								  for ( Iterator<Feature> infos  = dInfo.getFeatures(); infos.hasNext(); ){
 									  String s = infos.next().getVar();
-									  if (s.contains("urn:mobilis:service:")){
+									  if (s.contains("urn:mobilis:service:") || s.contains("urn:mobilis:servicediscoverynode:")){
 										  caps += s;
 									  }
 								  }

@@ -568,30 +568,32 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			
 			
 			//delete XMPP Account of Service: Step 2
-			if(!con.isConnected()){
-				try {
-					con.connect();
-				}	catch (XMPPException e3) {
-					// TODO Auto-generated catch block
+			if((!MobilisManager.getInstance().getReinstalling())){
+				if((!con.isConnected())){
+					try {
+						con.connect();
+					}	catch (XMPPException e3) {
+						// TODO Auto-generated catch block
+					}
 				}
-			}
-			if(!con.isAuthenticated()){
-				try {
-					con.login(username, password);
-				}	catch (XMPPException e2) {
-					// TODO Auto-generated catch block
-					System.out.println("ARG2");
+				if(!con.isAuthenticated()){
+					try {
+						con.login(username, password);
+					}	catch (XMPPException e2) {
+						// TODO Auto-generated catch block
+						System.out.println("ARG2");
+					}
 				}
-			}
-			try {
-					con.getAccountManager().deleteAccount();
-					con.disconnect();
-			} catch (XMPPException e1) {
-						System.out.println("Can't delete Account! Reason: " + e1.getMessage());
-			}
-				
-			System.out.println("Account " + username + " erfolgreich gelöscht");
+				try {
+						con.getAccountManager().deleteAccount();
+						con.disconnect();
+				} catch (XMPPException e1) {
+							System.out.println("Can't delete Account! Reason: " + e1.getMessage());
+				}
 
+				System.out.println("Account " + username + " erfolgreich gelöscht");
+			}
+			
 			MobilisManager
 					.getLogger()
 					.log(Level.INFO,

@@ -56,7 +56,10 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 	private Connection mConnection = null;
 	private String fullJid = null;
 	private EntityCapsManager capsMaganger;
-	private ServiceDiscoveryManager sdm;
+	private ServiceDiscoveryManager serviceDiscoveryManager;
+	private String discoName="";
+	private String discoVer="";
+	
 	
 	private final Set<MobilisService> mServices = Collections.synchronizedSet(new HashSet<MobilisService>());
 	private final Map<String, Object> mDefaultSettings = Collections.synchronizedMap(new HashMap<String, Object>());
@@ -214,21 +217,26 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		mConnection.login(username, password, resource);
 		mConnection.addConnectionListener(this);
 
-		sdm = ServiceDiscoveryManager.getInstanceFor(mConnection);
+		serviceDiscoveryManager = ServiceDiscoveryManager.getInstanceFor(mConnection);
 		capsMaganger = EntityCapsManager.getInstanceFor(mConnection);
 		capsMaganger.enableEntityCaps();
-		sdm.setEntityCapsManager(capsMaganger);
+		serviceDiscoveryManager.setEntityCapsManager(capsMaganger);
 		
 		// Set on every established connection that this client supports the Mobilis
 		// protocol. This information will be used when another client tries to
 		// discover whether this client supports Mobilis or not.
 		try {
-			sdm.addFeature(MobilisManager.discoNamespace);
+			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace);
 		} catch (Exception e) {
 			MobilisManager.getLogger().warning("Problem with ServiceDiscoveryManager: " + e.getMessage());
 		}
 		for(MobilisService ms : mServices){
-			sdm.addFeature("urn:mobilis:service:"+ ms.getName() + ":" + ms.getVersion());
+			serviceDiscoveryManager.addFeature("urn:mobilis:service:"+ ms.getName() + ":" + ms.getVersion());
+		}
+		if(discoName.length()>0 && discoVer.length()>0){
+			serviceDiscoveryManager.addFeature("urn:mobilis:servicediscoverynode:" + discoName + ":" + discoVer);
+			discoName="";
+			discoVer="";
 		}
 		capsMaganger.updateLocalEntityCaps();
 
@@ -236,7 +244,7 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 			for (MobilisService ms : mServices) {
 				try {
 					ms.startup();
-					sdm.setNodeInformationProvider(ms.getNode(), ms);
+					serviceDiscoveryManager.setNodeInformationProvider(ms.getNode(), ms);
 				} catch (Exception e) {
 					MobilisManager.getLogger().warning("Couldn't startup Mobilis Service (" + ms.getIdent() + ") because of " + e.getClass().getName() + ": " + e.getMessage());
 				}
@@ -246,7 +254,7 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		// Set the NodeInformationProvider that will provide information about the
 		// offered services whenever a disco request is received
 		try {
-			sdm.setNodeInformationProvider(MobilisManager.discoServicesNode, this);
+			serviceDiscoveryManager.setNodeInformationProvider(MobilisManager.discoServicesNode, this);
 		} catch (Exception e) {
 			MobilisManager.getLogger().warning("Problem with NodeInformationProvider: " + MobilisManager.discoServicesNode + " (" + getIdent() + ") " + e.getMessage());
 		}
@@ -453,6 +461,31 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 	public List<PacketExtension> getNodePacketExtensions() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public ServiceDiscoveryManager getServiceDiscoveryManager() {
+		return serviceDiscoveryManager;
+	}
+
+	public void setServiceDiscoveryManager(
+			ServiceDiscoveryManager serviceDiscoveryManager) {
+		this.serviceDiscoveryManager = serviceDiscoveryManager;
+	}
+
+	public String getDiscoName() {
+		return discoName;
+	}
+
+	public void setDiscoName(String discoName) {
+		this.discoName = discoName;
+	}
+
+	public String getDiscoVer() {
+		return discoVer;
+	}
+
+	public void setDiscoVer(String discoVer) {
+		this.discoVer = discoVer;
 	}
 
 }
