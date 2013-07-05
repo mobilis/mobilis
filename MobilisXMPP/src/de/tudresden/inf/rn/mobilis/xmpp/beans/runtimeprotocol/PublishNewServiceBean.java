@@ -17,22 +17,14 @@ public class PublishNewServiceBean extends XMPPBean {
 	
 	public String newServiceJID;
 	public boolean successfullyAddedService;
-	private String _xmlTag_AcceptAddService = "acceptAddService";
-	
-	/*
-	 * Empty Constructor
-	 */
-	public PublishNewServiceBean() {
-		super();
-	}
+	private String _xmlTag_ServiceJID = "serviceJID";
 	
 	/*
 	 * Constructor to send a Result
 	 */
-	public PublishNewServiceBean(boolean successfullyAddedService) {
+	public PublishNewServiceBean() {
 		super();
 		this.type=XMPPBean.TYPE_RESULT;
-		this.successfullyAddedService = successfullyAddedService;
 	}
 	
 	/*
@@ -62,10 +54,9 @@ public class PublishNewServiceBean extends XMPPBean {
 			case XmlPullParser.START_TAG:
 				String tagName = parser.getName();
 				if (tagName.equals(CHILD_ELEMENT)) {
-					for (int i = 0; i < parser.getAttributeCount(); i++)
-						if (parser.getAttributeName(i).equals("newservicejid"))
-							this.newServiceJID = parser.getAttributeValue(i);	
-					parser.next();				
+					parser.next();
+				} else if (tagName.equals(_xmlTag_ServiceJID)) {
+					this.newServiceJID = parser.nextText();
 				} else if (tagName.equals("error")) {
 					parser = parseErrorAttributes(parser);
 				} else
@@ -83,7 +74,14 @@ public class PublishNewServiceBean extends XMPPBean {
 			default:
 				parser.next();
 			}
-		} while (!done);		
+		} while (!done);
+		parser.next();
+		if(parser.getName().equals("error")){
+			this.errorType = parser.getAttributeValue(1);
+			parser.next();
+			this.errorCondition = parser.getName();
+			this.errorText = parser.getName();
+		}
 	}
 
 	@Override
@@ -106,20 +104,15 @@ public class PublishNewServiceBean extends XMPPBean {
 
 	@Override
 	public String payloadToXML() {
-		String childElement = MobilisServiceInfo.CHILD_ELEMENT;
 		
 		StringBuilder sb = new StringBuilder();
 				
 		if (getType() == XMPPBean.TYPE_SET) {
-			sb.append("<").append(childElement).append(" ");
-			if (this.newServiceJID!=null) sb.append("newservicejid=\"").append(this.newServiceJID).append("\" ");
-			sb.append(" />");
-		}
-		
-		if (getType() == XMPPBean.TYPE_RESULT) {
-			sb.append("<" + _xmlTag_AcceptAddService + ">")
-			.append(this.successfullyAddedService)
-			.append("</" + _xmlTag_AcceptAddService + ">");	
+			if(this.newServiceJID!=null){
+			sb.append("<" + _xmlTag_ServiceJID + ">")
+			.append(this.newServiceJID)
+			.append("</" + _xmlTag_ServiceJID + ">");	
+			}
 		}
 		
 		sb = appendErrorPayload(sb);

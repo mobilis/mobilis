@@ -369,6 +369,8 @@ public class DeploymentService extends MobilisService {
 							handlePublishNewServiceBean((PublishNewServiceBean) inBean);
 						if(inBean.getType() == XMPPBean.TYPE_ERROR)
 							handlePublishNewServiceErrorBean((PublishNewServiceBean) inBean);
+						if(inBean.getType() == XMPPBean.TYPE_RESULT);
+							//// Do nothing, just ack
 				} else {
 					handleUnknownBean( inBean );
 				}
@@ -390,7 +392,7 @@ public class DeploymentService extends MobilisService {
 				try {
 					runtimeRoster.createEntry(inBean.getNewServiceJID(), inBean.getNewServiceJID(), groups);
 					outBean = BeanHelper
-							.CreateResultBean( inBean, new PublishNewServiceBean( true ) );
+							.CreateResultBean( inBean, new PublishNewServiceBean() );
 				} catch (XMPPException e) {
 					System.out.println("Error while adding new Service JID to lokal Roster. Reason: " + e.getMessage());
 					outBean = BeanHelper.CreateErrorBean( inBean, "modify", "unexpected-error",
@@ -399,6 +401,7 @@ public class DeploymentService extends MobilisService {
 			} else {
 				outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
 						(StringUtils.parseBareAddress(inBean.getFrom()) + " is not an authorized Runtime of " + inBean.getTo() + ". Publish new service denied.") );
+				((PublishNewServiceBean) outBean).setNewServiceJID(inBean.getNewServiceJID());
 			}
 			
 			getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
@@ -411,7 +414,7 @@ public class DeploymentService extends MobilisService {
 		private void handlePublishNewServiceErrorBean(
 				PublishNewServiceBean inBean) {
 			System.out.println("Error while trying to publish a new Service to Runtime " + inBean.getFrom() + ". Reason: " + inBean.errorText );
-			System.out.println("Dienst JID" + inBean.getNewServiceJID());
+			System.out.println("Dienst JID: " + inBean.getNewServiceJID());
 		}
 		
 		/**
