@@ -1,5 +1,6 @@
 package de.tudresden.inf.rn.mobilis.xmpp.beans.runtimeprotocol;
 
+import org.jivesoftware.smack.packet.XMPPError;
 import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.Mobilis;
@@ -96,7 +97,7 @@ public class PublishNewServiceBean extends XMPPBean {
 
 	@Override
 	public PublishNewServiceBean clone() {
-		PublishNewServiceBean twin = new PublishNewServiceBean(newServiceJID);		
+		PublishNewServiceBean twin = new PublishNewServiceBean(this.newServiceJID);		
 				
 		twin = (PublishNewServiceBean) cloneBasicAttributes(twin);
 		return twin;
@@ -113,6 +114,14 @@ public class PublishNewServiceBean extends XMPPBean {
 			.append(this.newServiceJID)
 			.append("</" + _xmlTag_ServiceJID + ">");	
 			}
+		}
+		
+		if(getType() == XMPPBean.TYPE_ERROR){
+			if(this.newServiceJID!=null){
+				sb.append("<" + _xmlTag_ServiceJID + ">")
+				.append(this.newServiceJID)
+				.append("</" + _xmlTag_ServiceJID + ">");	
+				}
 		}
 		
 		sb = appendErrorPayload(sb);

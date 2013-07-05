@@ -401,7 +401,6 @@ public class DeploymentService extends MobilisService {
 			} else {
 				outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
 						(StringUtils.parseBareAddress(inBean.getFrom()) + " is not an authorized Runtime of " + inBean.getTo() + ". Publish new service denied.") );
-				((PublishNewServiceBean) outBean).setNewServiceJID(inBean.getNewServiceJID());
 			}
 			
 			getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
