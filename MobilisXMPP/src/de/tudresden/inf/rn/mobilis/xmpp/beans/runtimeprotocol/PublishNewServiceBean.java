@@ -54,24 +54,25 @@ public class PublishNewServiceBean extends XMPPBean {
 
 	@Override
 	public void fromXML(XmlPullParser parser) throws Exception {
-		String childElement = MobilisServiceInfo.CHILD_ELEMENT;
-		
+		//String childElement = MobilisServiceInfo.CHILD_ELEMENT;
 		boolean done = false;
 
 		do {
 			switch (parser.getEventType()) {
 			case XmlPullParser.START_TAG:
 				String tagName = parser.getName();
-				if (tagName.equals(childElement)) {
+				if (tagName.equals(CHILD_ELEMENT)) {
 					for (int i = 0; i < parser.getAttributeCount(); i++)
 						if (parser.getAttributeName(i).equals("newservicejid"))
 							this.newServiceJID = parser.getAttributeValue(i);	
 					parser.next();				
+				} else if (tagName.equals("error")) {
+					parser = parseErrorAttributes(parser);
 				} else
 					parser.next();
 				break;
 			case XmlPullParser.END_TAG:
-				if (parser.getName().equals(childElement))
+				if (parser.getName().equals(CHILD_ELEMENT))
 					done = true;
 				else
 					parser.next();
@@ -121,7 +122,7 @@ public class PublishNewServiceBean extends XMPPBean {
 			.append("</" + _xmlTag_AcceptAddService + ">");	
 		}
 		
-					
+		sb = appendErrorPayload(sb);
 		
 		return sb.toString();
 	}

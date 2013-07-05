@@ -364,15 +364,18 @@ public class DeploymentService extends MobilisService {
 				} else if ( inBean instanceof ServiceUploadConclusionBean
 						&& inBean.getType() == XMPPBean.TYPE_RESULT ) {
 					// Do nothing, just ack
-				} else if ( inBean instanceof PublishNewServiceBean
-						&& inBean.getType() == XMPPBean.TYPE_SET ) {
-					handlePublishNewServiceBean((PublishNewServiceBean) inBean);
+				} else if ( inBean instanceof PublishNewServiceBean){
+						if(inBean.getType() == XMPPBean.TYPE_SET )
+							handlePublishNewServiceBean((PublishNewServiceBean) inBean);
+						if(inBean.getType() == XMPPBean.TYPE_ERROR)
+							handlePublishNewServiceErrorBean((PublishNewServiceBean) inBean);
 				} else {
 					handleUnknownBean( inBean );
 				}
 			}
 		}
 		
+
 		/**
 		 * Handle incoming Request to add new ServiceJID to the Roster
 		 * @param inBean
@@ -400,7 +403,17 @@ public class DeploymentService extends MobilisService {
 			
 			getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
 		}
-
+		
+		/**
+		 * Handle an occouring Error while Publishing a new Service
+		 * @param inBean
+		 */
+		private void handlePublishNewServiceErrorBean(
+				PublishNewServiceBean inBean) {
+			System.out.println("Error while trying to publish a new Service to Runtime " + inBean.getFrom() + ". Reason: " + inBean.errorText );
+			System.out.println("Dienst JID" + inBean.getNewServiceJID());
+		}
+		
 		/**
 		 * Handle unknown bean.
 		 * 

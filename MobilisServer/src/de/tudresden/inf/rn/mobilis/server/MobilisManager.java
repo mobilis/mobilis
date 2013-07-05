@@ -558,7 +558,16 @@ public class MobilisManager {
 	
 	public void addAgent(MobilisAgent agent) {
 		synchronized (mAgents) {
+			if(!mAgents.containsKey(agent.getIdent())){
 			mAgents.put(agent.getIdent(), agent);
+			}
+			/*
+			 * Workaround: all agents for every resource of a service have the same ID. If new resource agent for the service
+			 * was added, it wiped last agent for the same service that has put in the map before cause they use the same key (agentIdent)
+			 */
+			else{
+				mAgents.put(agent.getResource(), agent);
+			}
 		}
 	}
 	
