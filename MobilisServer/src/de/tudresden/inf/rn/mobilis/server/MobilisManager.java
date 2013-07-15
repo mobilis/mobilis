@@ -27,7 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,7 +52,6 @@ import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.Roster.SubscriptionMode;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
 import org.jivesoftware.smackx.packet.DiscoverItems.Item;
@@ -523,7 +521,7 @@ public class MobilisManager {
 							getLogger().severe("Couldn't shutdown agent: " + key);
 						}
 					}
-					//mAgents.clear();
+					mAgents.clear();
 				}
 				synchronized (_serviceContainers) {
 					persistServices();
@@ -1060,7 +1058,7 @@ public class MobilisManager {
 						String aId = serviceContainer.getAgentId();
 						MobilisAgent ma = this.getAgent(aId);
 						mAgents.put(aId, ma);
-						ma.setDiscoName(serviceContainer.getServiceName());
+						ma.setDiscoName(serviceContainer.getServiceNamespace().replace("http://mobilis.inf.tu-dresden.de#services/", ""));
 						ma.setDiscoVer(Integer.toString((serviceContainer.getServiceVersion())));
 						ma.startup();
 					} catch (XMPPException e) {

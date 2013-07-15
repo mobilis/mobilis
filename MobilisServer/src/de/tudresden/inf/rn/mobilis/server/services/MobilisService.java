@@ -47,7 +47,10 @@ public abstract class MobilisService implements PacketListener, NodeInformationP
     
     private String _serviceName = null;
 	private boolean suicideMode = false;
-    
+	
+	//necessary cause serviceNamespace returned by getNamespace() differs from Namespaces in Service MSDL. But MDSL ServiceNamespace is needed for ServiceDiscovery
+    private String _serviceNamespace = "";
+	
     public MobilisService() {
 		mUserSettings = Collections.synchronizedMap(new HashMap<String, Map<String, Object>>());
 		try {
@@ -295,6 +298,14 @@ public abstract class MobilisService implements PacketListener, NodeInformationP
 
 	@Override
 	public void processPacket(Packet arg0) {
+	}
+
+	public String get_serviceNamespace() {
+		return _serviceNamespace;
+	}
+
+	public void set_serviceNamespace(String _serviceNamespace) {
+		this._serviceNamespace = _serviceNamespace;
 	}
     
 }

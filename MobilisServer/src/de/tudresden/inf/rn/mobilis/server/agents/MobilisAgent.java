@@ -37,6 +37,7 @@ import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.NodeInformationProvider;
 import org.jivesoftware.smackx.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
@@ -225,17 +226,21 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		// Set on every established connection that this client supports the Mobilis
 		// protocol. This information will be used when another client tries to
 		// discover whether this client supports Mobilis or not.
-		try {
+/*		try {
 			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace);
 		} catch (Exception e) {
 			MobilisManager.getLogger().warning("Problem with ServiceDiscoveryManager: " + e.getMessage());
-		}
+		}*/
+		//discoinfo for a concrete service instance
 		for(MobilisService ms : mServices){
-			serviceDiscoveryManager.addFeature("urn:mobilis:service:"+ ms.getName() + ":" + ms.getVersion());
+			String discoNamespace = ms.get_serviceNamespace().replace("http://mobilis.inf.tu-dresden.de#services/", "");
+			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace + "/instance#name=" + discoNamespace + ",version=" + ms.getVersion());
 		}
+		//discoinfo for service installed on runtime
 		if(discoName.length()>0 && discoVer.length()>0){
-			serviceDiscoveryManager.addFeature("urn:mobilis:servicediscoverynode:" + discoName + ":" + discoVer);
-			discoName="";
+			String runtimeJID = MobilisManager.getInstance().getAgent("deployment").getSettingString("username") + "@" + MobilisManager.getInstance().getAgent("deployment").getSettingString("host");
+			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace + "/service#name=" + discoName + ",version=" + discoVer + ",rt=" + runtimeJID);
+			//discoName="";
 			discoVer="";
 		}
 		capsMaganger.updateLocalEntityCaps();

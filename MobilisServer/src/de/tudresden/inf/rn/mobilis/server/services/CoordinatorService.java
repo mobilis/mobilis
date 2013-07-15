@@ -169,7 +169,7 @@ public class CoordinatorService extends MobilisService {
 							  if(dInfo != null){
 								  for ( Iterator<Feature> infos  = dInfo.getFeatures(); infos.hasNext(); ){
 									  String s = infos.next().getVar();
-									  if (s.contains("urn:mobilis:service:") || s.contains("urn:mobilis:servicediscoverynode:")){
+									  if (s.contains(MobilisManager.discoNamespace)){
 										  caps += s;
 									  }
 								  }
@@ -195,7 +195,7 @@ public class CoordinatorService extends MobilisService {
 			//Empty request for all active services
 			beanAnswer = new MobilisServiceDiscoveryBean(null);	
 			
-			// query all ServiceContainers which are available
+			// query all ServiceContainers which are available on local server
 			for ( ServiceContainer container : MobilisManager.getInstance().getAllServiceContainers() ) {
 				// filter collected ServiceContainers by active(registered) containers
 				if(container.getContainerState() == ServiceContainerState.ACTIVE){
@@ -274,6 +274,9 @@ public class CoordinatorService extends MobilisService {
 					}
 				}
 			}
+			
+			// query all services registered on remote runtimes in the "services" Rostergroup
+			
 		}	
 		
 		beanAnswer.setTo(from); beanAnswer.setFrom(to);

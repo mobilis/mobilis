@@ -251,6 +251,8 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			}
 			mobilisService.setVersion(this.getServiceVersion());
 			mobilisService.setName(this.getServiceName());
+			
+			mobilisService.set_serviceNamespace(this.getServiceNamespace());
 			// Get an XMPP resource for the new agent, that is not already in
 			// use.
 			String agentIdent = this.getAgentId();
