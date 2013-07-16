@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.Roster;
@@ -195,6 +196,7 @@ public class CoordinatorService extends MobilisService {
 			//Empty request for all active services
 			beanAnswer = new MobilisServiceDiscoveryBean(null);	
 			
+			
 			// query all ServiceContainers which are available on local server
 			for ( ServiceContainer container : MobilisManager.getInstance().getAllServiceContainers() ) {
 				// filter collected ServiceContainers by active(registered) containers
@@ -217,6 +219,55 @@ public class CoordinatorService extends MobilisService {
 						serviceInfo.setJid(container.getRunningServiceInstances().keySet().iterator().next());
 					}
 					
+					beanAnswer.addDiscoveredService(serviceInfo);
+				}
+			}
+			
+			// query all services registered on remote runtimes in the "services" Rostergroup
+			if(rg != null){
+				//check all entries from the "services" RosterGroup
+				for(RosterEntry entry : rg.getEntries()){
+					int numberOfInstances = 0;
+					MobilisServiceInfo serviceInfo = new MobilisServiceInfo();
+					//get resources for every entry and then the serviceDiscoveryInfo for every resource
+					for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
+					{
+						
+						Presence presence = iter.next();
+						
+						String fullJIDofService =  presence.getFrom();
+						
+						//just look for online services
+						if(!runtimeRoster.getPresenceResource(fullJIDofService).toString().equals("unavailable")){
+							DiscoverInfo dInfo;
+							try {
+								dInfo = MobilisManager.getInstance().getServiceDiscoveryManager().discoverInfo(fullJIDofService);
+								String caps="";
+								 
+								  //Alle Feature vars des DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
+								  if(dInfo != null){
+									  for ( Iterator<Feature> infos  = dInfo.getFeatures(); infos.hasNext(); ){
+										  String s = infos.next().getVar();
+										 
+										  if (s.contains(MobilisManager.discoNamespace + "/service#")){
+											  s = s.replace("http://mobilis.inf.tu-dresden.de/service#", "");
+											  String[] segs = s.split( Pattern.quote( "," ) );
+											  serviceInfo.setServiceNamespace("http://mobilis.inf.tu-dresden.de#services/" + segs[0].replaceFirst("name=", ""));
+											  serviceInfo.setVersion(segs[1].replaceFirst("version=", ""));
+											  serviceInfo.setMode("multi");
+										  }
+										  if (s.contains(MobilisManager.discoNamespace + "/instance#name=")){
+											  numberOfInstances++;
+										  }
+									  }
+								  }
+							} catch (XMPPException e) {
+								// TODO Auto-generated catch block
+								//e.printStackTrace();
+							}
+						}
+					}
+					serviceInfo.setInstances(numberOfInstances);
 					beanAnswer.addDiscoveredService(serviceInfo);
 				}
 			}
@@ -275,8 +326,73 @@ public class CoordinatorService extends MobilisService {
 				}
 			}
 			
-			// query all services registered on remote runtimes in the "services" Rostergroup
-			
+			// query all services instances on remote runtimes in the "services" Rostergroup
+			if(rg != null){
+				//check all entries from the "services" RosterGroup
+				for(RosterEntry entry : rg.getEntries()){
+					
+					//get resources for every entry and then the serviceDiscoveryInfo for every resource
+					for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
+					{
+						
+						Presence presence = iter.next();
+						
+						String fullJIDofService =  presence.getFrom();
+						System.out.println(fullJIDofService);
+						//just look for online services
+						if(!runtimeRoster.getPresenceResource(fullJIDofService).toString().equals("unavailable")){
+							DiscoverInfo dInfo;
+							try {
+								dInfo = MobilisManager.getInstance().getServiceDiscoveryManager().discoverInfo(fullJIDofService);
+								String caps="";
+								 
+								  //Alle Feature vars des DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
+								  if(dInfo != null){
+									  Iterator<Feature> infos  = dInfo.getFeatures();
+									  boolean notReady=true;
+									  
+									  //testen ob service caps dem angeforderten NS bzw. Version des DiscoBeans entsprechen. Wenn ja ServiceInfo hinzufügen
+									  while(infos.hasNext() && notReady){
+										  String s = infos.next().getVar();
+										  
+										  //fast check for service agent. if not same ns / version -> skip to next presence
+										  if (s.contains(MobilisManager.discoNamespace + "/service#")){
+											  s = s.replace("http://mobilis.inf.tu-dresden.de/service#", "");
+											  String[] segs = s.split( Pattern.quote( "," ) );
+											  if(bean.serviceNamespace.equals(("http://mobilis.inf.tu-dresden.de#services/" + segs[0].replaceFirst("name=", "")))){
+												  if((bean.serviceVersion<0) || Integer.toString(bean.serviceVersion).equals(segs[1].replaceFirst("version=", ""))){
+													  notReady=false;
+												  } else notReady=false;
+											  } else notReady=false;
+											  
+										  }
+										  // check for serviceinstance agents. if not same ns / version -> skip to next presence
+										  if (s.contains(MobilisManager.discoNamespace + "/instance#")){
+											  s = s.replace("http://mobilis.inf.tu-dresden.de/instance#", "");
+											  String[] segs = s.split( Pattern.quote( "," ) );
+											  if(bean.serviceNamespace.equals(("http://mobilis.inf.tu-dresden.de#services/" + segs[0].replaceFirst("name=", "")))){
+												  if((bean.serviceVersion<0) || Integer.toString(bean.serviceVersion).equals(segs[1].replaceFirst("version=", ""))){
+													  MobilisServiceInfo serviceInfo = new MobilisServiceInfo();
+													  serviceInfo.setServiceNamespace("http://mobilis.inf.tu-dresden.de#services/" + segs[0].replaceFirst("name=", ""));
+													  serviceInfo.setVersion(segs[1].replaceFirst("version=", ""));
+													  serviceInfo.setJid( fullJIDofService );
+													  serviceInfo.setServiceName( "dummy Service Name" );
+													  beanAnswer.addDiscoveredService(serviceInfo);
+													  notReady=false;
+												  } else notReady=false;
+											  } else notReady=false;
+												
+										  }
+									  }
+								  }
+							} catch (XMPPException e) {
+								// TODO Auto-generated catch block
+								//e.printStackTrace();
+							}
+						}
+					}
+				}
+			}
 		}	
 		
 		beanAnswer.setTo(from); beanAnswer.setFrom(to);
