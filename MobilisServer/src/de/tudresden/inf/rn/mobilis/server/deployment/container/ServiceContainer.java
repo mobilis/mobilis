@@ -531,7 +531,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 					e4.printStackTrace();
 				}
 				
-				RosterGroup rg = MobilisManager.getInstance().getRuntimeRoster().getGroup(this.getServiceName()+this.getServiceVersion());
+				RosterGroup rg = MobilisManager.getInstance().getRuntimeRoster().getGroup(MobilisManager.securityUserGroup + this.getServiceName()+this.getServiceVersion());
 				if(rg!=null){
 					for(RosterEntry rEntry : rg.getEntries()){
 						try {

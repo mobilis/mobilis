@@ -604,7 +604,7 @@ public class AdminService extends MobilisService {
 		//wenn gruppe existiert, existiert dienst
 		if(runtimeRoster.getGroup(serviceName+version)!=null){
 			//In Gruppe schauen ob requestNutzer in Security Gruppe ist
-			if(runtimeRoster.getGroup(serviceName+version).getEntry(StringUtils.parseBareAddress(from))!=null){
+			if(runtimeRoster.getGroup(MobilisManager.securityUserGroup + serviceName+version).getEntry(StringUtils.parseBareAddress(from))!=null){
 				return true;
 			} else {
 				return false;

@@ -188,15 +188,15 @@ public class DeploymentService extends MobilisService {
 							} catch (InstallServiceException e) {
 							}
 							Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
-							RosterGroup rg = runtimeRoster.getGroup(serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
+							RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityUserGroup + serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
 							String jid = StringUtils.parseBareAddress(request.getRequestor());
 							Date date = new Date();
 							//if roustergroup for service doesn't exist installing new service is allowed for all deploy users
 							if(rg==null){
 								message += MobilisManager.getInstance().installAndConfigureAndRegisterServiceFromFile(
 										incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null, false, date);
-								//create RosterGroup with GroupName=(serviceName+serviceVersion) as Security Group and add uploading User to group
-								rg = runtimeRoster.createGroup(serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
+								//create RosterGroup with GroupName=(serviceName+serviceVersion) as Security User Group and add uploading User to group
+								rg = runtimeRoster.createGroup(MobilisManager.securityUserGroup + serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
 								try {
 									rg.addEntry(runtimeRoster.getEntry(jid));
 								} catch (XMPPException e) {
@@ -284,14 +284,15 @@ public class DeploymentService extends MobilisService {
 	private void sendPublishNewServiceBeanSET(String newServiceJID){
 
 		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
-		RosterGroup rg = runtimeRoster.getGroup("runtimes");
-		
-		for(RosterEntry entry : rg.getEntries()){
-			PublishNewServiceBean bean = new PublishNewServiceBean(newServiceJID);
-			String recipientJIDOfRuntime = entry.getUser() + "/Deployment";
-			bean.setTo(recipientJIDOfRuntime);
-			bean.setType(XMPPBean.TYPE_SET);
-			getAgent().getConnection().sendPacket( new BeanIQAdapter( bean ) );
+		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup +"runtimes");
+		if(rg!=null){
+			for(RosterEntry entry : rg.getEntries()){
+				PublishNewServiceBean bean = new PublishNewServiceBean(newServiceJID);
+				String recipientJIDOfRuntime = entry.getUser() + "/Deployment";
+				bean.setTo(recipientJIDOfRuntime);
+				bean.setType(XMPPBean.TYPE_SET);
+				getAgent().getConnection().sendPacket( new BeanIQAdapter( bean ) );
+			}
 		}
 		
 	}
@@ -384,7 +385,7 @@ public class DeploymentService extends MobilisService {
 		 */
 		private void handlePublishNewServiceBean(PublishNewServiceBean inBean) {
 			Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
-			RosterGroup rg = runtimeRoster.getGroup("runtimes");
+			RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup + "runtimes");
 			XMPPBean outBean = null;
 			if(rg.getEntry(StringUtils.parseBareAddress(inBean.getFrom()))!=null){
 				//if requestor is an accepted runtime, add new service JID to rostergroup services
@@ -437,8 +438,9 @@ public class DeploymentService extends MobilisService {
 		private void handlePrepareServiceUploadBean( PrepareServiceUploadBean inBean ) {
 			XMPPBean outBean = null;
 			
+			MobilisManager.getInstance();
 			// If user is in the deploy security rostergroup of the runtime, proceed. Else send not authorized error.
-			if(MobilisManager.getInstance().getRuntimeRoster().getGroup("deploy").contains(inBean.getFrom())){
+			if(MobilisManager.getInstance().getRuntimeRoster().getGroup(MobilisManager.securityUserGroup +"deploy").contains(inBean.getFrom())){
 				// if no name was set, respond an error
 				if ( null == inBean.Filename || inBean.Filename.length() < 1 ) {
 					outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
@@ -485,16 +487,9 @@ public class DeploymentService extends MobilisService {
 		MobilisManager.getInstance().setRuntimeRoster(runtimeRoster);
 		MobilisManager.getInstance().setCapsManager(capsManager);
 		//if not already existing, generate standard security group for uploading files
-		if(runtimeRoster.getGroup("deploy")==null){
-			runtimeRoster.createGroup("deploy");
-		}
-		
-//		System.out.println("Runtimes Roster");
-//		System.out.println("Rostergruppen:" + runtimeRoster.getGroups().toString());
-//		for (RosterEntry rEntry : runtimeRoster.getEntries()){
-//			System.out.println("Rostereintrag: " + rEntry + " Gruppen: " + rEntry.getGroups().toString());
-//		}
-		
+		if(runtimeRoster.getGroup(MobilisManager.securityUserGroup + "deploy")==null){
+			runtimeRoster.createGroup(MobilisManager.securityUserGroup + "deploy");
+		}	
 
 	}
 

@@ -147,8 +147,8 @@ public class CoordinatorService extends MobilisService {
 		
 		//Roster und Rostergruppe der registrierten Dienste holen
 		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
-		RosterGroup rg = runtimeRoster.getGroup("services");
-		if(rg != null){
+		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.remoteServiceGroup + "services");
+		/*if(rg != null){
 			//alle Einträge der Dienste Rostergruppe durchsuchen
 			for(RosterEntry entry : rg.getEntries()){
 				
@@ -184,7 +184,7 @@ public class CoordinatorService extends MobilisService {
 				}
 				
 			}
-		}
+		}*/
 		MobilisServiceDiscoveryBean beanAnswer = null;
 		
 		if (maintenanceMode) {

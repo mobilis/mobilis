@@ -76,6 +76,9 @@ public class MobilisManager {
 	private static final String PERSISTED_SERVICES_FILE_PATH = "service/services.txt";
 	public final static String discoNamespace = Mobilis.NAMESPACE;	
 	public final static String discoServicesNode = discoNamespace + "#services";
+	public final static String securityUserGroup = "sug:"; //holds users with access to the object named by the rostergroup name
+	public final static String remoteServiceGroup = "rsg:"; //holds remote services for discovering services on other runtimes
+	public final static String securityRuntimeGroup = "srg:"; //holds remote runtimes with access to do operations on local runtime (e.g. create instances, publish remote new services...)
 //	// all services
 //	for (String serviceName : MobilisManager.getInstance().getServices().keySet()) {
 //		MobilisService service = MobilisManager.getInstance().getService(serviceName);
@@ -1056,7 +1059,6 @@ public class MobilisManager {
 					//that have no instances running. it provides the service information by telling other runtimes his entity capabilities and presence
 					try {
 						String aId = serviceContainer.getAgentId();
-						System.out.println(aId);
 						MobilisAgent ma = this.getAgent(aId);
 						mAgents.remove(ma.getIdent());
 						this.addAgent(ma);
