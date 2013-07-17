@@ -76,13 +76,14 @@ public class PublishNewServiceBean extends XMPPBean {
 				parser.next();
 			}
 		} while (!done);
-		parser.next();
-		if(parser.getName().equals("error")){
-			this.errorType = parser.getAttributeValue(1);
-			parser.next();
-			this.errorCondition = parser.getName();
-			this.errorText = parser.getName();
-		}
+//		parser.next();
+//		System.out.println(parser.getName());
+//		if(parser.getName().equals("error")){
+//			this.errorType = parser.getAttributeValue(1);
+//			parser.next();
+//			this.errorCondition = parser.getName();
+//			this.errorText = parser.getName();
+//		}
 	}
 
 	@Override
