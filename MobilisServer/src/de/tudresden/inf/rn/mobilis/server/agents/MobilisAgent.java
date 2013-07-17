@@ -36,6 +36,7 @@ import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.keepalive.KeepAliveManager;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.NodeInformationProvider;
@@ -199,7 +200,9 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 			mConnection = new XMPPConnection(connConfig);
 		}
 		mConnection.connect();
-
+		//stops auto pinging the Server, which is enabled by default in smack 3.3
+		KeepAliveManager.getInstanceFor(mConnection).stopPinging();
+		
 		String username = null;
 		String password = null;
 		String resource = null;
@@ -214,7 +217,6 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 			}
 		}
 
-		
 		mConnection.login(username, password, resource);
 		mConnection.addConnectionListener(this);
 

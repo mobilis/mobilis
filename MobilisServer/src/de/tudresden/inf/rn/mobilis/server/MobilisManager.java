@@ -556,8 +556,8 @@ public class MobilisManager {
 	
 	public void addAgent(MobilisAgent agent) {
 		synchronized (mAgents) {
-			if(!mAgents.containsKey(agent.getIdent())){
-			mAgents.put(agent.getIdent(), agent);
+			if(!mAgents.containsKey(agent.getResource())){
+			mAgents.put(agent.getResource(), agent);
 			}
 			/*
 			 * Workaround: all agents for every resource of a service have the same ID. If new resource agent for the service
@@ -1056,8 +1056,10 @@ public class MobilisManager {
 					//that have no instances running. it provides the service information by telling other runtimes his entity capabilities and presence
 					try {
 						String aId = serviceContainer.getAgentId();
+						System.out.println(aId);
 						MobilisAgent ma = this.getAgent(aId);
-						mAgents.put(aId, ma);
+						mAgents.remove(ma.getIdent());
+						this.addAgent(ma);
 						ma.setDiscoName(serviceContainer.getServiceNamespace().replace("http://mobilis.inf.tu-dresden.de#services/", ""));
 						ma.setDiscoVer(Integer.toString((serviceContainer.getServiceVersion())));
 						ma.startup();
