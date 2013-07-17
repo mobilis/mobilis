@@ -265,10 +265,11 @@ public class CoordinatorService extends MobilisService {
 								// TODO Auto-generated catch block
 								//e.printStackTrace();
 							}
+							serviceInfo.setInstances(numberOfInstances);
+							beanAnswer.addDiscoveredService(serviceInfo);
 						}
 					}
-					serviceInfo.setInstances(numberOfInstances);
-					beanAnswer.addDiscoveredService(serviceInfo);
+					
 				}
 			}
 			
