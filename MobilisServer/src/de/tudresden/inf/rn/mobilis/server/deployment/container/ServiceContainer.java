@@ -284,8 +284,8 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			String agentResource = String.format("%s#%d", agentIdent, i);
 
 			// Create the new Agent with the generated XMPP resource.
-			if(!serviceName.equals("")){
-			mobilisService.setName(serviceName);
+			if(!(serviceName==null)){ //important for setting the Service Name in the entity caps
+				mobilisService.setName(serviceName);
 			}
 			MobilisAgent agent = new MobilisAgent(agentIdent, true,
 					agentResource);

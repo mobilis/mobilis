@@ -1052,7 +1052,7 @@ public class MobilisManager {
 				message += "\nService registration successful.";
 				
 				if (singleMode) {
-					serviceContainer.startNewServiceInstance("");
+					serviceContainer.startNewServiceInstance(null);
 				}
 				else {
 					//starts a single disovery agent for the new service. It is necessary for discovering services on other runtimes, 
