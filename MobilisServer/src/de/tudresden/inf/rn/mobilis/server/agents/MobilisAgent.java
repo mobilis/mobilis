@@ -235,13 +235,14 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		}*/
 		//discoinfo for a concrete service instance
 		for(MobilisService ms : mServices){
-			String discoNamespace = ms.get_serviceNamespace().replace("http://mobilis.inf.tu-dresden.de#services/", "");
-			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace + "/instance#name=" + discoNamespace + ",version=" + ms.getVersion());
+			String runtimeJID = MobilisManager.getInstance().getAgent("deployment").getSettingString("username") + "@" + MobilisManager.getInstance().getAgent("deployment").getSettingString("host");
+			//String discoNamespace = ms.get_serviceNamespace().replace("http://mobilis.inf.tu-dresden.de#services/", "");
+			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace + "/instance#" + "servicenamespace=" + ms.get_serviceNamespace() + ",version=" + ms.getVersion() + ",name=" + ms.getName() + ",rt=" + runtimeJID);
 		}
 		//discoinfo for service installed on runtime
 		if(discoName.length()>0 && discoVer.length()>0){
 			String runtimeJID = MobilisManager.getInstance().getAgent("deployment").getSettingString("username") + "@" + MobilisManager.getInstance().getAgent("deployment").getSettingString("host");
-			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace + "/service#name=" + discoName + ",version=" + discoVer + ",rt=" + runtimeJID);
+			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace + "/service#" + "servicenamespace=" + discoName + ",version=" + discoVer + ",rt=" + runtimeJID);
 			//discoName="";
 			discoVer="";
 		}

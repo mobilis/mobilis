@@ -1052,7 +1052,7 @@ public class MobilisManager {
 				message += "\nService registration successful.";
 				
 				if (singleMode) {
-					serviceContainer.startNewServiceInstance();
+					serviceContainer.startNewServiceInstance("");
 				}
 				else {
 					//starts a single disovery agent for the new service. It is necessary for discovering services on other runtimes, 
@@ -1062,7 +1062,7 @@ public class MobilisManager {
 						MobilisAgent ma = this.getAgent(aId);
 						mAgents.remove(ma.getIdent());
 						this.addAgent(ma);
-						ma.setDiscoName(serviceContainer.getServiceNamespace().replace("http://mobilis.inf.tu-dresden.de#services/", ""));
+						ma.setDiscoName(serviceContainer.getServiceNamespace()/*.replace("http://mobilis.inf.tu-dresden.de#services/", "")*/);
 						ma.setDiscoVer(Integer.toString((serviceContainer.getServiceVersion())));
 						ma.startup();
 					} catch (XMPPException e) {

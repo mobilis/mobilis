@@ -217,7 +217,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	 * @throws StartNewServiceInstanceException
 	 *             exception if starting a new instance failed
 	 */
-	public MobilisService startNewServiceInstance()
+	public MobilisService startNewServiceInstance(String serviceName)
 			throws StartNewServiceInstanceException {
 		MobilisService mobilisService = null;
 
@@ -239,7 +239,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 								_runningServiceInstances.keySet().toArray()[0]));
 			}
 
-			Constructor construcor;
+			Constructor<MobilisService> construcor;
 
 			// Try to instantiate a new template class
 			try {
@@ -284,10 +284,13 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			String agentResource = String.format("%s#%d", agentIdent, i);
 
 			// Create the new Agent with the generated XMPP resource.
+			if(!serviceName.equals("")){
+			mobilisService.setName(serviceName);
+			}
 			MobilisAgent agent = new MobilisAgent(agentIdent, true,
 					agentResource);
 			agent.registerService(mobilisService);
-
+			
 			// Startup Agent and Service
 			mobilisService.setAgent(agent);
 			try {

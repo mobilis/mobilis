@@ -87,7 +87,7 @@ public class CoordinatorService extends MobilisService {
 	
 	public CoordinatorService() {
 		super();
-		System.out.println("CoordinatorService created");
+		//System.out.println("CoordinatorService created");
 		serviceSettings = MobilisManager.getInstance().getSettings("services");		
 		appSpecificServicesList=new ArrayList<AppSpecificService>();			
 	}
@@ -236,28 +236,30 @@ public class CoordinatorService extends MobilisService {
 						Presence presence = iter.next();
 						
 						String fullJIDofService =  presence.getFrom();
-						
 						//just look for online services
-						if(!runtimeRoster.getPresenceResource(fullJIDofService).toString().equals("unavailable")){
+						if(presence.isAvailable()){
 							DiscoverInfo dInfo;
 							try {
 								dInfo = MobilisManager.getInstance().getServiceDiscoveryManager().discoverInfo(fullJIDofService);
-								String caps="";
 								 
 								  //Alle Feature vars des DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
 								  if(dInfo != null){
-									  for ( Iterator<Feature> infos  = dInfo.getFeatures(); infos.hasNext(); ){
+									  Iterator<Feature> infos  = dInfo.getFeatures();
+									  boolean ready=false;
+									  while(infos.hasNext() && !ready){
 										  String s = infos.next().getVar();
 										 
 										  if (s.contains(MobilisManager.discoNamespace + "/service#")){
 											  s = s.replace("http://mobilis.inf.tu-dresden.de/service#", "");
 											  String[] segs = s.split( Pattern.quote( "," ) );
-											  serviceInfo.setServiceNamespace("http://mobilis.inf.tu-dresden.de#services/" + segs[0].replaceFirst("name=", ""));
+											  serviceInfo.setServiceNamespace(segs[0].replaceFirst("servicenamespace=", ""));
 											  serviceInfo.setVersion(segs[1].replaceFirst("version=", ""));
 											  serviceInfo.setMode("multi");
+											  ready=true;
 										  }
-										  if (s.contains(MobilisManager.discoNamespace + "/instance#name=")){
+										  if (s.contains(MobilisManager.discoNamespace + "/instance")){
 											  numberOfInstances++;
+											  ready=true;
 										  }
 									  }
 								  }
@@ -339,49 +341,47 @@ public class CoordinatorService extends MobilisService {
 						Presence presence = iter.next();
 						
 						String fullJIDofService =  presence.getFrom();
-						System.out.println(fullJIDofService);
 						//just look for online services
-						if(!runtimeRoster.getPresenceResource(fullJIDofService).toString().equals("unavailable")){
+						if(presence.isAvailable()){
 							DiscoverInfo dInfo;
 							try {
 								dInfo = MobilisManager.getInstance().getServiceDiscoveryManager().discoverInfo(fullJIDofService);
-								String caps="";
 								 
 								  //Alle Feature vars des DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
 								  if(dInfo != null){
 									  Iterator<Feature> infos  = dInfo.getFeatures();
-									  boolean notReady=true;
+									  boolean ready=false;
 									  
 									  //testen ob service caps dem angeforderten NS bzw. Version des DiscoBeans entsprechen. Wenn ja ServiceInfo hinzufügen
-									  while(infos.hasNext() && notReady){
+									  while(infos.hasNext() && !ready){
 										  String s = infos.next().getVar();
 										  
 										  //fast check for service agent. if not same ns / version -> skip to next presence
 										  if (s.contains(MobilisManager.discoNamespace + "/service#")){
 											  s = s.replace("http://mobilis.inf.tu-dresden.de/service#", "");
 											  String[] segs = s.split( Pattern.quote( "," ) );
-											  if(bean.serviceNamespace.equals(("http://mobilis.inf.tu-dresden.de#services/" + segs[0].replaceFirst("name=", "")))){
+											  if(bean.serviceNamespace.equals((segs[0].replaceFirst("servicenamespace=", "")))){
 												  if((bean.serviceVersion<0) || Integer.toString(bean.serviceVersion).equals(segs[1].replaceFirst("version=", ""))){
-													  notReady=false;
-												  } else notReady=false;
-											  } else notReady=false;
+													  ready=true;
+												  } else ready=true;
+											  } else ready=true;
 											  
 										  }
 										  // check for serviceinstance agents. if not same ns / version -> skip to next presence
 										  if (s.contains(MobilisManager.discoNamespace + "/instance#")){
 											  s = s.replace("http://mobilis.inf.tu-dresden.de/instance#", "");
 											  String[] segs = s.split( Pattern.quote( "," ) );
-											  if(bean.serviceNamespace.equals(("http://mobilis.inf.tu-dresden.de#services/" + segs[0].replaceFirst("name=", "")))){
+											  if(bean.serviceNamespace.equals((segs[0].replaceFirst("servicenamespace=", "")))){
 												  if((bean.serviceVersion<0) || Integer.toString(bean.serviceVersion).equals(segs[1].replaceFirst("version=", ""))){
 													  MobilisServiceInfo serviceInfo = new MobilisServiceInfo();
-													  serviceInfo.setServiceNamespace("http://mobilis.inf.tu-dresden.de#services/" + segs[0].replaceFirst("name=", ""));
+													  serviceInfo.setServiceNamespace(segs[0].replaceFirst("servicenamespace=", ""));
 													  serviceInfo.setVersion(segs[1].replaceFirst("version=", ""));
+													  serviceInfo.setServiceName(segs[2].replaceFirst("name=", ""));
 													  serviceInfo.setJid( fullJIDofService );
-													  serviceInfo.setServiceName( "dummy Service Name" );
 													  beanAnswer.addDiscoveredService(serviceInfo);
-													  notReady=false;
-												  } else notReady=false;
-											  } else notReady=false;
+													  ready=true;
+												  } else ready=true;
+											  } else ready=true;
 												
 										  }
 									  }
@@ -456,7 +456,7 @@ public class CoordinatorService extends MobilisService {
 				
 				// try to start a new instance of the service
 				try {
-					MobilisService newService = serviceContainer.startNewServiceInstance();
+					MobilisService newService = serviceContainer.startNewServiceInstance(bean.serviceName);
 					newService.setName( bean.serviceName );
 					
 					beanAnswer = new CreateNewServiceInstanceBean(newService.getAgent().getFullJid(),
