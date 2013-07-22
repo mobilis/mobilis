@@ -22,6 +22,7 @@ package de.tudresden.inf.rn.mobilis.server.services;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -148,6 +149,8 @@ public class CoordinatorService extends MobilisService {
 		//Roster und Rostergruppe der registrierten Dienste holen
 		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
 		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.remoteServiceGroup + "services");
+		Map<String, MobilisServiceInfo> discoveredServices = new HashMap<String, MobilisServiceInfo>();
+		
 		/*if(rg != null){
 			//alle Einträge der Dienste Rostergruppe durchsuchen
 			for(RosterEntry entry : rg.getEntries()){
@@ -194,7 +197,7 @@ public class CoordinatorService extends MobilisService {
 					"The MobilisServer is currently in maintenance mode. Retry later.");	
 		} else  if (bean.serviceNamespace==null) {
 			//Empty request for all active services
-			beanAnswer = new MobilisServiceDiscoveryBean(null);	
+			
 			
 			
 			// query all ServiceContainers which are available on local server
@@ -219,7 +222,7 @@ public class CoordinatorService extends MobilisService {
 						serviceInfo.setJid(container.getRunningServiceInstances().keySet().iterator().next());
 					}
 					
-					beanAnswer.addDiscoveredService(serviceInfo);
+					discoveredServices.put(container.getServiceNamespace(), serviceInfo);
 				}
 			}
 			
@@ -268,7 +271,15 @@ public class CoordinatorService extends MobilisService {
 								//e.printStackTrace();
 							}
 							serviceInfo.setInstances(numberOfInstances);
-							beanAnswer.addDiscoveredService(serviceInfo);
+							if(discoveredServices.containsKey(serviceInfo.getServiceNamespace())){
+								
+								MobilisServiceInfo sInfo = discoveredServices.get(serviceInfo.getServiceNamespace());
+								//System.out.println(sInfo.getInstances() + ":" + numberOfInstances);
+								if(sInfo.getVersion() == serviceInfo.getVersion()){
+									serviceInfo.setInstances(sInfo.getInstances());
+								}
+							}
+							discoveredServices.put(serviceInfo.getServiceNamespace(), serviceInfo);
 						}
 					}
 					
@@ -285,8 +296,14 @@ public class CoordinatorService extends MobilisService {
 						(bean.serviceNamespace!=null && bean.serviceNamespace.equals(service.getNamespace())))
 						&&
 						(bean.serviceVersion < 0 ||
-						(bean.serviceVersion > 0 && bean.serviceVersion == service.getVersion())))
-					beanAnswer.addDiscoveredService(service.getNamespace(), "" + service.getVersion(), service.mAgent.getFullJid());
+						(bean.serviceVersion > 0 && bean.serviceVersion == service.getVersion()))){
+					MobilisServiceInfo serviceInfo = new MobilisServiceInfo();
+					serviceInfo.setServiceNamespace(service.getNamespace());
+					serviceInfo.setVersion(Integer.toString(service.getVersion()));
+					serviceInfo.setJid(service.mAgent.getFullJid());
+					//beanAnswer.addDiscoveredService(service.getNamespace(), "" + service.getVersion(), service.mAgent.getFullJid());
+					discoveredServices.put(serviceInfo.getServiceNamespace(), serviceInfo);
+				}
 			}
 			
 			// query all running app specific services
@@ -297,14 +314,14 @@ public class CoordinatorService extends MobilisService {
 					for (AppSpecificService ass : appSpecificServicesList)
 						if (ident.equals(ass.getIdent()))
 							count++;									
-					beanAnswer.addDiscoveredService(MobilisManager.discoServicesNode+"/"+ident, count);
+					//beanAnswer.addDiscoveredService(MobilisManager.discoServicesNode+"/"+ident, count);
 				}
 			}
 			
 		} else {
 			// Request for a special service with given Namespace and optional given Version			
 			
-			beanAnswer = new MobilisServiceDiscoveryBean(null);
+			//beanAnswer = new MobilisServiceDiscoveryBean(null);
 			
 			// query all ServiceContainers which are available
 			Collection<ServiceContainer> serviceContainers = MobilisManager.getInstance().getAllServiceContainers( bean.serviceNamespace );
@@ -321,8 +338,8 @@ public class CoordinatorService extends MobilisService {
 								serviceInfo.setVersion( "" + container.getServiceVersion() );
 								serviceInfo.setJid( entity.getKey() );
 								serviceInfo.setServiceName( entity.getValue().getName() );
-								
-								beanAnswer.addDiscoveredService(serviceInfo);
+								discoveredServices.put(entity.getKey(), serviceInfo);
+								//beanAnswer.addDiscoveredService(serviceInfo);
 							}
 						}
 					}
@@ -378,7 +395,7 @@ public class CoordinatorService extends MobilisService {
 													  serviceInfo.setVersion(segs[1].replaceFirst("version=", ""));
 													  serviceInfo.setServiceName(segs[2].replaceFirst("name=", ""));
 													  serviceInfo.setJid( fullJIDofService );
-													  beanAnswer.addDiscoveredService(serviceInfo);
+													  discoveredServices.put(fullJIDofService, serviceInfo);
 													  ready=true;
 												  } else ready=true;
 											  } else ready=true;
@@ -394,8 +411,12 @@ public class CoordinatorService extends MobilisService {
 					}
 				}
 			}
-		}	
-		
+		}
+		if(discoveredServices.size()==0){
+			discoveredServices = null;
+		}
+		List<MobilisServiceInfo> dServices = new ArrayList<MobilisServiceInfo>(discoveredServices.values());
+		beanAnswer = new MobilisServiceDiscoveryBean(dServices);	
 		beanAnswer.setTo(from); beanAnswer.setFrom(to);
 		beanAnswer.setId(bean.getId());
 		c.sendPacket(new BeanIQAdapter(beanAnswer));
