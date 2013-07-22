@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import javax.swing.event.EventListenerList;
@@ -371,7 +372,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 						String.format(
 								"All service isntances of [ %s version %d ] will be shut down.",
 								_serviceNamespace, _serviceVersion));
-
+		Set<String> testset =_runningServiceInstances.keySet();
 		for (String runningServiceJid : _runningServiceInstances.keySet()) {
 			this.shutdownServiceInstance(runningServiceJid);
 
@@ -538,7 +539,6 @@ public class ServiceContainer implements IServiceContainerTransitions,
 				if(rg!=null){
 					for(RosterEntry rEntry : rg.getEntries()){
 						try {
-							
 							rg.removeEntry(rEntry);
 						} catch (XMPPException e) {
 							// TODO Auto-generated catch block

@@ -978,7 +978,7 @@ public class MobilisManager {
 					newServiceJIDs.put(date, newServiceJID);
 				}
 				if(!serverRestart){
-				String[] groups = {remoteServiceGroup + "services"};
+				String[] groups = {remoteServiceGroup + "local-services"};
 				try {
 					runtimeRoster.createEntry(newServiceJID, username, groups);
 				} catch (XMPPException e) {
