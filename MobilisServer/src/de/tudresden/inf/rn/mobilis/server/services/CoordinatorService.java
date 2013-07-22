@@ -257,7 +257,7 @@ public class CoordinatorService extends MobilisService {
 											  serviceInfo.setMode("multi");
 											  ready=true;
 										  }
-										  if (s.contains(MobilisManager.discoNamespace + "/instance")){
+										  if (s.contains(MobilisManager.discoNamespace + "/instance#")){
 											  numberOfInstances++;
 											  ready=true;
 										  }

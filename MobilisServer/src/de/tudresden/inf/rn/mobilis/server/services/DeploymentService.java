@@ -389,7 +389,7 @@ public class DeploymentService extends MobilisService {
 			XMPPBean outBean = null;
 			if(rg.getEntry(StringUtils.parseBareAddress(inBean.getFrom()))!=null){
 				//if requestor is an accepted runtime, add new service JID to rostergroup services
-				String[] groups = {"services"};
+				String[] groups = {MobilisManager.remoteServiceGroup + "services"};
 				try {
 					runtimeRoster.createEntry(inBean.getNewServiceJID(), inBean.getNewServiceJID(), groups);
 					outBean = BeanHelper
