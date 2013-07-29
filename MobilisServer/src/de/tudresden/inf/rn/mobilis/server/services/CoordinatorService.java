@@ -199,7 +199,7 @@ public class CoordinatorService extends MobilisService {
 			//Empty request for all active services
 			
 			
-			
+			int numberOfInstances = 0;
 			// query all ServiceContainers which are available on local server
 			for ( ServiceContainer container : MobilisManager.getInstance().getAllServiceContainers() ) {
 				// filter collected ServiceContainers by active(registered) containers
@@ -217,7 +217,9 @@ public class CoordinatorService extends MobilisService {
 					
 					// if container is of type multi, include information about the size of running instances
 					if(serviceMode.equalsIgnoreCase( "multi" )){
-						serviceInfo.setInstances( container.getSizeOfRunningServices() );
+						numberOfInstances = container.getSizeOfRunningServices();
+						serviceInfo.setInstances( numberOfInstances );
+						
 					} else {
 						serviceInfo.setJid(container.getRunningServiceInstances().keySet().iterator().next());
 					}
@@ -230,7 +232,7 @@ public class CoordinatorService extends MobilisService {
 			if(rg != null){
 				//check all entries from the "services" RosterGroup
 				for(RosterEntry entry : rg.getEntries()){
-					int numberOfInstances = 0;
+					
 					MobilisServiceInfo serviceInfo = new MobilisServiceInfo();
 					//get resources for every entry and then the serviceDiscoveryInfo for every resource
 					for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
