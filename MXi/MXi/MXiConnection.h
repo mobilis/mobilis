@@ -13,6 +13,7 @@
 @property (nonatomic, retain) XMPPJID* jabberID;
 @property (nonatomic, retain) NSString* password;
 @property (nonatomic, strong) NSString* hostName;
+@property (nonatomic, strong) NSString* serviceJID;
 @property (nonatomic, readonly) XMPPStream* xmppStream;
 @property (nonatomic, strong) id<MXiPresenceDelegate> presenceDelegate;
 @property (nonatomic, strong) id<MXiStanzaDelegate> stanzaDelegate;
@@ -22,6 +23,7 @@
 + (id)connectionWithJabberID:(NSString* )aJabberID
 					password:(NSString* )aPassword
 					hostName:(NSString* )aHostName
+				  serviceJID:(NSString* )theServiceJID
 			presenceDelegate:(id<MXiPresenceDelegate> )aPresenceDelegate
 			  stanzaDelegate:(id<MXiStanzaDelegate> )aStanzaDelegate
 				beanDelegate:(id<MXiBeanDelegate> )aBeanDelegate

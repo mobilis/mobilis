@@ -11,11 +11,12 @@
 
 @implementation MXiConnection
 
-@synthesize jabberID, password, hostName, xmppStream, presenceDelegate, stanzaDelegate, beanDelegate, incomingBeanPrototypes;
+@synthesize jabberID, password, hostName, serviceJID, xmppStream, presenceDelegate, stanzaDelegate, beanDelegate, incomingBeanPrototypes;
 
 + (id)connectionWithJabberID:(NSString* )aJabberID
 					password:(NSString* )aPassword
 					hostName:(NSString* )aHostName
+				  serviceJID:(NSString* )theServiceJID
 			presenceDelegate:(id<MXiPresenceDelegate> )aPresenceDelegate
 			  stanzaDelegate:(id<MXiStanzaDelegate> )aStanzaDelegate
 				beanDelegate:(id<MXiBeanDelegate>)aBeanDelegate
@@ -25,11 +26,12 @@
 	XMPPJID* tempJid = [XMPPJID jidWithString:aJabberID];
 	[connection setJabberID:tempJid];
 	[connection setPassword:aPassword];
-	if (aHostName) {
+	if (aHostName && ![aHostName isEqualToString:@""]) {
 		[connection setHostName:aHostName];
 	} else {
 		[connection setHostName:[tempJid domain]];
 	}
+	[connection setServiceJID:theServiceJID];
 	[connection setPresenceDelegate:aPresenceDelegate];
 	[connection setStanzaDelegate:aStanzaDelegate];
 	[connection setBeanDelegate:aBeanDelegate];
@@ -130,6 +132,12 @@
 	[xmppStream setMyJID:jabberID];
 	[xmppStream setHostName:[self hostName]];
 	
+	NSLog(@"Trying to connect with:");
+	NSLog(@" - myJid: %@", [xmppStream myJID]);
+	NSLog(@" - myPassword: %@", password);
+	NSLog(@" - hostname: %@", [xmppStream hostName]);
+	NSLog(@" - port: %d", [xmppStream hostPort]);
+	
 	NSError* error = nil;
 	if (![xmppStream connect:&error]) {
 		NSLog(@"Couldn't connect because of error: %@", [error localizedDescription]);
@@ -161,7 +169,7 @@
 
 - (void)sendBean:(MXiBean<MXiOutgoingBean> *)bean {
 	[bean setFrom:jabberID];
-	[bean setTo:[XMPPJID jidWithString:@"mobilis@mymac.box/Mobilist_v1#1"]];
+	[bean setTo:[XMPPJID jidWithString:serviceJID]];
 	
 	[self sendElement:[MXiBeanConverter beanToIQ:bean]];
 }
