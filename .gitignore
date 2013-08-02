@@ -9,3 +9,6 @@ gen/
 Emulation/GWTEmulationServer/war/sessions
 DemoServices/TreasureHunt/dist
 MobilisServer/service/services.txt
+
+*.classpath
+*.settings*
