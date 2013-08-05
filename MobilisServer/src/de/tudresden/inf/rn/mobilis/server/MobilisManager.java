@@ -1064,6 +1064,11 @@ public class MobilisManager {
 						this.addAgent(ma);
 						ma.setDiscoName(serviceContainer.getServiceNamespace());
 						ma.setDiscoVer(Integer.toString((serviceContainer.getServiceVersion())));
+						if(singleMode){
+							ma.setMode("single");
+						} else{
+							ma.setMode("multi");
+						}
 						ma.startup();
 					} catch (XMPPException e) {
 						// TODO Auto-generated catch block

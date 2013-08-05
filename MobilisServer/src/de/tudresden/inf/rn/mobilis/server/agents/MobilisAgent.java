@@ -61,10 +61,11 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 	private ServiceDiscoveryManager serviceDiscoveryManager;
 	private String discoName="";
 	private String discoVer="";
-	
+	private String mode; //for entity caps: tells if a service is running in single or multi mode
 	
 	private final Set<MobilisService> mServices = Collections.synchronizedSet(new HashSet<MobilisService>());
 	private final Map<String, Object> mDefaultSettings = Collections.synchronizedMap(new HashMap<String, Object>());
+	
 
 	public MobilisAgent(String ident) {
 		this(ident, true);
@@ -242,7 +243,7 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		//discoinfo for service installed on runtime
 		if(discoName.length()>0 && discoVer.length()>0){
 			String runtimeJID = MobilisManager.getInstance().getAgent("deployment").getSettingString("username") + "@" + MobilisManager.getInstance().getAgent("deployment").getSettingString("host");
-			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace + "/service#" + "servicenamespace=" + discoName + ",version=" + discoVer + ",rt=" + runtimeJID);
+			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace + "/service#" + "servicenamespace=" + discoName + ",version=" + discoVer + ",rt=" + runtimeJID + ",mode=" + mode);
 			//discoName="";
 			discoVer="";
 		}
@@ -499,6 +500,14 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 
 	public void setDiscoVer(String discoVer) {
 		this.discoVer = discoVer;
+	}
+
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
 	}
 
 }

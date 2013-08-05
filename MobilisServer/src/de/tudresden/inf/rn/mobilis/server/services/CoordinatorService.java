@@ -259,7 +259,7 @@ public class CoordinatorService extends MobilisService {
 											  String[] segs = s.split( Pattern.quote( "," ) );
 											  serviceInfo.setServiceNamespace(segs[0].replaceFirst("servicenamespace=", ""));
 											  serviceInfo.setVersion(segs[1].replaceFirst("version=", ""));
-											  serviceInfo.setMode("multi");
+											  serviceInfo.setMode(segs[2].replaceFirst("mode=", ""));
 											  ready=true;
 										  }
 										  if (s.contains(MobilisManager.discoNamespace + "/instance#")){
