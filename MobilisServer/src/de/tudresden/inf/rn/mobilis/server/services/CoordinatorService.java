@@ -299,10 +299,7 @@ public class CoordinatorService extends MobilisService {
 						&&
 						(bean.serviceVersion < 0 ||
 						(bean.serviceVersion > 0 && bean.serviceVersion == service.getVersion()))){
-					MobilisServiceInfo serviceInfo = new MobilisServiceInfo();
-					serviceInfo.setServiceNamespace(service.getNamespace());
-					serviceInfo.setVersion(Integer.toString(service.getVersion()));
-					serviceInfo.setJid(service.mAgent.getFullJid());
+					MobilisServiceInfo serviceInfo = new MobilisServiceInfo(service.getNamespace(), Integer.toString(service.getVersion()), service.mAgent.getFullJid());
 					//beanAnswer.addDiscoveredService(service.getNamespace(), "" + service.getVersion(), service.mAgent.getFullJid());
 					discoveredServices.put(serviceInfo.getServiceNamespace(), serviceInfo);
 				}
