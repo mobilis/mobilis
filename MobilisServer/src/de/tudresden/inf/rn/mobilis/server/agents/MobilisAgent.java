@@ -243,7 +243,7 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		//discoinfo for service installed on runtime
 		if(discoName.length()>0 && discoVer.length()>0){
 			String runtimeJID = MobilisManager.getInstance().getAgent("deployment").getSettingString("username") + "@" + MobilisManager.getInstance().getAgent("deployment").getSettingString("host");
-			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace + "/service#" + "servicenamespace=" + discoName + ",version=" + discoVer + ",rt=" + runtimeJID + ",mode=" + mode);
+			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace + "/service#" + "servicenamespace=" + discoName + ",version=" + discoVer + ",mode=" + mode + ",rt=" + runtimeJID);
 			//discoName="";
 			discoVer="";
 		}
