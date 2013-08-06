@@ -1,6 +1,7 @@
 package de.tudresden.inf.rn.mobilis.server.services.Coordination;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -14,7 +15,13 @@ public class loadBalancing {
 	 * @return
 	 */
 	public static String randomRuntimeForCreateInstance(HashSet<String> jidsOfRuntimes){
-		String[] jids = (String[]) jidsOfRuntimes.toArray();
+		Iterator<String> iter = jidsOfRuntimes.iterator();
+		int i = 0;
+		String[] jids = new String[jidsOfRuntimes.size()];
+		while(iter.hasNext()){
+			jids[i] = iter.next();
+			i++;
+		}
 		Random r = new Random();
 		int randomNumber = r.nextInt(jids.length);
 		String choosenRuntime = jids[randomNumber];

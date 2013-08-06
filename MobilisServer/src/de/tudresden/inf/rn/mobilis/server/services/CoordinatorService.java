@@ -416,8 +416,8 @@ public class CoordinatorService extends MobilisService {
 		String answerID = bean.getFrom() + bean.getId();
 		HashSet<String> remoteRuntimesSupportingService = new HashSet<String>();
 		//check remote servers for requested service, but just if the Request was not forwarded yet!
-		if((bean.jidOfOriginalRequestor != null)){
-			remoteRuntimesSupportingService = CoordinationHelper.getServiceOnRemoteRuntime(bean.getServiceName(), bean.getServiceVersion());
+		if((bean.jidOfOriginalRequestor == null)){
+			remoteRuntimesSupportingService = CoordinationHelper.getServiceOnRemoteRuntime(bean.getServiceNamespace(), bean.getServiceVersion());
 		}
     	Connection c = this.mAgent.getConnection();
     	String from = bean.getFrom();
