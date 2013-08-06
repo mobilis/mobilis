@@ -46,6 +46,7 @@ import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.jivesoftware.smackx.packet.DiscoverInfo.Feature;
+import org.omg.CORBA.ServiceInformation;
 
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
@@ -164,6 +165,8 @@ public class CoordinatorService extends MobilisService {
 		//Roster und Rostergruppe der registrierten Dienste holen
 		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
 		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.remoteServiceGroup + "services");
+		
+		//Map of all Discovered Services for sending in the ServiceDiscoveryBean
 		Map<String, MobilisServiceInfo> discoveredServices = new HashMap<String, MobilisServiceInfo>();
 		
 		
@@ -178,7 +181,7 @@ public class CoordinatorService extends MobilisService {
 			//Empty request for all active services
 			
 			
-			int numberOfInstances = 0;
+			
 			// query all ServiceContainers which are available on local server
 			for ( ServiceContainer container : MobilisManager.getInstance().getAllServiceContainers() ) {
 				// filter collected ServiceContainers by active(registered) containers
@@ -196,8 +199,7 @@ public class CoordinatorService extends MobilisService {
 					
 					// if container is of type multi, include information about the size of running instances
 					if(serviceMode.equalsIgnoreCase( "multi" )){
-						numberOfInstances = container.getSizeOfRunningServices();
-						serviceInfo.setInstances( numberOfInstances );
+						serviceInfo.setInstances( container.getSizeOfRunningServices() );
 						
 					} else {
 						serviceInfo.setJid(container.getRunningServiceInstances().keySet().iterator().next());
@@ -236,13 +238,31 @@ public class CoordinatorService extends MobilisService {
 										  if (s.contains(MobilisManager.discoNamespace + "/service#")){
 											  s = s.replace("http://mobilis.inf.tu-dresden.de/service#", "");
 											  String[] segs = s.split( Pattern.quote( "," ) );
-											  serviceInfo.setServiceNamespace(segs[0].replaceFirst("servicenamespace=", ""));
-											  serviceInfo.setVersion(segs[1].replaceFirst("version=", ""));
-											  serviceInfo.setMode(segs[2].replaceFirst("mode=", ""));
+											  if(discoveredServices.get(segs[0].replaceFirst("servicenamespace=", ""))==null){
+												  serviceInfo.setServiceNamespace(segs[0].replaceFirst("servicenamespace=", ""));
+												  serviceInfo.setVersion(segs[1].replaceFirst("version=", ""));
+												  serviceInfo.setMode(segs[2].replaceFirst("mode=", ""));
+												  serviceInfo.setInstances(0);
+												  discoveredServices.put(segs[0].replaceFirst("servicenamespace=", ""), serviceInfo);
+											  }
+											  
 											  ready=true;
 										  }
 										  if (s.contains(MobilisManager.discoNamespace + "/instance#")){
-											  numberOfInstances++;
+											  s = s.replace("http://mobilis.inf.tu-dresden.de/instance#", "");
+											  String[] segs = s.split( Pattern.quote( "," ) );
+											  if(discoveredServices.get(segs[0].replaceFirst("servicenamespace=", ""))==null){
+												  serviceInfo.setServiceNamespace(segs[0].replaceFirst("servicenamespace=", ""));
+												  serviceInfo.setVersion(segs[1].replaceFirst("version=", ""));
+												  serviceInfo.setMode(segs[2].replaceFirst("mode=", ""));
+												  serviceInfo.setInstances(1);
+												  discoveredServices.put(segs[0].replaceFirst("servicenamespace=", ""), serviceInfo);
+											  }
+											  else {
+												  MobilisServiceInfo sInfo = discoveredServices.get(segs[0].replaceFirst("servicenamespace=", ""));
+												  sInfo.setInstances(sInfo.getInstances()+1);
+												  discoveredServices.put(segs[0].replaceFirst("servicenamespace=", ""), sInfo);
+											  }
 											  ready=true;
 										  }
 									  }
@@ -251,15 +271,15 @@ public class CoordinatorService extends MobilisService {
 								// TODO Auto-generated catch block
 								//e.printStackTrace();
 							}
-							serviceInfo.setInstances(numberOfInstances);
-							if(discoveredServices.containsKey(serviceInfo.getServiceNamespace())){
-								
-								MobilisServiceInfo sInfo = discoveredServices.get(serviceInfo.getServiceNamespace());
-								//System.out.println(sInfo.getInstances() + ":" + numberOfInstances);
-								if(sInfo.getVersion() == serviceInfo.getVersion()){
-									serviceInfo.setInstances(sInfo.getInstances());
-								}
-							}
+//							serviceInfo.setInstances(numberOfInstances);
+//							if(discoveredServices.containsKey(serviceInfo.getServiceNamespace())){
+//								
+//								MobilisServiceInfo sInfo = discoveredServices.get(serviceInfo.getServiceNamespace());
+//								//System.out.println(sInfo.getInstances() + ":" + numberOfInstances);
+//								if(sInfo.getVersion() == serviceInfo.getVersion()){
+//									serviceInfo.setInstances(sInfo.getInstances());
+//								}
+//							}
 							discoveredServices.put(serviceInfo.getServiceNamespace(), serviceInfo);
 						}
 					}
