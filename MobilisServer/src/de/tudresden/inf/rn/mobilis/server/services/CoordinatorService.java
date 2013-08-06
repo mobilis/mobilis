@@ -503,7 +503,7 @@ public class CoordinatorService extends MobilisService {
 						String.format( "Service instantiation error: %s", e.getMessage() ) );
 			}
 			beanAnswer.setTo(bean.getFrom()); beanAnswer.setFrom(bean.getTo());
-			beanAnswer.setId(bean.getId()+"a");
+			beanAnswer.setId(bean.getId());
 			
 			//if the requestor is still empty, the request was send by the real requesting client, else it was already forwarded
 			if(bean.jidOfOriginalRequestor != null){

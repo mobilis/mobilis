@@ -62,6 +62,8 @@ public class SendNewServiceInstanceBean extends XMPPBean {
 			sb.append("<serviceNamespace>").append(serviceNamespace).append("</serviceNamespace>");
 		if (this.jidOfNewService!=null)
 			sb.append("<jidOfNewService>").append(jidOfNewService).append("</jidOfNewService>");
+		if (this.jidOfOriginalRequestor!=null)
+			sb.append("<jidOfOriginalRequestor>").append(jidOfOriginalRequestor).append("</jidOfOriginalRequestor>");
 		if (this.serviceVersion!=-1)
 			sb.append("<serviceVersion>").append(this.serviceVersion).append("</serviceVersion>");
 		if (this.minVersion!=-1)
@@ -87,7 +89,9 @@ public class SendNewServiceInstanceBean extends XMPPBean {
 				} else if (tagName.equals("serviceNamespace")) {
 					this.serviceNamespace = parser.nextText();		
 				} else if (tagName.equals("jidOfNewService")) {
-					this.jidOfNewService = parser.nextText();	
+					this.jidOfNewService = parser.nextText();
+				} else if (tagName.equals("jidOfOriginalRequestor")) {
+					this.jidOfOriginalRequestor = parser.nextText();	
 				} else if (tagName.equals("serviceVersion")) {
 					this.serviceVersion = Integer.parseInt( parser.nextText() );	
 				} else if (tagName.equals("minVersion")) {
