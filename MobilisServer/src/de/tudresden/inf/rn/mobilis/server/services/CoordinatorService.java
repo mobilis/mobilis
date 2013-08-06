@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,7 @@ import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
 import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainer;
 import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainerState;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.StartNewServiceInstanceException;
+import de.tudresden.inf.rn.mobilis.server.services.Coordination.CoordinationHelper;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
@@ -151,43 +153,7 @@ public class CoordinatorService extends MobilisService {
 		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.remoteServiceGroup + "services");
 		Map<String, MobilisServiceInfo> discoveredServices = new HashMap<String, MobilisServiceInfo>();
 		
-		/*if(rg != null){
-			//alle Einträge der Dienste Rostergruppe durchsuchen
-			for(RosterEntry entry : rg.getEntries()){
-				
-				//Für jeden Eintrag die verbundenen Ressourcen (FullJID) holen und anschließend für jede Ressource die DiscoveryInfo durch den EntityCapManager (EntityCapabilities anstelle einer Service Discovery)
-				for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
-				{
-					Presence presence = iter.next();
-					
-					String fullJIDofService =  presence.getFrom();
-					
-					//nur Ressourcen die Online sind prüfen
-					if(!runtimeRoster.getPresenceResource(fullJIDofService).toString().equals("unavailable")){
-						DiscoverInfo dInfo;
-						try {
-							dInfo = MobilisManager.getInstance().getServiceDiscoveryManager().discoverInfo(fullJIDofService);
-							String caps="";
-							 
-							  //Alle Feature vars des DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
-							  if(dInfo != null){
-								  for ( Iterator<Feature> infos  = dInfo.getFeatures(); infos.hasNext(); ){
-									  String s = infos.next().getVar();
-									  if (s.contains(MobilisManager.discoNamespace)){
-										  caps += s;
-									  }
-								  }
-								  System.out.println("Service unter: " + fullJIDofService + " capabilities: " + caps);
-							  }
-						} catch (XMPPException e) {
-							// TODO Auto-generated catch block
-							//e.printStackTrace();
-						}
-					}
-				}
-				
-			}
-		}*/
+		
 		MobilisServiceDiscoveryBean beanAnswer = null;
 		
 		if (maintenanceMode) {
@@ -460,9 +426,12 @@ public class CoordinatorService extends MobilisService {
 						bean.maxVersion,
 						ServiceContainerState.ACTIVE );
 			}
+			
+			//check remote servers for requested service
+			HashSet<String> remoteRuntimesSupportingService = CoordinationHelper.getServiceOnRemoteRuntime(bean.getServiceName(), bean.getServiceVersion());
 
-			// if no service container was found or the container isn't in state active, respond an error
-			if(null == serviceContainer || serviceContainer.getContainerState() != ServiceContainerState.ACTIVE){
+			// if no service container was found or the container isn't in state active, check if service is available on remote runtime. if not, respond an error
+			if((null == serviceContainer || serviceContainer.getContainerState() != ServiceContainerState.ACTIVE) && remoteRuntimesSupportingService.size()<=0){
 				beanAnswer = BeanHelper.CreateErrorBean( 
 						bean,
 						"cancel",
@@ -471,7 +440,7 @@ public class CoordinatorService extends MobilisService {
 				
 				MobilisManager.getLogger().log( Level.WARNING,
 						String.format( "Service instantiation error: %s", beanAnswer.toXML() ) );
-			} else {
+			} else if(!(null == serviceContainer || serviceContainer.getContainerState() != ServiceContainerState.ACTIVE)) {
 				// CoordinatorService#inCreateServiceInstanceSet: moved code to class ServiceContainer#startNewServiceInstance
 				
 				// try to start a new instance of the service
@@ -493,7 +462,11 @@ public class CoordinatorService extends MobilisService {
 					MobilisManager.getLogger().log( Level.WARNING,
 							String.format( "Service instantiation error: %s", e.getMessage() ) );
 				}
+			} else if (!(remoteRuntimesSupportingService.size()<=0)){
+				
 			}
+			
+			
 		}
 				
 		beanAnswer.setTo(from); beanAnswer.setFrom(to);
