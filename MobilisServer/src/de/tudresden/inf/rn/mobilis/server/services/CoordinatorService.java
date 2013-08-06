@@ -150,10 +150,7 @@ public class CoordinatorService extends MobilisService {
     	}
     }
     
-    private void handleNewServiceInstance(SendNewServiceInstanceBean bb) {
-		// TODO Auto-generated method stub
-		
-	}
+    
 
 	private void inMobilisServiceDiscoveryGet(MobilisServiceDiscoveryBean bean) {
     	Connection c = this.mAgent.getConnection();
@@ -417,8 +414,11 @@ public class CoordinatorService extends MobilisService {
 	private void inCreateServiceInstanceSet(CreateNewServiceInstanceBean bean) {
 		Boolean createAccepted = false;
 		String answerID = bean.getFrom() + bean.getId();
-		//check remote servers for requested service
-		HashSet<String> remoteRuntimesSupportingService = CoordinationHelper.getServiceOnRemoteRuntime(bean.getServiceName(), bean.getServiceVersion());
+		HashSet<String> remoteRuntimesSupportingService = new HashSet<String>();
+		//check remote servers for requested service, but just if the Request was not forwarded yet!
+		if((bean.jidOfOriginalRequestor != null)){
+			remoteRuntimesSupportingService = CoordinationHelper.getServiceOnRemoteRuntime(bean.getServiceName(), bean.getServiceVersion());
+		}
     	Connection c = this.mAgent.getConnection();
     	String from = bean.getFrom();
 		String to = bean.getTo();
@@ -462,9 +462,9 @@ public class CoordinatorService extends MobilisService {
 						String.format( "Service instantiation error: %s", beanAnswer.toXML() ) );
 			} else {
 				
-				//create a response bean to inform the requestor that his Request is being processed under the given answerID.
+				//create a response bean to inform the requestor that his Request is being processed
 				
-				beanAnswer = new CreateNewServiceInstanceBean(answerID);
+				beanAnswer = new CreateNewServiceInstanceBean();
 				createAccepted = true;
 			}
 			
@@ -503,19 +503,45 @@ public class CoordinatorService extends MobilisService {
 						String.format( "Service instantiation error: %s", e.getMessage() ) );
 			}
 			beanAnswer.setTo(bean.getFrom()); beanAnswer.setFrom(bean.getTo());
-			beanAnswer.setId(bean.getId()+"b");
+			beanAnswer.setId(bean.getId()+"a");
+			
+			//if the requestor is still empty, the request was send by the real requesting client, else it was already forwarded
+			if(bean.jidOfOriginalRequestor != null){
+				beanAnswer.jidOfOriginalRequestor = bean.jidOfOriginalRequestor;
+			}
+			
 			connection.sendPacket(new BeanIQAdapter(beanAnswer));
 			
 		} 
 		// try to start a new instance on a remote runtime by forwarding the initial Request to a Random Runtime that supports the requested Service
 		else {
 			CreateNewServiceInstanceBean createBean = bean.clone();
+			createBean.setId(bean.getId()+"b");
 			createBean.jidOfOriginalRequestor = bean.getFrom();
 			createBean.setFrom(bean.getTo());
 			createBean.setTo(loadBalancing.randomRuntimeForCreateInstance(remoteRuntimesSupportingService) + "/Coordinator");
 			connection.sendPacket(new BeanIQAdapter(createBean));
 		}
+	}
+	
+	private void handleNewServiceInstance(SendNewServiceInstanceBean inBean) {
+		Connection connection = this.mAgent.getConnection();
 		
+
+			
+			//create Answer IQ for original Client Requestor
+			SendNewServiceInstanceBean toOriginalRequestor = inBean.clone();
+			toOriginalRequestor.setFrom(inBean.getTo());
+			toOriginalRequestor.setTo(inBean.jidOfOriginalRequestor);
+			
+			//create Answer IQ for Remote Server (ok)
+			SendNewServiceInstanceBean toRemoteRuntime = new SendNewServiceInstanceBean();
+			toRemoteRuntime.setFrom(inBean.getId());
+			toRemoteRuntime.setTo(inBean.getTo());
+		
+		
+		connection.sendPacket(new BeanIQAdapter(toOriginalRequestor));
+		connection.sendPacket(new BeanIQAdapter(toRemoteRuntime));
 		
 	}
 	
