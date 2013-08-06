@@ -271,16 +271,6 @@ public class CoordinatorService extends MobilisService {
 								// TODO Auto-generated catch block
 								//e.printStackTrace();
 							}
-//							serviceInfo.setInstances(numberOfInstances);
-//							if(discoveredServices.containsKey(serviceInfo.getServiceNamespace())){
-//								
-//								MobilisServiceInfo sInfo = discoveredServices.get(serviceInfo.getServiceNamespace());
-//								//System.out.println(sInfo.getInstances() + ":" + numberOfInstances);
-//								if(sInfo.getVersion() == serviceInfo.getVersion()){
-//									serviceInfo.setInstances(sInfo.getInstances());
-//								}
-//							}
-							discoveredServices.put(serviceInfo.getServiceNamespace(), serviceInfo);
 						}
 					}
 					
@@ -299,7 +289,6 @@ public class CoordinatorService extends MobilisService {
 						(bean.serviceVersion < 0 ||
 						(bean.serviceVersion > 0 && bean.serviceVersion == service.getVersion()))){
 					MobilisServiceInfo serviceInfo = new MobilisServiceInfo(service.getNamespace(), Integer.toString(service.getVersion()), service.mAgent.getFullJid());
-					//beanAnswer.addDiscoveredService(service.getNamespace(), "" + service.getVersion(), service.mAgent.getFullJid());
 					discoveredServices.put(serviceInfo.getServiceNamespace(), serviceInfo);
 				}
 			}
@@ -311,15 +300,12 @@ public class CoordinatorService extends MobilisService {
 					int count = 0;
 					for (AppSpecificService ass : appSpecificServicesList)
 						if (ident.equals(ass.getIdent()))
-							count++;									
-					//beanAnswer.addDiscoveredService(MobilisManager.discoServicesNode+"/"+ident, count);
+							count++;
 				}
 			}
 			
 		} else {
-			// Request for a special service with given Namespace and optional given Version			
-			
-			//beanAnswer = new MobilisServiceDiscoveryBean(null);
+			// Request for a special service with given Namespace and optional given Version
 			
 			// query all ServiceContainers which are available
 			Collection<ServiceContainer> serviceContainers = MobilisManager.getInstance().getAllServiceContainers( bean.serviceNamespace );
@@ -337,7 +323,6 @@ public class CoordinatorService extends MobilisService {
 								serviceInfo.setJid( entity.getKey() );
 								serviceInfo.setServiceName( entity.getValue().getName() );
 								discoveredServices.put(entity.getKey(), serviceInfo);
-								//beanAnswer.addDiscoveredService(serviceInfo);
 							}
 						}
 					}
