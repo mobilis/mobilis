@@ -53,10 +53,12 @@ import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainer;
 import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainerState;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.StartNewServiceInstanceException;
 import de.tudresden.inf.rn.mobilis.server.services.Coordination.CoordinationHelper;
+import de.tudresden.inf.rn.mobilis.server.services.Coordination.loadBalancing;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.SendNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanHelper;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
@@ -110,10 +112,12 @@ public class CoordinatorService extends MobilisService {
 		XMPPBean prototype1 = new CreateNewServiceInstanceBean();	
 		XMPPBean prototype2 = new MobilisServiceDiscoveryBean();
 		XMPPBean prototype3 = new StopServiceInstanceBean();
+		XMPPBean prototype4 = new SendNewServiceInstanceBean();
 		
 		(new BeanProviderAdapter(prototype1)).addToProviderManager();
 		(new BeanProviderAdapter(prototype2)).addToProviderManager();
 		(new BeanProviderAdapter(prototype3)).addToProviderManager();
+		(new BeanProviderAdapter(prototype4)).addToProviderManager();
 		
 		getAgent().getConnection().addPacketListener( this, new PacketTypeFilter( IQ.class ) );
 	}
@@ -135,11 +139,23 @@ public class CoordinatorService extends MobilisService {
     			StopServiceInstanceBean bb = (StopServiceInstanceBean) b;    			
     			if (b.getType() == XMPPBean.TYPE_SET)
     				this.stopServiceInstance(bb); 
+    		} else if (b instanceof SendNewServiceInstanceBean){
+    			SendNewServiceInstanceBean bb = (SendNewServiceInstanceBean) b;
+    			if (b.getType() == XMPPBean.TYPE_RESULT){
+    				// DO nothing, just OK for received message
+    			} else {
+    				this.handleNewServiceInstance(bb);
+    			}
     		}
     	}
     }
     
-    private void inMobilisServiceDiscoveryGet(MobilisServiceDiscoveryBean bean) {
+    private void handleNewServiceInstance(SendNewServiceInstanceBean bb) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void inMobilisServiceDiscoveryGet(MobilisServiceDiscoveryBean bean) {
     	Connection c = this.mAgent.getConnection();
     	String from = bean.getFrom();
 		String to = bean.getTo();
@@ -399,10 +415,14 @@ public class CoordinatorService extends MobilisService {
     
 
 	private void inCreateServiceInstanceSet(CreateNewServiceInstanceBean bean) {
+		Boolean createAccepted = false;
+		String answerID = bean.getFrom() + bean.getId();
+		//check remote servers for requested service
+		HashSet<String> remoteRuntimesSupportingService = CoordinationHelper.getServiceOnRemoteRuntime(bean.getServiceName(), bean.getServiceVersion());
     	Connection c = this.mAgent.getConnection();
     	String from = bean.getFrom();
 		String to = bean.getTo();
-			
+		ServiceContainer serviceContainer = null;
 		XMPPBean beanAnswer=null;
 				
 		if (maintenanceMode) {
@@ -412,7 +432,7 @@ public class CoordinatorService extends MobilisService {
 			//ServiceNamespace is null
 			beanAnswer = new CreateNewServiceInstanceBean("modify", "not-acceptable", "The service namespace is not set.");
 		} else {
-			ServiceContainer serviceContainer = null;
+			
 			
 			// query ServiceContainer with a specific version
 			if(bean.serviceVersion > -1){
@@ -427,9 +447,9 @@ public class CoordinatorService extends MobilisService {
 						ServiceContainerState.ACTIVE );
 			}
 			
-			//check remote servers for requested service
-			HashSet<String> remoteRuntimesSupportingService = CoordinationHelper.getServiceOnRemoteRuntime(bean.getServiceName(), bean.getServiceVersion());
-
+			
+			
+			
 			// if no service container was found or the container isn't in state active, check if service is available on remote runtime. if not, respond an error
 			if((null == serviceContainer || serviceContainer.getContainerState() != ServiceContainerState.ACTIVE) && remoteRuntimesSupportingService.size()<=0){
 				beanAnswer = BeanHelper.CreateErrorBean( 
@@ -440,39 +460,63 @@ public class CoordinatorService extends MobilisService {
 				
 				MobilisManager.getLogger().log( Level.WARNING,
 						String.format( "Service instantiation error: %s", beanAnswer.toXML() ) );
-			} else if(!(null == serviceContainer || serviceContainer.getContainerState() != ServiceContainerState.ACTIVE)) {
-				// CoordinatorService#inCreateServiceInstanceSet: moved code to class ServiceContainer#startNewServiceInstance
+			} else {
 				
-				// try to start a new instance of the service
-				try {
-					MobilisService newService = serviceContainer.startNewServiceInstance(bean.serviceName);
-					newService.setName( bean.serviceName );
-					
-					beanAnswer = new CreateNewServiceInstanceBean(newService.getAgent().getFullJid(),
-							serviceContainer.getServiceVersion());
-				// exception was thrown, respond an error 
-				} catch ( StartNewServiceInstanceException e ) {
-					beanAnswer = bean.clone();
-					beanAnswer.setType( XMPPBean.TYPE_ERROR );
-					
-					beanAnswer.errorType = "wait";
-					beanAnswer.errorCondition = "internal-server-error";
-					beanAnswer.errorText = String.format( "Error starting new instance of service. Reason: %s", e.getMessage() );
-					
-					MobilisManager.getLogger().log( Level.WARNING,
-							String.format( "Service instantiation error: %s", e.getMessage() ) );
-				}
-			} else if (!(remoteRuntimesSupportingService.size()<=0)){
+				//create a response bean to inform the requestor that his Request is being processed under the given answerID.
 				
+				beanAnswer = new CreateNewServiceInstanceBean(answerID);
+				createAccepted = true;
 			}
 			
 			
 		}
-				
+		
+		//Sending Response/error to the Requestor
 		beanAnswer.setTo(from); beanAnswer.setFrom(to);
 		beanAnswer.setId(bean.getId());
-		
 		c.sendPacket(new BeanIQAdapter(beanAnswer));
+		
+		//create new Instance local or on remote Runtime
+		if(createAccepted){
+			createServiceInstance(bean, answerID, remoteRuntimesSupportingService, serviceContainer, c);
+		}
+	}
+	
+	private void createServiceInstance(CreateNewServiceInstanceBean bean, String answerID, HashSet<String> remoteRuntimesSupportingService, ServiceContainer serviceContainer, Connection connection){
+		
+		//primarily create service local if possible, else try remote
+		if((null != serviceContainer && serviceContainer.getContainerState() == ServiceContainerState.ACTIVE)){
+			// CoordinatorService#inCreateServiceInstanceSet: moved code to class ServiceContainer#startNewServiceInstance
+			SendNewServiceInstanceBean beanAnswer = new SendNewServiceInstanceBean();
+			// try to start a new instance of the service
+			try {
+				MobilisService newService = serviceContainer.startNewServiceInstance(bean.serviceName);
+				newService.setName( bean.serviceName );
+				
+				beanAnswer = new SendNewServiceInstanceBean(newService.getAgent().getFullJid(),
+						serviceContainer.getServiceVersion());
+			// exception was thrown, respond an error 
+			} catch ( StartNewServiceInstanceException e ) {
+				beanAnswer = new SendNewServiceInstanceBean("wait", "internal-server-error", String.format( "Error starting new instance of service. Reason: %s", e.getMessage() ));
+				
+				MobilisManager.getLogger().log( Level.WARNING,
+						String.format( "Service instantiation error: %s", e.getMessage() ) );
+			}
+			beanAnswer.setTo(bean.getFrom()); beanAnswer.setFrom(bean.getTo());
+			beanAnswer.setId(bean.getId()+"b");
+			connection.sendPacket(new BeanIQAdapter(beanAnswer));
+			
+		} 
+		// try to start a new instance on a remote runtime by forwarding the initial Request to a Random Runtime that supports the requested Service
+		else {
+			CreateNewServiceInstanceBean createBean = bean.clone();
+			createBean.jidOfOriginalRequestor = bean.getFrom();
+			createBean.setFrom(bean.getTo());
+			createBean.setTo(loadBalancing.randomRuntimeForCreateInstance(remoteRuntimesSupportingService) + "/Coordinator");
+			connection.sendPacket(new BeanIQAdapter(createBean));
+		}
+		
+		
 	}
 	
 	/**

@@ -10,57 +10,47 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
  * a service on the MobilisServer.
  * @author Robert L�bke
  */
-public class CreateNewServiceInstanceBean extends XMPPBean {
+public class SendNewServiceInstanceBean extends XMPPBean {
 
 	private static final long serialVersionUID = 1L;
 	public static final String NAMESPACE = Mobilis.NAMESPACE + "#services/CoordinatorService";
-	public static final String CHILD_ELEMENT = "createNewServiceInstance";
+	public static final String CHILD_ELEMENT = "sendNewServiceInstance";
 	
-	public String serviceNamespace, servicePassword, serviceName;
+	public String serviceNamespace;
 	public int serviceVersion = -1;
 	public int minVersion = -1;
 	public int maxVersion = -1;
-	//public String jidOfNewService;
-	//public String answerID; // to ensure recieving the correct answer in later IQs (sendNewServiceInstance)
-	public String jidOfOriginalRequestor; //needed if a runtime forwards the clientrequest to the next runtime
+	public String jidOfNewService;
+	public String jidOfOriginalRequestor;
 	
-	/** Constructor for creating a new Service Instance on the MobilisServer; type=SET */
-	public CreateNewServiceInstanceBean(String serviceNamespace, String servicePassword) {
+	/** Constructor for sending new Service Instance Information back to original Requestor; type=SET */
+	public SendNewServiceInstanceBean(String jidOfNewService, int serviceVersion) {
 		super();
-		this.serviceNamespace=serviceNamespace;
-		this.servicePassword=servicePassword;
+		this.jidOfNewService=jidOfNewService;
+		this.serviceVersion = serviceVersion;
 		this.type=XMPPBean.TYPE_SET;
 	}
 		
 	/** Constructor for type=ERROR */
-	public CreateNewServiceInstanceBean(String errorType, String errorCondition, String errorText) {
+	public SendNewServiceInstanceBean(String errorType, String errorCondition, String errorText) {
 		super(errorType, errorCondition, errorText);	
 	}
 	
-	/** Constructor for empty bean */
-	public CreateNewServiceInstanceBean() {
-		super();
-		this.type=XMPPBean.TYPE_RESULT;
-	}
-	
 	/** Constructor for type=RESULT */
-	public CreateNewServiceInstanceBean(String answerID) {
+	public SendNewServiceInstanceBean() {
 		super();
-		//this.answerID = answerID;
 		this.type=XMPPBean.TYPE_RESULT;
 	}
 	
 	@Override
-	public CreateNewServiceInstanceBean clone() {
-		CreateNewServiceInstanceBean twin = new CreateNewServiceInstanceBean(serviceNamespace, servicePassword);		
-		//twin.jidOfNewService = this.jidOfNewService;
-		twin.jidOfOriginalRequestor = this.jidOfOriginalRequestor;
-		//twin.answerID = this.answerID;
+	public SendNewServiceInstanceBean clone() {
+		SendNewServiceInstanceBean twin = new SendNewServiceInstanceBean(jidOfNewService, serviceVersion);		
+		twin.jidOfNewService = this.jidOfNewService;
 		twin.serviceVersion = this.serviceVersion;
 		twin.minVersion = this.minVersion;
 		twin.maxVersion = this.maxVersion;
 		
-		twin = (CreateNewServiceInstanceBean) cloneBasicAttributes(twin);
+		twin = (SendNewServiceInstanceBean) cloneBasicAttributes(twin);
 		return twin;
 	}
 
@@ -68,18 +58,10 @@ public class CreateNewServiceInstanceBean extends XMPPBean {
 	public String payloadToXML() {
 		StringBuilder sb = new StringBuilder();
 		
-		if (this.jidOfOriginalRequestor!=null)
-			sb.append("<originalRequestor>").append(jidOfOriginalRequestor).append("</originalRequestor>");
-//		if (this.answerID!=null)
-//			sb.append("<answerID>").append(answerID).append("</answerID>");
 		if (this.serviceNamespace!=null)
 			sb.append("<serviceNamespace>").append(serviceNamespace).append("</serviceNamespace>");
-		if (this.servicePassword!=null)
-			sb.append("<servicePassword>").append(servicePassword).append("</servicePassword>");
-//		if (this.jidOfNewService!=null)
-//			sb.append("<jidOfNewService>").append(jidOfNewService).append("</jidOfNewService>");
-		if (this.serviceName!=null)
-			sb.append("<serviceName>").append(serviceName).append("</serviceName>");
+		if (this.jidOfNewService!=null)
+			sb.append("<jidOfNewService>").append(jidOfNewService).append("</jidOfNewService>");
 		if (this.serviceVersion!=-1)
 			sb.append("<serviceVersion>").append(this.serviceVersion).append("</serviceVersion>");
 		if (this.minVersion!=-1)
@@ -93,7 +75,7 @@ public class CreateNewServiceInstanceBean extends XMPPBean {
 
 	@Override
 	public void fromXML(XmlPullParser parser) throws Exception {
-		String childElement = CreateNewServiceInstanceBean.CHILD_ELEMENT;
+		String childElement = SendNewServiceInstanceBean.CHILD_ELEMENT;
 		
 		boolean done = false;
 		do {
@@ -104,16 +86,8 @@ public class CreateNewServiceInstanceBean extends XMPPBean {
 					parser.next();
 				} else if (tagName.equals("serviceNamespace")) {
 					this.serviceNamespace = parser.nextText();		
-				} else if (tagName.equals("servicePassword")) {
-					this.servicePassword = parser.nextText();
-				} else if (tagName.equals("originalRequestor")) {
-					this.jidOfOriginalRequestor = parser.nextText();
-//				} else if (tagName.equals("answerID")) {
-//					this.answerID = parser.nextText();
-//				} else if (tagName.equals("jidOfNewService")) {
-//					this.jidOfNewService = parser.nextText();	
-				} else if (tagName.equals("serviceName")) {
-					this.serviceName = parser.nextText();	
+				} else if (tagName.equals("jidOfNewService")) {
+					this.jidOfNewService = parser.nextText();	
 				} else if (tagName.equals("serviceVersion")) {
 					this.serviceVersion = Integer.parseInt( parser.nextText() );	
 				} else if (tagName.equals("minVersion")) {
@@ -143,12 +117,12 @@ public class CreateNewServiceInstanceBean extends XMPPBean {
 
 	@Override
 	public String getChildElement() {
-		return CreateNewServiceInstanceBean.CHILD_ELEMENT;
+		return SendNewServiceInstanceBean.CHILD_ELEMENT;
 	}
 
 	@Override
 	public String getNamespace() {
-		return CreateNewServiceInstanceBean.NAMESPACE;
+		return SendNewServiceInstanceBean.NAMESPACE;
 	}
 
 	public String getServiceNamespace() {
@@ -159,34 +133,12 @@ public class CreateNewServiceInstanceBean extends XMPPBean {
 		this.serviceNamespace = serviceNamespace;
 	}
 
-	public String getServicePassword() {
-		return servicePassword;
+	public String getJidOfNewService() {
+		return jidOfNewService;
 	}
 
-	public void setServicePassword(String servicePassword) {
-		this.servicePassword = servicePassword;
-	}
-
-//	public String getJidOfNewService() {
-//		return jidOfNewService;
-//	}
-//
-//	public void setJidOfNewService(String jidOfNewService) {
-//		this.jidOfNewService = jidOfNewService;
-//	}
-
-	/**
-	 * @return the name of the service which should be created. 
-	 */
-	public String getServiceName() {
-		return serviceName;
-	}
-
-	/**
-	 * @param serviceName the name of the service which should be created. This should be a descriptive text of this special service instance.
-	 */
-	public void setServiceName(String serviceName) {
-		this.serviceName = serviceName;
+	public void setJidOfNewService(String jidOfNewService) {
+		this.jidOfNewService = jidOfNewService;
 	}
 
 	/**

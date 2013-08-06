@@ -28,6 +28,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UnregisterServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UpdateServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.SendNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
@@ -277,6 +278,7 @@ public class Connection {
 		( new BeanProviderAdapter( new UnregisterServiceBean() ) ).addToProviderManager();
 		( new BeanProviderAdapter( new UpdateServiceBean() ) ).addToProviderManager();
 		( new BeanProviderAdapter( new StopServiceInstanceBean() ) ).addToProviderManager();
+		( new BeanProviderAdapter( new SendNewServiceInstanceBean() ) ).addToProviderManager();
 	}
 
 	/**
