@@ -67,7 +67,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
 
 /**
  * 
- * @author Robert L���bke
+ * @author Robert L���bke, Philipp Grubitzsch
  *
  */
 public class CoordinatorService extends MobilisService {
@@ -395,9 +395,9 @@ public class CoordinatorService extends MobilisService {
 				}
 			}
 		}
-		if(discoveredServices.size()==0){
-			discoveredServices = null;
-		}
+//		if(discoveredServices.size()==0){
+//			discoveredServices = null;
+//		}
 		List<MobilisServiceInfo> dServices = new ArrayList<MobilisServiceInfo>(discoveredServices.values());
 		beanAnswer = new MobilisServiceDiscoveryBean(dServices);	
 		beanAnswer.setTo(from); beanAnswer.setFrom(to);

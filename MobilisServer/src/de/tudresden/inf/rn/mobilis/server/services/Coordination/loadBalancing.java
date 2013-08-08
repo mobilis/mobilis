@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Random;
 
 /**
+ * @author Philipp Grubitzsch
  * This Class is a Helper Class of the CoordinatorService. It is implementing different Methods to handle clientside createServiceInstance Requests.
  * The Methods in this Class differ in how the best Runtime is choosed, where the new Serviceinstance should be created.
  */

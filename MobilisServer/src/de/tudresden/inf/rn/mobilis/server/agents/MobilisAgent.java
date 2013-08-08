@@ -50,7 +50,7 @@ import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
 
 /**
  *
- * @author Christopher
+ * @author Christopher, Philipp Grubitzsch
  */
 public class MobilisAgent implements NodeInformationProvider, ConnectionListener {
 

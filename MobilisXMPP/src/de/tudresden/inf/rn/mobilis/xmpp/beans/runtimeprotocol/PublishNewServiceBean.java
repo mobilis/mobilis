@@ -1,12 +1,15 @@
 package de.tudresden.inf.rn.mobilis.xmpp.beans.runtimeprotocol;
 
-import org.jivesoftware.smack.packet.XMPPError;
 import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.Mobilis;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
 
+/**
+ * 
+ * @author Philipp Grubitzsch
+ *
+ */
 public class PublishNewServiceBean extends XMPPBean {
 
 	/**

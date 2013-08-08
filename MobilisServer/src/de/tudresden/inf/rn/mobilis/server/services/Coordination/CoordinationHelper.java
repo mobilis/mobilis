@@ -14,6 +14,11 @@ import org.jivesoftware.smackx.packet.DiscoverInfo.Feature;
 
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 
+/**
+ * 
+ * @author Philipp Grubitzsch
+ *
+ */
 public class CoordinationHelper {
 	
 	/**
