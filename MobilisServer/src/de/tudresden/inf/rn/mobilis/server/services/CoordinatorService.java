@@ -520,10 +520,15 @@ public class CoordinatorService extends MobilisService {
 		} 
 		// try to start a new instance on a remote runtime by forwarding the initial Request to a Random Runtime that supports the requested Service
 		else {
-			CreateNewServiceInstanceBean createBean = bean.clone();
-			createBean.setId(bean.getId()+"b");
+			CreateNewServiceInstanceBean createBean = new CreateNewServiceInstanceBean();
+			createBean.setType(XMPPBean.TYPE_SET);
 			createBean.jidOfOriginalRequestor = bean.getFrom();
 			createBean.setFrom(bean.getTo());
+			createBean.setServiceName(bean.getServiceName());
+			createBean.setServiceNamespace(bean.getServiceNamespace());
+			createBean.setServicePassword(bean.getServicePassword());
+			createBean.setServiceVersion(bean.getServiceVersion());
+			//choose runtime
 			createBean.setTo(loadBalancing.randomRuntimeForCreateInstance(remoteRuntimesSupportingService) + "/Coordinator");
 			connection.sendPacket(new BeanIQAdapter(createBean));
 		}
