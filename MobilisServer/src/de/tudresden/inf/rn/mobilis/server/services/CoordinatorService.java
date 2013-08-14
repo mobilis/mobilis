@@ -540,14 +540,15 @@ public class CoordinatorService extends MobilisService {
 
 			
 			//create Answer IQ for original Client Requestor
-			SendNewServiceInstanceBean toOriginalRequestor = inBean.clone();
+			SendNewServiceInstanceBean toOriginalRequestor = new SendNewServiceInstanceBean(inBean.getJidOfNewService(), inBean.getServiceVersion());
 			toOriginalRequestor.setFrom(inBean.getTo());
 			toOriginalRequestor.setTo(inBean.jidOfOriginalRequestor);
 			
 			//create Answer IQ for Remote Server (ok)
 			SendNewServiceInstanceBean toRemoteRuntime = new SendNewServiceInstanceBean();
-			toRemoteRuntime.setFrom(inBean.getId());
-			toRemoteRuntime.setTo(inBean.getTo());
+			toRemoteRuntime.setFrom(inBean.getTo());
+			toRemoteRuntime.setTo(inBean.getFrom());
+			toRemoteRuntime.setId(inBean.getId());
 		
 		
 		connection.sendPacket(new BeanIQAdapter(toOriginalRequestor));
