@@ -13,7 +13,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
  * @author Philipp Grubitzsch
  *
  */
-public class PublishNewServiceBean extends XMPPBean {
+public class SynchronizeRuntimesBean extends XMPPBean {
 
 	/**
 	 * 
@@ -29,7 +29,7 @@ public class PublishNewServiceBean extends XMPPBean {
 	/*
 	 * Constructor to send a Result
 	 */
-	public PublishNewServiceBean() {
+	public SynchronizeRuntimesBean() {
 		super();
 		this.type=XMPPBean.TYPE_RESULT;
 	}
@@ -37,7 +37,7 @@ public class PublishNewServiceBean extends XMPPBean {
 	/*
 	 * Constructor for publish a new Service to another Runtimes Discovery
 	 */
-	public PublishNewServiceBean(List<String> newServiceJIDs){
+	public SynchronizeRuntimesBean(List<String> newServiceJIDs){
 		super();
 		this.newServiceJIDs = newServiceJIDs;
 		this.type=XMPPBean.TYPE_SET;
@@ -46,7 +46,7 @@ public class PublishNewServiceBean extends XMPPBean {
 	/**
 	 * Constructor for a Get Request. Needed for Pulling remote services to a local runtime roster.
 	 */
-	public PublishNewServiceBean(String targetRuntimeJID){
+	public SynchronizeRuntimesBean(String targetRuntimeJID){
 		super();
 		this.setTo(targetRuntimeJID);
 		this.type = XMPPBean.TYPE_GET;
@@ -55,7 +55,7 @@ public class PublishNewServiceBean extends XMPPBean {
 	/*
 	 * Constructor for occuring Errors while trying to publish a new Service 
 	 */
-	public PublishNewServiceBean(String errorType, String errorCondition,
+	public SynchronizeRuntimesBean(String errorType, String errorCondition,
 			String errorText) {
 		super(errorType, errorCondition, errorText);
 	}
@@ -103,19 +103,19 @@ public class PublishNewServiceBean extends XMPPBean {
 
 	@Override
 	public String getChildElement() {
-		return PublishNewServiceBean.CHILD_ELEMENT;
+		return SynchronizeRuntimesBean.CHILD_ELEMENT;
 	}
 
 	@Override
 	public String getNamespace() {
-		return PublishNewServiceBean.NAMESPACE;
+		return SynchronizeRuntimesBean.NAMESPACE;
 	}
 
 	@Override
-	public PublishNewServiceBean clone() {
-		PublishNewServiceBean twin = new PublishNewServiceBean(this.newServiceJIDs);		
+	public SynchronizeRuntimesBean clone() {
+		SynchronizeRuntimesBean twin = new SynchronizeRuntimesBean(this.newServiceJIDs);		
 				
-		twin = (PublishNewServiceBean) cloneBasicAttributes(twin);
+		twin = (SynchronizeRuntimesBean) cloneBasicAttributes(twin);
 		return twin;
 	}
 
