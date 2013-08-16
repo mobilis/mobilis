@@ -208,7 +208,7 @@ public class DeploymentService extends MobilisService {
 									System.out.println("Couldn't add user to Rostergroup. Reason: " + e.getMessage());
 									e.printStackTrace();
 								}
-								sendPublishNewServiceBeanSET(MobilisManager.getInstance().getNewServiceJIDByDate(date));
+								sendSynchronizeRuntimesBeanSET(MobilisManager.getInstance().getNewServiceJIDByDate(date));
 							}
 							else{
 								//if rostergroup for service exist, check if request user is in that group. if not, he isn't authorized upload and change service
@@ -286,7 +286,7 @@ public class DeploymentService extends MobilisService {
 	 * @param recipientJIDOfRuntime
 	 * @param newServiceJID
 	 */
-	private void sendPublishNewServiceBeanSET(String newServiceJID){
+	private void sendSynchronizeRuntimesBeanSET(String newServiceJID){
 
 		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
 		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup +"runtimes");
@@ -301,8 +301,8 @@ public class DeploymentService extends MobilisService {
 				getAgent().getConnection().sendPacket( new BeanIQAdapter( bean ) );
 			}
 		}
-		
 	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -375,18 +375,18 @@ public class DeploymentService extends MobilisService {
 				} else if ( inBean instanceof SynchronizeRuntimesBean){
 						SynchronizeRuntimesBean bean = (SynchronizeRuntimesBean) inBean;
 						if(inBean.getType() == XMPPBean.TYPE_SET )
-							handlePublishNewServiceBean(bean);
+							handleSynchronizeRuntimesBean(bean);
 						if(inBean.getType() == XMPPBean.TYPE_ERROR) {
-							handlePublishNewServiceErrorBean(bean);
+							synchronizeRuntimesErrorBean(bean);
 						} else {
 							if(inBean.getType() == XMPPBean.TYPE_RESULT);
 								if((bean.newServiceJIDs == null) || (bean.newServiceJIDs.size() == 0)){
 									//no services result bean for GET REQUEST or result bean for SET Request.
 								} else {
-									handlePublishNewServiceBeanResult(bean);
+									handleSynchronizeRuntimesBeanResult(bean);
 								}
 							if(inBean.getType() == XMPPBean.TYPE_GET)
-								handlePullRequestForServices(bean);
+								handleSynchronizeRuntimesGET(bean);
 						}
 				} else {
 					handleUnknownBean( inBean );
@@ -398,41 +398,25 @@ public class DeploymentService extends MobilisService {
 		 * Process a Result of a GET Request.
 		 * @param inBean
 		 */
-		private void handlePublishNewServiceBeanResult(SynchronizeRuntimesBean inBean) {
-			Roster roster = MobilisManager.getInstance().getRuntimeRoster();
-			String[] groups = {MobilisManager.remoteServiceGroup + "services"};
-			try {
-				for(String jid : inBean.getNewServiceJIDs()){
-				roster.createEntry(jid, jid, groups);
-				}
-			}  catch (XMPPException e){
-				MobilisManager.getLogger().severe("JID could not added cause: " + e.getMessage());
-			}
-			
+		private void handleSynchronizeRuntimesBeanResult(SynchronizeRuntimesBean inBean) {
+			addRemoteServiceJIDsToRoster(inBean.getNewServiceJIDs());
 		}
 
 		/**
 		 * Process a GET Request for local services and push them to the requestor.
 		 * @param inBean
 		 */
-		private void handlePullRequestForServices(SynchronizeRuntimesBean inBean) {
+		private void handleSynchronizeRuntimesGET(SynchronizeRuntimesBean inBean) {
 			XMPPBean answerBean = null;
 			Roster roster = MobilisManager.getInstance().getRuntimeRoster();
 			RosterGroup allowedRuntimes = roster.getGroup(MobilisManager.securityRuntimeGroup + "runtimes");
-			ArrayList<String> serviceJIDs = new ArrayList<String>();
+
 			//first security check if requesting runtime is in the runtimes rostergroup
 			if(allowedRuntimes !=null){
 				if(allowedRuntimes.getEntry(StringUtils.parseBareAddress(inBean.getFrom()))!=null){
 					// runtime allowed
-					RosterGroup services = roster.getGroup(MobilisManager.remoteServiceGroup + "local-services");
-					for(RosterEntry entry : services.getEntries()){
-						serviceJIDs.add(entry.getUser());
-					}
-					
 					answerBean = BeanHelper
-							.CreateResultBean( inBean, new SynchronizeRuntimesBean(serviceJIDs) );
-					
-					
+							.CreateResultBean( inBean, new SynchronizeRuntimesBean(getLocalServiceJIDs()) );
 				}	else {
 					answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access denied",
 							( "Access denied: Runtime is not allowed to request service Informations from " + inBean.getTo()));
@@ -441,7 +425,7 @@ public class DeploymentService extends MobilisService {
 				answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access denied",
 						( "Access denied: Runtime is not allowed to request service Informations from " + inBean.getTo()));
 			}
-			
+			addRemoteServiceJIDsToRoster(inBean.getNewServiceJIDs());
 			getAgent().getConnection().sendPacket( new BeanIQAdapter( answerBean ) );
 			
 		}
@@ -451,7 +435,7 @@ public class DeploymentService extends MobilisService {
 		 * Handle incoming SET Request to add new ServiceJID to the Roster
 		 * @param inBean
 		 */
-		private void handlePublishNewServiceBean(SynchronizeRuntimesBean inBean) {
+		private void handleSynchronizeRuntimesBean(SynchronizeRuntimesBean inBean) {
 			Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
 			RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup + "runtimes");
 			XMPPBean outBean = null;
@@ -481,7 +465,7 @@ public class DeploymentService extends MobilisService {
 		 * Handle an occouring Error while Publishing a new Service
 		 * @param inBean
 		 */
-		private void handlePublishNewServiceErrorBean(
+		private void synchronizeRuntimesErrorBean(
 				SynchronizeRuntimesBean inBean) {
 			System.out.println("Error while trying to publish a new Service to Runtime " + inBean.getFrom() + ". Reason: " + inBean.errorText );
 			System.out.println("Dienst JID: " + (inBean.getNewServiceJIDs()).toString());
@@ -569,7 +553,11 @@ public class DeploymentService extends MobilisService {
 
 
 	}
-	
+	/**
+	 * Delayed Request for synchronizing runtimes
+	 * @author Philipp
+	 *
+	 */
 	private class UpdateRemoteServices extends TimerTask{
 
 		@Override
@@ -586,8 +574,9 @@ public class DeploymentService extends MobilisService {
 						String presenceRessource = StringUtils.parseResource((presence.getFrom()));
 						
 						if(presence.isAvailable() && presenceRessource.equalsIgnoreCase("deployment")){
-					
+							
 							SynchronizeRuntimesBean outBean = new SynchronizeRuntimesBean(entry.getUser() + "/Deployment");
+							outBean.setNewServiceJID(getLocalServiceJIDs());
 							getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
 						}
 					}
@@ -598,30 +587,32 @@ public class DeploymentService extends MobilisService {
 		
 	}
 	
-	/**
-	 * Update Remote Services REQUEST in Roster on call
-	 */
-	public void updateRemoteServices(){
+	private List<String> getLocalServiceJIDs(){
+		Roster roster = MobilisManager.getInstance().getRuntimeRoster();
+
+		ArrayList<String> serviceJIDs = new ArrayList<String>();
 		
-		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
-		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup + "runtimes");
-		if(rg != null){
-			for(RosterEntry entry : rg.getEntries()){
-				
-				//request new Services just from online runtimes
-				for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
-				{
-					Presence presence = iter.next();
-					String presenceRessource = StringUtils.parseResource((presence.getFrom()));
-					
-					if(presence.isAvailable() && presenceRessource.equalsIgnoreCase("deployment")){
-				
-						SynchronizeRuntimesBean outBean = new SynchronizeRuntimesBean(entry.getUser() + "/Deployment");
-						getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
-					}
-				}
+		RosterGroup services = roster.getGroup(MobilisManager.remoteServiceGroup + "local-services");
+		for(RosterEntry entry : services.getEntries()){
+			serviceJIDs.add(entry.getUser());
+		}
+		
+		return serviceJIDs;
+	}
+	
+	/**
+	 * adding a list of services running on a remote runtime to local runtimes roster and rostergroup
+	 * @param serviceJIDs
+	 */
+	private void addRemoteServiceJIDsToRoster(List<String> serviceJIDs){
+		Roster roster = MobilisManager.getInstance().getRuntimeRoster();
+		String[] groups = {MobilisManager.remoteServiceGroup + "services"};
+		try {
+			for(String jid : serviceJIDs){
+			roster.createEntry(jid, jid, groups);
 			}
+		}  catch (XMPPException e){
+			MobilisManager.getLogger().severe("JID could not added cause: " + e.getMessage());
 		}
 	}
-
 }
