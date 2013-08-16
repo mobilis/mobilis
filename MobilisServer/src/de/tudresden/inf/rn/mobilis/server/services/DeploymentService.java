@@ -2,6 +2,7 @@ package de.tudresden.inf.rn.mobilis.server.services;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.logging.Level;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.Roster.SubscriptionMode;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.RosterGroup;
@@ -22,6 +24,7 @@ import org.jivesoftware.smack.keepalive.KeepAliveManager;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
@@ -287,7 +290,9 @@ public class DeploymentService extends MobilisService {
 		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup +"runtimes");
 		if(rg!=null){
 			for(RosterEntry entry : rg.getEntries()){
-				PublishNewServiceBean bean = new PublishNewServiceBean(newServiceJID);
+				List<String> newServiceJIDs = new ArrayList<String>();
+				newServiceJIDs.add(newServiceJID);
+				PublishNewServiceBean bean = new PublishNewServiceBean(newServiceJIDs);
 				String recipientJIDOfRuntime = entry.getUser() + "/Deployment";
 				bean.setTo(recipientJIDOfRuntime);
 				bean.setType(XMPPBean.TYPE_SET);
@@ -366,21 +371,82 @@ public class DeploymentService extends MobilisService {
 						&& inBean.getType() == XMPPBean.TYPE_RESULT ) {
 					// Do nothing, just ack
 				} else if ( inBean instanceof PublishNewServiceBean){
+						PublishNewServiceBean bean = (PublishNewServiceBean) inBean;
 						if(inBean.getType() == XMPPBean.TYPE_SET )
-							handlePublishNewServiceBean((PublishNewServiceBean) inBean);
-						if(inBean.getType() == XMPPBean.TYPE_ERROR)
-							handlePublishNewServiceErrorBean((PublishNewServiceBean) inBean);
-						if(inBean.getType() == XMPPBean.TYPE_RESULT);
-							//// Do nothing, just ack
+							handlePublishNewServiceBean(bean);
+						if(inBean.getType() == XMPPBean.TYPE_ERROR) {
+							handlePublishNewServiceErrorBean(bean);
+						} else {
+							if(inBean.getType() == XMPPBean.TYPE_RESULT);
+								if((bean.newServiceJIDs == null) || (bean.newServiceJIDs.size() == 0)){
+									//no services result bean for GET REQUEST or result bean for SET Request.
+								} else {
+									handlePublishNewServiceBeanResult(bean);
+								}
+							if(inBean.getType() == XMPPBean.TYPE_GET)
+								handlePullRequestForServices(bean);
+						}
 				} else {
 					handleUnknownBean( inBean );
 				}
 			}
 		}
 		
+		/**
+		 * Process a Result of a GET Request.
+		 * @param inBean
+		 */
+		private void handlePublishNewServiceBeanResult(PublishNewServiceBean inBean) {
+			Roster roster = MobilisManager.getInstance().getRuntimeRoster();
+			String[] groups = {MobilisManager.remoteServiceGroup + "services"};
+			try {
+				for(String jid : inBean.getNewServiceJIDs()){
+				roster.createEntry(jid, jid, groups);
+				}
+			}  catch (XMPPException e){
+				MobilisManager.getLogger().severe("JID could not added cause: " + e.getMessage());
+			}
+			
+		}
 
 		/**
-		 * Handle incoming Request to add new ServiceJID to the Roster
+		 * Process a GET Request for local services and push them to the requestor.
+		 * @param inBean
+		 */
+		private void handlePullRequestForServices(PublishNewServiceBean inBean) {
+			XMPPBean answerBean = null;
+			Roster roster = MobilisManager.getInstance().getRuntimeRoster();
+			RosterGroup allowedRuntimes = roster.getGroup(MobilisManager.securityRuntimeGroup + "runtimes");
+			ArrayList<String> serviceJIDs = new ArrayList<String>();
+			//first security check if requesting runtime is in the runtimes rostergroup
+			if(allowedRuntimes !=null){
+				if(allowedRuntimes.getEntry(StringUtils.parseBareAddress(inBean.getFrom()))!=null){
+					// runtime allowed
+					RosterGroup services = roster.getGroup(MobilisManager.remoteServiceGroup + "local-services");
+					for(RosterEntry entry : services.getEntries()){
+						serviceJIDs.add(entry.getUser());
+					}
+					
+					answerBean = BeanHelper
+							.CreateResultBean( inBean, new PublishNewServiceBean(serviceJIDs) );
+					
+					
+				}	else {
+					answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access denied",
+							( "Access denied: Runtime is not allowed to request service Informations from " + inBean.getTo()));
+				}
+			} else {
+				answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access denied",
+						( "Access denied: Runtime is not allowed to request service Informations from " + inBean.getTo()));
+			}
+			
+			getAgent().getConnection().sendPacket( new BeanIQAdapter( answerBean ) );
+			
+		}
+
+
+		/**
+		 * Handle incoming SET Request to add new ServiceJID to the Roster
 		 * @param inBean
 		 */
 		private void handlePublishNewServiceBean(PublishNewServiceBean inBean) {
@@ -388,16 +454,18 @@ public class DeploymentService extends MobilisService {
 			RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup + "runtimes");
 			XMPPBean outBean = null;
 			if(rg.getEntry(StringUtils.parseBareAddress(inBean.getFrom()))!=null){
-				//if requestor is an accepted runtime, add new service JID to rostergroup services
+				//if requestor is an accepted runtime, add new service JIDs to rostergroup services
 				String[] groups = {MobilisManager.remoteServiceGroup + "services"};
 				try {
-					runtimeRoster.createEntry(inBean.getNewServiceJID(), inBean.getNewServiceJID(), groups);
+					for(String jid : inBean.getNewServiceJIDs()){
+					runtimeRoster.createEntry(jid, jid, groups);
+					}
 					outBean = BeanHelper
 							.CreateResultBean( inBean, new PublishNewServiceBean() );
 				} catch (XMPPException e) {
 					System.out.println("Error while adding new Service JID to lokal Roster. Reason: " + e.getMessage());
 					outBean = BeanHelper.CreateErrorBean( inBean, "modify", "unexpected-error",
-							( "Could not add Service JID " + inBean.getNewServiceJID() + " to Roster of Runtime " + inBean.getTo() + ". Reason: " + e.getMessage()));
+							( "Could not add Service JIDs: " + (inBean.getNewServiceJIDs()).toString() + " to Roster of Runtime " + inBean.getTo() + ". Reason: " + e.getMessage()));
 				}
 			} else {
 				outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
@@ -414,7 +482,7 @@ public class DeploymentService extends MobilisService {
 		private void handlePublishNewServiceErrorBean(
 				PublishNewServiceBean inBean) {
 			System.out.println("Error while trying to publish a new Service to Runtime " + inBean.getFrom() + ". Reason: " + inBean.errorText );
-			System.out.println("Dienst JID: " + inBean.getNewServiceJID());
+			System.out.println("Dienst JID: " + (inBean.getNewServiceJIDs()).toString());
 		}
 		
 		/**
@@ -489,8 +557,36 @@ public class DeploymentService extends MobilisService {
 		//if not already existing, generate standard security group for uploading files
 		if(runtimeRoster.getGroup(MobilisManager.securityUserGroup + "deploy")==null){
 			runtimeRoster.createGroup(MobilisManager.securityUserGroup + "deploy");
-		}	
+		}
+		
+		updateRemoteServices();
 
+	}
+	
+	/**
+	 * Update Remote Services REQUEST in Roster on call
+	 */
+	public void updateRemoteServices(){
+		
+		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
+		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup + "runtimes");
+		if(rg != null){
+			for(RosterEntry entry : rg.getEntries()){
+				
+				//request new Services just from online runtimes
+				for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
+				{
+					Presence presence = iter.next();
+					String presenceRessource = StringUtils.parseResource((presence.getFrom()));
+					
+					if(presence.isAvailable() && presenceRessource.equalsIgnoreCase("deployment")){
+				
+						PublishNewServiceBean outBean = new PublishNewServiceBean(entry.getUser() + "/Deployment");
+						getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
+					}
+				}
+			}
+		}
 	}
 
 }

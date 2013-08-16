@@ -1,5 +1,8 @@
 package de.tudresden.inf.rn.mobilis.xmpp.beans.runtimeprotocol;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.Mobilis;
@@ -19,7 +22,7 @@ public class PublishNewServiceBean extends XMPPBean {
 	public static final String NAMESPACE = Mobilis.NAMESPACE + "#XMPPBean:deployment:publishNewService";
 	public static final String CHILD_ELEMENT = "publishNewService";
 	
-	public String newServiceJID;
+	public List<String> newServiceJIDs;
 	public boolean successfullyAddedService;
 	private String _xmlTag_ServiceJID = "serviceJID";
 	
@@ -34,10 +37,19 @@ public class PublishNewServiceBean extends XMPPBean {
 	/*
 	 * Constructor for publish a new Service to another Runtimes Discovery
 	 */
-	public PublishNewServiceBean(String newServiceJID){
+	public PublishNewServiceBean(List<String> newServiceJIDs){
 		super();
-		this.newServiceJID = newServiceJID;
+		this.newServiceJIDs = newServiceJIDs;
 		this.type=XMPPBean.TYPE_SET;
+	}
+	
+	/**
+	 * Constructor for a Get Request. Needed for Pulling remote services to a local runtime roster.
+	 */
+	public PublishNewServiceBean(String targetRuntimeJID){
+		super();
+		this.setTo(targetRuntimeJID);
+		this.type = XMPPBean.TYPE_GET;
 	}
 	
 	/*
@@ -52,7 +64,7 @@ public class PublishNewServiceBean extends XMPPBean {
 	public void fromXML(XmlPullParser parser) throws Exception {
 		//String childElement = MobilisServiceInfo.CHILD_ELEMENT;
 		boolean done = false;
-
+		newServiceJIDs = new ArrayList<String>();
 		do {
 			switch (parser.getEventType()) {
 			case XmlPullParser.START_TAG:
@@ -60,7 +72,7 @@ public class PublishNewServiceBean extends XMPPBean {
 				if (tagName.equals(CHILD_ELEMENT)) {
 					parser.next();
 				} else if (tagName.equals(_xmlTag_ServiceJID)) {
-					this.newServiceJID = parser.nextText();
+					newServiceJIDs.add(parser.nextText());
 				} else if (tagName.equals("error")) {
 					parser = parseErrorAttributes(parser);
 				} else
@@ -101,7 +113,7 @@ public class PublishNewServiceBean extends XMPPBean {
 
 	@Override
 	public PublishNewServiceBean clone() {
-		PublishNewServiceBean twin = new PublishNewServiceBean(this.newServiceJID);		
+		PublishNewServiceBean twin = new PublishNewServiceBean(this.newServiceJIDs);		
 				
 		twin = (PublishNewServiceBean) cloneBasicAttributes(twin);
 		return twin;
@@ -113,17 +125,31 @@ public class PublishNewServiceBean extends XMPPBean {
 		StringBuilder sb = new StringBuilder();
 				
 		if (getType() == XMPPBean.TYPE_SET) {
-			if(this.newServiceJID!=null){
-			sb.append("<" + _xmlTag_ServiceJID + ">")
-			.append(this.newServiceJID)
-			.append("</" + _xmlTag_ServiceJID + ">");	
+			
+			if(this.newServiceJIDs!=null){
+				for(String jid : newServiceJIDs){
+					sb.append("<" + _xmlTag_ServiceJID + ">")
+					.append(jid)
+					.append("</" + _xmlTag_ServiceJID + ">");	
+				}
+			}
+		}
+		
+		if (getType() == XMPPBean.TYPE_RESULT) {
+			
+			if((this.newServiceJIDs!=null) && (newServiceJIDs.size()>0)){
+				for(String jid : newServiceJIDs){
+					sb.append("<" + _xmlTag_ServiceJID + ">")
+					.append(jid)
+					.append("</" + _xmlTag_ServiceJID + ">");	
+				}
 			}
 		}
 		
 		if(getType() == XMPPBean.TYPE_ERROR){
-			if(this.newServiceJID!=null){
+			if(this.newServiceJIDs!=null){
 				sb.append("<" + _xmlTag_ServiceJID + ">")
-				.append(this.newServiceJID)
+				.append(this.newServiceJIDs)
 				.append("</" + _xmlTag_ServiceJID + ">");	
 				}
 		}
@@ -133,12 +159,12 @@ public class PublishNewServiceBean extends XMPPBean {
 		return sb.toString();
 	}
 
-	public String getNewServiceJID() {
-		return newServiceJID;
+	public List<String> getNewServiceJIDs() {
+		return newServiceJIDs;
 	}
 
-	public void setNewServiceJID(String newServiceJID) {
-		this.newServiceJID = newServiceJID;
+	public void setNewServiceJID(List<String> newServiceJID) {
+		this.newServiceJIDs = newServiceJID;
 	}
 
 }
