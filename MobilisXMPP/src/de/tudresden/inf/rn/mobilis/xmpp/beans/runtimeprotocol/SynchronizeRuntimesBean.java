@@ -124,7 +124,7 @@ public class SynchronizeRuntimesBean extends XMPPBean {
 		
 		StringBuilder sb = new StringBuilder();
 				
-		if (getType() == XMPPBean.TYPE_SET) {
+		
 			
 			if(this.newServiceJIDs!=null){
 				for(String jid : newServiceJIDs){
@@ -133,26 +133,7 @@ public class SynchronizeRuntimesBean extends XMPPBean {
 					.append("</" + _xmlTag_ServiceJID + ">");	
 				}
 			}
-		}
 		
-		if (getType() == XMPPBean.TYPE_RESULT) {
-			
-			if((this.newServiceJIDs!=null) && (newServiceJIDs.size()>0)){
-				for(String jid : newServiceJIDs){
-					sb.append("<" + _xmlTag_ServiceJID + ">")
-					.append(jid)
-					.append("</" + _xmlTag_ServiceJID + ">");	
-				}
-			}
-		}
-		
-		if(getType() == XMPPBean.TYPE_ERROR){
-			if(this.newServiceJIDs!=null){
-				sb.append("<" + _xmlTag_ServiceJID + ">")
-				.append(this.newServiceJIDs)
-				.append("</" + _xmlTag_ServiceJID + ">");	
-				}
-		}
 		
 		sb = appendErrorPayload(sb);
 		

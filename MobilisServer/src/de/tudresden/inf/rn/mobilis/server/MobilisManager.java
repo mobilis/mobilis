@@ -49,7 +49,9 @@ import org.jdom.input.SAXBuilder;
 import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.Roster.SubscriptionMode;
+import org.jivesoftware.smack.RosterGroup;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.ServiceDiscoveryManager;
@@ -514,6 +516,7 @@ public class MobilisManager {
 	public void shutdown() {
 		synchronized(mStarted) {
 			if (mStarted) {
+				clearRemoteServicesRosterGroup();
 				synchronized(mAgents) {
 					String[] agentsArray = mAgents.keySet().toArray(new String[0]);
 					for (int i = 0; i < agentsArray.length; i++) {
@@ -1175,6 +1178,25 @@ public class MobilisManager {
 	     System.out.println("Account für " + serviceName + " wurde erfolgreich angelegt");
 	     connection.disconnect();
 	     return true;
+	}
+	
+	/**
+	 * clears the rostergroup of remote services (Needed to hold runtimes synchronized!)
+	 */
+	public void clearRemoteServicesRosterGroup(){
+		RosterGroup rg = runtimeRoster.getGroup(remoteServiceGroup + "services");
+		
+		if(rg != null){
+			for(RosterEntry entry : rg.getEntries()){
+				try {
+					runtimeRoster.removeEntry(entry);
+				} catch (XMPPException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
 	}
 
 }

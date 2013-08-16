@@ -545,6 +545,7 @@ public class DeploymentService extends MobilisService {
 			runtimeRoster.createGroup(MobilisManager.securityUserGroup + "deploy");
 		}
 		
+		//MobilisManager.getInstance().clearRemoteServicesRosterGroup();
 		//updateRemoteServices();
 		Timer timer = new Timer();
 
@@ -562,6 +563,7 @@ public class DeploymentService extends MobilisService {
 
 		@Override
 		public void run() {
+			
 			Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
 			RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup + "runtimes");
 			if(rg != null){
