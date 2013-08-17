@@ -7,10 +7,10 @@
 	<xsl:output method="text" version="1.0" encoding="UTF-8" indent="yes"/>
 	
 	<!-- the output folder where the classes will be created. this folder has to be create before -->
-	<xsl:variable name="outputFolder" select="'Code/'"/>
+	<xsl:variable name="outputFolder" select="'build/client/'"/>
 	
 	<!-- set package namespace if required. default = '' -->
-	<xsl:variable name="packageNamespace" select="'de.tud.inf.mobsda.services.myservicename.proxy'" />
+	<xsl:variable name="packageNamespace" select="'de.tudresden.inf.rn.mobilis.android.xhunt.clientstub'" />
 	
 	<!-- path of the service name -->
 	<xsl:variable name="serviceName" select="/msdl:description/msdl:service/@name"/>
@@ -55,17 +55,10 @@
 	<!-- generate proxy class -->
 	<xsl:apply-templates select="/" mode="generateProxyClass" /><xsl:value-of select="$newline" />	 
 	 
-	<!-- generate xmpp bean class and info interface -->
-	<xsl:apply-templates select="/" mode="generateXMPPInfoInterface" /><xsl:value-of select="$newline" />
-	<xsl:apply-templates select="/" mode="generateXMPPBeanClass" /><xsl:value-of select="$newline" />	 
-	
 	<!-- creates incoming and outgoing interfaces -->
 	<xsl:apply-templates select="/" mode="generateIIncomingInterface" /><xsl:value-of select="$newline" />
 	<xsl:apply-templates select="/" mode="generateIOutgoingInterface" /><xsl:value-of select="$newline" />
-	
-	<!-- creates callback interface -->
-	<xsl:apply-templates select="/" mode="generateXMPPCallbackInterface" /><xsl:value-of select="$newline" />
-	
+	 
 	<!-- creates all specialized bean classes -->
 	<xsl:apply-templates select="/msdl:description/msdl:binding/msdl:operation" mode="generateTypeBeanClass" /><xsl:value-of select="$newline" />
 	
@@ -83,7 +76,7 @@
 		
 		<!-- creates a file with the filename -->
 		<xsl:result-document href="{$fileName}" >
-						
+		
 			<!-- if package namespace is set, write it at first into file -->
 			<xsl:if test="string-length($packageNamespace) > 0">
 				<xsl:text>package </xsl:text><xsl:value-of select="$packageNamespace" /><xsl:text>;</xsl:text>
@@ -92,14 +85,14 @@
 			
 			<xsl:text>import java.util.List;</xsl:text>
 			<xsl:text>import java.util.ArrayList;</xsl:text>
-			
+		
 			<!-- begin with class definition -->
 			<xsl:text>public class </xsl:text><xsl:value-of select="$className"/><xsl:text> {</xsl:text>
 				
 				<!-- create attribute _bindingStub -->
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
 				<xsl:text>private </xsl:text><xsl:value-of select="$IOutgoingInterfaceName" /><xsl:text> _bindingStub;</xsl:text>
-				
+			
 				<!-- create constructor -->
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" /><xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
 				<xsl:text>public </xsl:text><xsl:value-of select="$className" /><xsl:text>( </xsl:text><xsl:value-of select="$IOutgoingInterfaceName" /><xsl:text> bindingStub) {</xsl:text>
@@ -118,7 +111,7 @@
 				
 				<!-- for each which should be send, create a proxy method -->
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
-				<xsl:apply-templates select="/msdl:description/msdl:interface/msdl:operation[@pattern=$mepOutOnly or @pattern=$mepOutIn or @pattern=$mepInOut]" mode="generateProxyMethod"/>
+				<xsl:apply-templates select="/msdl:description/msdl:interface/msdl:operation[@pattern=$mepInOnly or @pattern=$mepOutIn or @pattern=$mepInOut]" mode="generateProxyMethod"/>
 				<xsl:value-of select="$newline" />
 				
 			<xsl:text>}</xsl:text>
@@ -131,7 +124,7 @@
 		<!-- Get operation name -->
 		<xsl:variable name="methodName" select="./@name" />
 		<!-- Get datatype of input class -->
-		<xsl:variable name="outClassName" select="substring-after(msdl:output/@element,':')" />
+		<xsl:variable name="outClassName" select="substring-after(msdl:input/@element,':')" />
 		
 		<xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
 		<xsl:text>public </xsl:text>
@@ -145,7 +138,7 @@
 		</xsl:choose>
 		<xsl:value-of select="$methodName" /><xsl:text>( String toJid</xsl:text>
 		
-		<xsl:if test="@pattern=$mepInOut">
+		<xsl:if test="@pattern=$mepOutIn">
 			<xsl:text>, String packetId</xsl:text>
 		</xsl:if>
 		
@@ -158,9 +151,9 @@
 		</xsl:if>
 		
 		<!-- Check if callback is required -->
-		<xsl:if test="@pattern=$mepOutIn">
-			<!-- Looking for $mepOutIn patterns-->
-			<xsl:variable name="inClassName" select="substring-after(msdl:input/@element,':')" />          
+		<xsl:if test="@pattern=$mepInOut">
+			<!-- Looking for $mepInOut patterns-->
+			<xsl:variable name="inClassName" select="substring-after(msdl:output/@element,':')" />          
 			<!-- If "out"-Element exists, create callback parameter with type; element attribute cannot be empty -->
 			<xsl:text>, </xsl:text><xsl:value-of select="$xmppCallbackInterfaceName" /><xsl:text>&lt; </xsl:text><xsl:value-of select="$inClassName" /><xsl:text> &gt;</xsl:text><xsl:text> callback</xsl:text>
 		</xsl:if>
@@ -169,7 +162,7 @@
 			<xsl:text>if ( null == _bindingStub</xsl:text>
 			
 			<!-- Check if callback is required -->
-			<xsl:if test="@pattern=$mepOutIn">		
+			<xsl:if test="@pattern=$mepInOut">		
 				<xsl:text> || null == callback</xsl:text>
 			</xsl:if>
 			<xsl:text> )</xsl:text>
@@ -191,7 +184,7 @@
 			<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
 			<xsl:text>out.setTo( toJid );</xsl:text>
 			
-			<xsl:if test="@pattern=$mepInOut">
+			<xsl:if test="@pattern=$mepOutIn">
 				<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
 				<xsl:text>out.setId( packetId );</xsl:text>
 			</xsl:if>
@@ -200,7 +193,7 @@
 			<xsl:text>_bindingStub.sendXMPPBean( out</xsl:text>
 			
 			<!-- Check if callback is required -->
-			<xsl:if test="@pattern = $mepOutIn">
+			<xsl:if test="@pattern = $mepInOut">
 				<xsl:text>, callback</xsl:text>
 			</xsl:if>
 			
@@ -229,7 +222,7 @@
 			</xsl:if>
 			
 			<xsl:value-of select="./@name" />
-							
+				
 			<xsl:if test="position() &lt; $i" >
 				<xsl:text>, </xsl:text>	
 			</xsl:if>
@@ -347,20 +340,20 @@
 			<xsl:value-of select="$newline" />
 
 			<!-- iterate each operation element in interface -->
-			<!-- Looking for $mepInOut, $mepInOnly and $mepOutIn patterns-->
-			<xsl:for-each select="msdl:description/msdl:interface/msdl:operation[@pattern=$mepInOnly or @pattern=$mepOutIn or @pattern=$mepInOut]" >
+			<!-- Looking for $mepInOut, $mepOutOnly and $mepOutIn patterns-->
+			<xsl:for-each select="msdl:description/msdl:interface/msdl:operation[@pattern=$mepOutOnly or @pattern=$mepOutIn or @pattern=$mepInOut]" >
 			
 				<!-- Get operation name -->
 				<xsl:variable name="methodName" select="./@name" />
 				<!-- Get datatype of output class -->
-				<xsl:variable name="inClassName" select="substring-after(msdl:input/@element,':')" />
+				<xsl:variable name="inClassName" select="substring-after(msdl:output/@element,':')" />
 				
 				<xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
 				
 				<xsl:choose>
-			        <!-- Looking for $mepInOut patterns -->
-			        <xsl:when test="@pattern=$mepInOut">
-						<!-- <xsl:variable name="outClassName" select="substring-after(msdl:output/@element,':')" />
+			        <!-- Looking for $mepOutIn patterns -->
+			        <xsl:when test="@pattern=$mepOutIn">
+						<!-- <xsl:variable name="outClassName" select="substring-after(msdl:input/@element,':')" />
 						<xsl:value-of select="$inClassName" /> -->
 						<xsl:value-of select="$xmppBeanClassName" />
 			        </xsl:when>
@@ -377,11 +370,11 @@
 				<xsl:value-of select="$newline" />
 				
 				<!-- If pattern is in-out an unknown XMPPError can be reponded (e.g. service unavailable) -->
-				<xsl:if test="@pattern = $mepOutIn">
+				<xsl:if test="@pattern = $mepInOut">
 					<xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
 					
 					<xsl:text>void on</xsl:text><xsl:value-of select="$methodName" /><xsl:text>Error</xsl:text>
-						<xsl:text>( </xsl:text><xsl:value-of select="substring-after(msdl:output/@element,':')" /><xsl:text> in);</xsl:text>
+						<xsl:text>( </xsl:text><xsl:value-of select="substring-after(msdl:input/@element,':')" /><xsl:text> in);</xsl:text>
 					<xsl:value-of select="$newline" />
 				</xsl:if>
 			
@@ -403,43 +396,18 @@
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
 			</xsl:if>
 			
-						<xsl:text>public interface </xsl:text><xsl:value-of select="$IOutgoingInterfaceName" /><xsl:text> {
+			<xsl:text>public interface </xsl:text><xsl:value-of select="$IOutgoingInterfaceName" /><xsl:text> {
 
 	void sendXMPPBean( XMPPBean out, IXMPPCallback&lt; ? extends XMPPBean &gt; callback );
 
 	void sendXMPPBean( XMPPBean out );
 
 }</xsl:text>
-			
+						
 				</xsl:result-document>
 			    </xsl:template>
-			
-	<!-- generates XMPPCallback Interface -->
-    <xsl:template match="/" mode="generateXMPPCallbackInterface" >
-    	<xsl:variable name="fileName" select="concat($outputFolder,$xmppCallbackInterfaceName,'.java')" />
-		<xsl:value-of select="$fileName" />
-		<xsl:result-document href="{$fileName}" >
-			<xsl:if test="string-length($packageNamespace) > 0">
-				<xsl:text>package </xsl:text><xsl:value-of select="$packageNamespace" /><xsl:text>;</xsl:text>
-				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
-			</xsl:if>
-			
-			<xsl:text>public interface </xsl:text><xsl:value-of select="$xmppCallbackInterfaceName" /><xsl:text>&lt;B extends </xsl:text><xsl:value-of select="$xmppBeanClassName" /><xsl:text>&gt; {</xsl:text>
-			
-			<xsl:value-of select="$newline" /><xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
-			
-				<xsl:text>void invoke(B xmppBean);</xsl:text>
-			
-			<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
-			
-			<xsl:text>}</xsl:text>
-
-		</xsl:result-document>
-    </xsl:template>
-    
   
-  
-  	<!-- generates a XMPPInfo class of a type tag -->
+	<!-- generates a XMPPInfo class of a type tag -->
     <xsl:template match="xs:complexType" mode="generateTypeInfoClass" >
 		<xsl:variable name="namespace" select="./@xmpp:ident" /><!-- serviceNs + '#type:' + classname -->		
 		<xsl:variable name="typeInfoClassName" select="./@name" />
@@ -602,7 +570,7 @@
 						</xsl:apply-templates>
 						<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
 						
-						<xsl:if test="../@pattern = $mepInOut and compare(name(),'msdl:input') = 0">
+						<xsl:if test="../@pattern = $mepOutIn and compare(name(),'msdl:output') = 0">
 							<xsl:apply-templates select=".." mode="generateFaultFunctions" >
 								<xsl:with-param name="className" select="$typeBeanClassName" />
 							</xsl:apply-templates>
@@ -725,8 +693,8 @@
 				
 				if (tagName.equals(getChildElement())) {
 					parser.next();
-				}</xsl:text>
-					
+				}</xsl:text>					
+			
 			<!-- create a case for each property of the bean and parse/assign value -->
 			<xsl:for-each select="./xs:element">
 				<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
@@ -926,7 +894,7 @@
 			<xsl:text> );</xsl:text>
 			
 			<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
-			<xsl:text>clone.cloneBasicAttributes( clone );</xsl:text>
+			<xsl:text>this.cloneBasicAttributes( clone );</xsl:text>
 		
 			<xsl:value-of select="$newline" /><xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
 			<xsl:text>return clone;</xsl:text>
@@ -984,7 +952,7 @@
     				<xsl:apply-templates select="." mode="parseElementDatatype">
     					<xsl:with-param name="asSimple" select="1" />
     				</xsl:apply-templates>
-					<xsl:text> entry : </xsl:text><xsl:value-of select="./@name" /><xsl:text> ) {</xsl:text>
+					<xsl:text> entry : this.</xsl:text><xsl:value-of select="./@name" /><xsl:text> ) {</xsl:text>
 				
 				<xsl:choose>
 					<!-- if list consist of simple datatypes like int -->
@@ -1004,7 +972,7 @@
 							<xsl:apply-templates select="." mode="parseElementDatatype">
 		    					<xsl:with-param name="asSimple" select="1" />
 		    				</xsl:apply-templates>
-						<xsl:text>.CHILD_ELEMENT + "&gt;"</xsl:text>
+						<xsl:text>.CHILD_ELEMENT + "&gt;" );</xsl:text>
 					</xsl:when>
 					
 					<!-- if list consist of XMPPInfo type -->
@@ -1020,21 +988,21 @@
 						<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
 						<xsl:text>sb.append( "&lt;/</xsl:text>
 							<xsl:value-of select="./@name" />
-						<xsl:text>&gt;"</xsl:text>
+						<xsl:text>&gt;" );</xsl:text>
 					</xsl:otherwise>
 				</xsl:choose>
-				
-				<xsl:text> );</xsl:text>
+
 				
 				<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
 				<xsl:text>}</xsl:text>
 			</xsl:when>
 			
+			
 			<!-- Else if property is no list -->
 			<xsl:otherwise>
-				<xsl:text>sb.append( "&lt;</xsl:text>
+				<xsl:text>sb.append( "&lt;</xsl:text>				
 				<xsl:choose>
-				<!-- if property is of type XMPPInfo -->
+					<!-- if property is of type XMPPInfo -->
 					<xsl:when test="contains(./@type,'tns:')">
 						<xsl:text>" + this.</xsl:text><xsl:value-of select="./@name" /><xsl:text>.getChildElement() + "</xsl:text>
 					</xsl:when>
@@ -1074,7 +1042,7 @@
     <xsl:template match="msdl:interface/msdl:operation" mode="generateFaultFunctions">
     	<xsl:param name="className" />
     
-    	<xsl:for-each select="./msdl:outfault" >
+    	<xsl:for-each select="./msdl:infault" >
 			<xsl:variable name="faultRef" select="@ref" />
 			<xsl:apply-templates select="/msdl:description/msdl:binding/msdl:fault[@ref = $faultRef]" mode="generateFunctionBuildFault" >
 				<xsl:with-param name="className" select="$className" />
@@ -1120,13 +1088,13 @@
 	<xsl:value-of select="$newline" />
     </xsl:template>
     
-<!-- generates all getters and setters -->
+    <!-- generates all getters and setters -->
     <xsl:template match="xs:element" mode="generateGetSet" >
 		<!-- Getter -->
 		<xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
 		<xsl:text>public </xsl:text>
 			<xsl:apply-templates select="." mode="parseElementDatatype"/>
-		<xsl:text> get</xsl:text><xsl:value-of select="concat(translate(substring(@name, 1, 1), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), substring(@name, 2))" /><xsl:text>() {</xsl:text>
+		<xsl:text> get</xsl:text><xsl:value-of select="concat(translate(substring(./@name, 1, 1), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), substring(@name, 2))" /><xsl:text>() {</xsl:text>
 	
 			<xsl:value-of select="$newline" /><xsl:value-of select="$indent" /><xsl:value-of select="$indent" />
 			<xsl:text>return this.</xsl:text><xsl:value-of select="./@name" /><xsl:text>;</xsl:text>
@@ -1136,7 +1104,7 @@
 		
 		<!-- Setter -->
 		<xsl:value-of select="$newline" /><xsl:value-of select="$newline" /><xsl:value-of select="$indent" />
-		<xsl:text>public void set</xsl:text><xsl:value-of select="concat(translate(substring(@name, 1, 1), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), substring(@name, 2))" /><xsl:text>( </xsl:text>
+		<xsl:text>public void set</xsl:text><xsl:value-of select="concat(translate(substring(./@name, 1, 1), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), substring(@name, 2))" /><xsl:text>( </xsl:text>
 			<xsl:apply-templates select="." mode="parseElementDatatype"/><xsl:text> </xsl:text><xsl:value-of select="./@name" />
 		<xsl:text> ) {</xsl:text>
 	
@@ -1147,239 +1115,6 @@
 		<xsl:text>}</xsl:text>
 		<xsl:value-of select="$newline" />
 		
-    </xsl:template>
-    
-    
-    
-    
-    
-    
-    <!-- generates the old known XMPPInfo interface -->
-    <xsl:template match="/" mode="generateXMPPInfoInterface">
-		<xsl:variable name="fileName" select="concat($outputFolder,'XMPPInfo.java')" />
-			<xsl:value-of select="$fileName" />
-			<xsl:result-document href="{$fileName}" >
-			<xsl:if test="string-length($packageNamespace) > 0">
-				<xsl:text>package </xsl:text><xsl:value-of select="$packageNamespace" /><xsl:text>;</xsl:text>
-				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
-			</xsl:if>
-			
-import java.io.Serializable;
-
-import org.xmlpull.v1.XmlPullParser;
-
-/**
- * @author Benjamin Söllner, Robert Lübke
- */
-public interface XMPPInfo extends Serializable {
-	/**
-	 * Parses the XML String of an XMPP stanza and saves all neccessary information. 
-	 * @param parser XML Parser to use for parsing the XML String
-	 * @throws Exception
-	 */
-	public void fromXML(XmlPullParser parser) throws Exception;
-	/**
-	 * Converts this XMPP stanza into its representation as XML string.
-	 * @return XML string representation of this XMPP stanza 
-	 */
-	public String toXML(); 
-	/**
-	 * @return Child Element of this XMPP stanza
-	 */
-	public String getChildElement();
-	/**
-	 * @return Namespace of this XMPP stanza
-	 */
-	public String getNamespace();
-}
-		</xsl:result-document>
-    </xsl:template>
-    
-    <!-- generates the old known XMPPBean class -->
-    <xsl:template match="/" mode="generateXMPPBeanClass">
-    <xsl:variable name="fileName" select="concat($outputFolder,$xmppBeanClassName,'.java')" />
-			<xsl:value-of select="$fileName" />
-			<xsl:result-document href="{$fileName}" >
-			<xsl:if test="string-length($packageNamespace) > 0">
-				<xsl:text>package </xsl:text><xsl:value-of select="$packageNamespace" /><xsl:text>;</xsl:text>
-				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
-			</xsl:if>
-			
-import java.io.IOException;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import java.util.List;
-import java.util.ArrayList;
-
-/**
- * @author Benjamin Söllner, Robert Lübke
- */
-public abstract class <xsl:value-of select="$xmppBeanClassName" /> implements Cloneable, XMPPInfo {
-
-	private static final long serialVersionUID = 1L;
-	public static final int TYPE_SET = 0;
-	public static final int TYPE_GET = 1;
-	public static final int TYPE_RESULT = 2;
-	public static final int TYPE_ERROR = 3;
-
-	public static int currentId = 0;
-
-	protected int type;
-	protected String id;
-	protected String from;
-	protected String to;
-
-	public String errorType, errorCondition, errorText;
-
-	public void setType( int type ) {
-		this.type = type;
-	}
-
-	public void setId( String id ) {
-		this.id = id;
-	}
-
-	public void setFrom( String from ) {
-		this.from = from;
-	}
-
-	public void setTo( String to ) {
-		this.to = to;
-	}
-
-	public int getType() {
-		return this.type;
-	}
-
-	public String getId() {
-		return this.id;
-	}
-
-	public String getFrom() {
-		return this.from;
-	}
-
-	public String getTo() {
-		return this.to;
-	}
-
-	public <xsl:value-of select="$xmppBeanClassName" />() {
-		this.id = "mobilis_" + <xsl:value-of select="$xmppBeanClassName" />.currentId;
-		<xsl:value-of select="$xmppBeanClassName" />.currentId++;
-	}
-
-	/**
-	 * Constructor for type=ERROR. For more information about the parameters of
-	 * an error IQ see http://xmpp.org/rfcs/rfc3920.html#stanzas.
-	 * 
-	 * @param errorType
-	 *            Error type
-	 * @param errorCondition
-	 *            Error condition
-	 * @param errorText
-	 *            descriptive error text
-	 */
-	public <xsl:value-of select="$xmppBeanClassName" />(String errorType, String errorCondition, String errorText) {
-		this.id = "mobilis_" + <xsl:value-of select="$xmppBeanClassName" />.currentId;
-		<xsl:value-of select="$xmppBeanClassName" />.currentId++;
-
-		this.errorType = errorType;
-		this.errorCondition = errorCondition;
-		this.errorText = errorText;
-		this.type = <xsl:value-of select="$xmppBeanClassName" />.TYPE_ERROR;
-	}
-
-	/**
-	 * Appends XML Payload information about an error to the given StringBuilder
-	 * 
-	 * @param sb
-	 * @return the changed StringBuilder
-	 */
-	public StringBuilder appendErrorPayload( StringBuilder sb ) {
-		// Error element:
-		if ( this.errorCondition != null &amp;&amp; this.errorText != null &amp;&amp; this.errorType != null ) {
-			sb.append( "&lt;error type=\"" + errorType + "\"&gt;" )
-					.append(
-							"&lt;" + errorCondition
-									+ " xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\" /&gt;" )
-					.append( "&lt;text xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"&gt;" )
-					.append( errorText ).append( "&lt;/text&gt;" ).append( "&lt;/error&gt;" );
-		}
-		return sb;
-	}
-
-	public <xsl:value-of select="$xmppBeanClassName" /> cloneBasicAttributes( <xsl:value-of select="$xmppBeanClassName" /> twin ) {
-		twin.errorCondition = this.errorCondition;
-		twin.errorText = this.errorText;
-		twin.errorType = this.errorType;
-
-		twin.id = this.id;
-		twin.from = this.from;
-		twin.to = this.to;
-		twin.type = this.type;
-		return twin;
-	}
-
-	/**
-	 * Parses and saves the error attributes (type, condition and text).
-	 * 
-	 * @param parser
-	 * @return
-	 * @throws XmlPullParserException
-	 * @throws IOException
-	 */
-	public XmlPullParser parseErrorAttributes( XmlPullParser parser )
-			throws XmlPullParserException, IOException {
-		if ( parser.getAttributeName( 0 ).equals( "type" ) )
-			errorType = parser.getAttributeValue( 0 );
-		parser.next();
-		// Now the parser is at START_TAG of error condition
-		errorCondition = parser.getName();
-		parser.next();
-		parser.next();
-		// Now the parser is at START_TAG of error text
-		errorText = parser.nextText();
-		return parser;
-	}
-
-	public String toXML() {
-		String childElement = this.getChildElement();
-		String namespace = this.getNamespace();
-		return new StringBuilder().append( "&lt;" ).append( childElement ).append( " xmlns=\"" )
-				.append( namespace ).append( "\"&gt;" ).append( this.payloadToXML() ).append( "&lt;/" )
-				.append( childElement ).append( "&gt;" ).toString();
-	}
-
-	public abstract <xsl:value-of select="$xmppBeanClassName" /> clone();
-
-	/**
-	 * Converts all payload information into XML format.
-	 * 
-	 * @return XML representation of the payload.
-	 */
-	public abstract String payloadToXML();
-
-	public String toString() {
-		String type = "no type";
-		switch ( this.type ) {
-		case <xsl:value-of select="$xmppBeanClassName" />.TYPE_GET:
-			type = "GET";
-			break;
-		case <xsl:value-of select="$xmppBeanClassName" />.TYPE_SET:
-			type = "SET";
-			break;
-		case <xsl:value-of select="$xmppBeanClassName" />.TYPE_RESULT:
-			type = "RESULT";
-			break;
-		case <xsl:value-of select="$xmppBeanClassName" />.TYPE_ERROR:
-			type = "ERROR";
-			break;
-		}
-		return "packetID:" + id + " type:" + type + "childelement:" + this.getChildElement();
-	}
-}
-		</xsl:result-document>
     </xsl:template>
 	
 </xsl:stylesheet>
