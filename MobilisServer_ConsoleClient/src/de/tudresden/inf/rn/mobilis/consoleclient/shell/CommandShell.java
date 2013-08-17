@@ -111,6 +111,10 @@ public class CommandShell {
 					"login succesful? " + _controller.getConnection().loginXMPP() );
 
 			break;
+		
+		case Sync:
+			_controller.getConnection().sendExecuteSynchronizeRequest();
+			break;
 
 		case Discover:
 			// 3 paramers: namespace, version, query msdl

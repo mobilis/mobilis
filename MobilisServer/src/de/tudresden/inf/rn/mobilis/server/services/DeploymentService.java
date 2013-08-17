@@ -45,6 +45,7 @@ import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceExc
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileUploadInformation;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ExecuteSynchronizeRuntimesBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.runtimeprotocol.SynchronizeRuntimesBean;
@@ -251,9 +252,11 @@ public class DeploymentService extends MobilisService {
 		XMPPBean prepareServiceUploadBean = new PrepareServiceUploadBean();
 		XMPPBean serviceUploadConclusionBean = new ServiceUploadConclusionBean();
 		XMPPBean publishNewServiceBean = new SynchronizeRuntimesBean();
+		XMPPBean executeSynchronizeBean = new ExecuteSynchronizeRuntimesBean();
 		( new BeanProviderAdapter( prepareServiceUploadBean ) ).addToProviderManager();
 		( new BeanProviderAdapter( serviceUploadConclusionBean ) ).addToProviderManager();
 		( new BeanProviderAdapter( publishNewServiceBean ) ).addToProviderManager();
+		( new BeanProviderAdapter( executeSynchronizeBean ) ).addToProviderManager();
 		IQListener iqListener = new IQListener();
 		PacketTypeFilter locFil = new PacketTypeFilter( IQ.class );
 		getAgent().getConnection().addPacketListener( iqListener, locFil );
@@ -366,12 +369,14 @@ public class DeploymentService extends MobilisService {
 		public void processPacket( Packet packet ) {
 			if ( packet instanceof BeanIQAdapter ) {
 				XMPPBean inBean = ( (BeanIQAdapter)packet ).getBean();
-
+				
 				if ( inBean instanceof PrepareServiceUploadBean ) {
 					handlePrepareServiceUploadBean( (PrepareServiceUploadBean)inBean );
 				} else if ( inBean instanceof ServiceUploadConclusionBean
 						&& inBean.getType() == XMPPBean.TYPE_RESULT ) {
 					// Do nothing, just ack
+				} else if ( (inBean instanceof ExecuteSynchronizeRuntimesBean) && (inBean.getType() == XMPPBean.TYPE_SET)){
+					handleExecuteSynchronizeRequest((ExecuteSynchronizeRuntimesBean) inBean);
 				} else if ( inBean instanceof SynchronizeRuntimesBean){
 						SynchronizeRuntimesBean bean = (SynchronizeRuntimesBean) inBean;
 						if(inBean.getType() == XMPPBean.TYPE_SET )
@@ -394,6 +399,36 @@ public class DeploymentService extends MobilisService {
 			}
 		}
 		
+		/**
+		 * handles a request from a remote client user with administration rights on the server to manually synchronize the 
+		 * remote services with other runtimes
+		 * @param inBean
+		 */
+		private void handleExecuteSynchronizeRequest(
+				ExecuteSynchronizeRuntimesBean inBean) {
+			XMPPBean answerBean = null;
+			Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
+			RosterGroup admins = runtimeRoster.getGroup(MobilisManager.securityUserGroup + "administrators");
+			if(admins != null){
+				if(admins.contains(StringUtils.parseBareAddress(inBean.getFrom()))){
+					updateRemoteServices();
+					answerBean = BeanHelper
+							.CreateResultBean( inBean, new ExecuteSynchronizeRuntimesBean() );
+				} else {
+					//error bean senden
+					answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access denied",
+							( "Access denied: You need Administrator rights to perform this action "));
+				}
+			} else {
+				//error bean senden
+				answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access denied",
+						( "Access denied: You need Administrator rights to perform this action "));
+			}
+			
+			getAgent().getConnection().sendPacket( new BeanIQAdapter( answerBean ) );
+			
+		}
+
 		/**
 		 * Process a Result of a GET Request.
 		 * @param inBean
@@ -549,7 +584,7 @@ public class DeploymentService extends MobilisService {
 		//updateRemoteServices();
 		Timer timer = new Timer();
 
-	    // delayed update of remote services
+	    // delayed update of remote services on server start up
 	    timer.schedule( new UpdateRemoteServices(), 1000 );
 
 
@@ -563,28 +598,31 @@ public class DeploymentService extends MobilisService {
 
 		@Override
 		public void run() {
-			
-			Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
-			RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup + "runtimes");
-			if(rg != null){
-				for(RosterEntry entry : rg.getEntries()){
+			updateRemoteServices();
+		}
+		
+	}
+	
+	private void updateRemoteServices(){
+		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
+		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup + "runtimes");
+		if(rg != null){
+			for(RosterEntry entry : rg.getEntries()){
+				
+				//request new Services just from online runtimes
+				for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
+				{
+					Presence presence = iter.next();
+					String presenceRessource = StringUtils.parseResource((presence.getFrom()));
 					
-					//request new Services just from online runtimes
-					for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
-					{
-						Presence presence = iter.next();
-						String presenceRessource = StringUtils.parseResource((presence.getFrom()));
+					if(presence.isAvailable() && presenceRessource.equalsIgnoreCase("deployment")){
 						
-						if(presence.isAvailable() && presenceRessource.equalsIgnoreCase("deployment")){
-							
-							SynchronizeRuntimesBean outBean = new SynchronizeRuntimesBean(entry.getUser() + "/Deployment");
-							outBean.setNewServiceJID(getLocalServiceJIDs());
-							getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
-						}
+						SynchronizeRuntimesBean outBean = new SynchronizeRuntimesBean(entry.getUser() + "/Deployment");
+						outBean.setNewServiceJID(getLocalServiceJIDs());
+						getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
 					}
 				}
 			}
-			
 		}
 		
 	}

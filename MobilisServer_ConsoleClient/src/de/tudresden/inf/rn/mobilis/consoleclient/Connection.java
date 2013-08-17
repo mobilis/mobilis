@@ -30,6 +30,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInsta
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.SendNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ExecuteSynchronizeRuntimesBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
@@ -279,6 +280,7 @@ public class Connection {
 		( new BeanProviderAdapter( new UpdateServiceBean() ) ).addToProviderManager();
 		( new BeanProviderAdapter( new StopServiceInstanceBean() ) ).addToProviderManager();
 		( new BeanProviderAdapter( new SendNewServiceInstanceBean() ) ).addToProviderManager();
+		( new BeanProviderAdapter( new ExecuteSynchronizeRuntimesBean() ) ).addToProviderManager();
 	}
 
 	/**
@@ -367,6 +369,16 @@ public class Connection {
 		bean.setType( XMPPBean.TYPE_SET );
 
 		sendXMPPBean( bean );
+	}
+	
+	/**
+	 * Request for synchronize the remote runtime with other know runtimes
+	 */
+	public void sendExecuteSynchronizeRequest(){
+		final ExecuteSynchronizeRuntimesBean bean = new ExecuteSynchronizeRuntimesBean();
+		bean.setTo( _controller.getSettings().getMobilisDeploymentJid());
+		bean.setType( XMPPBean.TYPE_SET );
+		sendXMPPBean(bean);
 	}
 
 	/**

@@ -37,6 +37,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscove
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.SendNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ExecuteSynchronizeRuntimesBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
@@ -191,6 +192,8 @@ public class IQListener implements PacketListener {
 					}
 				} else if ( inBean instanceof StopServiceInstanceBean ) {
 					_controller.getLog().writeToConsole( "Stopping service instance successful." );
+				} else if ( inBean instanceof ExecuteSynchronizeRuntimesBean) {
+					_controller.getLog().writeToConsole( "Runtime is successfully synchronized" );
 				}
 			}
 		}

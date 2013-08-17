@@ -71,5 +71,6 @@ public class CommandMap extends HashMap< String, CommandEnum > {
 		put( "update", CommandEnum.Update );
 		put( "xmppinfo", CommandEnum.XMPPInfo );
 		put( "fastinstall", CommandEnum.FastInstall);
+		put( "sync", CommandEnum.Sync);
 	}
 }

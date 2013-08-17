@@ -77,6 +77,9 @@ public enum CommandEnum {
 	XMPPInfo,
 	
 	/** The FastInstall command. */
-	FastInstall
+	FastInstall,
+	
+	/** The Synchronize Runtime command. */
+	Sync
 
 }
