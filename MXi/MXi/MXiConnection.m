@@ -161,13 +161,13 @@
 	[xmppStream sendElement:message];
 }
 
-- (void)sendElement:(NSXMLElement *)element {
+- (void)sendElement:(NSXMLElement* )element {
 	NSLog(@"Sent: %@", [element prettyXMLString]);
 	
 	[xmppStream sendElement:element];
 }
 
-- (void)sendBean:(MXiBean<MXiOutgoingBean> *)bean {
+- (void)sendBean:(MXiBean<MXiOutgoingBean>* )bean {
 	[bean setFrom:jabberID];
 	[bean setTo:[XMPPJID jidWithString:serviceJID]];
 	
