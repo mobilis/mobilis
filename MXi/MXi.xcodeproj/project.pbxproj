@@ -12,36 +12,36 @@
 		794491BF171995FF000D53ED /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 794491BE171995FF000D53ED /* Foundation.framework */; };
 		794491CA171996A4000D53ED /* MXi.h in Headers */ = {isa = PBXBuildFile; fileRef = 794491B117199564000D53ED /* MXi.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		794491CC171996D2000D53ED /* MXi.h in Headers */ = {isa = PBXBuildFile; fileRef = 794491B117199564000D53ED /* MXi.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		797C03E8171C20E400B40FFC /* DDAbstractDatabaseLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03D8171C20E400B40FFC /* DDAbstractDatabaseLogger.h */; };
+		797C03E8171C20E400B40FFC /* DDAbstractDatabaseLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03D8171C20E400B40FFC /* DDAbstractDatabaseLogger.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C03E9171C20E400B40FFC /* DDAbstractDatabaseLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03D8171C20E400B40FFC /* DDAbstractDatabaseLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C03EA171C20E400B40FFC /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C03D9171C20E400B40FFC /* DDAbstractDatabaseLogger.m */; };
 		797C03EB171C20E400B40FFC /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C03D9171C20E400B40FFC /* DDAbstractDatabaseLogger.m */; };
-		797C03EC171C20E400B40FFC /* DDASLLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03DA171C20E400B40FFC /* DDASLLogger.h */; };
+		797C03EC171C20E400B40FFC /* DDASLLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03DA171C20E400B40FFC /* DDASLLogger.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C03ED171C20E400B40FFC /* DDASLLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03DA171C20E400B40FFC /* DDASLLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C03EE171C20E400B40FFC /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C03DB171C20E400B40FFC /* DDASLLogger.m */; };
 		797C03EF171C20E400B40FFC /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C03DB171C20E400B40FFC /* DDASLLogger.m */; };
-		797C03F0171C20E400B40FFC /* DDFileLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03DC171C20E400B40FFC /* DDFileLogger.h */; };
+		797C03F0171C20E400B40FFC /* DDFileLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03DC171C20E400B40FFC /* DDFileLogger.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C03F1171C20E400B40FFC /* DDFileLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03DC171C20E400B40FFC /* DDFileLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C03F2171C20E400B40FFC /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C03DD171C20E400B40FFC /* DDFileLogger.m */; };
 		797C03F3171C20E400B40FFC /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C03DD171C20E400B40FFC /* DDFileLogger.m */; };
-		797C03F4171C20E400B40FFC /* DDLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03DE171C20E400B40FFC /* DDLog.h */; };
+		797C03F4171C20E400B40FFC /* DDLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03DE171C20E400B40FFC /* DDLog.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C03F5171C20E400B40FFC /* DDLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03DE171C20E400B40FFC /* DDLog.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C03F6171C20E400B40FFC /* DDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C03DF171C20E400B40FFC /* DDLog.m */; };
 		797C03F7171C20E400B40FFC /* DDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C03DF171C20E400B40FFC /* DDLog.m */; };
-		797C03F8171C20E400B40FFC /* DDTTYLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03E0171C20E400B40FFC /* DDTTYLogger.h */; };
+		797C03F8171C20E400B40FFC /* DDTTYLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03E0171C20E400B40FFC /* DDTTYLogger.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C03F9171C20E400B40FFC /* DDTTYLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03E0171C20E400B40FFC /* DDTTYLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C03FA171C20E400B40FFC /* DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C03E1171C20E400B40FFC /* DDTTYLogger.m */; };
 		797C03FB171C20E400B40FFC /* DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C03E1171C20E400B40FFC /* DDTTYLogger.m */; };
-		797C03FC171C20E400B40FFC /* ContextFilterLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03E3171C20E400B40FFC /* ContextFilterLogFormatter.h */; };
+		797C03FC171C20E400B40FFC /* ContextFilterLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03E3171C20E400B40FFC /* ContextFilterLogFormatter.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C03FD171C20E400B40FFC /* ContextFilterLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03E3171C20E400B40FFC /* ContextFilterLogFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C03FE171C20E400B40FFC /* ContextFilterLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C03E4171C20E400B40FFC /* ContextFilterLogFormatter.m */; };
 		797C03FF171C20E400B40FFC /* ContextFilterLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C03E4171C20E400B40FFC /* ContextFilterLogFormatter.m */; };
-		797C0400171C20E400B40FFC /* DispatchQueueLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03E5171C20E400B40FFC /* DispatchQueueLogFormatter.h */; };
+		797C0400171C20E400B40FFC /* DispatchQueueLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03E5171C20E400B40FFC /* DispatchQueueLogFormatter.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C0401171C20E400B40FFC /* DispatchQueueLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C03E5171C20E400B40FFC /* DispatchQueueLogFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C0402171C20E400B40FFC /* DispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C03E6171C20E400B40FFC /* DispatchQueueLogFormatter.m */; };
 		797C0403171C20E400B40FFC /* DispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C03E6171C20E400B40FFC /* DispatchQueueLogFormatter.m */; };
 		797C0404171C20E400B40FFC /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 797C03E7171C20E400B40FFC /* README.txt */; };
-		797C0408171C214600B40FFC /* GCDAsyncSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0406171C214600B40FFC /* GCDAsyncSocket.h */; };
+		797C0408171C214600B40FFC /* GCDAsyncSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0406171C214600B40FFC /* GCDAsyncSocket.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C0409171C214600B40FFC /* GCDAsyncSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0406171C214600B40FFC /* GCDAsyncSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C040A171C214600B40FFC /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0407171C214600B40FFC /* GCDAsyncSocket.m */; };
 		797C040B171C214600B40FFC /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0407171C214600B40FFC /* GCDAsyncSocket.m */; };
@@ -62,102 +62,102 @@
 		797C0436171C231C00B40FFC /* idn-int.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0433171C231C00B40FFC /* idn-int.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C0437171C231C00B40FFC /* libidn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 797C0434171C231C00B40FFC /* libidn.a */; };
 		797C0438171C231D00B40FFC /* stringprep.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0435171C231C00B40FFC /* stringprep.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		797C0475171C23B900B40FFC /* XMPPAnonymousAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C043B171C23B900B40FFC /* XMPPAnonymousAuthentication.h */; };
+		797C0475171C23B900B40FFC /* XMPPAnonymousAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C043B171C23B900B40FFC /* XMPPAnonymousAuthentication.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C0476171C23B900B40FFC /* XMPPAnonymousAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C043B171C23B900B40FFC /* XMPPAnonymousAuthentication.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C0477171C23B900B40FFC /* XMPPAnonymousAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C043C171C23B900B40FFC /* XMPPAnonymousAuthentication.m */; };
 		797C0478171C23B900B40FFC /* XMPPAnonymousAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C043C171C23B900B40FFC /* XMPPAnonymousAuthentication.m */; };
-		797C0479171C23B900B40FFC /* XMPPDeprecatedDigestAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C043E171C23B900B40FFC /* XMPPDeprecatedDigestAuthentication.h */; };
+		797C0479171C23B900B40FFC /* XMPPDeprecatedDigestAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C043E171C23B900B40FFC /* XMPPDeprecatedDigestAuthentication.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C047A171C23B900B40FFC /* XMPPDeprecatedDigestAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C043E171C23B900B40FFC /* XMPPDeprecatedDigestAuthentication.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C047B171C23B900B40FFC /* XMPPDeprecatedDigestAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C043F171C23B900B40FFC /* XMPPDeprecatedDigestAuthentication.m */; };
 		797C047C171C23B900B40FFC /* XMPPDeprecatedDigestAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C043F171C23B900B40FFC /* XMPPDeprecatedDigestAuthentication.m */; };
-		797C047D171C23B900B40FFC /* XMPPDeprecatedPlainAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0441171C23B900B40FFC /* XMPPDeprecatedPlainAuthentication.h */; };
+		797C047D171C23B900B40FFC /* XMPPDeprecatedPlainAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0441171C23B900B40FFC /* XMPPDeprecatedPlainAuthentication.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C047E171C23B900B40FFC /* XMPPDeprecatedPlainAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0441171C23B900B40FFC /* XMPPDeprecatedPlainAuthentication.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C047F171C23B900B40FFC /* XMPPDeprecatedPlainAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0442171C23B900B40FFC /* XMPPDeprecatedPlainAuthentication.m */; };
 		797C0480171C23B900B40FFC /* XMPPDeprecatedPlainAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0442171C23B900B40FFC /* XMPPDeprecatedPlainAuthentication.m */; };
-		797C0481171C23B900B40FFC /* XMPPDigestMD5Authentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0444171C23B900B40FFC /* XMPPDigestMD5Authentication.h */; };
+		797C0481171C23B900B40FFC /* XMPPDigestMD5Authentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0444171C23B900B40FFC /* XMPPDigestMD5Authentication.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C0482171C23B900B40FFC /* XMPPDigestMD5Authentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0444171C23B900B40FFC /* XMPPDigestMD5Authentication.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C0483171C23B900B40FFC /* XMPPDigestMD5Authentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0445171C23B900B40FFC /* XMPPDigestMD5Authentication.m */; };
 		797C0484171C23B900B40FFC /* XMPPDigestMD5Authentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0445171C23B900B40FFC /* XMPPDigestMD5Authentication.m */; };
-		797C0485171C23B900B40FFC /* XMPPPlainAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0447171C23B900B40FFC /* XMPPPlainAuthentication.h */; };
+		797C0485171C23B900B40FFC /* XMPPPlainAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0447171C23B900B40FFC /* XMPPPlainAuthentication.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C0486171C23B900B40FFC /* XMPPPlainAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0447171C23B900B40FFC /* XMPPPlainAuthentication.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C0487171C23B900B40FFC /* XMPPPlainAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0448171C23B900B40FFC /* XMPPPlainAuthentication.m */; };
 		797C0488171C23B900B40FFC /* XMPPPlainAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0448171C23B900B40FFC /* XMPPPlainAuthentication.m */; };
-		797C0489171C23B900B40FFC /* XMPPXFacebookPlatformAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C044A171C23B900B40FFC /* XMPPXFacebookPlatformAuthentication.h */; };
+		797C0489171C23B900B40FFC /* XMPPXFacebookPlatformAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C044A171C23B900B40FFC /* XMPPXFacebookPlatformAuthentication.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C048A171C23B900B40FFC /* XMPPXFacebookPlatformAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C044A171C23B900B40FFC /* XMPPXFacebookPlatformAuthentication.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C048B171C23B900B40FFC /* XMPPXFacebookPlatformAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C044B171C23B900B40FFC /* XMPPXFacebookPlatformAuthentication.m */; };
 		797C048C171C23B900B40FFC /* XMPPXFacebookPlatformAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C044B171C23B900B40FFC /* XMPPXFacebookPlatformAuthentication.m */; };
-		797C048D171C23B900B40FFC /* XMPPSASLAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C044C171C23B900B40FFC /* XMPPSASLAuthentication.h */; };
+		797C048D171C23B900B40FFC /* XMPPSASLAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C044C171C23B900B40FFC /* XMPPSASLAuthentication.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C048E171C23B900B40FFC /* XMPPSASLAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C044C171C23B900B40FFC /* XMPPSASLAuthentication.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		797C048F171C23B900B40FFC /* NSData+XMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C044E171C23B900B40FFC /* NSData+XMPP.h */; };
+		797C048F171C23B900B40FFC /* NSData+XMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C044E171C23B900B40FFC /* NSData+XMPP.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C0490171C23B900B40FFC /* NSData+XMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C044E171C23B900B40FFC /* NSData+XMPP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C0491171C23B900B40FFC /* NSData+XMPP.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C044F171C23B900B40FFC /* NSData+XMPP.m */; };
 		797C0492171C23B900B40FFC /* NSData+XMPP.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C044F171C23B900B40FFC /* NSData+XMPP.m */; };
-		797C0493171C23B900B40FFC /* NSNumber+XMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0450171C23B900B40FFC /* NSNumber+XMPP.h */; };
+		797C0493171C23B900B40FFC /* NSNumber+XMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0450171C23B900B40FFC /* NSNumber+XMPP.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C0494171C23B900B40FFC /* NSNumber+XMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0450171C23B900B40FFC /* NSNumber+XMPP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C0495171C23B900B40FFC /* NSNumber+XMPP.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0451171C23B900B40FFC /* NSNumber+XMPP.m */; };
 		797C0496171C23B900B40FFC /* NSNumber+XMPP.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0451171C23B900B40FFC /* NSNumber+XMPP.m */; };
-		797C0497171C23B900B40FFC /* NSXMLElement+XMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0452171C23B900B40FFC /* NSXMLElement+XMPP.h */; };
+		797C0497171C23B900B40FFC /* NSXMLElement+XMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0452171C23B900B40FFC /* NSXMLElement+XMPP.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C0498171C23B900B40FFC /* NSXMLElement+XMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0452171C23B900B40FFC /* NSXMLElement+XMPP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C0499171C23B900B40FFC /* NSXMLElement+XMPP.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0453171C23B900B40FFC /* NSXMLElement+XMPP.m */; };
 		797C049A171C23B900B40FFC /* NSXMLElement+XMPP.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0453171C23B900B40FFC /* NSXMLElement+XMPP.m */; };
-		797C049B171C23B900B40FFC /* XMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0455171C23B900B40FFC /* XMPP.h */; };
+		797C049B171C23B900B40FFC /* XMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0455171C23B900B40FFC /* XMPP.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C049C171C23B900B40FFC /* XMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0455171C23B900B40FFC /* XMPP.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		797C049D171C23B900B40FFC /* XMPPElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0456171C23B900B40FFC /* XMPPElement.h */; };
+		797C049D171C23B900B40FFC /* XMPPElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0456171C23B900B40FFC /* XMPPElement.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C049E171C23B900B40FFC /* XMPPElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0456171C23B900B40FFC /* XMPPElement.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C049F171C23B900B40FFC /* XMPPElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0457171C23B900B40FFC /* XMPPElement.m */; };
 		797C04A0171C23B900B40FFC /* XMPPElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0457171C23B900B40FFC /* XMPPElement.m */; };
-		797C04A1171C23B900B40FFC /* XMPPInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0458171C23B900B40FFC /* XMPPInternal.h */; };
+		797C04A1171C23B900B40FFC /* XMPPInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0458171C23B900B40FFC /* XMPPInternal.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04A2171C23B900B40FFC /* XMPPInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0458171C23B900B40FFC /* XMPPInternal.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		797C04A3171C23B900B40FFC /* XMPPIQ.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0459171C23B900B40FFC /* XMPPIQ.h */; };
+		797C04A3171C23B900B40FFC /* XMPPIQ.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0459171C23B900B40FFC /* XMPPIQ.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04A4171C23B900B40FFC /* XMPPIQ.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0459171C23B900B40FFC /* XMPPIQ.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04A5171C23B900B40FFC /* XMPPIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C045A171C23B900B40FFC /* XMPPIQ.m */; };
 		797C04A6171C23B900B40FFC /* XMPPIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C045A171C23B900B40FFC /* XMPPIQ.m */; };
-		797C04A7171C23B900B40FFC /* XMPPJID.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C045B171C23B900B40FFC /* XMPPJID.h */; };
+		797C04A7171C23B900B40FFC /* XMPPJID.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C045B171C23B900B40FFC /* XMPPJID.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04A8171C23B900B40FFC /* XMPPJID.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C045B171C23B900B40FFC /* XMPPJID.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04A9171C23B900B40FFC /* XMPPJID.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C045C171C23B900B40FFC /* XMPPJID.m */; };
 		797C04AA171C23B900B40FFC /* XMPPJID.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C045C171C23B900B40FFC /* XMPPJID.m */; };
-		797C04AB171C23B900B40FFC /* XMPPLogging.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C045D171C23B900B40FFC /* XMPPLogging.h */; };
+		797C04AB171C23B900B40FFC /* XMPPLogging.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C045D171C23B900B40FFC /* XMPPLogging.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04AC171C23B900B40FFC /* XMPPLogging.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C045D171C23B900B40FFC /* XMPPLogging.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		797C04AD171C23B900B40FFC /* XMPPMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C045E171C23B900B40FFC /* XMPPMessage.h */; };
+		797C04AD171C23B900B40FFC /* XMPPMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C045E171C23B900B40FFC /* XMPPMessage.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04AE171C23B900B40FFC /* XMPPMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C045E171C23B900B40FFC /* XMPPMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04AF171C23B900B40FFC /* XMPPMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C045F171C23B900B40FFC /* XMPPMessage.m */; };
 		797C04B0171C23B900B40FFC /* XMPPMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C045F171C23B900B40FFC /* XMPPMessage.m */; };
-		797C04B1171C23B900B40FFC /* XMPPModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0460171C23B900B40FFC /* XMPPModule.h */; };
+		797C04B1171C23B900B40FFC /* XMPPModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0460171C23B900B40FFC /* XMPPModule.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04B2171C23B900B40FFC /* XMPPModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0460171C23B900B40FFC /* XMPPModule.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04B3171C23B900B40FFC /* XMPPModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0461171C23B900B40FFC /* XMPPModule.m */; };
 		797C04B4171C23B900B40FFC /* XMPPModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0461171C23B900B40FFC /* XMPPModule.m */; };
-		797C04B5171C23B900B40FFC /* XMPPParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0462171C23B900B40FFC /* XMPPParser.h */; };
+		797C04B5171C23B900B40FFC /* XMPPParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0462171C23B900B40FFC /* XMPPParser.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04B6171C23B900B40FFC /* XMPPParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0462171C23B900B40FFC /* XMPPParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04B7171C23B900B40FFC /* XMPPParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0463171C23B900B40FFC /* XMPPParser.m */; };
 		797C04B8171C23B900B40FFC /* XMPPParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0463171C23B900B40FFC /* XMPPParser.m */; };
-		797C04B9171C23B900B40FFC /* XMPPPresence.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0464171C23B900B40FFC /* XMPPPresence.h */; };
+		797C04B9171C23B900B40FFC /* XMPPPresence.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0464171C23B900B40FFC /* XMPPPresence.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04BA171C23B900B40FFC /* XMPPPresence.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0464171C23B900B40FFC /* XMPPPresence.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04BB171C23B900B40FFC /* XMPPPresence.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0465171C23B900B40FFC /* XMPPPresence.m */; };
 		797C04BC171C23B900B40FFC /* XMPPPresence.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0465171C23B900B40FFC /* XMPPPresence.m */; };
-		797C04BD171C23B900B40FFC /* XMPPStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0466171C23B900B40FFC /* XMPPStream.h */; };
+		797C04BD171C23B900B40FFC /* XMPPStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0466171C23B900B40FFC /* XMPPStream.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04BE171C23B900B40FFC /* XMPPStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0466171C23B900B40FFC /* XMPPStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04BF171C23B900B40FFC /* XMPPStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0467171C23B900B40FFC /* XMPPStream.m */; };
 		797C04C0171C23B900B40FFC /* XMPPStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0467171C23B900B40FFC /* XMPPStream.m */; };
-		797C04C1171C23B900B40FFC /* DDList.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0469171C23B900B40FFC /* DDList.h */; };
+		797C04C1171C23B900B40FFC /* DDList.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0469171C23B900B40FFC /* DDList.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04C2171C23B900B40FFC /* DDList.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0469171C23B900B40FFC /* DDList.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04C3171C23B900B40FFC /* DDList.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C046A171C23B900B40FFC /* DDList.m */; };
 		797C04C4171C23B900B40FFC /* DDList.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C046A171C23B900B40FFC /* DDList.m */; };
-		797C04C5171C23B900B40FFC /* GCDMulticastDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C046B171C23B900B40FFC /* GCDMulticastDelegate.h */; };
+		797C04C5171C23B900B40FFC /* GCDMulticastDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C046B171C23B900B40FFC /* GCDMulticastDelegate.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04C6171C23B900B40FFC /* GCDMulticastDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C046B171C23B900B40FFC /* GCDMulticastDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04C7171C23B900B40FFC /* GCDMulticastDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C046C171C23B900B40FFC /* GCDMulticastDelegate.m */; };
 		797C04C8171C23B900B40FFC /* GCDMulticastDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C046C171C23B900B40FFC /* GCDMulticastDelegate.m */; };
-		797C04C9171C23B900B40FFC /* LibIDN.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C046D171C23B900B40FFC /* LibIDN.h */; };
+		797C04C9171C23B900B40FFC /* LibIDN.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C046D171C23B900B40FFC /* LibIDN.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04CA171C23B900B40FFC /* LibIDN.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C046D171C23B900B40FFC /* LibIDN.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04CB171C23B900B40FFC /* LibIDN.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C046E171C23B900B40FFC /* LibIDN.m */; };
 		797C04CC171C23B900B40FFC /* LibIDN.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C046E171C23B900B40FFC /* LibIDN.m */; };
-		797C04CD171C23B900B40FFC /* RFImageToDataTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C046F171C23B900B40FFC /* RFImageToDataTransformer.h */; };
+		797C04CD171C23B900B40FFC /* RFImageToDataTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C046F171C23B900B40FFC /* RFImageToDataTransformer.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04CE171C23B900B40FFC /* RFImageToDataTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C046F171C23B900B40FFC /* RFImageToDataTransformer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04D0171C23B900B40FFC /* RFImageToDataTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0470171C23B900B40FFC /* RFImageToDataTransformer.m */; };
-		797C04D1171C23B900B40FFC /* XMPPIDTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0471171C23B900B40FFC /* XMPPIDTracker.h */; };
+		797C04D1171C23B900B40FFC /* XMPPIDTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0471171C23B900B40FFC /* XMPPIDTracker.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04D2171C23B900B40FFC /* XMPPIDTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0471171C23B900B40FFC /* XMPPIDTracker.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04D3171C23B900B40FFC /* XMPPIDTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0472171C23B900B40FFC /* XMPPIDTracker.m */; };
 		797C04D4171C23B900B40FFC /* XMPPIDTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0472171C23B900B40FFC /* XMPPIDTracker.m */; };
-		797C04D5171C23B900B40FFC /* XMPPSRVResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0473171C23B900B40FFC /* XMPPSRVResolver.h */; };
+		797C04D5171C23B900B40FFC /* XMPPSRVResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0473171C23B900B40FFC /* XMPPSRVResolver.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		797C04D6171C23B900B40FFC /* XMPPSRVResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0473171C23B900B40FFC /* XMPPSRVResolver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04D7171C23B900B40FFC /* XMPPSRVResolver.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0474171C23B900B40FFC /* XMPPSRVResolver.m */; };
 		797C04D8171C23B900B40FFC /* XMPPSRVResolver.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0474171C23B900B40FFC /* XMPPSRVResolver.m */; };
@@ -167,29 +167,29 @@
 		797C04DE171C24EC00B40FFC /* stringprep.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0435171C231C00B40FFC /* stringprep.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04E3171C266700B40FFC /* libidn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 797C04E2171C266700B40FFC /* libidn.a */; };
 		797C04E6171C30A100B40FFC /* RFImageToDataTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0470171C23B900B40FFC /* RFImageToDataTransformer.m */; };
-		79A4DD7E175A22FC00E6BDE4 /* MXiBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */; };
+		79A4DD7E175A22FC00E6BDE4 /* MXiBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		79A4DD7F175A22FC00E6BDE4 /* MXiBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		79A4DD80175A22FC00E6BDE4 /* MXiBean.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */; };
 		79A4DD81175A22FC00E6BDE4 /* MXiBean.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */; };
-		79A4DD84175A55AC00E6BDE4 /* MXiOutgoingBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD82175A55AC00E6BDE4 /* MXiOutgoingBean.h */; };
+		79A4DD84175A55AC00E6BDE4 /* MXiOutgoingBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD82175A55AC00E6BDE4 /* MXiOutgoingBean.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		79A4DD85175A55AC00E6BDE4 /* MXiOutgoingBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD82175A55AC00E6BDE4 /* MXiOutgoingBean.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		79A4DD8E175A5D2700E6BDE4 /* MXiBeanConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD8C175A5D2700E6BDE4 /* MXiBeanConverter.h */; };
+		79A4DD8E175A5D2700E6BDE4 /* MXiBeanConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD8C175A5D2700E6BDE4 /* MXiBeanConverter.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		79A4DD8F175A5D2700E6BDE4 /* MXiBeanConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD8C175A5D2700E6BDE4 /* MXiBeanConverter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		79A4DD90175A5D2700E6BDE4 /* MXiBeanConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD8D175A5D2700E6BDE4 /* MXiBeanConverter.m */; };
 		79A4DD91175A5D2700E6BDE4 /* MXiBeanConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD8D175A5D2700E6BDE4 /* MXiBeanConverter.m */; };
-		79A4DD94175A5FD300E6BDE4 /* MXiIQTypeLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD92175A5FD300E6BDE4 /* MXiIQTypeLookup.h */; };
+		79A4DD94175A5FD300E6BDE4 /* MXiIQTypeLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD92175A5FD300E6BDE4 /* MXiIQTypeLookup.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		79A4DD95175A5FD300E6BDE4 /* MXiIQTypeLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD92175A5FD300E6BDE4 /* MXiIQTypeLookup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		79A4DD96175A5FD300E6BDE4 /* MXiIQTypeLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD93175A5FD300E6BDE4 /* MXiIQTypeLookup.m */; };
 		79A4DD97175A5FD300E6BDE4 /* MXiIQTypeLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD93175A5FD300E6BDE4 /* MXiIQTypeLookup.m */; };
-		79A4DD99175A6B4700E6BDE4 /* MXiIncomingBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD98175A6B4700E6BDE4 /* MXiIncomingBean.h */; };
+		79A4DD99175A6B4700E6BDE4 /* MXiIncomingBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD98175A6B4700E6BDE4 /* MXiIncomingBean.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		79A4DD9A175A6B4700E6BDE4 /* MXiIncomingBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD98175A6B4700E6BDE4 /* MXiIncomingBean.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		79A4DDA2175BA80300E6BDE4 /* MXiStanzaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DDA1175BA80300E6BDE4 /* MXiStanzaDelegate.h */; };
+		79A4DDA2175BA80300E6BDE4 /* MXiStanzaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DDA1175BA80300E6BDE4 /* MXiStanzaDelegate.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		79A4DDA3175BA80300E6BDE4 /* MXiStanzaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DDA1175BA80300E6BDE4 /* MXiStanzaDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		79A4DDA5175BA82800E6BDE4 /* MXiPresenceDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DDA4175BA82800E6BDE4 /* MXiPresenceDelegate.h */; };
+		79A4DDA5175BA82800E6BDE4 /* MXiPresenceDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DDA4175BA82800E6BDE4 /* MXiPresenceDelegate.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		79A4DDA6175BA82800E6BDE4 /* MXiPresenceDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DDA4175BA82800E6BDE4 /* MXiPresenceDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		79A4DDA8175BF38500E6BDE4 /* MXiBeanDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DDA7175BF38500E6BDE4 /* MXiBeanDelegate.h */; };
+		79A4DDA8175BF38500E6BDE4 /* MXiBeanDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DDA7175BF38500E6BDE4 /* MXiBeanDelegate.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		79A4DDA9175BF38500E6BDE4 /* MXiBeanDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DDA7175BF38500E6BDE4 /* MXiBeanDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		79F3945017200551003F348C /* MXiConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 79F3944E17200551003F348C /* MXiConnection.h */; };
+		79F3945017200551003F348C /* MXiConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 79F3944E17200551003F348C /* MXiConnection.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		79F3945117200551003F348C /* MXiConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 79F3944E17200551003F348C /* MXiConnection.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		79F3945217200551003F348C /* MXiConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 79F3944F17200551003F348C /* MXiConnection.m */; };
 		79F3945317200551003F348C /* MXiConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 79F3944F17200551003F348C /* MXiConnection.m */; };
@@ -654,6 +654,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				794491CA171996A4000D53ED /* MXi.h in Headers */,
+				797C0475171C23B900B40FFC /* XMPPAnonymousAuthentication.h in Headers */,
+				797C0479171C23B900B40FFC /* XMPPDeprecatedDigestAuthentication.h in Headers */,
+				797C047D171C23B900B40FFC /* XMPPDeprecatedPlainAuthentication.h in Headers */,
+				797C0481171C23B900B40FFC /* XMPPDigestMD5Authentication.h in Headers */,
+				797C0485171C23B900B40FFC /* XMPPPlainAuthentication.h in Headers */,
+				797C0489171C23B900B40FFC /* XMPPXFacebookPlatformAuthentication.h in Headers */,
+				797C048D171C23B900B40FFC /* XMPPSASLAuthentication.h in Headers */,
+				797C0497171C23B900B40FFC /* NSXMLElement+XMPP.h in Headers */,
+				797C049B171C23B900B40FFC /* XMPP.h in Headers */,
+				797C049D171C23B900B40FFC /* XMPPElement.h in Headers */,
+				797C04A3171C23B900B40FFC /* XMPPIQ.h in Headers */,
+				797C04A7171C23B900B40FFC /* XMPPJID.h in Headers */,
+				797C04AD171C23B900B40FFC /* XMPPMessage.h in Headers */,
+				797C04B1171C23B900B40FFC /* XMPPModule.h in Headers */,
 				797C03E8171C20E400B40FFC /* DDAbstractDatabaseLogger.h in Headers */,
 				797C03EC171C20E400B40FFC /* DDASLLogger.h in Headers */,
 				797C03F0171C20E400B40FFC /* DDFileLogger.h in Headers */,
@@ -662,33 +676,19 @@
 				797C03FC171C20E400B40FFC /* ContextFilterLogFormatter.h in Headers */,
 				797C0400171C20E400B40FFC /* DispatchQueueLogFormatter.h in Headers */,
 				797C0408171C214600B40FFC /* GCDAsyncSocket.h in Headers */,
-				797C0475171C23B900B40FFC /* XMPPAnonymousAuthentication.h in Headers */,
-				797C0479171C23B900B40FFC /* XMPPDeprecatedDigestAuthentication.h in Headers */,
-				797C047D171C23B900B40FFC /* XMPPDeprecatedPlainAuthentication.h in Headers */,
-				797C0481171C23B900B40FFC /* XMPPDigestMD5Authentication.h in Headers */,
-				797C0485171C23B900B40FFC /* XMPPPlainAuthentication.h in Headers */,
-				797C0489171C23B900B40FFC /* XMPPXFacebookPlatformAuthentication.h in Headers */,
-				797C048D171C23B900B40FFC /* XMPPSASLAuthentication.h in Headers */,
 				797C048F171C23B900B40FFC /* NSData+XMPP.h in Headers */,
 				797C0493171C23B900B40FFC /* NSNumber+XMPP.h in Headers */,
-				797C0497171C23B900B40FFC /* NSXMLElement+XMPP.h in Headers */,
-				797C049B171C23B900B40FFC /* XMPP.h in Headers */,
-				797C049D171C23B900B40FFC /* XMPPElement.h in Headers */,
 				797C04A1171C23B900B40FFC /* XMPPInternal.h in Headers */,
-				797C04A3171C23B900B40FFC /* XMPPIQ.h in Headers */,
-				797C04A7171C23B900B40FFC /* XMPPJID.h in Headers */,
 				797C04AB171C23B900B40FFC /* XMPPLogging.h in Headers */,
-				797C04AD171C23B900B40FFC /* XMPPMessage.h in Headers */,
-				797C04B1171C23B900B40FFC /* XMPPModule.h in Headers */,
 				797C04B5171C23B900B40FFC /* XMPPParser.h in Headers */,
-				797C04B9171C23B900B40FFC /* XMPPPresence.h in Headers */,
-				797C04BD171C23B900B40FFC /* XMPPStream.h in Headers */,
 				797C04C1171C23B900B40FFC /* DDList.h in Headers */,
 				797C04C5171C23B900B40FFC /* GCDMulticastDelegate.h in Headers */,
 				797C04C9171C23B900B40FFC /* LibIDN.h in Headers */,
 				797C04CD171C23B900B40FFC /* RFImageToDataTransformer.h in Headers */,
 				797C04D1171C23B900B40FFC /* XMPPIDTracker.h in Headers */,
 				797C04D5171C23B900B40FFC /* XMPPSRVResolver.h in Headers */,
+				797C04B9171C23B900B40FFC /* XMPPPresence.h in Headers */,
+				797C04BD171C23B900B40FFC /* XMPPStream.h in Headers */,
 				797C04DD171C24EC00B40FFC /* idn-int.h in Headers */,
 				797C04DE171C24EC00B40FFC /* stringprep.h in Headers */,
 				79F3945017200551003F348C /* MXiConnection.h in Headers */,
@@ -1022,6 +1022,7 @@
 					"\"$(SRCROOT)/libidn/x86_64\"",
 				);
 				PRODUCT_NAME = MXi;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -1041,6 +1042,7 @@
 					"\"$(SRCROOT)/libidn/x86_64\"",
 				);
 				PRODUCT_NAME = MXi;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
@@ -1077,6 +1079,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = MXi;
 				PUBLIC_HEADERS_FOLDER_PATH = "include/$(PRODUCT_NAME)";

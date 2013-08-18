@@ -7,7 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#if TARGET_OS_IPHONE
 #import "MXi.h"
+#else
+#import <MXi/MXi.h>
+#endif
 
 @interface MXiBeanConverter : NSObject
 

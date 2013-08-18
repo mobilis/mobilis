@@ -12,3 +12,7 @@ MobilisServer/service/services.txt
 
 *.classpath
 *.settings*
+
+#Xcode workspace
+*.xcworkspace
+xcuserdata/
