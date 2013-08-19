@@ -450,6 +450,7 @@ public class DeploymentService extends MobilisService {
 			if(allowedRuntimes !=null){
 				if(allowedRuntimes.getEntry(StringUtils.parseBareAddress(inBean.getFrom()))!=null){
 					// runtime allowed
+					addRemoteServiceJIDsToRoster(inBean.getNewServiceJIDs());
 					answerBean = BeanHelper
 							.CreateResultBean( inBean, new SynchronizeRuntimesBean(getLocalServiceJIDs()) );
 				}	else {
@@ -460,9 +461,8 @@ public class DeploymentService extends MobilisService {
 				answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access denied",
 						( "Access denied: Runtime is not allowed to request service Informations from " + inBean.getTo()));
 			}
-			addRemoteServiceJIDsToRoster(inBean.getNewServiceJIDs());
-			getAgent().getConnection().sendPacket( new BeanIQAdapter( answerBean ) );
 			
+			getAgent().getConnection().sendPacket( new BeanIQAdapter( answerBean ) );
 		}
 
 
