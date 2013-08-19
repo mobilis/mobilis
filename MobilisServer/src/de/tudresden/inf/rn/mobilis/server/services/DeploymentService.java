@@ -384,12 +384,13 @@ public class DeploymentService extends MobilisService {
 						if(inBean.getType() == XMPPBean.TYPE_ERROR) {
 							synchronizeRuntimesErrorBean(bean);
 						} else {
-							if(inBean.getType() == XMPPBean.TYPE_RESULT);
+							if(inBean.getType() == XMPPBean.TYPE_RESULT){
 								if((bean.newServiceJIDs == null) || (bean.newServiceJIDs.size() == 0)){
 									//no services result bean for GET REQUEST or result bean for SET Request.
 								} else {
 									handleSynchronizeRuntimesBeanResult(bean);
 								}
+							}
 							if(inBean.getType() == XMPPBean.TYPE_GET)
 								handleSynchronizeRuntimesGET(bean);
 						}
@@ -416,12 +417,12 @@ public class DeploymentService extends MobilisService {
 							.CreateResultBean( inBean, new ExecuteSynchronizeRuntimesBean() );
 				} else {
 					//error bean senden
-					answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access denied",
+					answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access-denied",
 							( "Access denied: You need Administrator rights to perform this action "));
 				}
 			} else {
 				//error bean senden
-				answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access denied",
+				answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access-denied",
 						( "Access denied: You need Administrator rights to perform this action "));
 			}
 			
@@ -454,11 +455,11 @@ public class DeploymentService extends MobilisService {
 					answerBean = BeanHelper
 							.CreateResultBean( inBean, new SynchronizeRuntimesBean(getLocalServiceJIDs()) );
 				}	else {
-					answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access denied",
+					answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access-denied",
 							( "Access denied: Runtime is not allowed to request service Informations from " + inBean.getTo()));
 				}
 			} else {
-				answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access denied",
+				answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access-denied",
 						( "Access denied: Runtime is not allowed to request service Informations from " + inBean.getTo()));
 			}
 			
