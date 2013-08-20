@@ -565,9 +565,10 @@ public class MobilisManager {
 			if(!mAgents.containsKey(agent.getResource())){
 			mAgents.put(agent.getResource(), agent);
 			}
-			/*
-			 * Workaround: all agents for every resource of a service have the same ID. If new resource agent for the service
-			 * was added, it wiped last agent for the same service that has put in the map before cause they use the same key (agentIdent)
+			/* by Philipp Grubitzsch
+			 * problem: old map key was agentIdent. All agents for every resource of a service have the same ID. If new resource agent for the service
+			 * was added, it wiped last agent for the same service that was put in the map before cause they used the same key (agentIdent)
+			 * workaround: use the resource of the agents JID as unique identifier for the map key
 			 */
 			else{
 				mAgents.put(agent.getResource(), agent);
@@ -1005,7 +1006,7 @@ public class MobilisManager {
 				}
 				Roster serviceRoster = serviceCon.getRoster();
 				System.out.println("Version : " + serviceContainer.getServiceVersion());
-				//diese Stelle müsste noch etwas sicherer gemacht werden. Der Roster des Dienstes sollte am besten nur seine Presence an seinen Runtime Server und die Discovery Server schicken
+				
 				serviceRoster.setSubscriptionMode(SubscriptionMode.accept_all);
 				serviceCon.disconnect();
 				}
@@ -1058,8 +1059,8 @@ public class MobilisManager {
 					serviceContainer.startNewServiceInstance(null);
 				}
 				else {
-					/*starts a single disovery agent for the new service. It is necessary for discovering services on other runtimes, 
-					that have no instances running. it provides the service information by telling other runtimes his entity capabilities and presence*/
+					/*starts a single discovery agent for the new service. It is necessary for discovering services on other runtimes, 
+					if no instances of this service are running. it provides the service information by telling other runtimes his entity capabilities and presence*/
 					try {
 						String aId = serviceContainer.getAgentId();
 						MobilisAgent ma = this.getAgent(aId);
@@ -1110,11 +1111,12 @@ public class MobilisManager {
 		this.serviceDiscoveryManager = serviceDiscoveryManager;
 	}
 
-	//this Map is needed for pulling new ServiceJids created in the installAndConfigureAndRegisterServiceFromFile Method by the DiscoveryService:
-	//Long Version: DiscoveryService calls installAndConfigureAndRegisterServiceFromFile(), but has no idea what the JID of the new Service will be, cause the jid is build out
-	//of the ServiceName and the name part of the Runtime JID. The ServiceName is hide in the ServiceContainer until its first unpack in the installAndConfigureAndRegisterServiceFromFile Method.
-	//When deployment service is calling this method it creates a Date key for the special call which identifies the depending newServiceJID. With that key, the deployment service can pull the created newServiceJID
-	//from this map.
+	/*this Map is needed for pulling new ServiceJids created in the installAndConfigureAndRegisterServiceFromFile Method by the DiscoveryService:
+	Long Version: DiscoveryService calls installAndConfigureAndRegisterServiceFromFile(), but has no idea what the JID of the new Service will be, cause the jid is build out
+	of the ServiceName and the name part of the Runtime JID. The ServiceName is hide in the ServiceContainer until its first unpack in the installAndConfigureAndRegisterServiceFromFile Method.
+	When deployment service is calling this method it creates a Date key for the special call which identifies the depending newServiceJID. With that key, the deployment service can pull the created newServiceJID
+	from this map.
+	*/
 	private HashMap<java.util.Date,String> newServiceJIDs = new HashMap<>();
 	
 	public EntityCapsManager getCapsManager() {

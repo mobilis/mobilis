@@ -338,22 +338,23 @@ public class ServiceContainer implements IServiceContainerTransitions,
 										"Cannot shutdown Service [ %s ] because of: %s",
 										jid, e.getMessage()));
 			}
-
-			// shutdown agent
-			try {
-				agent.shutdown();
-
-				MobilisManager.getLogger().log(
-						Level.WARNING,
-						String.format(
-								"Shutdown Agent [ %s ] which contains: %s",
-								agent.getFullJid(), agent.servicesToString()));
-			} catch (XMPPException e) {
-				MobilisManager.getLogger().log(
-						Level.WARNING,
-						String.format(
-								"Cannot shutdown Agent [ %s ] because of: %s",
-								jid, e.getMessage()));
+			if(agent.getConnection() != null){
+				// shutdown agent
+				try {
+					agent.shutdown();
+	
+					MobilisManager.getLogger().log(
+							Level.WARNING,
+							String.format(
+									"Shutdown Agent [ %s ] which contains: %s",
+									agent.getFullJid(), agent.servicesToString()));
+				} catch (XMPPException e) {
+					MobilisManager.getLogger().log(
+							Level.WARNING,
+							String.format(
+									"Cannot shutdown Agent [ %s ] because of: %s",
+									jid, e.getMessage()));
+				}
 			}
 
 			return mobilisService;
@@ -372,7 +373,6 @@ public class ServiceContainer implements IServiceContainerTransitions,
 						String.format(
 								"All service isntances of [ %s version %d ] will be shut down.",
 								_serviceNamespace, _serviceVersion));
-		Set<String> testset =_runningServiceInstances.keySet();
 		for (String runningServiceJid : _runningServiceInstances.keySet()) {
 			this.shutdownServiceInstance(runningServiceJid);
 
