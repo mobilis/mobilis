@@ -1005,7 +1005,6 @@ public class MobilisManager {
 					e.printStackTrace();
 				}
 				Roster serviceRoster = serviceCon.getRoster();
-				System.out.println("Version : " + serviceContainer.getServiceVersion());
 				
 				serviceRoster.setSubscriptionMode(SubscriptionMode.accept_all);
 				serviceCon.disconnect();
@@ -1177,7 +1176,11 @@ public class MobilisManager {
 	    	connection.disconnect();
 	        return false;
 	    }
-	     System.out.println("Account für " + serviceName + " wurde erfolgreich angelegt");
+	     
+	     getLogger().log(Level.INFO,
+				String.format(
+					"Service XMPP Account [ %s ] sucessfully created.", username));
+	     
 	     connection.disconnect();
 	     return true;
 	}

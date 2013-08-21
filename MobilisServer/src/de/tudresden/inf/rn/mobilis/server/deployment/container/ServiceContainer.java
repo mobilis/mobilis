@@ -596,7 +596,6 @@ public class ServiceContainer implements IServiceContainerTransitions,
 						con.login(username, password);
 					}	catch (XMPPException e2) {
 						// TODO Auto-generated catch block
-						System.out.println("ARG2");
 					}
 				}
 				try {
@@ -605,8 +604,11 @@ public class ServiceContainer implements IServiceContainerTransitions,
 				} catch (XMPPException e1) {
 							System.out.println("Can't delete Account! Reason: " + e1.getMessage());
 				}
-
-				System.out.println("Account " + username + " erfolgreich gelöscht");
+				
+				MobilisManager.getLogger().log(Level.INFO,
+						String.format(
+								"Service XMPP Account [ %s ] sucessfully deleted.",
+								username));
 			}
 			
 			MobilisManager

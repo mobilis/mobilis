@@ -286,7 +286,6 @@ public class DeploymentService extends MobilisService {
 	
 	/**
 	 * Sends the newServiceJID to another Runtime for adding it to their ServiceDiscovery Roster
-	 * @param recipientJIDOfRuntime
 	 * @param newServiceJID
 	 */
 	private void sendSynchronizeRuntimesBeanSET(String newServiceJID){
@@ -295,13 +294,23 @@ public class DeploymentService extends MobilisService {
 		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup +"runtimes");
 		if(rg!=null){
 			for(RosterEntry entry : rg.getEntries()){
-				List<String> newServiceJIDs = new ArrayList<String>();
-				newServiceJIDs.add(newServiceJID);
-				SynchronizeRuntimesBean bean = new SynchronizeRuntimesBean(newServiceJIDs);
-				String recipientJIDOfRuntime = entry.getUser() + "/Deployment";
-				bean.setTo(recipientJIDOfRuntime);
-				bean.setType(XMPPBean.TYPE_SET);
-				getAgent().getConnection().sendPacket( new BeanIQAdapter( bean ) );
+				
+				//send SET request of new Services just to online runtimes
+				for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
+				{
+					Presence presence = iter.next();
+					String presenceRessource = StringUtils.parseResource((presence.getFrom()));
+					
+					if(presence.isAvailable() && presenceRessource.equalsIgnoreCase("deployment")){
+						List<String> newServiceJIDs = new ArrayList<String>();
+						newServiceJIDs.add(newServiceJID);
+						SynchronizeRuntimesBean bean = new SynchronizeRuntimesBean(newServiceJIDs);
+						String recipientJIDOfRuntime = entry.getUser() + "/Deployment";
+						bean.setTo(recipientJIDOfRuntime);
+						bean.setType(XMPPBean.TYPE_SET);
+						getAgent().getConnection().sendPacket( new BeanIQAdapter( bean ) );
+					}
+				}
 			}
 		}
 	}
