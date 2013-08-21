@@ -37,6 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -982,32 +984,42 @@ public class MobilisManager {
 					newServiceJIDs.put(date, newServiceJID);
 				}
 				if(!serverRestart){
-				String[] groups = {remoteServiceGroup + "local-services"};
-				try {
-					runtimeRoster.createEntry(newServiceJID, username, groups);
-				} catch (XMPPException e) {
-					// TODO Auto-generated catch block
-					System.out.println("User " + username + "couldnt add to roster cause:" + e.getMessage());
-				}
-				
-				//add runtime jid to service roster
-				Connection serviceCon = new XMPPConnection((String) getAgent(defaultValueAgent).getSettingString( "host" ));
-				try {
-					serviceCon.connect();
-				} catch (XMPPException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				try {
-					serviceCon.login(username, password);
-				} catch (XMPPException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				Roster serviceRoster = serviceCon.getRoster();
-				
-				serviceRoster.setSubscriptionMode(SubscriptionMode.accept_all);
-				serviceCon.disconnect();
+					String[] groups = {remoteServiceGroup + "local-services"};
+					try {
+						runtimeRoster.createEntry(newServiceJID, username, groups);
+					} catch (XMPPException e) {
+						// TODO Auto-generated catch block
+						System.out.println("User " + username + "couldnt add to roster cause:" + e.getMessage());
+					}
+					
+					//change subscriptionMode of service roster
+					Connection serviceCon = new XMPPConnection((String) getAgent(defaultValueAgent).getSettingString( "host" ));
+					try {
+						serviceCon.connect();
+					} catch (XMPPException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					try {
+						serviceCon.login(username, password);
+					} catch (XMPPException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					serviceCon.getRoster().setSubscriptionMode(SubscriptionMode.accept_all);
+					
+					
+					/* TODO need to remove if a better method can make sure, that serviceCon.disconnect() will
+					 * the connection correctly
+					 */
+					
+					Timer timer = new Timer();
+					Delay delay = new Delay();
+					delay.setServiceCon(serviceCon);
+					timer.schedule(delay, 100);
+					
+					
+					//serviceCon.disconnect();
 				}
 				// configure
 				DoubleKeyMap< String, String, Object > configuration = new DoubleKeyMap< String, String, Object >(
@@ -1072,6 +1084,7 @@ public class MobilisManager {
 						} else{
 							ma.setMode("multi");
 						}
+						serviceContainer.setDiscoAgent(ma);
 						ma.startup();
 					} catch (XMPPException e) {
 						// TODO Auto-generated catch block
@@ -1206,6 +1219,25 @@ public class MobilisManager {
 	
 	public void removeAgent(String jid){
 		mAgents.remove(jid);
+	}
+	
+	
+	/*
+	 * needed for delayed serviceDisconnect
+	 */
+	private class Delay extends TimerTask{
+		
+		private Connection serviceCon;
+		
+		@Override
+		public void run() {
+			serviceCon.disconnect();
+		}
+
+		public void setServiceCon(Connection serviceCon) {
+			this.serviceCon = serviceCon;
+		}
+		
 	}
 
 }
