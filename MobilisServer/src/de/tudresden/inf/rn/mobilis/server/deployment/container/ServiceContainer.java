@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 
 import javax.swing.event.EventListenerList;
@@ -373,7 +374,16 @@ public class ServiceContainer implements IServiceContainerTransitions,
 						String.format(
 								"All service isntances of [ %s version %d ] will be shut down.",
 								_serviceNamespace, _serviceVersion));
-		for (String runningServiceJid : _runningServiceInstances.keySet()) {
+		
+		/*
+		 * Fixed critical Error by Philipp Grubitzsch
+		 * problem: shutdown of all running instances result in java.util.ConcurrentModificationException cause the "_runningServiceInstances.keySet()"
+		 * used before as iterator will be changed in the called method shutdownServiceInstance(runningServiceJid)
+		 * workaround: instantiate new String Set
+		 */
+		Set<String> instanceJIDs = new TreeSet<>(_runningServiceInstances.keySet());
+				
+		for (String runningServiceJid : instanceJIDs) {
 			this.shutdownServiceInstance(runningServiceJid);
 
 			MobilisManager.getLogger()
