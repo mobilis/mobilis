@@ -643,8 +643,10 @@ public class DeploymentService extends MobilisService {
 		ArrayList<String> serviceJIDs = new ArrayList<String>();
 		
 		RosterGroup services = roster.getGroup(MobilisManager.remoteServiceGroup + "local-services");
-		for(RosterEntry entry : services.getEntries()){
-			serviceJIDs.add(entry.getUser());
+		if(services!=null){
+			for(RosterEntry entry : services.getEntries()){
+				serviceJIDs.add(entry.getUser());
+			}
 		}
 		
 		return serviceJIDs;
