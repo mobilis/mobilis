@@ -583,16 +583,18 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			// state == uninstalled
 			changeContainerState(ServiceContainerState.UNINSTALLED);
 			
-			// shutdown the discovery Agent
-			try {
-				discoAgent.shutdown();
-			} catch (XMPPException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			
 			// delete XMPP Account of Service: Step 2
 			if((!MobilisManager.getInstance().getReinstalling())){
+				
+				// shutdown the discovery Agent
+				try {
+					discoAgent.shutdown();
+				} catch (XMPPException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				if((!con.isConnected())){
 					try {
 						con.connect();
