@@ -290,8 +290,12 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 	 * @throws org.jivesoftware.smack.XMPPException
 	 */
 	public void shutdown() throws XMPPException {
+		
+		//remove Agent from MobilisManager mAgents Map
+		MobilisManager.getInstance().removeAgent(StringUtils.parseResource(fullJid));
+		
 		ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(mConnection);
-
+		
 		// ServiceDiscovery (feature) http://rn.inf.tu-dresden.de/mobilis
 
 		//not used anymore. Cause of introduction of Entity Caps, the capManager sends new presence if features
@@ -330,6 +334,7 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		MobilisManager.getLogger().info("Mobilis Agent (" + getIdent() + ") shut down.");
 		
 		MobilisManager.getInstance().notifyOfAgentShutdown(this);
+		
 	}
 
 	public void registerService(MobilisService service) {

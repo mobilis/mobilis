@@ -1200,5 +1200,9 @@ public class MobilisManager {
 		}
 		
 	}
+	
+	public void removeAgent(String jid){
+		mAgents.remove(jid);
+	}
 
 }
