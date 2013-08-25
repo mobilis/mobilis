@@ -7,6 +7,7 @@
 //
 
 #import "MXiBean.h"
+#import "DDXML.h"
 
 @protocol MXiIncomingBean <NSObject>
 
