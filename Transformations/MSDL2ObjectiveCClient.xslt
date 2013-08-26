@@ -160,7 +160,7 @@
 							<xsl:call-template name="convertToListElement">
 								<xsl:with-param name="elementName" select="$elementName" />
 								<xsl:with-param name="elementToAddTo" select="'beanElement'" />
-								<xsl:with-param name="collectionName" select="./@name" />
+								<xsl:with-param name="collectionName" select="concat('[self ', ./@name, ']')" />
 								<xsl:with-param name="indent" select="$tab" />
 							</xsl:call-template>
 						</xsl:when>
@@ -634,7 +634,7 @@
 								<xsl:with-param name="elementName" select="$subElementName" />
 								<xsl:with-param name="indent" select="$indent" />
 								<xsl:with-param name="elementToAddTo" select="$elementName" />
-								<xsl:with-param name="collectionName" select="./@name" />
+								<xsl:with-param name="collectionName" select="concat('[', $wholeName, ' ', ./@name, ']')" />
 							</xsl:call-template>
 						</xsl:otherwise>
 					</xsl:choose>
@@ -646,12 +646,26 @@
 							<xsl:choose>
 								<xsl:when test="starts-with(./@type, $serviceXMLNS)">
 									<!-- Custom atomic named type -->
-									<xsl:call-template name="convertToCustomNamedAtomicElement">
-										<xsl:with-param name="elementName" select="$subElementName" />
-										<xsl:with-param name="wholeName" select="$wholeName" />
-										<xsl:with-param name="elementToAddTo" select="$elementName" />
-										<xsl:with-param name="indent" select="$indent" />
-									</xsl:call-template>
+									<xsl:choose>
+										<xsl:when test="$collectionName">
+											<xsl:call-template name="convertToCustomNamedAtomicElement">
+												<xsl:with-param name="elementName" select="$subElementName" />
+												<xsl:with-param name="wholeName" select="$wholeName" />
+												<xsl:with-param name="elementToAddTo" select="$elementName" />
+												<xsl:with-param name="indent" select="$indent" />
+												<xsl:with-param name="collectionName" select="concat('[', $collectionName, ' ', ./@name, ']')" />
+											</xsl:call-template>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:call-template name="convertToCustomNamedAtomicElement">
+												<xsl:with-param name="elementName" select="$subElementName" />
+												<xsl:with-param name="wholeName" select="$wholeName" />
+												<xsl:with-param name="elementToAddTo" select="$elementName" />
+												<xsl:with-param name="indent" select="$indent" />
+												<xsl:with-param name="collectionName" select="concat('[', $wholeName, ' ', ./@name, ']')" />
+											</xsl:call-template>
+										</xsl:otherwise>
+									</xsl:choose>
 								</xsl:when>
 								<xsl:otherwise>
 									<!-- (Probably) simple predefined type -->
@@ -668,7 +682,6 @@
 										<xsl:otherwise>
 											<xsl:call-template name="convertToSimpleAtomicXMLElement">
 												<xsl:with-param name="elementName" select="$subElementName" />
-												<!-- TODO the following is not flexible enough for nested complex types -->
 												<xsl:with-param name="valueName" select="concat('[', $wholeName, ' ', ./@name, ']')" />
 												<xsl:with-param name="typeName" select="./@type" />
 												<xsl:with-param name="elementToAddTo" select="$elementName" />
@@ -697,7 +710,7 @@
 										<xsl:with-param name="wholeName" select="$wholeName" />
 										<xsl:with-param name="elementName" select="$subElementName" />
 										<xsl:with-param name="elementToAddTo" select="$elementName" />
-										<xsl:with-param name="collectionName" select="./@name" />
+										<xsl:with-param name="collectionName" select="concat('[', $wholeName, ' ', ./@name, ']')" />
 										<xsl:with-param name="indent" select="$indent" />
 									</xsl:call-template>
 								</xsl:otherwise>
@@ -723,6 +736,7 @@
 		<xsl:param name="wholeName" as="xs:string" />
 		<xsl:param name="elementToAddTo" as="xs:string" />
 		<xsl:param name="indent" as="xs:string" />
+		<xsl:param name="collectionName" required="no" />
 		
 		<xsl:value-of select="$indent" />
 		<xsl:text>NSXMLElement* </xsl:text><xsl:value-of select="$elementName" />
@@ -738,12 +752,24 @@
 			<xsl:choose>
 				<xsl:when test="./@maxOccurs != '1'">
 					<!-- Array -->
-					<xsl:call-template name="convertToListElement">
-						<xsl:with-param name="elementName" select="$subElementName" />
-						<xsl:with-param name="elementToAddTo" select="$elementName" />
-						<xsl:with-param name="collectionName" select="./@name" />
-						<xsl:with-param name="indent" select="$indent" />
-					</xsl:call-template>
+					<xsl:choose>
+						<xsl:when test="$collectionName">
+							<xsl:call-template name="convertToListElement">
+								<xsl:with-param name="elementName" select="$subElementName" />
+								<xsl:with-param name="elementToAddTo" select="$elementName" />
+								<xsl:with-param name="collectionName" select="concat('[', $collectionName, ' ', ./@name, ']')" />
+								<xsl:with-param name="indent" select="$indent" />
+							</xsl:call-template>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:call-template name="convertToListElement">
+								<xsl:with-param name="elementName" select="$subElementName" />
+								<xsl:with-param name="elementToAddTo" select="$elementName" />
+								<xsl:with-param name="collectionName" select="concat('[', $wholeName, ' ', ./@name, ']')" />
+								<xsl:with-param name="indent" select="$indent" />
+							</xsl:call-template>
+						</xsl:otherwise>
+					</xsl:choose>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:choose>
@@ -752,35 +778,75 @@
 							<xsl:choose>
 								<xsl:when test="starts-with(./@type, $serviceXMLNS)">
 									<!-- Custom atomic named type -->
-									<xsl:call-template name="convertToCustomNamedAtomicElement">
-										<xsl:with-param name="elementName" select="$subElementName" />
-										<xsl:with-param name="elementToAddTo" select="$elementName" />
-										<xsl:with-param name="indent" select="$indent" />
-										<xsl:with-param name="wholeName" select="$wholeName" />
-									</xsl:call-template>
+									<xsl:choose>
+										<xsl:when test="$collectionName">
+											<xsl:call-template name="convertToCustomNamedAtomicElement">
+												<xsl:with-param name="elementName" select="$subElementName" />
+												<xsl:with-param name="elementToAddTo" select="$elementName" />
+												<xsl:with-param name="indent" select="$indent" />
+												<xsl:with-param name="wholeName" select="$wholeName" />
+												<xsl:with-param name="collectionName" select="concat('[', $collectionName, ' ', ./@name, ']')" />
+											</xsl:call-template>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:call-template name="convertToCustomNamedAtomicElement">
+												<xsl:with-param name="elementName" select="$subElementName" />
+												<xsl:with-param name="elementToAddTo" select="$elementName" />
+												<xsl:with-param name="indent" select="$indent" />
+												<xsl:with-param name="wholeName" select="$wholeName" />
+												<xsl:with-param name="collectionName" select="concat('[', $wholeName, ' ', ./@name, ']')" />
+											</xsl:call-template>
+										</xsl:otherwise>
+									</xsl:choose>
+									
 								</xsl:when>
 								<xsl:otherwise>
 									<!-- (Probably) simple predefined type -->
-									<xsl:call-template name="convertToSimpleAtomicXMLElement">
-										<xsl:with-param name="elementName" select="$subElementName" />
-										<!-- TODO the following is not flexible enough for nested complex types -->
-										<xsl:with-param name="valueName" select="concat('[', $wholeName, ' ', ./@name, ']')" />
-										<xsl:with-param name="typeName" select="./@type" />
-										<xsl:with-param name="elementToAddTo" select="$elementName" />
-										<xsl:with-param name="indent" select="$indent" />
-									</xsl:call-template>
+									<xsl:choose>
+										<xsl:when test="$collectionName">
+											<xsl:call-template name="convertToSimpleAtomicXMLElement">
+												<xsl:with-param name="elementName" select="$subElementName" />
+												<xsl:with-param name="valueName" select="concat('[', $collectionName, ' ', ./@name, ']')" />
+												<xsl:with-param name="typeName" select="./@type" />
+												<xsl:with-param name="elementToAddTo" select="$elementName" />
+												<xsl:with-param name="indent" select="$indent" />
+											</xsl:call-template>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:call-template name="convertToSimpleAtomicXMLElement">
+												<xsl:with-param name="elementName" select="$subElementName" />
+												<xsl:with-param name="valueName" select="concat('[', $wholeName, ' ', ./@name, ']')" />
+												<xsl:with-param name="typeName" select="./@type" />
+												<xsl:with-param name="elementToAddTo" select="$elementName" />
+												<xsl:with-param name="indent" select="$indent" />
+											</xsl:call-template>
+										</xsl:otherwise>
+									</xsl:choose>
 								</xsl:otherwise>
 							</xsl:choose>
 						</xsl:when>
 						<xsl:otherwise>
 							<!-- Anonymous complex type -->
-							<xsl:call-template name="convertToCustomAnonymousAtomicElement">
-								<xsl:with-param name="wholeName" select="$wholeName" />
-								<xsl:with-param name="elementName" select="$subElementName" />
-								<xsl:with-param name="elementToAddTo" select="$elementName" />
-								<xsl:with-param name="indent" select="$indent" />
-								<xsl:with-param name="collectionName" select="concat('[', $wholeName, ' ', ./@name, ']')" />
-							</xsl:call-template>
+							<xsl:choose>
+								<xsl:when test="$collectionName">
+									<xsl:call-template name="convertToCustomAnonymousAtomicElement">
+										<xsl:with-param name="wholeName" select="$wholeName" />
+										<xsl:with-param name="elementName" select="$subElementName" />
+										<xsl:with-param name="elementToAddTo" select="$elementName" />
+										<xsl:with-param name="indent" select="$indent" />
+										<xsl:with-param name="collectionName" select="concat('[', $collectionName, ' ', ./@name, ']')" />
+									</xsl:call-template>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:call-template name="convertToCustomAnonymousAtomicElement">
+										<xsl:with-param name="wholeName" select="$wholeName" />
+										<xsl:with-param name="elementName" select="$subElementName" />
+										<xsl:with-param name="elementToAddTo" select="$elementName" />
+										<xsl:with-param name="indent" select="$indent" />
+										<xsl:with-param name="collectionName" select="concat('[', $wholeName, ' ', ./@name, ']')" />
+									</xsl:call-template>
+								</xsl:otherwise>
+							</xsl:choose>
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:otherwise>
