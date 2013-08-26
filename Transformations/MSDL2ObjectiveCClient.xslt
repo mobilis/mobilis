@@ -176,7 +176,7 @@
 												<xsl:with-param name="elementName" select="$elementName" />
 												<xsl:with-param name="indent" select="$tab" />
 												<xsl:with-param name="elementToAddTo" select="'beanElement'" />
-												<xsl:with-param name="wholeName" select="./@name" />
+												<xsl:with-param name="wholeName" select="concat('[self ', ./@name, ']')" />
 											</xsl:call-template>
 										</xsl:when>
 										<xsl:otherwise>
@@ -195,9 +195,9 @@
 									<!-- Element structure is defined with complexType subelement -->
 									<xsl:call-template name="convertToCustomAnonymousAtomicElement">
 										<xsl:with-param name="elementName" select="$elementName" />
-										<xsl:with-param name="wholeName" select="./@name" />
+										<xsl:with-param name="wholeName" select="concat('[self ', ./@name, ']')" />
 										<xsl:with-param name="elementToAddTo" select="'beanElement'" />
-										<xsl:with-param name="collectionName" select="./@name" />
+										<xsl:with-param name="collectionName" select="concat('[self ', ./@name, ']')" />
 										<xsl:with-param name="indent" select="$tab" />
 									</xsl:call-template>
 								</xsl:otherwise>
