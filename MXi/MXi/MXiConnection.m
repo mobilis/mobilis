@@ -43,9 +43,18 @@
 }
 
 - (BOOL)reconnectWithJabberID:(NSString *)aJabberID
-					 password:(NSString *)aPassword {
+					 password:(NSString *)aPassword
+					 hostname:(NSString *)aHostname
+				   serviceJID:(NSString *)theServiceJID {
+	[xmppStream disconnect];
+	
 	[self setJabberID:[XMPPJID jidWithString:aJabberID]];
 	[self setPassword:aPassword];
+	if (aHostname && ![aHostname isEqualToString:@""]) {
+		[self setHostName:aHostname];
+	}
+	[self setServiceJID:theServiceJID];
+	
 	return [self connect];
 }
 

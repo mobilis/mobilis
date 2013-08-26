@@ -33,8 +33,10 @@
 - (void)sendElement:(NSXMLElement* )element;
 - (void)sendBean:(MXiBean<MXiOutgoingBean>* )bean;
 
-- (BOOL)reconnectWithJabberID:(NSString* ) aJabberID
-					 password:(NSString* )aPassword;
+- (BOOL)reconnectWithJabberID:(NSString* )jabberID
+					 password:(NSString* )password
+					 hostname:(NSString* )hostname
+				   serviceJID:(NSString* )serviceJID;
 - (void)disconnect;
 
 @end
