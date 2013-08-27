@@ -11,12 +11,14 @@
 
 @implementation MXiConnection
 
-@synthesize jabberID, password, hostName, serviceJID, xmppStream, presenceDelegate, stanzaDelegate, beanDelegate, incomingBeanPrototypes;
+@synthesize jabberID, password, hostName, serviceJID, coordinatorJID, serviceNamespace,
+	xmppStream, presenceDelegate, stanzaDelegate, beanDelegate, incomingBeanPrototypes;
 
 + (id)connectionWithJabberID:(NSString* )aJabberID
 					password:(NSString* )aPassword
 					hostName:(NSString* )aHostName
-				  serviceJID:(NSString* )theServiceJID
+			  coordinatorJID:(NSString* )theCoordinatorJID
+			serviceNamespace:(NSString* )theServiceNamespace
 			presenceDelegate:(id<MXiPresenceDelegate> )aPresenceDelegate
 			  stanzaDelegate:(id<MXiStanzaDelegate> )aStanzaDelegate
 				beanDelegate:(id<MXiBeanDelegate>)aBeanDelegate
@@ -31,7 +33,8 @@
 	} else {
 		[connection setHostName:[tempJid domain]];
 	}
-	[connection setServiceJID:theServiceJID];
+	[connection setCoordinatorJID:theCoordinatorJID];
+	[connection setServiceNamespace:theServiceNamespace];
 	[connection setPresenceDelegate:aPresenceDelegate];
 	[connection setStanzaDelegate:aStanzaDelegate];
 	[connection setBeanDelegate:aBeanDelegate];
@@ -45,7 +48,7 @@
 - (BOOL)reconnectWithJabberID:(NSString *)aJabberID
 					 password:(NSString *)aPassword
 					 hostname:(NSString *)aHostname
-				   serviceJID:(NSString *)theServiceJID {
+				   coordinatorJID:(NSString *)theCoordinatorJID {
 	[xmppStream disconnect];
 	
 	[self setJabberID:[XMPPJID jidWithString:aJabberID]];
@@ -53,7 +56,7 @@
 	if (aHostname && ![aHostname isEqualToString:@""]) {
 		[self setHostName:aHostname];
 	}
-	[self setServiceJID:theServiceJID];
+	[self setCoordinatorJID:theCoordinatorJID];
 	
 	return [self connect];
 }
@@ -73,6 +76,7 @@
 
 - (void)xmppStreamDidAuthenticate:(XMPPStream* )sender {
 	[self goOnline];
+	[self discoverService];
 }
 
 - (void)xmppStream:(XMPPStream *)sender didNotAuthenticate:(NSXMLElement *)error {
@@ -83,10 +87,31 @@
 
 - (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq {
 	BOOL success = [stanzaDelegate didReceiveIQ:iq];
+
+	NSLog(@"Received iq: %@", [iq prettyXMLString]);
+	NSXMLElement* childElement = [iq childElement];
 	
+	// Did we get a service discovery response?
+	if ([[childElement name] isEqualToString:@"serviceDiscovery"]) {
+		NSArray* discoveredServiceElements = [childElement children];
+		for (int i = 0; i < [discoveredServiceElements count]; i++) {
+			NSXMLElement* discoveredServiceElement = [discoveredServiceElements objectAtIndex:i];
+			[presenceDelegate didDiscoverServiceWithNamespace:[discoveredServiceElement attributeStringValueForName:@"namespace"]
+														 name:[discoveredServiceElement attributeStringValueForName:@"serviceName"]
+													  version:[discoveredServiceElement attributeIntegerValueForName:@"version"]
+												   atJabberID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
+			
+			if (i == 0) {
+				// choose the first discovered service jid by default
+				[self setServiceJID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
+			}
+		}
+	}
+	
+	// Did we get an incoming mobilis bean?
 	for (MXiBean<MXiIncomingBean>* prototype in incomingBeanPrototypes) {
-		if ([[[prototype class] elementName] isEqualToString:[[iq childElement] name]] &&
-				[[[prototype class] iqNamespace] isEqualToString:[[iq childElement] xmlns]] &&
+		if ([[[prototype class] elementName] isEqualToString:[childElement name]] &&
+				[[[prototype class] iqNamespace] isEqualToString:[childElement xmlns]] &&
 				[[MXiIQTypeLookup stringValueForIQType:[prototype beanType]]
 					isEqualToString:[iq attributeStringValueForName:@"type"]]) {
 			// parse the iq data into the bean object
@@ -133,6 +158,23 @@
 	[xmppStream sendElement:presence];
 }
 
+- (void)discoverService {
+	NSXMLElement* namespaceElement =
+	[NSXMLElement elementWithName:@"serviceNamespace"];
+	[namespaceElement setStringValue:@"http://mobilis.inf.tu-dresden.de#services/MobilistService"];
+	NSXMLElement* discoElement =
+	[NSXMLElement elementWithName:@"serviceDiscovery"
+							xmlns:@"http://mobilis.inf.tu-dresden.de#services/CoordinatorService"];
+	[discoElement addChild:namespaceElement];
+	NSXMLElement* iqElement = [NSXMLElement elementWithName:@"iq"];
+	[iqElement addAttributeWithName:@"to"
+						stringValue:[self coordinatorJID]];
+	[iqElement addAttributeWithName:@"type" stringValue:@"get"];
+	[iqElement addChild:discoElement];
+	
+	[self sendElement:iqElement];
+}
+
 - (BOOL)connect {
 	if ([xmppStream isConnected]) {
 		return YES;
@@ -141,11 +183,13 @@
 	[xmppStream setMyJID:jabberID];
 	[xmppStream setHostName:[self hostName]];
 	
+	/*
 	NSLog(@"Trying to connect with:");
 	NSLog(@" - myJid: %@", [xmppStream myJID]);
 	NSLog(@" - myPassword: %@", password);
 	NSLog(@" - hostname: %@", [xmppStream hostName]);
 	NSLog(@" - port: %d", [xmppStream hostPort]);
+	*/
 	
 	NSError* error = nil;
 	if (![xmppStream connect:&error]) {

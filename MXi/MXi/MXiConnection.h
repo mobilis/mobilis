@@ -14,20 +14,23 @@
 @property (nonatomic, retain) NSString* password;
 @property (nonatomic, strong) NSString* hostName;
 @property (nonatomic, strong) NSString* serviceJID;
+@property (nonatomic, strong) NSString* serviceNamespace;
+@property (nonatomic, strong) NSString* coordinatorJID;
 @property (nonatomic, readonly) XMPPStream* xmppStream;
 @property (nonatomic, strong) id<MXiPresenceDelegate> presenceDelegate;
 @property (nonatomic, strong) id<MXiStanzaDelegate> stanzaDelegate;
 @property (nonatomic, strong) id<MXiBeanDelegate> beanDelegate;
 @property (nonatomic, strong) NSArray* incomingBeanPrototypes;
 
-+ (id)connectionWithJabberID:(NSString* )aJabberID
-					password:(NSString* )aPassword
-					hostName:(NSString* )aHostName
-				  serviceJID:(NSString* )theServiceJID
-			presenceDelegate:(id<MXiPresenceDelegate> )aPresenceDelegate
-			  stanzaDelegate:(id<MXiStanzaDelegate> )aStanzaDelegate
-				beanDelegate:(id<MXiBeanDelegate> )aBeanDelegate
-   listeningForIncomingBeans:(NSArray* )theIncomingBeanPrototypes;
++ (id)connectionWithJabberID:(NSString* )jabberID
+					password:(NSString* )password
+					hostName:(NSString* )hostName
+			  coordinatorJID:(NSString* )coordinatorJID
+			serviceNamespace:(NSString* )serviceNamespace
+			presenceDelegate:(id<MXiPresenceDelegate> )presenceDelegate
+			  stanzaDelegate:(id<MXiStanzaDelegate> )stanzaDelegate
+				beanDelegate:(id<MXiBeanDelegate> )beanDelegate
+   listeningForIncomingBeans:(NSArray* )incomingBeanPrototypes;
 
 - (void)sendTestMessageWithContent:(NSString* )content to:(NSString* )to;
 - (void)sendElement:(NSXMLElement* )element;
@@ -36,7 +39,7 @@
 - (BOOL)reconnectWithJabberID:(NSString* )jabberID
 					 password:(NSString* )password
 					 hostname:(NSString* )hostname
-				   serviceJID:(NSString* )serviceJID;
+				   coordinatorJID:(NSString* )coordinatorJID;
 - (void)disconnect;
 
 @end

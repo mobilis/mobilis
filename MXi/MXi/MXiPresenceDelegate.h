@@ -11,6 +11,10 @@
 @protocol MXiPresenceDelegate <NSObject>
 
 - (void)didAuthenticate;
+- (void)didDiscoverServiceWithNamespace:(NSString* )serviceNamespace
+								   name:(NSString* )serviceName
+								version:(NSInteger )version
+							 atJabberID:(NSString* )serviceJID;
 - (void)didDisconnectWithError:(NSError* )error;
 - (void)didFailToAuthenticate:(NSXMLElement* )error;
 
