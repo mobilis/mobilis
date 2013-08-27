@@ -7,7 +7,8 @@
 //
 
 #if TARGET_OS_IPHONE
-#import "MXi.h"
+#import "MXiBean.h"
+#import "DDXML.h"
 #else
 #import <MXi/MXi.h>
 #endif
