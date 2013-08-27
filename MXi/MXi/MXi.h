@@ -1,6 +1,7 @@
 // Third party stuff
 #import <Foundation/Foundation.h>
 #import "XMPP.h"
+#import "XMPPReconnect.h"
 
 // Protocols
 #import "MXiOutgoingBean.h"

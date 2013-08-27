@@ -190,6 +190,9 @@
 	[xmppStream setHostName:[self hostName]];
 	[xmppStream setHostPort:[self port]];
 	
+	XMPPReconnect* reconnect = [[XMPPReconnect alloc] init];
+	[reconnect activate:xmppStream];
+	
 	/*
 	NSLog(@"Trying to connect with:");
 	NSLog(@" - myJid: %@", [xmppStream myJID]);
