@@ -2,6 +2,7 @@
 #if TARGET_OS_IPHONE
 // Third party stuff
 #import "XMPP.h"
+#import "XMPPReconnect.h"
 
 // Protocolls
 #import "MXiOutgoingBean.h"

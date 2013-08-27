@@ -167,7 +167,12 @@
 		797C04DE171C24EC00B40FFC /* stringprep.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0435171C231C00B40FFC /* stringprep.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04E3171C266700B40FFC /* libidn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 797C04E2171C266700B40FFC /* libidn.a */; };
 		797C04E6171C30A100B40FFC /* RFImageToDataTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0470171C23B900B40FFC /* RFImageToDataTransformer.m */; };
-		79A4DD7E175A22FC00E6BDE4 /* MXiBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		798D5FB517CCAA7400B27757 /* XMPPReconnect.h in Headers */ = {isa = PBXBuildFile; fileRef = 798D5FB317CCAA7400B27757 /* XMPPReconnect.h */; };
+		798D5FB617CCAA7400B27757 /* XMPPReconnect.h in Headers */ = {isa = PBXBuildFile; fileRef = 798D5FB317CCAA7400B27757 /* XMPPReconnect.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		798D5FB717CCAA7400B27757 /* XMPPReconnect.m in Sources */ = {isa = PBXBuildFile; fileRef = 798D5FB417CCAA7400B27757 /* XMPPReconnect.m */; };
+		798D5FB817CCAA7400B27757 /* XMPPReconnect.m in Sources */ = {isa = PBXBuildFile; fileRef = 798D5FB417CCAA7400B27757 /* XMPPReconnect.m */; };
+		798D5FBA17CCABB800B27757 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 798D5FB917CCABB800B27757 /* SystemConfiguration.framework */; };
+		79A4DD7E175A22FC00E6BDE4 /* MXiBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */; };
 		79A4DD7F175A22FC00E6BDE4 /* MXiBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		79A4DD80175A22FC00E6BDE4 /* MXiBean.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */; };
 		79A4DD81175A22FC00E6BDE4 /* MXiBean.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */; };
@@ -304,6 +309,9 @@
 		797C04D9171C23DF00B40FFC /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		797C04DB171C23E700B40FFC /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/usr/lib/libresolv.dylib; sourceTree = DEVELOPER_DIR; };
 		797C04E2171C266700B40FFC /* libidn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libidn.a; path = libidn/x86_64/libidn.a; sourceTree = "<group>"; };
+		798D5FB317CCAA7400B27757 /* XMPPReconnect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMPPReconnect.h; sourceTree = "<group>"; };
+		798D5FB417CCAA7400B27757 /* XMPPReconnect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMPPReconnect.m; sourceTree = "<group>"; };
+		798D5FB917CCABB800B27757 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiBean.h; sourceTree = "<group>"; };
 		79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiBean.m; sourceTree = "<group>"; };
 		79A4DD82175A55AC00E6BDE4 /* MXiOutgoingBean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiOutgoingBean.h; sourceTree = "<group>"; };
@@ -336,6 +344,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				798D5FBA17CCABB800B27757 /* SystemConfiguration.framework in Frameworks */,
 				797C04DC171C23E700B40FFC /* libresolv.dylib in Frameworks */,
 				794491BF171995FF000D53ED /* Foundation.framework in Frameworks */,
 				797C0410171C218700B40FFC /* Security.framework in Frameworks */,
@@ -368,6 +377,8 @@
 		794491A317199564000D53ED /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				798D5FB917CCABB800B27757 /* SystemConfiguration.framework */,
+				798D5FB117CCAA7400B27757 /* Extensions */,
 				797C04E5171C270000B40FFC /* lib-os-x */,
 				797C04E4171C26EC00B40FFC /* lib-ios */,
 				797C0439171C23B900B40FFC /* Authentication */,
@@ -646,6 +657,23 @@
 			name = "lib-os-x";
 			sourceTree = "<group>";
 		};
+		798D5FB117CCAA7400B27757 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				798D5FB217CCAA7400B27757 /* Reconnect */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		798D5FB217CCAA7400B27757 /* Reconnect */ = {
+			isa = PBXGroup;
+			children = (
+				798D5FB317CCAA7400B27757 /* XMPPReconnect.h */,
+				798D5FB417CCAA7400B27757 /* XMPPReconnect.m */,
+			);
+			path = Reconnect;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -700,6 +728,7 @@
 				79A4DDA2175BA80300E6BDE4 /* MXiStanzaDelegate.h in Headers */,
 				79A4DDA5175BA82800E6BDE4 /* MXiPresenceDelegate.h in Headers */,
 				79A4DDA8175BF38500E6BDE4 /* MXiBeanDelegate.h in Headers */,
+				798D5FB517CCAA7400B27757 /* XMPPReconnect.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -760,6 +789,7 @@
 				79A4DDA6175BA82800E6BDE4 /* MXiPresenceDelegate.h in Headers */,
 				79A4DD9A175A6B4700E6BDE4 /* MXiIncomingBean.h in Headers */,
 				79A4DDA9175BF38500E6BDE4 /* MXiBeanDelegate.h in Headers */,
+				798D5FB617CCAA7400B27757 /* XMPPReconnect.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -881,6 +911,7 @@
 				79A4DD80175A22FC00E6BDE4 /* MXiBean.m in Sources */,
 				79A4DD90175A5D2700E6BDE4 /* MXiBeanConverter.m in Sources */,
 				79A4DD96175A5FD300E6BDE4 /* MXiIQTypeLookup.m in Sources */,
+				798D5FB717CCAA7400B27757 /* XMPPReconnect.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -927,6 +958,7 @@
 				79A4DD81175A22FC00E6BDE4 /* MXiBean.m in Sources */,
 				79A4DD91175A5D2700E6BDE4 /* MXiBeanConverter.m in Sources */,
 				79A4DD97175A5FD300E6BDE4 /* MXiIQTypeLookup.m in Sources */,
+				798D5FB817CCAA7400B27757 /* XMPPReconnect.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
