@@ -161,7 +161,7 @@
 - (void)discoverService {
 	NSXMLElement* namespaceElement =
 	[NSXMLElement elementWithName:@"serviceNamespace"];
-	[namespaceElement setStringValue:@"http://mobilis.inf.tu-dresden.de#services/MobilistService"];
+	[namespaceElement setStringValue:[self serviceNamespace]];
 	NSXMLElement* discoElement =
 	[NSXMLElement elementWithName:@"serviceDiscovery"
 							xmlns:@"http://mobilis.inf.tu-dresden.de#services/CoordinatorService"];
