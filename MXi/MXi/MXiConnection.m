@@ -11,12 +11,13 @@
 
 @implementation MXiConnection
 
-@synthesize jabberID, password, hostName, serviceJID, coordinatorJID, serviceNamespace,
+@synthesize jabberID, password, hostName, port, serviceJID, coordinatorJID, serviceNamespace,
 	xmppStream, presenceDelegate, stanzaDelegate, beanDelegate, incomingBeanPrototypes;
 
 + (id)connectionWithJabberID:(NSString* )aJabberID
 					password:(NSString* )aPassword
 					hostName:(NSString* )aHostName
+						port:(NSInteger )port
 			  coordinatorJID:(NSString* )theCoordinatorJID
 			serviceNamespace:(NSString* )theServiceNamespace
 			presenceDelegate:(id<MXiPresenceDelegate> )aPresenceDelegate
@@ -33,6 +34,7 @@
 	} else {
 		[connection setHostName:[tempJid domain]];
 	}
+	[connection setPort:port];
 	[connection setCoordinatorJID:theCoordinatorJID];
 	[connection setServiceNamespace:theServiceNamespace];
 	[connection setPresenceDelegate:aPresenceDelegate];
@@ -48,15 +50,19 @@
 - (BOOL)reconnectWithJabberID:(NSString *)aJabberID
 					 password:(NSString *)aPassword
 					 hostname:(NSString *)aHostname
-				   coordinatorJID:(NSString *)theCoordinatorJID {
-	[xmppStream disconnect];
+						 port:(NSInteger )thePort
+				   coordinatorJID:(NSString *)theCoordinatorJID
+			 serviceNamespace:(NSString *)theServiceNamespace {
+	[self disconnect];
 	
 	[self setJabberID:[XMPPJID jidWithString:aJabberID]];
 	[self setPassword:aPassword];
 	if (aHostname && ![aHostname isEqualToString:@""]) {
 		[self setHostName:aHostname];
 	}
+	[self setPort:thePort];
 	[self setCoordinatorJID:theCoordinatorJID];
+	[self setServiceNamespace:theServiceNamespace];
 	
 	return [self connect];
 }
@@ -160,11 +166,11 @@
 
 - (void)discoverService {
 	NSXMLElement* namespaceElement =
-	[NSXMLElement elementWithName:@"serviceNamespace"];
+		[NSXMLElement elementWithName:@"serviceNamespace"];
 	[namespaceElement setStringValue:[self serviceNamespace]];
 	NSXMLElement* discoElement =
-	[NSXMLElement elementWithName:@"serviceDiscovery"
-							xmlns:@"http://mobilis.inf.tu-dresden.de#services/CoordinatorService"];
+		[NSXMLElement elementWithName:@"serviceDiscovery"
+								xmlns:@"http://mobilis.inf.tu-dresden.de#services/CoordinatorService"];
 	[discoElement addChild:namespaceElement];
 	NSXMLElement* iqElement = [NSXMLElement elementWithName:@"iq"];
 	[iqElement addAttributeWithName:@"to"
@@ -180,8 +186,9 @@
 		return YES;
 	}
 	
-	[xmppStream setMyJID:jabberID];
+	[xmppStream setMyJID:[self jabberID]];
 	[xmppStream setHostName:[self hostName]];
+	[xmppStream setHostPort:[self port]];
 	
 	/*
 	NSLog(@"Trying to connect with:");

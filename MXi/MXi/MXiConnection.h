@@ -13,6 +13,7 @@
 @property (nonatomic, retain) XMPPJID* jabberID;
 @property (nonatomic, retain) NSString* password;
 @property (nonatomic, strong) NSString* hostName;
+@property (nonatomic) NSInteger port;
 @property (nonatomic, strong) NSString* serviceJID;
 @property (nonatomic, strong) NSString* serviceNamespace;
 @property (nonatomic, strong) NSString* coordinatorJID;
@@ -25,6 +26,7 @@
 + (id)connectionWithJabberID:(NSString* )jabberID
 					password:(NSString* )password
 					hostName:(NSString* )hostName
+						port:(NSInteger )port
 			  coordinatorJID:(NSString* )coordinatorJID
 			serviceNamespace:(NSString* )serviceNamespace
 			presenceDelegate:(id<MXiPresenceDelegate> )presenceDelegate
@@ -39,7 +41,9 @@
 - (BOOL)reconnectWithJabberID:(NSString* )jabberID
 					 password:(NSString* )password
 					 hostname:(NSString* )hostname
-				   coordinatorJID:(NSString* )coordinatorJID;
+						 port:(NSInteger )port
+			   coordinatorJID:(NSString* )coordinatorJID
+			 serviceNamespace:(NSString* )serviceNamespace;
 - (void)disconnect;
 
 @end
