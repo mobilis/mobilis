@@ -37,6 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -46,7 +48,16 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.jivesoftware.smack.AccountManager;
+import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.Roster.SubscriptionMode;
+import org.jivesoftware.smack.RosterGroup;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smackx.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
 import org.jivesoftware.smackx.packet.DiscoverItems.Item;
 
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
@@ -69,6 +80,9 @@ public class MobilisManager {
 	private static final String PERSISTED_SERVICES_FILE_PATH = "service/services.txt";
 	public final static String discoNamespace = Mobilis.NAMESPACE;	
 	public final static String discoServicesNode = discoNamespace + "#services";
+	public final static String securityUserGroup = "sug:"; //holds users with access to the object named by the rostergroup name
+	public final static String remoteServiceGroup = "rsg:"; //holds remote services for discovering services on other runtimes
+	public final static String securityRuntimeGroup = "srg:"; //holds remote runtimes with access to do operations on local runtime (e.g. create instances, publish remote new services...)
 //	// all services
 //	for (String serviceName : MobilisManager.getInstance().getServices().keySet()) {
 //		MobilisService service = MobilisManager.getInstance().getService(serviceName);
@@ -454,8 +468,10 @@ public class MobilisManager {
 					String[] fileNameAndModeSplit = fileNameAndMode.split(";");
 					String fileName = "service/" + fileNameAndModeSplit[0];
 					String mode = fileNameAndModeSplit[1];
+					String username = fileNameAndModeSplit[2];
+					String password = fileNameAndModeSplit[3];
 					boolean singleMode = mode.equals("single");
-					installAndConfigureAndRegisterServiceFromFile(new File(fileName), true, singleMode, "deployment");
+					installAndConfigureAndRegisterServiceFromFile(new File(fileName), true, singleMode, "deployment", username, password, true, null);
 				}
 			} catch (IOException e) {
 				System.err.println("Couldn't read from services.txt!");
@@ -502,6 +518,7 @@ public class MobilisManager {
 	public void shutdown() {
 		synchronized(mStarted) {
 			if (mStarted) {
+				clearRemoteServicesRosterGroup();
 				synchronized(mAgents) {
 					String[] agentsArray = mAgents.keySet().toArray(new String[0]);
 					for (int i = 0; i < agentsArray.length; i++) {
@@ -547,7 +564,17 @@ public class MobilisManager {
 	
 	public void addAgent(MobilisAgent agent) {
 		synchronized (mAgents) {
-			mAgents.put(agent.getIdent(), agent);
+			if(!mAgents.containsKey(agent.getResource())){
+			mAgents.put(agent.getResource(), agent);
+			}
+			/* by Philipp Grubitzsch
+			 * problem: old map key was agentIdent. All agents for every resource of a service have the same ID. If new resource agent for the service
+			 * was added, it wiped last agent for the same service that was put in the map before cause they used the same key (agentIdent)
+			 * workaround: use the resource of the agents JID as unique identifier for the map key
+			 */
+			else{
+				mAgents.put(agent.getResource(), agent);
+			}
 		}
 	}
 	
@@ -581,7 +608,7 @@ public class MobilisManager {
 			
 			List<ServiceContainer> serviceContainers = _serviceContainers.getListOfAllValues();
 			for (ServiceContainer container : serviceContainers) {
-				serviceInfos.add(container.getJarFile().getAbsoluteFile().getName() + ";" + container.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "mode"));
+				serviceInfos.add(container.getJarFile().getAbsoluteFile().getName() + ";" + container.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "mode") + ";" + container.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username") + ";" + container.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password"));
 			}
 			Files.write(path, serviceInfos, Charset.defaultCharset(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
 		} catch (IOException e) {
@@ -900,7 +927,8 @@ public class MobilisManager {
 	 * 		A human readable message describing the outcome of the operation. You may forward this to
 	 * 		the user who issued the command.
 	 */
-	public String installAndConfigureAndRegisterServiceFromFile(File serviceJar, boolean autoDeploy, boolean singleMode, String defaultValueAgent) {
+	public String installAndConfigureAndRegisterServiceFromFile(File serviceJar, boolean autoDeploy, boolean singleMode,
+			String defaultValueAgent, String username, String password, Boolean serverRestart, java.util.Date date) {
 		String message = "";
 		
 		// check if service is already installed and uninstall if necessary
@@ -914,7 +942,9 @@ public class MobilisManager {
 		}		
 		ServiceContainer oldServiceContainer = getServiceContainer(serviceContainer.getServiceNamespace(), serviceContainer.getServiceVersion());
 		if (oldServiceContainer != null) {
+			reinstalling = true;
 			oldServiceContainer.uninstall();
+			reinstalling = false;
 		}
 		
 		// Add a new uploaded service as a pending service which is
@@ -940,7 +970,57 @@ public class MobilisManager {
 					MobilisManager.getLogger().log( Level.WARNING, message );
 				}
 
+				//Inband Registration of a new XMPP Account just for new uploaded Services
+				if((username == null) && (password==null)){
+					String serviceName=serviceContainer.getServiceName();
+					username = getAgent(defaultValueAgent).getSettingString( "username" ).toString() + "." + serviceContainer.getServiceName().toLowerCase();
+					password = serviceContainer.getServiceName().toLowerCase();
+					inBandRegistration(serviceName, username, password, getAgent(defaultValueAgent).getSettingString( "host" ).toString());
+				}
 				
+				//add service jid to runtime roster
+				String newServiceJID = username + "@" + getAgent(defaultValueAgent).getSettingString( "host" ).toString();
+				if(date!=null){
+					newServiceJIDs.put(date, newServiceJID);
+				}
+				if(!serverRestart){
+					String[] groups = {remoteServiceGroup + "local-services"};
+					try {
+						runtimeRoster.createEntry(newServiceJID, username, groups);
+					} catch (XMPPException e) {
+						// TODO Auto-generated catch block
+						System.out.println("User " + username + "couldnt add to roster cause:" + e.getMessage());
+					}
+					
+					//change subscriptionMode of service roster
+					Connection serviceCon = new XMPPConnection((String) getAgent(defaultValueAgent).getSettingString( "host" ));
+					try {
+						serviceCon.connect();
+					} catch (XMPPException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					try {
+						serviceCon.login(username, password);
+					} catch (XMPPException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					serviceCon.getRoster().setSubscriptionMode(SubscriptionMode.accept_all);
+					
+					
+					/* TODO need to remove if a better method can make sure, that serviceCon.disconnect() will
+					 * the connection correctly
+					 */
+					
+					Timer timer = new Timer();
+					Delay delay = new Delay();
+					delay.setServiceCon(serviceCon);
+					timer.schedule(delay, 100);
+					
+					
+					//serviceCon.disconnect();
+				}
 				// configure
 				DoubleKeyMap< String, String, Object > configuration = new DoubleKeyMap< String, String, Object >(
 						false );
@@ -957,7 +1037,7 @@ public class MobilisManager {
 						deploymentAgent.getSettingString( "port" ) );
 				
 				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username",
-						deploymentAgent.getSettingString( "username" ) );
+						username );
 				
 				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "host",
 						deploymentAgent.getSettingString( "host" ) );
@@ -978,7 +1058,7 @@ public class MobilisManager {
 						"de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent" );
 				
 				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password",
-						deploymentAgent.getSettingString( "password" ) );
+						password );
 				serviceContainer.configure(configuration);
 				message += "\nService configuration successful.";
 				
@@ -987,8 +1067,32 @@ public class MobilisManager {
 				message += "\nService registration successful.";
 				
 				if (singleMode) {
-					serviceContainer.startNewServiceInstance();
+					serviceContainer.startNewServiceInstance(null);
 				}
+				else {
+					/*starts a single discovery agent for the new service. It is necessary for discovering services on other runtimes, 
+					if no instances of this service are running. it provides the service information by telling other runtimes his entity capabilities and presence*/
+					try {
+						String aId = serviceContainer.getAgentId();
+						MobilisAgent ma = this.getAgent(aId);
+						mAgents.remove(ma.getIdent());
+						this.addAgent(ma);
+						ma.setDiscoName(serviceContainer.getServiceNamespace());
+						ma.setDiscoVer(Integer.toString((serviceContainer.getServiceVersion())));
+						if(singleMode){
+							ma.setMode("single");
+						} else{
+							ma.setMode("multi");
+						}
+						serviceContainer.setDiscoAgent(ma);
+						ma.startup();
+					} catch (XMPPException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+				
 			} catch (InstallServiceException e) {
 				message += "\n" + e.getMessage();
 				e.printStackTrace();
@@ -1002,4 +1106,138 @@ public class MobilisManager {
 		}
 		return message;
 	}
+	
+	private Roster runtimeRoster;
+	private Roster discoveryRoster;
+	private Boolean reinstalling = false;
+	private EntityCapsManager capsManager;
+	private ServiceDiscoveryManager serviceDiscoveryManager;
+	
+	
+	public ServiceDiscoveryManager getServiceDiscoveryManager() {
+		return serviceDiscoveryManager;
+	}
+
+	public void setServiceDiscoveryManager(
+			ServiceDiscoveryManager serviceDiscoveryManager) {
+		this.serviceDiscoveryManager = serviceDiscoveryManager;
+	}
+
+	/*this Map is needed for pulling new ServiceJids created in the installAndConfigureAndRegisterServiceFromFile Method by the DiscoveryService:
+	Long Version: DiscoveryService calls installAndConfigureAndRegisterServiceFromFile(), but has no idea what the JID of the new Service will be, cause the jid is build out
+	of the ServiceName and the name part of the Runtime JID. The ServiceName is hide in the ServiceContainer until its first unpack in the installAndConfigureAndRegisterServiceFromFile Method.
+	When deployment service is calling this method it creates a Date key for the special call which identifies the depending newServiceJID. With that key, the deployment service can pull the created newServiceJID
+	from this map.
+	*/
+	private HashMap<java.util.Date,String> newServiceJIDs = new HashMap<>();
+	
+	public EntityCapsManager getCapsManager() {
+		return capsManager;
+	}
+
+	public void setCapsManager(EntityCapsManager capsManager) {
+		this.capsManager = capsManager;
+	}
+
+	public Boolean getReinstalling() {
+		return reinstalling;
+	}
+
+	public void setReinstalling(Boolean reinstalling) {
+		this.reinstalling = reinstalling;
+	}
+
+	public Roster getRuntimeRoster() {
+		return runtimeRoster;
+	}
+
+	public void setRuntimeRoster(Roster runtimeRoster) {
+		this.runtimeRoster = runtimeRoster;
+	}
+
+	public Roster getDiscoveryRoster() {
+		return discoveryRoster;
+	}
+
+	public void setDiscoveryRoster(Roster discoveryRoster) {
+		this.discoveryRoster = discoveryRoster;
+	}
+	
+	public String getNewServiceJIDByDate(java.util.Date date){
+		return newServiceJIDs.remove(date);
+	}
+	/**
+	 * Method creates a new XMPP Account with the given Service Name on the given Host
+	 * @param serviceName
+	 * @param host
+	 * @return
+	 */
+	private boolean inBandRegistration(String serviceName, String username,String password, String host){
+		Connection connection = new XMPPConnection(host);
+		try {
+			connection.connect();
+		} catch (XMPPException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		AccountManager accountManager=new AccountManager(connection);
+	      try {
+	        accountManager.createAccount(username, password);
+	    } catch (XMPPException e1) {
+	        // TODO Auto-generated catch block
+	    	System.out.println("Account für " + serviceName + " konnte nicht angelegt werden:\n" + e1.getMessage());
+	    	connection.disconnect();
+	        return false;
+	    }
+	     
+	     getLogger().log(Level.INFO,
+				String.format(
+					"Service XMPP Account [ %s ] sucessfully created.", username));
+	     
+	     connection.disconnect();
+	     return true;
+	}
+	
+	/**
+	 * clears the rostergroup of remote services (Needed to hold runtimes synchronized!)
+	 */
+	public void clearRemoteServicesRosterGroup(){
+		RosterGroup rg = runtimeRoster.getGroup(remoteServiceGroup + "services");
+		
+		if(rg != null){
+			for(RosterEntry entry : rg.getEntries()){
+				try {
+					runtimeRoster.removeEntry(entry);
+				} catch (XMPPException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+	}
+	
+	public void removeAgent(String jid){
+		mAgents.remove(jid);
+	}
+	
+	
+	/*
+	 * needed for delayed serviceDisconnect
+	 */
+	private class Delay extends TimerTask{
+		
+		private Connection serviceCon;
+		
+		@Override
+		public void run() {
+			serviceCon.disconnect();
+		}
+
+		public void setServiceCon(Connection serviceCon) {
+			this.serviceCon = serviceCon;
+		}
+		
+	}
+
 }

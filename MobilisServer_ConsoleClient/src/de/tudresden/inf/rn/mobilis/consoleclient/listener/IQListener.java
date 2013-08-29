@@ -35,7 +35,9 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UpdateServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.SendNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ExecuteSynchronizeRuntimesBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
@@ -83,6 +85,7 @@ public class IQListener implements PacketListener {
 			XMPPBean inBean = ( (BeanIQAdapter)arg0 ).getBean();
 
 			if ( inBean.getType() == XMPPBean.TYPE_ERROR ) {
+				_controller.getLog().writeToConsole(inBean.errorText);
 				_controller.getLog().writeErrorToConsole(
 						String.format( "Incoming IQ of type error:%s", ( (IQ)arg0 ).toXML()
 								.replaceAll( "<", "\n<" ) ) );
@@ -101,7 +104,7 @@ public class IQListener implements PacketListener {
 						sb.append( "Service upload: Negotiating Stream...\nFilename=" ).append( cBean.FileName );
 					}
 					else{
-						sb.append( "Service uplaod failed." );
+						sb.append( "Service upload failed." );
 					}
 					
 					if( null != cBean.Message ){
@@ -146,11 +149,16 @@ public class IQListener implements PacketListener {
 									"Update service successful. New\nnamespace=%s\nversion=%d",
 									cBean.NewServiceNamespace, cBean.NewServiceVersion ) );
 				} else if ( inBean instanceof CreateNewServiceInstanceBean ) {
-					CreateNewServiceInstanceBean cBean = (CreateNewServiceInstanceBean)inBean;
+					//CreateNewServiceInstanceBean cBean = (CreateNewServiceInstanceBean)inBean;
+
+					_controller.getLog().writeToConsole(
+							String.format( "Create New Service Instance. Processing..." ));
+				} else if ( inBean instanceof SendNewServiceInstanceBean ) {
+					SendNewServiceInstanceBean cBean = (SendNewServiceInstanceBean)inBean;
 
 					_controller.getLog().writeToConsole(
 							String.format( "start service instant successful. New\njid= %s",
-									cBean.jidOfNewService ) );
+							cBean.jidOfNewService ) );
 				} else if ( inBean instanceof MobilisServiceDiscoveryBean ) {
 					MobilisServiceDiscoveryBean cBean = (MobilisServiceDiscoveryBean)inBean;
 					StringBuilder sb = new StringBuilder();
@@ -184,6 +192,8 @@ public class IQListener implements PacketListener {
 					}
 				} else if ( inBean instanceof StopServiceInstanceBean ) {
 					_controller.getLog().writeToConsole( "Stopping service instance successful." );
+				} else if ( inBean instanceof ExecuteSynchronizeRuntimesBean) {
+					_controller.getLog().writeToConsole( "Runtime is successfully synchronized" );
 				}
 			}
 		}

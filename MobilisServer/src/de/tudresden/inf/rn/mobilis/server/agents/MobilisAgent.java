@@ -29,15 +29,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jivesoftware.smack.BOSHConfiguration;
-import org.jivesoftware.smack.BOSHConnection;
+//import org.jivesoftware.smack.BOSHConfiguration;
+//import org.jivesoftware.smack.BOSHConnection;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.keepalive.KeepAliveManager;
+import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.NodeInformationProvider;
 import org.jivesoftware.smackx.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.jivesoftware.smackx.packet.DiscoverItems;
 
@@ -46,16 +50,22 @@ import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
 
 /**
  *
- * @author Christopher
+ * @author Christopher, Philipp Grubitzsch
  */
 public class MobilisAgent implements NodeInformationProvider, ConnectionListener {
 
 	private String mIdentifier;
 	private Connection mConnection = null;
 	private String fullJid = null;
+	private EntityCapsManager capsMaganger;
+	private ServiceDiscoveryManager serviceDiscoveryManager;
+	private String discoName="";
+	private String discoVer="";
+	private String mode; //for entity caps: tells if a service is running in single or multi mode
 	
 	private final Set<MobilisService> mServices = Collections.synchronizedSet(new HashSet<MobilisService>());
 	private final Map<String, Object> mDefaultSettings = Collections.synchronizedMap(new HashMap<String, Object>());
+	
 
 	public MobilisAgent(String ident) {
 		this(ident, true);
@@ -182,15 +192,18 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		}
 
 		if (mDefaultSettings.get("conType") != null && mDefaultSettings.get("conType").equals("bosh")) {
-			BOSHConfiguration connConfig = new BOSHConfiguration(false, host, port, "/http-bind/", service);
-			mConnection = new BOSHConnection(connConfig);
+			//BOSHConfiguration connConfig = new BOSHConfiguration(false, host, port, "/http-bind/", service);
+			//mConnection = new BOSHConnection(connConfig);
+			System.out.println("BOSH is not supported by Smack 3.3 .");
 		} else {
 			// default: XMPP connection
 			ConnectionConfiguration connConfig = new ConnectionConfiguration(host, port, service);
 			mConnection = new XMPPConnection(connConfig);
 		}
 		mConnection.connect();
-
+		//stops auto pinging the Server, which is enabled by default in smack 3.3
+		KeepAliveManager.getInstanceFor(mConnection).stopPinging();
+		
 		String username = null;
 		String password = null;
 		String resource = null;
@@ -205,26 +218,42 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 			}
 		}
 
-		
 		mConnection.login(username, password, resource);
 		mConnection.addConnectionListener(this);
 
-		ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(mConnection);
-
+		serviceDiscoveryManager = ServiceDiscoveryManager.getInstanceFor(mConnection);
+		capsMaganger = EntityCapsManager.getInstanceFor(mConnection);
+		capsMaganger.enableEntityCaps();
+		serviceDiscoveryManager.setEntityCapsManager(capsMaganger);
+		
 		// Set on every established connection that this client supports the Mobilis
 		// protocol. This information will be used when another client tries to
 		// discover whether this client supports Mobilis or not.
-		try {
-			sdm.addFeature(MobilisManager.discoNamespace);
+/*		try {
+			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace);
 		} catch (Exception e) {
 			MobilisManager.getLogger().warning("Problem with ServiceDiscoveryManager: " + e.getMessage());
+		}*/
+		//discoinfo for a concrete service instance
+		for(MobilisService ms : mServices){
+			String runtimeJID = MobilisManager.getInstance().getAgent("deployment").getSettingString("username") + "@" + MobilisManager.getInstance().getAgent("deployment").getSettingString("host");
+			//String discoNamespace = ms.get_serviceNamespace().replace("http://mobilis.inf.tu-dresden.de#services/", "");
+			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace + "/instance#" + "servicenamespace=" + ms.get_serviceNamespace() + ",version=" + ms.getVersion() + ",name=" + ms.getName() + ",rt=" + runtimeJID);
 		}
+		//discoinfo for service installed on runtime
+		if(discoName.length()>0 && discoVer.length()>0){
+			String runtimeJID = MobilisManager.getInstance().getAgent("deployment").getSettingString("username") + "@" + MobilisManager.getInstance().getAgent("deployment").getSettingString("host");
+			serviceDiscoveryManager.addFeature(MobilisManager.discoNamespace + "/service#" + "servicenamespace=" + discoName + ",version=" + discoVer + ",mode=" + mode + ",rt=" + runtimeJID);
+			//discoName="";
+			discoVer="";
+		}
+		capsMaganger.updateLocalEntityCaps();
 
 		synchronized(mServices) {
 			for (MobilisService ms : mServices) {
 				try {
 					ms.startup();
-					sdm.setNodeInformationProvider(ms.getNode(), ms);
+					serviceDiscoveryManager.setNodeInformationProvider(ms.getNode(), ms);
 				} catch (Exception e) {
 					MobilisManager.getLogger().warning("Couldn't startup Mobilis Service (" + ms.getIdent() + ") because of " + e.getClass().getName() + ": " + e.getMessage());
 				}
@@ -234,7 +263,7 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		// Set the NodeInformationProvider that will provide information about the
 		// offered services whenever a disco request is received
 		try {
-			sdm.setNodeInformationProvider(MobilisManager.discoServicesNode, this);
+			serviceDiscoveryManager.setNodeInformationProvider(MobilisManager.discoServicesNode, this);
 		} catch (Exception e) {
 			MobilisManager.getLogger().warning("Problem with NodeInformationProvider: " + MobilisManager.discoServicesNode + " (" + getIdent() + ") " + e.getMessage());
 		}
@@ -261,14 +290,23 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 	 * @throws org.jivesoftware.smack.XMPPException
 	 */
 	public void shutdown() throws XMPPException {
+		
+		//remove Agent from MobilisManager mAgents Map
+		MobilisManager.getInstance().removeAgent(StringUtils.parseResource(fullJid));
+		
 		ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(mConnection);
-
+		
 		// ServiceDiscovery (feature) http://rn.inf.tu-dresden.de/mobilis
-		try {
-			sdm.removeFeature(MobilisManager.discoNamespace);
-		} catch (Exception e) {
-			MobilisManager.getLogger().warning("Problem with ServiceDiscoveryManager: " + e.getMessage());
-		}
+
+		//not used anymore. Cause of introduction of Entity Caps, the capManager sends new presence if features
+		//have changed. If the updated presence send by the entity caps manager received clients after 
+		//the unaivailable presence send by the shutdown sequence, it could result in online presence 
+		//state on distant clients while node is offline.
+//		try {
+//			sdm.removeFeature(MobilisManager.discoNamespace);
+//		} catch (Exception e) {
+//			MobilisManager.getLogger().warning("Problem with ServiceDiscoveryManager: " + e.getMessage());
+//		}
 
 		// ServiceDiscovery (info+items) http://rn.inf.tu-dresden.de/mobilis#services
 		try {
@@ -296,6 +334,7 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		MobilisManager.getLogger().info("Mobilis Agent (" + getIdent() + ") shut down.");
 		
 		MobilisManager.getInstance().notifyOfAgentShutdown(this);
+		
 	}
 
 	public void registerService(MobilisService service) {
@@ -436,4 +475,44 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 		// The connection has reconnected successfully to the server.
 		MobilisManager.getLogger().info("MobilisAgent (" + getIdent() + ") reconnected successfully to the server.");
 	}
+
+	@Override
+	public List<PacketExtension> getNodePacketExtensions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ServiceDiscoveryManager getServiceDiscoveryManager() {
+		return serviceDiscoveryManager;
+	}
+
+	public void setServiceDiscoveryManager(
+			ServiceDiscoveryManager serviceDiscoveryManager) {
+		this.serviceDiscoveryManager = serviceDiscoveryManager;
+	}
+
+	public String getDiscoName() {
+		return discoName;
+	}
+
+	public void setDiscoName(String discoName) {
+		this.discoName = discoName;
+	}
+
+	public String getDiscoVer() {
+		return discoVer;
+	}
+
+	public void setDiscoVer(String discoVer) {
+		this.discoVer = discoVer;
+	}
+
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+
 }

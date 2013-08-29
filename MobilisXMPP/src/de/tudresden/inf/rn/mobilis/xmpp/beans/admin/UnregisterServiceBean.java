@@ -5,15 +5,15 @@ import org.xmlpull.v1.XmlPullParser;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.Mobilis;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
-public class UnregisterServiceBean extends XMPPBean {
+public class UnregisterServiceBean extends AdministrationBean {
 
 	private static final long serialVersionUID = 1L;
 	public static final String NAMESPACE = Mobilis.NAMESPACE + "#XMPPBeans:admin:UnregisterService";
 	public static final String CHILD_ELEMENT = "unregister";
 	
 	// SET
-	public String ServiceNamespace = null;
-	public int ServiceVersion = -1;
+//	public String ServiceNamespace = null;
+//	public int ServiceVersion = -1;
 	
 	// RESULT
 	

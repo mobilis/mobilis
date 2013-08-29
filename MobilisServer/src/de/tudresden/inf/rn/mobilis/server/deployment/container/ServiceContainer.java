@@ -28,10 +28,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 
 import javax.swing.event.EventListenerList;
 
+import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.RosterGroup;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
@@ -85,6 +92,8 @@ public class ServiceContainer implements IServiceContainerTransitions,
 
 	/** The service name. */
 	private String _serviceName = "";
+	
+	private MobilisAgent discoAgent;
 
 	/**
 	 * The configuration of the service. Configuration will be stored as
@@ -212,7 +221,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	 * @throws StartNewServiceInstanceException
 	 *             exception if starting a new instance failed
 	 */
-	public MobilisService startNewServiceInstance()
+	public MobilisService startNewServiceInstance(String serviceName)
 			throws StartNewServiceInstanceException {
 		MobilisService mobilisService = null;
 
@@ -234,7 +243,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 								_runningServiceInstances.keySet().toArray()[0]));
 			}
 
-			Constructor construcor;
+			Constructor<MobilisService> construcor;
 
 			// Try to instantiate a new template class
 			try {
@@ -244,7 +253,10 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			} catch (Exception e) {
 				throw new StartNewServiceInstanceException(e.getMessage());
 			}
-
+			mobilisService.setVersion(this.getServiceVersion());
+			mobilisService.setName(this.getServiceName());
+			
+			mobilisService.set_serviceNamespace(this.getServiceNamespace());
 			// Get an XMPP resource for the new agent, that is not already in
 			// use.
 			String agentIdent = this.getAgentId();
@@ -276,10 +288,13 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			String agentResource = String.format("%s#%d", agentIdent, i);
 
 			// Create the new Agent with the generated XMPP resource.
+			if(!(serviceName==null)){ //important for setting the Service Name in the entity caps
+				mobilisService.setName(serviceName);
+			}
 			MobilisAgent agent = new MobilisAgent(agentIdent, true,
 					agentResource);
 			agent.registerService(mobilisService);
-
+			
 			// Startup Agent and Service
 			mobilisService.setAgent(agent);
 			try {
@@ -326,22 +341,23 @@ public class ServiceContainer implements IServiceContainerTransitions,
 										"Cannot shutdown Service [ %s ] because of: %s",
 										jid, e.getMessage()));
 			}
-
-			// shutdown agent
-			try {
-				agent.shutdown();
-
-				MobilisManager.getLogger().log(
-						Level.WARNING,
-						String.format(
-								"Shutdown Agent [ %s ] which contains: %s",
-								agent.getFullJid(), agent.servicesToString()));
-			} catch (XMPPException e) {
-				MobilisManager.getLogger().log(
-						Level.WARNING,
-						String.format(
-								"Cannot shutdown Agent [ %s ] because of: %s",
-								jid, e.getMessage()));
+			if(agent.getConnection() != null){
+				// shutdown agent
+				try {
+					agent.shutdown();
+	
+					MobilisManager.getLogger().log(
+							Level.WARNING,
+							String.format(
+									"Shutdown Agent [ %s ] which contains: %s",
+									agent.getFullJid(), agent.servicesToString()));
+				} catch (XMPPException e) {
+					MobilisManager.getLogger().log(
+							Level.WARNING,
+							String.format(
+									"Cannot shutdown Agent [ %s ] because of: %s",
+									jid, e.getMessage()));
+				}
 			}
 
 			return mobilisService;
@@ -360,8 +376,16 @@ public class ServiceContainer implements IServiceContainerTransitions,
 						String.format(
 								"All service isntances of [ %s version %d ] will be shut down.",
 								_serviceNamespace, _serviceVersion));
-
-		for (String runningServiceJid : _runningServiceInstances.keySet()) {
+		
+		/*
+		 * Fixed critical Error by Philipp Grubitzsch
+		 * problem: shutdown of all running instances result in java.util.ConcurrentModificationException cause the "_runningServiceInstances.keySet()"
+		 * used before as iterator will be changed in the called method shutdownServiceInstance(runningServiceJid)
+		 * workaround: instantiate new String Set
+		 */
+		Set<String> instanceJIDs = new TreeSet<>(_runningServiceInstances.keySet());
+				
+		for (String runningServiceJid : instanceJIDs) {
 			this.shutdownServiceInstance(runningServiceJid);
 
 			MobilisManager.getLogger()
@@ -502,7 +526,40 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	public void uninstall() {
 		if (_containerState == ServiceContainerState.INSTALLED
 				|| _containerState == ServiceContainerState.ACTIVE) {
+			
+			//delete xmppaccount of Service: Step 1
+			String host = (String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "host");
+			String username =(String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username");
+			String password = (String) this.getConfigurationValue(MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password");
+			Connection con = new XMPPConnection(host);
+			
 
+			
+			//delete existing Rostergroup of the Service, but not if Service is just getting reinstalled
+			if(!MobilisManager.getInstance().getReinstalling()){
+				
+				//delete xmpp service account in runtime roster
+				Roster rr = MobilisManager.getInstance().getRuntimeRoster();
+				try {
+					rr.removeEntry(rr.getEntry(username + "@" + host));
+				} catch (XMPPException e4) {
+					// TODO Auto-generated catch block
+					e4.printStackTrace();
+				}
+				
+				RosterGroup rg = MobilisManager.getInstance().getRuntimeRoster().getGroup(MobilisManager.securityUserGroup + this.getServiceName()+this.getServiceVersion());
+				if(rg!=null){
+					for(RosterEntry rEntry : rg.getEntries()){
+						try {
+							rg.removeEntry(rEntry);
+						} catch (XMPPException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					rg=null;
+				}
+			}
 			// at first unregister service if it is registered
 			this.unregister();
 
@@ -511,6 +568,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 
 			MobilisManager.getInstance().notifyOfServiceContainerUninstall(this);
 			// reset container parameters
+			
 			this.resetContainer();
 
 			if (jarClassLoader != null) {
@@ -525,7 +583,45 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			// state == uninstalled
 			changeContainerState(ServiceContainerState.UNINSTALLED);
 			
-
+			
+			// delete XMPP Account of Service: Step 2
+			if((!MobilisManager.getInstance().getReinstalling())){
+				
+				// shutdown the discovery Agent
+				try {
+					discoAgent.shutdown();
+				} catch (XMPPException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				if((!con.isConnected())){
+					try {
+						con.connect();
+					}	catch (XMPPException e3) {
+						// TODO Auto-generated catch block
+					}
+				}
+				if(!con.isAuthenticated()){
+					try {
+						con.login(username, password);
+					}	catch (XMPPException e2) {
+						// TODO Auto-generated catch block
+					}
+				}
+				try {
+						con.getAccountManager().deleteAccount();
+						con.disconnect();
+				} catch (XMPPException e1) {
+							System.out.println("Can't delete Account! Reason: " + e1.getMessage());
+				}
+				
+				MobilisManager.getLogger().log(Level.INFO,
+						String.format(
+								"Service XMPP Account [ %s ] sucessfully deleted.",
+								username));
+			}
+			
 			MobilisManager
 					.getLogger()
 					.log(Level.INFO,
@@ -852,6 +948,14 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	 */
 	public String getServiceNamespace() {
 		return _serviceNamespace;
+	}
+
+	public MobilisAgent getDiscoAgent() {
+		return discoAgent;
+	}
+
+	public void setDiscoAgent(MobilisAgent discoAgent) {
+		this.discoAgent = discoAgent;
 	}
 
 	/**

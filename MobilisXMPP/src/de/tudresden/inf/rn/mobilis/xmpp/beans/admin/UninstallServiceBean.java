@@ -5,15 +5,15 @@ import org.xmlpull.v1.XmlPullParser;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.Mobilis;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
-public class UninstallServiceBean extends XMPPBean {
+public class UninstallServiceBean extends AdministrationBean {
 
 	private static final long serialVersionUID = 1L;
 	public static final String NAMESPACE = Mobilis.NAMESPACE + "#XMPPBeans:admin:UninstallService";
 	public static final String CHILD_ELEMENT = "uninstall";
 	
 	// SET
-	public String ServiceNamespace = null;
-	public int ServiceVersion = -1;
+//	public String ServiceNamespace = null;
+//	public int ServiceVersion = -1;
 	
 	// RESULT
 	
