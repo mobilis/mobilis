@@ -21,6 +21,7 @@
 
 // Third party stuff
 #import <MXi/XMPP.h>
+#import <MXi/XMPPReconnect.h>
 
 // Protocols
 #import <MXi/MXiOutgoingBean.h>

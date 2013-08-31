@@ -8,11 +8,15 @@
 
 #if TARGET_OS_IPHONE
 #import "MXi.h"
+#import "XMPPFramework.h"
+#import "MXiMultiUserChatDelegate.h"
 #else
 #import <MXi/MXi.h>
+#import <MXi/XMPPFramework.h>
+#import <MXi/MXiMultiUserChatDelegate.h>
 #endif
 
-@interface MXiConnection : NSObject
+@interface MXiConnection : NSObject <XMPPRoomDelegate>
 
 @property (nonatomic, retain) XMPPJID* jabberID;
 @property (nonatomic, retain) NSString* password;
@@ -25,6 +29,7 @@
 @property (nonatomic, strong) id<MXiPresenceDelegate> presenceDelegate;
 @property (nonatomic, strong) id<MXiStanzaDelegate> stanzaDelegate;
 @property (nonatomic, strong) id<MXiBeanDelegate> beanDelegate;
+@property (nonatomic, strong) id<MXiMultiUserChatDelegate> mucDelegate;
 @property (nonatomic, strong) NSArray* incomingBeanPrototypes;
 
 + (id)connectionWithJabberID:(NSString* )jabberID
@@ -48,6 +53,10 @@
 						 port:(NSInteger )port
 			   coordinatorJID:(NSString* )coordinatorJID
 			 serviceNamespace:(NSString* )serviceNamespace;
+
+- (void)connectToMultiUserChatRoom:(NSString *)roomJID;
+- (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID;
+
 - (void)disconnect;
 
 @end

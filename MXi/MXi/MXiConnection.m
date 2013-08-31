@@ -7,7 +7,15 @@
 //
 
 #import "MXiConnection.h"
-#import "XMPP.h"
+
+#import "MXiMultiUserChatMessage.h"
+
+@interface MXiConnection ()
+
+@property (strong, nonatomic) NSMutableArray *connectedMUCRooms;
+@property dispatch_queue_t room_queue;
+
+@end
 
 @implementation MXiConnection
 
@@ -67,6 +75,29 @@
 	return [self connect];
 }
 
+- (void)connectToMultiUserChatRoom:(NSString *)roomJID
+{
+    if (!_connectedMUCRooms) {
+        self.connectedMUCRooms = [NSMutableArray arrayWithCapacity:5];
+        _room_queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
+    }
+    XMPPRoom *room = [[XMPPRoom alloc] initWithRoomStorage:[[XMPPRoomMemoryStorage alloc] init]
+                                                       jid:[XMPPJID jidWithString:roomJID]
+                                             dispatchQueue:_room_queue];
+    [room activate:self.xmppStream];
+    [room addDelegate:self delegateQueue:_room_queue];
+    [room joinRoomUsingNickname:@"acdsense_bot_DG" history:nil];
+}
+
+- (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID;
+{
+    for (XMPPRoom *room in _connectedMUCRooms) {
+        if ([[room.roomJID full] isEqualToString:roomJID]) {
+            [room sendMessage:[MXiMultiUserChatMessage initWithBody:message]];
+        }
+    }
+}
+
 /*
  * XMPPStream delegate methods
  */
@@ -102,16 +133,15 @@
 		NSArray* discoveredServiceElements = [childElement children];
 		for (int i = 0; i < [discoveredServiceElements count]; i++) {
 			NSXMLElement* discoveredServiceElement = [discoveredServiceElements objectAtIndex:i];
+            if (i == 0) {
+				// choose the first discovered service jid by default
+				[self setServiceJID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
+			}
 			[presenceDelegate didDiscoverServiceWithNamespace:[discoveredServiceElement attributeStringValueForName:@"namespace"]
 														 name:[discoveredServiceElement attributeStringValueForName:@"serviceName"]
 													  version:[discoveredServiceElement attributeIntegerValueForName:@"version"]
 												   atJabberID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
-			
-			if (i == 0) {
-				// choose the first discovered service jid by default
-				[self setServiceJID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
-			}
-		}
+            }
 	}
 	
 	// Did we get an incoming mobilis bean?
@@ -240,6 +270,21 @@
 - (void)disconnect {
 	[self goOffline];
 	[xmppStream disconnect];
+}
+
+#pragma mark - XMPPRoomDelegate
+
+- (void)xmppRoomDidJoin:(XMPPRoom *)sender
+{
+    [self.connectedMUCRooms addObject:sender];
+    if (_mucDelegate && [_mucDelegate respondsToSelector:@selector(connectionToRoomEstablished:)]) {
+        [_mucDelegate performSelector:@selector(connectionToRoomEstablished:) withObject:[sender.roomJID bare]];
+    }
+}
+
+- (void)xmppRoom:(XMPPRoom *)sender didReceiveMessage:(XMPPMessage *)message fromOccupant:(XMPPJID *)occupantJID
+{
+    // TODO: implement delegation of messages
 }
 
 @end
