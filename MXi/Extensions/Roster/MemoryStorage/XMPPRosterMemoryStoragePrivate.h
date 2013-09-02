@@ -1,6 +1,10 @@
 #import "XMPPUserMemoryStorageObject.h"
 #import "XMPPResourceMemoryStorageObject.h"
 
+#if TARGET_OS_IPHONE
+#import <UIKit/UIKit.h>
+#endif
+
 /**
  * The following methods are designed to be invoked ONLY from
  * within the XMPPRosterMemoryStorage implementation.

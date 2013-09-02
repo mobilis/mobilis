@@ -79,7 +79,7 @@
 {
     if (!_connectedMUCRooms) {
         self.connectedMUCRooms = [NSMutableArray arrayWithCapacity:5];
-        _room_queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
+        _room_queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     }
     XMPPRoom *room = [[XMPPRoom alloc] initWithRoomStorage:[[XMPPRoomMemoryStorage alloc] init]
                                                        jid:[XMPPJID jidWithString:roomJID]
