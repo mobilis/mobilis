@@ -286,6 +286,7 @@
 
 - (NSUInteger)insertMessage:(XMPPRoomMessageMemoryStorageObject *)message
 {
+    @synchronized(messages) {
 	NSUInteger count = [messages count];
 	
 	if (count == 0)
@@ -363,6 +364,7 @@
 	
 	[messages insertObject:message atIndex:mid];
 	return (NSUInteger)mid;
+    }
 }
 
 - (void)addMessage:(XMPPRoomMessageMemoryStorageObject *)roomMsg
@@ -373,8 +375,11 @@
 	
 	XMPPRoomMessageMemoryStorageObject *roomMsgCopy = [roomMsg copy];
 	XMPPRoomOccupantMemoryStorageObject *occupantCopy = [occupant copy];
-	NSArray *messagesCopy = [[NSArray alloc] initWithArray:messages copyItems:YES];
-	
+    
+    NSArray *messagesCopy = nil;
+    @synchronized(messages) {
+        messagesCopy = [[NSArray alloc] initWithArray:messages copyItems:YES];
+	}
 	[[self multicastDelegate] xmppRoomMemoryStorage:self
 	                              didReceiveMessage:roomMsgCopy
 	                                   fromOccupant:occupantCopy
