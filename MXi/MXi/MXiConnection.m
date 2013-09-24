@@ -10,7 +10,7 @@
 
 #import "MXiMultiUserChatMessage.h"
 
-@interface MXiConnection ()
+@interface MXiConnection () <XMPPRoomDelegate>
 
 @property (strong, nonatomic) NSMutableArray *connectedMUCRooms;
 @property dispatch_queue_t room_queue;
@@ -75,6 +75,8 @@
 	return [self connect];
 }
 
+#pragma mark - XEP-0045: Multi-User-Chat
+
 - (void)connectToMultiUserChatRoom:(NSString *)roomJID
 {
     if (!_connectedMUCRooms) {
@@ -89,18 +91,29 @@
     [room joinRoomUsingNickname:@"acdsense_bot_DG" history:nil];
 }
 
+- (void)leaveMultiUserChatRoom:(NSString *)roomJID
+{
+    XMPPRoom *roomToLeave = nil;
+    for (XMPPRoom *room in _connectedMUCRooms) {
+        if ([[room.roomJID full] isEqualToString:roomJID]) {
+            [room leaveRoom];
+            roomToLeave = room;
+            break;
+        }
+    }
+    [_connectedMUCRooms removeObject:roomToLeave];
+}
+
 - (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID;
 {
     for (XMPPRoom *room in _connectedMUCRooms) {
         if ([[room.roomJID full] isEqualToString:roomJID]) {
-            [room sendMessage:[MXiMultiUserChatMessage initWithBody:message]];
+            [room sendMessage:[MXiMultiUserChatMessage messageWithBody:message]];
         }
     }
 }
 
-/*
- * XMPPStream delegate methods
- */
+#pragma mark - XMPPStreamDelegate
 
 - (void)xmppStreamDidConnect:(XMPPStream* )sender {
 	NSError* error = nil;
@@ -284,7 +297,32 @@
 
 - (void)xmppRoom:(XMPPRoom *)sender didReceiveMessage:(XMPPMessage *)message fromOccupant:(XMPPJID *)occupantJID
 {
-    // TODO: implement delegation of messages
+    if (_mucDelegate && [_mucDelegate respondsToSelector:@selector(didReceiveMultiUserChatMessage:fromUser:publishedInRoom:)]) {
+        [_mucDelegate didReceiveMultiUserChatMessage:[((MXiMultiUserChatMessage *)message) bodyContent]
+                                            fromUser:occupantJID.full
+                                     publishedInRoom:sender.roomJID.full];
+    }
+}
+
+- (void)xmppRoom:(XMPPRoom *)sender occupantDidJoin:(XMPPJID *)occupantJID withPresence:(XMPPPresence *)presence
+{
+    if (_mucDelegate && [_mucDelegate respondsToSelector:@selector(userWithJid:didJoin:room:)]) {
+        [_mucDelegate userWithJid:occupantJID.full didJoin:presence.status room:[sender.roomJID full]];
+    }
+}
+
+- (void)xmppRoom:(XMPPRoom *)sender occupantDidLeave:(XMPPJID *)occupantJID withPresence:(XMPPPresence *)presence
+{
+    if (_mucDelegate && [_mucDelegate respondsToSelector:@selector(userWithJid:didLeaveRoom:)]) {
+        [_mucDelegate userWithJid:occupantJID.full didLeaveRoom:[sender.roomJID full]];
+    }
+}
+
+- (void)xmppRoom:(XMPPRoom *)sender occupantDidUpdate:(XMPPJID *)occupantJID withPresence:(XMPPPresence *)presence
+{
+    if (_mucDelegate && [_mucDelegate respondsToSelector:@selector(userWithJid:didUpdate:inRoom:)]) {
+        [_mucDelegate userWithJid:occupantJID.full didUpdate:presence.status inRoom:[sender.roomJID full]];
+    }
 }
 
 @end

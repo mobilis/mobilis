@@ -18,6 +18,8 @@
 
 @interface MXiMultiUserChatMessage : XMPPMessage
 
-+ initWithBody:(NSString *)body;
++ (id)messageWithBody:(NSString *)body;
+
+- (NSString *)bodyContent;
 
 @end

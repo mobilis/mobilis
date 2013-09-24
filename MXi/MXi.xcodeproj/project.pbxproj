@@ -133,6 +133,7 @@
 		5B154F5517D0BB14004AAD86 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 794491BE171995FF000D53ED /* Foundation.framework */; };
 		5B154F5B17D0BED3004AAD86 /* MXi-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 794491B017199564000D53ED /* MXi-Prefix.pch */; };
 		5B154F5C17D0BED4004AAD86 /* MXi-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 794491B017199564000D53ED /* MXi-Prefix.pch */; settings = {ATTRIBUTES = (Public, ); }; };
+		5B1FC78717EAEAFA0071C1E3 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B1FC78617EAEAFA0071C1E3 /* libresolv.dylib */; };
 		5B63EE5E17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B63EE5D17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5B63EE5F17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B63EE5D17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5B63EE6717D20D8100CD8667 /* MXiMultiUserChatMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B63EE6517D20D8100CD8667 /* MXiMultiUserChatMessage.h */; settings = {ATTRIBUTES = (); }; };
@@ -294,7 +295,6 @@
 		797C04D7171C23B900B40FFC /* XMPPSRVResolver.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0474171C23B900B40FFC /* XMPPSRVResolver.m */; };
 		797C04D8171C23B900B40FFC /* XMPPSRVResolver.m in Sources */ = {isa = PBXBuildFile; fileRef = 797C0474171C23B900B40FFC /* XMPPSRVResolver.m */; };
 		797C04DA171C23DF00B40FFC /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 797C04D9171C23DF00B40FFC /* libresolv.dylib */; };
-		797C04DC171C23E700B40FFC /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 797C04DB171C23E700B40FFC /* libresolv.dylib */; };
 		797C04DD171C24EC00B40FFC /* idn-int.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0433171C231C00B40FFC /* idn-int.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04DE171C24EC00B40FFC /* stringprep.h in Headers */ = {isa = PBXBuildFile; fileRef = 797C0435171C231C00B40FFC /* stringprep.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		797C04E3171C266700B40FFC /* libidn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 797C04E2171C266700B40FFC /* libidn.a */; };
@@ -406,6 +406,7 @@
 		5B154F4717D0B7F5004AAD86 /* NSDate+XMPPDateTimeProfiles.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+XMPPDateTimeProfiles.m"; sourceTree = "<group>"; };
 		5B154F4817D0B7F5004AAD86 /* XMPPDateTimeProfiles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMPPDateTimeProfiles.h; sourceTree = "<group>"; };
 		5B154F4917D0B7F5004AAD86 /* XMPPDateTimeProfiles.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMPPDateTimeProfiles.m; sourceTree = "<group>"; };
+		5B1FC78617EAEAFA0071C1E3 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/usr/lib/libresolv.dylib; sourceTree = DEVELOPER_DIR; };
 		5B63EE5D17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiMultiUserChatDelegate.h; sourceTree = "<group>"; };
 		5B63EE6517D20D8100CD8667 /* MXiMultiUserChatMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiMultiUserChatMessage.h; sourceTree = "<group>"; };
 		5B63EE6617D20D8100CD8667 /* MXiMultiUserChatMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiMultiUserChatMessage.m; sourceTree = "<group>"; };
@@ -542,8 +543,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5B1FC78717EAEAFA0071C1E3 /* libresolv.dylib in Frameworks */,
 				798D5FBA17CCABB800B27757 /* SystemConfiguration.framework in Frameworks */,
-				797C04DC171C23E700B40FFC /* libresolv.dylib in Frameworks */,
 				797C0410171C218700B40FFC /* Security.framework in Frameworks */,
 				797C0411171C218B00B40FFC /* CFNetwork.framework in Frameworks */,
 				797C0437171C231C00B40FFC /* libidn.a in Frameworks */,
@@ -710,6 +711,7 @@
 		794491A317199564000D53ED /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5B1FC78617EAEAFA0071C1E3 /* libresolv.dylib */,
 				798D5FB917CCABB800B27757 /* SystemConfiguration.framework */,
 				798D5FB117CCAA7400B27757 /* Extensions */,
 				797C04E5171C270000B40FFC /* lib-os-x */,
@@ -1254,7 +1256,7 @@
 		7944919817199564000D53ED /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "TU Dresden";
 			};
 			buildConfigurationList = 7944919B17199564000D53ED /* Build configuration list for PBXProject "MXi" */;
@@ -1452,7 +1454,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -1487,7 +1488,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -1558,7 +1558,6 @@
 		794491C8171995FF000D53ED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DSTROOT = /tmp/MXi.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MXi/MXi-Prefix.pch";
@@ -1578,7 +1577,6 @@
 		794491C9171995FF000D53ED /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DSTROOT = /tmp/MXi.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MXi/MXi-Prefix.pch";

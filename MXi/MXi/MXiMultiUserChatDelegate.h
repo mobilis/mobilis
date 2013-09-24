@@ -14,8 +14,10 @@
 
 @optional
 
-- (void)connectionToRoomNotEstablished:(NSString *)roomJID;
+- (void)didReceiveMultiUserChatMessage:(NSString *)message fromUser:(NSString *)user publishedInRoom:(NSString *)roomJID;
 
-- (void)didReceiveMultiUserChatMessage:(NSString *)message fromUser:(NSString *)user publishedInRomm:(NSString *)roomJID;
+- (void)userWithJid:(NSString *)fullJid didJoin:(NSString *)presence room:(NSString *)roomJid;
+- (void)userWithJid:(NSString *)fullJid didLeaveRoom:(NSString *)roomJid;
+- (void)userWithJid:(NSString *)fullJid didUpdate:(NSString *)presence inRoom:(NSString *)roomJid;
 
 @end

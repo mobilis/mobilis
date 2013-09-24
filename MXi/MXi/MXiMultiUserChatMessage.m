@@ -10,7 +10,7 @@
 
 @implementation MXiMultiUserChatMessage
 
-+ (id)initWithBody:(NSString *)body
++ (id)messageWithBody:(NSString *)body
 {
     XMPPMessage *message = [XMPPMessage message];
     NSXMLElement *bodyElement = [NSXMLElement elementWithName:@"body" stringValue:body];
@@ -19,5 +19,11 @@
     
     return message;
 }
+
+- (NSString *)bodyContent
+{
+    return [[self elementForName:@"body"] stringValue];
+}
+
 
 @end

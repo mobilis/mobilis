@@ -16,7 +16,7 @@
 #import <MXi/MXiMultiUserChatDelegate.h>
 #endif
 
-@interface MXiConnection : NSObject <XMPPRoomDelegate>
+@interface MXiConnection : NSObject
 
 @property (nonatomic, retain) XMPPJID* jabberID;
 @property (nonatomic, retain) NSString* password;
@@ -55,6 +55,7 @@
 			 serviceNamespace:(NSString* )serviceNamespace;
 
 - (void)connectToMultiUserChatRoom:(NSString *)roomJID;
+- (void)leaveMultiUserChatRoom:(NSString *)roomJID;
 - (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID;
 
 - (void)disconnect;
