@@ -1,5 +1,0 @@
-<resources>
-    <drawable name="nonpressed">#0000FF</drawable>
-    <drawable name="pressed">#e5e5e5</drawable>
-    <drawable name="focused">#FF0000</drawable>
-</resources>
