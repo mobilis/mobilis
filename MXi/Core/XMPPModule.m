@@ -110,7 +110,7 @@
 		block();
 	else
 		dispatch_sync(moduleQueue, block);
-	
+    
 	return result;
 }
 

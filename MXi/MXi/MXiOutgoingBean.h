@@ -6,7 +6,12 @@
 //  Copyright (c) 2013 TU Dresden. All rights reserved.
 //
 
-#import "MXi.h"
+#if TARGET_OS_IPHONE
+#import "MXiBean.h"
+#import "DDXML.h"
+#else
+#import <MXi/MXi.h>
+#endif
 
 @protocol MXiOutgoingBean <NSObject>
 

@@ -7,6 +7,9 @@
 //
 
 #import "MXiBean.h"
+#if TARGET_OS_IPHONE
+#import "DDXML.h"
+#endif
 
 @protocol MXiIncomingBean <NSObject>
 
