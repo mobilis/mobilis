@@ -1,25 +1,23 @@
 (function() {
 
-	var ninecards = {
+    var ninecards = {
 
-		NS : {
-			SERVICE : "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService",
-			CONFIGUREGAME : "mobilisninecards:iq:configuregame",
-			JOINGAME : "mobilisninecards:iq:joingame"
-		},
 
-        settings: {},
-        
-        handlers: {},
+        init: function() {
+            MX.addNamespace('SERVICE', MX.NS.URL + '#services/MobilisNineCardsService');
+            MX.addNamespace('CONFIGUREGAME', 'mobilisninecards:iq:configuregame');
+            MX.addNamespace('JOINGAME', 'mobilisninecards:iq:joingame');
+        },
 
 
         createServiceInstance: function (name, resultcallback, errorcallback) {
+            var settings = jQuery.jStorage.get('settings');
             var customIq = $iq({
-                to: MX.core.SERVICES[MX.core.NS.COORDINATOR].jid,
+                to: settings.coordinator,
                 type: 'set'                
             })
-            .c('createNewServiceInstance', {xmlns: MX.core.NS.COORDINATOR} )
-            .c('serviceNamespace').t(MX.ninecards.NS.SERVICE).up()
+            .c('createNewServiceInstance', {xmlns: MX.NS.COORDINATOR} )
+            .c('serviceNamespace').t(MX.NS.SERVICE).up()
             .c('serviceName').t(name);
 
             MX.core.sendIQ(customIq, resultcallback, errorcallback);
@@ -36,7 +34,7 @@
                 to: gameJID,
                 type: 'set'
             })
-            .c('ConfigureGameRequest', {xmlns : MX.ninecards.NS.CONFIGUREGAME})
+            .c('ConfigureGameRequest', {xmlns : MX.NS.CONFIGUREGAME})
             .c('gamename').t(GameName).up()
             .c('players').t(MaxPlayers).up()
             .c('rounds').t(NumberOfRounds).up();
@@ -59,7 +57,7 @@
                     to: gameJid,
                     type: 'set'
                 })
-                .c('JoinGameRequest' , {xmlns : MX.ninecards.NS.JOINGAME}).up();
+                .c('JoinGameRequest' , {xmlns : MX.NS.JOINGAME}).up();
             } else {
                 errorcallback(null, 'Game JID not defined');
             }
@@ -69,8 +67,8 @@
 
 
 
-	}
+    }
 
-	MX.extend('ninecards', ninecards);
+    MX.extend('ninecards', ninecards);
 
 })();

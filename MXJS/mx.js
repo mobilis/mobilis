@@ -21,30 +21,36 @@
                 console.log('jQuery Library missing');
             } else {
 
+                this.NS = {};
+
                 this.plugins = {};
 
                 /** Function: extend
                  *  Extends MX with the provided functionality encapsulated in the object that is passed.
                  *
-                 *  The plug-in adapter of MX. Plug-in objects are used by calling MX.namespace
+                 *  The plug-in adapter of MX. Plug-in objects are used by calling MX.name
                  *
                  *  Parameters:
-                 *    (String) namespace - Namespace for the plug-in.
+                 *    (String) name - Name for the plug-in.
                  *    (Object) object - Plug-in object that holds the functionality.
                  */
-                this.extend = function(namespace, object) {
-                    if ( typeof this[namespace] === 'undefined') {
-                        if ( typeof this.plugins[namespace] === 'undefined' && typeof this[namespace] === 'undefined') {
+                this.extend = function(name, object) {
+                    if ( typeof this[name] === 'undefined') {
+                        if ( typeof this.plugins[name] === 'undefined' && typeof this[name] === 'undefined') {
                             jQuery.extend(object, this.plugins.extFN);
-                            this.plugins[namespace] = object;
-                            this[namespace] = this.plugins[namespace];
-                            if ( typeof this[namespace].init === 'function') {
-                                this[namespace].init();
+                            this.plugins[name] = object;
+                            this[name] = this.plugins[name];
+                            if ( typeof this[name].init === 'function') {
+                                this[name].init();
                             }
                         } else {
-                            console.log('The namespace ' + namespace + ' is already used.');
+                            console.log('The name ' + name + ' is already used.');
                         }
                     }
+                };
+
+                this.addNamespace = function (name, value){
+                  this.NS[name] = value;
                 };
 
                 this.addHandlers = function() {
