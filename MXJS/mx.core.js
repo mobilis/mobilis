@@ -1,3 +1,10 @@
+/** File: mx.core.js
+*  Mobilis XMPP for JavaScript Framework Core Plugin
+*
+*  This file contains the core functionality of the MXJS framework. 
+*  It extends the MX object created in the main file mx.js
+*/
+
 (function() {
 
 	var core = {
@@ -42,18 +49,18 @@
 
 
 
-		start: {},
+		// start: {},
 
 
 
 		connect: function(server, jid, password, callback) {
 
 			if (server) {
-				Mobilis.core.HTTPBIND = 'http://'+server+'/http-bind';
-				Mobilis.core.SERVICES[Mobilis.core.NS.COORDINATOR].jid = 'mobilis@'+server+'/Coordinator'
+				MX.core.HTTPBIND = 'http://'+server+'/http-bind';
+				MX.core.SERVICES[MX.core.NS.COORDINATOR].jid = 'mobilis@'+server+'/Coordinator'
 			}
 
-			var connection = new Strophe.Connection(Mobilis.core.HTTPBIND);
+			var connection = new Strophe.Connection(MX.core.HTTPBIND);
 			
 			connection.rawInput = function (data) { 
 				// console.log('RECV: ' + data);
@@ -66,15 +73,15 @@
 				jid,
 				password,
 				function(status) {
-					if (status == Mobilis.core.Status.ERROR) {
+					if (status == MX.core.Status.ERROR) {
 						console.log('connection error');
-					} else if (status == Mobilis.core.Status.CONNECTING) {
+					} else if (status == MX.core.Status.CONNECTING) {
 						console.log('connecting');
-					} else if (status == Mobilis.core.Status.CONNFAIL) {
+					} else if (status == MX.core.Status.CONNFAIL) {
 						console.log('connection fail');
-					} else if (status == Mobilis.core.Status.AUTHENTICATING) {
+					} else if (status == MX.core.Status.AUTHENTICATING) {
 						console.log('authenticating');
-					} else if (status == Mobilis.core.Status.AUTHFAIL) {
+					} else if (status == MX.core.Status.AUTHFAIL) {
 						console.log('authentication fail');
 						$('#error-popup').popup({
 							afteropen: function( event, ui ) {
@@ -83,7 +90,7 @@
 								$(this).find('.ui-content p').html('Please check the settings');
 							},
 							afterclose: function( event, ui ) {
-								Mobilis.connection.disconnect();
+								MX.connection.disconnect();
 								jQuery.mobile.changePage('#start', {
 									transition: 'slide',
 									reverse: true,
@@ -94,11 +101,11 @@
 						$('#error-popup').popup('open', {
 							positionTo: 'window'
 						});
-					} else if (status == Mobilis.core.Status.CONNECTED) {
+					} else if (status == MX.core.Status.CONNECTED) {
 						console.log('connected');
 
 						connection.addHandler(
-							Mobilis.core.onChatMessage,
+							MX.core.onChatMessage,
 							null,
 							'message',
 							'chat'
@@ -106,17 +113,17 @@
 						connection.send($pres());
 
 						var discoiq = $iq({
-							to: Mobilis.core.SERVICES[Mobilis.core.NS.COORDINATOR].jid,
+							to: MX.core.SERVICES[MX.core.NS.COORDINATOR].jid,
 							type: "get"
 						})
 						.c("serviceDiscovery", {
-							xmlns: Mobilis.core.NS.COORDINATOR
+							xmlns: MX.core.NS.COORDINATOR
 						});
 
 						connection.sendIQ(discoiq,
 						function(iq) {
 							$(iq).find("mobilisService").each(function() {
-								Mobilis.core.SERVICES[$(this).attr('namespace')] =
+								MX.core.SERVICES[$(this).attr('namespace')] =
 								{
 									'version': $(this).attr('version'),
 									'mode': $(this).attr('mode'),
@@ -132,11 +139,11 @@
 							console.log('Initial Service Discovery failed')
 						},
 						30000);
-					} else if (status == Mobilis.core.Status.DISCONNECTED) {
+					} else if (status == MX.core.Status.DISCONNECTED) {
 						console.log('disconnected');
-					} else if (status == Mobilis.core.Status.DISCONNECTING) {
+					} else if (status == MX.core.Status.DISCONNECTING) {
 						console.log('disconnecting');
-					} else if (status == Mobilis.core.Status.ATTACHED) {
+					} else if (status == MX.core.Status.ATTACHED) {
 						console.log('attached');
 					}
 					if (callback) {
@@ -145,7 +152,7 @@
 				}
 			);
 
-			Mobilis.connection = connection;
+			MX.connection = connection;
 		},
 
 
@@ -156,13 +163,12 @@
 
 		disconnect : function(reason) {
 
-			if (Mobilis.connection) {
-				if (Mobilis.connection.connected) {
-					Mobilis.connection.send($pres({
+			if (MX.connection) {
+				if (MX.connection.connected) {
+					MX.connection.send($pres({
 						type : 'unavailable'
 					}));
-					Mobilis.utils.trace("Disconnect");
-					Mobilis.connection.disconnect(reason);
+					MX.connection.disconnect(reason);
 				};
 			}
 
@@ -172,18 +178,18 @@
 
 
 		send: function(elem) {
-			Mobilis.connection.send(elem);
+			MX.connection.send(elem);
 		},
 
 
 
 
 		sendIQ: function(elem, resultcallback, errorcallback) {
-			if (Mobilis.connection) {
-				Mobilis.core.start = (new Date).getTime();
-				Mobilis.connection.sendIQ(elem, resultcallback, errorcallback, 3000);
+			if (MX.connection) {
+				//MX.core.start = (new Date).getTime();
+				MX.connection.sendIQ(elem, resultcallback, errorcallback, 3000);
 			} else {
-				errorcallback(null, 'Mobilis.conneciton not defined');   
+				errorcallback(null, 'MX.conneciton not defined');   
 			}
 		},
 
@@ -195,17 +201,17 @@
 			// console.log('attr',attr);
 
 			if (!resultcallback) {
-				resultcallback = Mobilis.core.defaultcallback;
+				resultcallback = MX.core.defaultcallback;
 			};
 			if (!errorcallback) {
-				errorcallback = Mobilis.core.defaulterrorback;
+				errorcallback = MX.core.defaulterrorback;
 			}; 
 			var discoiq = $iq({
-				to: Mobilis.core.SERVICES[Mobilis.core.NS.COORDINATOR].jid,
+				to: MX.core.SERVICES[MX.core.NS.COORDINATOR].jid,
 				type: "get"
 			})
 			.c("serviceDiscovery", {
-				xmlns: Mobilis.core.NS.COORDINATOR
+				xmlns: MX.core.NS.COORDINATOR
 			});
 			if (attr[0] && attr[0] !== null) {
 				discoiq.c('serviceNamespace').t(attr[0]);
@@ -213,7 +219,7 @@
 			if (attr[1] && attr[1] !== null) {
 				discoiq.up().c('serviceVersion').t(attr[1]);
 			};
-			Mobilis.core.sendIQ(discoiq, resultcallback, errorcallback);
+			MX.core.sendIQ(discoiq, resultcallback, errorcallback);
 		},
 
 
@@ -223,8 +229,8 @@
 
 		defaultcallback: function (iq) {
 			if (iq) {
-				var diff = (new Date).getTime() - Mobilis.core.start;
-				console.log('Stanza received in: ' + diff + ' ms');
+				// var diff = (new Date).getTime() - MX.core.start;
+				// console.log('Stanza received in: ' + diff + ' ms');
 				console.log(iq);
 
 			}
@@ -246,10 +252,6 @@
 
 	};
 
-	Mobilis.extend("core", core);
+	MX.extend('core', core);
 
 })();
-
-$(window).unload(function() {
-	Mobilis.core.disconnect('Browser Window Closed');
-}); 

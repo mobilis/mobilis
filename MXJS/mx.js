@@ -1,12 +1,12 @@
 /** File: mx.js
-*  Mobilis XMPP for Javascript Framework
+*  Mobilis XMPP for JavaScript Framework
 *
 *  This file contains just the object of framework. It is designed to be extensible 
 *  with plug-ins. The core functionality is also a plugin located in the file 
 *     -  mx.core.js
 *  The framework also builds on top of the following essential librarys:
-*     -  DOM Manipulation Framework jQuery 
-*     -  Javascript BOSH client Library Strophe.js
+*     -  DOM Manipulation Framework jQuery - http://jquery.com
+*     -  XMPP Library Strophe - http://strophe.im
 */
 
 (function($) {
