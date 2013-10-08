@@ -54,24 +54,6 @@
                         console.log('authenticating');
                     } else if (status == MX.core.Status.AUTHFAIL) {
                         console.log('authentication fail');
-                        $('#error-popup').popup({
-                            afteropen: function( event, ui ) {
-                                $(this).find('h1').html('Error');
-                                $(this).find('.ui-content h3').html('Authentication Fail');
-                                $(this).find('.ui-content p').html('Please check the settings');
-                            },
-                            afterclose: function( event, ui ) {
-                                MX.connection.disconnect();
-                                jQuery.mobile.changePage('#start', {
-                                    transition: 'slide',
-                                    reverse: true,
-                                    changeHash: true
-                                });
-                            }
-                        });
-                        $('#error-popup').popup('open', {
-                            positionTo: 'window'
-                        });
                     } else if (status == MX.core.Status.CONNECTED) {
                         console.log('connected');
 
