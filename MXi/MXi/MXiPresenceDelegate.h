@@ -18,4 +18,10 @@
 - (void)didDisconnectWithError:(NSError* )error;
 - (void)didFailToAuthenticate:(NSXMLElement* )error;
 
+- (void)didCreateServiceWithJabberID:(NSString *)jabberID andVersion:(NSString *)version;
+
+@optional
+
+- (void)serviceInstanceCreating;
+
 @end

@@ -16,6 +16,8 @@
 #import <MXi/MXiMultiUserChatDelegate.h>
 #endif
 
+static NSString *const CoordinatorService = @"http://mobilis.inf.tu-dresden.de#services/CoordinatorService";
+
 @interface MXiConnection : NSObject
 
 @property (nonatomic, retain) XMPPJID* jabberID;
@@ -57,6 +59,10 @@
 - (void)connectToMultiUserChatRoom:(NSString *)roomJID;
 - (void)leaveMultiUserChatRoom:(NSString *)roomJID;
 - (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID;
+
+- (void)createServiceInstanceWithServiceName:(NSString *)serviceName
+                             servicePassword:(NSString *)password
+                            serviceNamespace:(NSString *)serviceNamespace;
 
 - (void)disconnect;
 

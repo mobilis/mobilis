@@ -169,8 +169,40 @@
 			[beanDelegate didReceiveBean:prototype];
 		}
 	}
+
+    // Did we get an incoming service creation response
+    [self handleServiceResponse:iq];
 	
 	return success;
+}
+- (void)handleServiceResponse:(XMPPIQ *)iq
+{
+    NSArray *iqChildren = [iq children];
+    if (iqChildren.count != 1)
+        return;
+
+    if ([iq elementForName:@"createNewServiceInstance"]) {
+        [self.presenceDelegate serviceInstanceCreating];
+    }
+    if ([iq elementForName:@"sendNewServiceInstance"]) {
+        NSXMLElement *element = [iq elementForName:@"sendNewServiceInstance"];
+        NSString *serviceJID = [[element elementForName:@"jidOfNewService"] stringValue];
+        NSString *serviceVersion = [[element elementForName:@"serviceVersion"] stringValue];
+
+        [self.presenceDelegate didCreateServiceWithJabberID:serviceJID andVersion:serviceVersion];
+        
+        [self sendServiceCreationAcknowledgement];
+    }
+}
+- (void)sendServiceCreationAcknowledgement
+{
+    NSXMLElement *ackIQ = [NSXMLElement elementWithName:@"iq"];
+    [ackIQ addAttributeWithName:@"to" stringValue:self.coordinatorJID];
+    [ackIQ addAttributeWithName:@"from" stringValue:self.jabberID.full];
+    [ackIQ addAttributeWithName:@"type" stringValue:@"result"];
+    [ackIQ addChild:[[NSXMLElement alloc] initWithName:@"sendNewServiceInstance" xmlns:CoordinatorService]];
+
+    [self.xmppStream sendElement:ackIQ];
 }
 
 - (void)xmppStream:(XMPPStream *)sender didReceiveMessage:(XMPPMessage *)message {
@@ -212,8 +244,8 @@
 		[NSXMLElement elementWithName:@"serviceNamespace"];
 	[namespaceElement setStringValue:[self serviceNamespace]];
 	NSXMLElement* discoElement =
-		[NSXMLElement elementWithName:@"serviceDiscovery"
-								xmlns:@"http://mobilis.inf.tu-dresden.de#services/CoordinatorService"];
+    [NSXMLElement elementWithName:@"serviceDiscovery"
+                            xmlns:CoordinatorService];
 	[discoElement addChild:namespaceElement];
 	NSXMLElement* iqElement = [NSXMLElement elementWithName:@"iq"];
 	[iqElement addAttributeWithName:@"to"
@@ -278,6 +310,29 @@
 	[bean setTo:[XMPPJID jidWithString:serviceJID]];
 	
 	[self sendElement:[MXiBeanConverter beanToIQ:bean]];
+}
+
+- (void)createServiceInstanceWithServiceName:(NSString *)serviceName
+                             servicePassword:(NSString *)password
+                            serviceNamespace:(NSString *)serviceNamespace
+{
+    @autoreleasepool {
+        NSXMLElement *serviceIQ = [NSXMLElement elementWithName:@"iq"];
+        NSXMLElement *serviceBean = [NSXMLElement elementWithName:@"createNewServiceInstance"
+                                                            xmlns:CoordinatorService];
+
+        [serviceBean addChild:[[NSXMLElement alloc] initWithName:@"serviceNamespace" stringValue:serviceNamespace]];
+        [serviceBean addChild:[[NSXMLElement alloc] initWithName:@"password" stringValue:password]];
+        [serviceBean addChild:[[NSXMLElement alloc] initWithName:@"serviceName" stringValue:serviceName]];
+
+        [serviceIQ addAttributeWithName:@"to" stringValue:self.coordinatorJID];
+        [serviceIQ addAttributeWithName:@"from" stringValue:self.jabberID.full];
+        [serviceIQ addAttributeWithName:@"type" stringValue:@"set"];
+
+        [serviceIQ addChild:serviceBean];
+
+        [self.xmppStream sendElement:serviceIQ];
+    }
 }
 
 - (void)disconnect {
