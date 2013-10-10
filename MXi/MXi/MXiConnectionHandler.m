@@ -10,6 +10,7 @@
 
 #import "MXiDelegateDictionary.h"
 #import "MXiDelegateSelectorMapping.h"
+#import "IncomingBeanDetection.h"
 
 @interface MXiConnectionHandler ()
 
@@ -55,11 +56,11 @@
             authenticationBlock:(AuthenticationBlock)authentication
 {
     NSDictionary *settingsDictionary = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Settings"
-                                                                                                                  ofType:@'plist']];
+                                                                                                                  ofType:@"plist"]];
     self.connection = [MXiConnection connectionWithJabberID:jabberID
                                                    password:password
                                                    hostName:hostName
-                                                       port:hostPort
+                                                       port:[hostPort intValue]
                                              coordinatorJID:[NSString stringWithFormat:@"mobilis@%@/Coordinator", hostName]
                                            serviceNamespace:[settingsDictionary valueForKeyPath:@"jabberInformation.serviceNamespace"]
                                            presenceDelegate:self
@@ -185,10 +186,8 @@
     if (self.incomingBeans) {
         return self.incomingBeans;
     }
-//    IncomingBeanDetection *incomingBeans = [IncomingBeanDetection new];
-//    self.incomingBeans = [incomingBeans detectBeans];
-    // TODO: either use reflection here or generate all the beans.
-    self.incomingBeans = @[];
+    IncomingBeanDetection *incomingBeans = [IncomingBeanDetection new];
+    self.incomingBeans = [incomingBeans detectBeans];
 
     return self.incomingBeans;
 }
