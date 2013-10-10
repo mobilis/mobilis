@@ -298,7 +298,7 @@
 - (void)xmppRoom:(XMPPRoom *)sender didReceiveMessage:(XMPPMessage *)message fromOccupant:(XMPPJID *)occupantJID
 {
     if (_mucDelegate && [_mucDelegate respondsToSelector:@selector(didReceiveMultiUserChatMessage:fromUser:publishedInRoom:)]) {
-        [_mucDelegate didReceiveMultiUserChatMessage:[((MXiMultiUserChatMessage *)message) bodyContent]
+        [_mucDelegate didReceiveMultiUserChatMessage:[[message elementForName:@"body"] stringValue]
                                             fromUser:occupantJID.full
                                      publishedInRoom:sender.roomJID.full];
     }

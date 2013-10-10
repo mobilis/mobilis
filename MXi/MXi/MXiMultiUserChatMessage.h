@@ -20,6 +20,8 @@
 
 + (id)messageWithBody:(NSString *)body;
 
+- (id)initWithBody:(NSString *)body;
+
 - (NSString *)bodyContent;
 
 @end

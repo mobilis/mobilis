@@ -12,12 +12,18 @@
 
 + (id)messageWithBody:(NSString *)body
 {
-    XMPPMessage *message = [XMPPMessage message];
+    return [[self alloc] initWithBody:body];
+}
+
+- (id)initWithBody:(NSString *)body
+{
+    self = [super init];
+    
     NSXMLElement *bodyElement = [NSXMLElement elementWithName:@"body" stringValue:body];
     
-    [message addChild:bodyElement];
+    [self addChild:bodyElement];
     
-    return message;
+    return self;
 }
 
 - (NSString *)bodyContent
