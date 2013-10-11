@@ -1,0 +1,8 @@
+platform :ios, '7.0'
+pod 'XMPPFramework/Core', :podspec => 'xmpp.podspec'
+pod 'XMPPFramework/Reconnect', :podspec => 'xmpp.podspec'
+pod 'XMPPFramework/XEP-0045', :podspec => 'xmpp.podspec'
+pod 'XMPPFramework/Roster', :podspec => 'xmpp.podspec'
+podspec :path => 'mxi.podspec'
+
+link_with ['MXi.framework', 'libMXi.a']
