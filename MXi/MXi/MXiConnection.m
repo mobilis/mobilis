@@ -9,6 +9,8 @@
 #import "MXiConnection.h"
 
 #import "MXiMultiUserChatMessage.h"
+#import "XMPPRoom.h"
+#import "XMPPRoomMemoryStorage.h"
 
 @interface MXiConnection () <XMPPRoomDelegate>
 
@@ -277,7 +279,7 @@
 	*/
 	
 	NSError* error = nil;
-	if (![xmppStream connect:&error]) {
+	if (![xmppStream connectWithTimeout:30.0 error:&error]) {
 		NSLog(@"Couldn't connect because of error: %@", [error localizedDescription]);
 		return NO;
 	}

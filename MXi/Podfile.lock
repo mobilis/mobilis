@@ -1,0 +1,56 @@
+PODS:
+  - CocoaAsyncSocket (7.3.2)
+  - CocoaLumberjack (1.6.2)
+  - XMPPFramework/Authentication (3.6.1):
+    - XMPPFramework/Core
+  - XMPPFramework/Categories (3.6.1):
+    - XMPPFramework/Core
+  - XMPPFramework/Core (3.6.1):
+    - CocoaAsyncSocket (~> 7.3.1)
+    - CocoaLumberjack (~> 1.6.2)
+    - XMPPFramework/Authentication
+    - XMPPFramework/Categories
+    - XMPPFramework/KissXML
+    - XMPPFramework/Utilities
+  - XMPPFramework/CoreDataStorage (3.6.1):
+    - XMPPFramework/Core
+  - XMPPFramework/KissXML (3.6.1):
+    - XMPPFramework/Core
+  - XMPPFramework/Reconnect (3.6.1):
+    - XMPPFramework/Core
+  - XMPPFramework/Roster (3.6.1):
+    - XMPPFramework/Core
+    - XMPPFramework/CoreDataStorage
+    - XMPPFramework/XEP-0203
+  - XMPPFramework/Utilities (3.6.1):
+    - XMPPFramework/Core
+  - XMPPFramework/XEP-0045 (3.6.1):
+    - XMPPFramework/Core
+    - XMPPFramework/CoreDataStorage
+    - XMPPFramework/XEP-0203
+  - XMPPFramework/XEP-0082 (3.6.1):
+    - XMPPFramework/Core
+  - XMPPFramework/XEP-0203 (3.6.1):
+    - XMPPFramework/Core
+    - XMPPFramework/XEP-0082
+
+DEPENDENCIES:
+  - XMPPFramework/Core
+  - XMPPFramework/Core (from `xmpp.podspec`)
+  - XMPPFramework/Reconnect
+  - XMPPFramework/Reconnect (from `xmpp.podspec`)
+  - XMPPFramework/Roster
+  - XMPPFramework/Roster (from `xmpp.podspec`)
+  - XMPPFramework/XEP-0045
+  - XMPPFramework/XEP-0045 (from `xmpp.podspec`)
+
+EXTERNAL SOURCES:
+  XMPPFramework:
+    :podspec: xmpp.podspec
+
+SPEC CHECKSUMS:
+  CocoaAsyncSocket: 977404129ec8505fee1c3701956b769e3bb10ea7
+  CocoaLumberjack: d73e1e317ced14ab930797dda6c17156ff17aaa1
+  XMPPFramework: 497aa5e1173ad51124b81f53264fd64e83adc4e3
+
+COCOAPODS: 0.26.2
