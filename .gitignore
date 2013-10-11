@@ -16,3 +16,4 @@ MobilisServer/service/services.txt
 #Xcode workspace
 *.xcworkspace
 xcuserdata/
+liststore.xml
