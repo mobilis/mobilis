@@ -75,7 +75,7 @@
                 password:(NSString *)password
                 hostName:(NSString *)hostName
                     port:(NSNumber *)port
-    authtenticationBlock:(AuthenticationBlock)authentication
+     authenticationBlock:(AuthenticationBlock)authentication
 {
     _authenticated = NO;
     _connected = NO;
