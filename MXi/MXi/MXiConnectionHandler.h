@@ -11,6 +11,26 @@
 #import <MXi/MXi.h>
 
 /**
+ *  The MXiConnectionServiceStateDelegate defines basic methods for objects to implement when information on
+ *  the service availability are required.
+*/
+@protocol MXiConnectionServiceStateDelegate
+
+typedef enum {
+    MXiConnectionServiceConnected,
+    MXiConnectionServiceUnconnected
+} MXiConnectionServiceState;
+
+/**
+ *  This method is invoked whenever the service availability changes.
+ *
+ *  @param connectionState The new state of the client - service connection.
+*/
+- (void)connectionStateChanged:(MXiConnectionServiceState)connectionState;
+
+@end
+
+/**
  *  This block will be called when the authentication of the user finished. If the authentication was successfull
  *  the block will be called with 'YES' as parameter and 'NO' otherwise.
  *
@@ -90,5 +110,24 @@ typedef void (^ AuthenticationBlock)(BOOL);
  *
  */
 - (void)addDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass;
+
+/**
+ *  Objects that are interested in listening to state changes of the overall service available can register as delegates.
+ *  Whenever the service becomes available or unavailable all registered delegates will be notified.
+ *
+ *  @param delegate The object that wants to be notified on service availability changes.
+ *
+ *  @see MXiConnectionServiceStateDelegate
+*/
+- (void)addDelegate:(id<MXiConnectionServiceStateDelegate>)delegate;
+
+/**
+ *  Remove an object from the receiver's list of objects that want to be notified on service availability changes.
+ *
+ *  @param delegate The object that should be removed from the receiver's list of delegates.
+ *
+ *  @see MXiConnectionServiceStateDelegate
+*/
+- (void)removeDelegate:(id<MXiConnectionServiceStateDelegate>)delegate;
 
 @end

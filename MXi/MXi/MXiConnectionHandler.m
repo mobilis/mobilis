@@ -21,6 +21,8 @@
 @property BOOL authenticated;
 @property BOOL connected;
 
+@property (strong, nonatomic) NSMutableArray *delegates;
+
 @property (copy, nonatomic) AuthenticationBlock authenticationBlock;
 
 - (NSArray *)allIncomingBeans;
@@ -44,6 +46,7 @@
 
 - (instancetype)initUniqueInstance
 {
+    self.delegates = [NSMutableArray arrayWithCapacity:10];
     return [super init];
 }
 
@@ -124,6 +127,20 @@
     }
 }
 
+- (void)addDelegate:(id <MXiConnectionServiceStateDelegate>)delegate
+{
+    @synchronized (_delegates) {
+        [self.delegates addObject:delegate];
+    }
+}
+
+- (void)removeDelegate:(id <MXiConnectionServiceStateDelegate>)delegate
+{
+    @synchronized (_delegates) {
+        [self.delegates removeObject:delegate];
+    }
+}
+
 #pragma mark - MXiPresenceDelegate
 
 - (void)didAuthenticate
@@ -171,7 +188,19 @@
 
 - (void)didReceivePresence:(XMPPPresence *)presence
 {
-#warning incomplete implementation
+    if ([[[presence from] full] isEqualToString:[[self connection] serviceJID]]) {
+        NSString *presenceType = [presence type];
+        if ([presenceType compare:@"available" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+            for (id<MXiConnectionServiceStateDelegate> delegate in self.delegates) {
+                [delegate connectionStateChanged:MXiConnectionServiceConnected];
+            }
+        }
+        if ([presenceType compare:@"unavailable" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+            for (id<MXiConnectionServiceStateDelegate> delegate in self.delegates) {
+                [delegate connectionStateChanged:MXiConnectionServiceUnconnected];
+            }
+        }
+    }
 }
 
 - (void)didReceiveError:(DDXMLElement *)error
