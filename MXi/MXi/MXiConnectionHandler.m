@@ -28,6 +28,7 @@
 
 - (NSArray *)allIncomingBeans;
 - (void)clearOutgoingBeanQueue;
+- (void)addServiceInstance:(MXiService *)service;
 
 @end
 
@@ -166,6 +167,11 @@
 {
     self.authenticationBlock(_authenticated);
     _connected = YES;
+
+    [self addServiceInstance:[MXiService serviceWithName:serviceName
+                                               namespace:serviceNamespace
+                                                 version:version
+                                                jabberID:serviceJID]];
     [self clearOutgoingBeanQueueWithServiceJID:serviceJID];
 }
 
@@ -262,6 +268,14 @@
             [self sendBean:outgoing];
         }
     }
+}
+
+- (void)addServiceInstance:(MXiService *)service
+{
+    NSMutableArray *tmpArray = [NSMutableArray arrayWithArray:self.discoveredServiceInstances];
+    [tmpArray addObject:service];
+    
+    self.discoveredServiceInstances = [NSArray arrayWithArray:tmpArray];
 }
 
 @end

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "MXiConnection.h"
+#import "MXiService.h"
 
 /**
  *  The MXiConnectionServiceStateDelegate defines basic methods for objects to implement when information on
@@ -49,6 +50,8 @@ typedef void (^ ServiceCreateCompletionBlock)(NSString *);
  *  The ConnectionHandler class provides global-level information of the XMPP connection to an XMPP server.
  */
 @interface MXiConnectionHandler : NSObject <MXiBeanDelegate, MXiPresenceDelegate, MXiStanzaDelegate>
+
+@property (strong) NSArray* discoveredServiceInstances;
 
 /**
  *  Returns a ConnectionHandler object that manages all relevant information on the connection and incoming and

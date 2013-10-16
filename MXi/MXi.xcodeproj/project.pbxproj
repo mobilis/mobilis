@@ -12,6 +12,10 @@
 		5B154F5517D0BB14004AAD86 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 794491BE171995FF000D53ED /* Foundation.framework */; };
 		5B154F5B17D0BED3004AAD86 /* MXi-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 794491B017199564000D53ED /* MXi-Prefix.pch */; };
 		5B154F5C17D0BED4004AAD86 /* MXi-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 794491B017199564000D53ED /* MXi-Prefix.pch */; settings = {ATTRIBUTES = (Public, ); }; };
+		5B1C4022180EDA720029030E /* MXiService.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B1C4020180EDA720029030E /* MXiService.h */; };
+		5B1C4023180EDA720029030E /* MXiService.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B1C4020180EDA720029030E /* MXiService.h */; };
+		5B1C4024180EDA720029030E /* MXiService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B1C4021180EDA720029030E /* MXiService.m */; };
+		5B1C4025180EDA720029030E /* MXiService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B1C4021180EDA720029030E /* MXiService.m */; };
 		5B63EE5E17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B63EE5D17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5B63EE5F17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B63EE5D17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5B63EE6717D20D8100CD8667 /* MXiMultiUserChatMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B63EE6517D20D8100CD8667 /* MXiMultiUserChatMessage.h */; settings = {ATTRIBUTES = (); }; };
@@ -106,6 +110,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5B1C4020180EDA720029030E /* MXiService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiService.h; sourceTree = "<group>"; };
+		5B1C4021180EDA720029030E /* MXiService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiService.m; sourceTree = "<group>"; };
 		5B1FC78617EAEAFA0071C1E3 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/usr/lib/libresolv.dylib; sourceTree = DEVELOPER_DIR; };
 		5B63EE5D17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiMultiUserChatDelegate.h; sourceTree = "<group>"; };
 		5B63EE6517D20D8100CD8667 /* MXiMultiUserChatMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiMultiUserChatMessage.h; sourceTree = "<group>"; };
@@ -268,6 +274,8 @@
 				BF8CBC6AB63AF23ABCE6F0D5 /* MXiDelegateSelectorMapping.h */,
 				BF8CB39146D79067F5DA5B96 /* MXiDelegateSelectorMapping.m */,
 				BF8CB1C6A1377CCDDAF0715B /* Utilities */,
+				5B1C4020180EDA720029030E /* MXiService.h */,
+				5B1C4021180EDA720029030E /* MXiService.m */,
 			);
 			path = MXi;
 			sourceTree = "<group>";
@@ -344,6 +352,7 @@
 				BF8CBE0A9B6769F4214647BB /* NSString+Selector.h in Headers */,
 				BF8CBA5643DD0E8DCB057D2C /* IncomingBeanDetection.h in Headers */,
 				BF8CBD4BDC06BBD7DF70E647 /* AccountManager.h in Headers */,
+				5B1C4022180EDA720029030E /* MXiService.h in Headers */,
 				BF8CB0ECFC9A07248564E6F5 /* Account.h in Headers */,
 				BF8CBE21934365F927BCBA3D /* KeychainItemWrapper.h in Headers */,
 			);
@@ -372,6 +381,7 @@
 				BF8CBA0A817ED5B992E06830 /* NSString+Selector.h in Headers */,
 				BF8CBB81919142F66A5B71AC /* IncomingBeanDetection.h in Headers */,
 				BF8CB3C476C799BEA353E883 /* AccountManager.h in Headers */,
+				5B1C4023180EDA720029030E /* MXiService.h in Headers */,
 				BF8CB0449E06092C75361374 /* Account.h in Headers */,
 				BF8CB9A3F4A071BB375FBC7D /* KeychainItemWrapper.h in Headers */,
 			);
@@ -536,6 +546,7 @@
 				BF8CBF851492F764D4DAA66E /* MXiDelegateSelectorMapping.m in Sources */,
 				BF8CBB36E6E1A347A1B22E5E /* NSString+Selector.m in Sources */,
 				BF8CB07BD0F3F870D662874F /* IncomingBeanDetection.m in Sources */,
+				5B1C4024180EDA720029030E /* MXiService.m in Sources */,
 				BF8CBA044101DB4EE3F44792 /* AccountManager.m in Sources */,
 				BF8CBDABD70C7CAB130A9BA2 /* Account.m in Sources */,
 				BF8CB1CE5593869FB91B8898 /* KeychainItemWrapper.m in Sources */,
@@ -556,6 +567,7 @@
 				BF8CB4570794E3F69DFDE52E /* MXiDelegateSelectorMapping.m in Sources */,
 				BF8CB45D127EC862D58940ED /* NSString+Selector.m in Sources */,
 				BF8CB6AC574D41F464847F0B /* IncomingBeanDetection.m in Sources */,
+				5B1C4025180EDA720029030E /* MXiService.m in Sources */,
 				BF8CB7EE9BF061534A891A74 /* AccountManager.m in Sources */,
 				BF8CB72034006A3E3B0E62BC /* Account.m in Sources */,
 				BF8CB7A1E517F15B7308375E /* KeychainItemWrapper.m in Sources */,
