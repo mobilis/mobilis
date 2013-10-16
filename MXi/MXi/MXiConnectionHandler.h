@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import <MXi/MXi.h>
+#import "MXiConnection.h"
 
 /**
  *  The MXiConnectionServiceStateDelegate defines basic methods for objects to implement when information on
@@ -74,12 +74,14 @@ typedef void (^ ServiceCreateCompletionBlock)(NSString *);
  *  @param jabberID        The full or bare JID of the user who's registered at the XMPP server.
  *  @param password        The user's password associated with the JID and XMPP server.
  *  @param hostName        The host name of XMPP server, e.g. 'jabber.org'.
+ *  @param serviceType     The type of the service which is either MULTI or SINGLE.
  *  @param port            The port under which the XMPP server is available, usually 5222.
  *  @param authentication  Callback block to inform the application on the success of the authentication.
  */
 - (void)launchConnectionWithJID:(NSString *)jabberID
                        password:(NSString *)password
                        hostName:(NSString *)hostName
+                    serviceType:(enum _ServiceType)serviceType
                            port:(NSNumber *)hostPort
             authenticationBlock:(AuthenticationBlock)authentication;
 

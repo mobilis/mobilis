@@ -18,6 +18,11 @@
 
 static NSString *const CoordinatorService = @"http://mobilis.inf.tu-dresden.de#services/CoordinatorService";
 
+typedef enum _ServiceType {
+    SINGLE,
+    MULTI
+} ServiceType;
+
 @interface MXiConnection : NSObject
 
 @property (nonatomic, retain) XMPPJID* jabberID;
@@ -27,6 +32,7 @@ static NSString *const CoordinatorService = @"http://mobilis.inf.tu-dresden.de#s
 @property (nonatomic, strong) NSString* serviceJID;
 @property (nonatomic, strong) NSString* serviceNamespace;
 @property (nonatomic, strong) NSString *serviceName;
+@property (nonatomic) ServiceType serviceType;
 @property (nonatomic, strong) NSString* coordinatorJID;
 @property (nonatomic, readonly) XMPPStream* xmppStream;
 @property (nonatomic, strong) id<MXiPresenceDelegate> presenceDelegate;
@@ -35,16 +41,30 @@ static NSString *const CoordinatorService = @"http://mobilis.inf.tu-dresden.de#s
 @property (nonatomic, strong) id<MXiMultiUserChatDelegate> mucDelegate;
 @property (nonatomic, strong) NSArray* incomingBeanPrototypes;
 
-+ (id)connectionWithJabberID:(NSString* )jabberID
-					password:(NSString* )password
-					hostName:(NSString* )hostName
-						port:(NSInteger )port
-			  coordinatorJID:(NSString* )coordinatorJID
-			serviceNamespace:(NSString* )serviceNamespace
-			presenceDelegate:(id<MXiPresenceDelegate> )presenceDelegate
-			  stanzaDelegate:(id<MXiStanzaDelegate> )stanzaDelegate
-				beanDelegate:(id<MXiBeanDelegate> )beanDelegate
-   listeningForIncomingBeans:(NSArray* )incomingBeanPrototypes;
++ (id)connectionWithJabberID:(NSString *)jabberID
+                    password:(NSString *)password
+                    hostName:(NSString *)hostName
+                        port:(NSInteger)port
+              coordinatorJID:(NSString *)coordinatorJID
+            serviceNamespace:(NSString *)serviceNamespace
+                 serviceType:(ServiceType)serviceType
+            presenceDelegate:(id <MXiPresenceDelegate>)presenceDelegate
+              stanzaDelegate:(id <MXiStanzaDelegate>)stanzaDelegate
+                beanDelegate:(id <MXiBeanDelegate>)beanDelegate
+   listeningForIncomingBeans:(NSArray *)incomingBeanPrototypes;
+
+/*!
+    This method will discover all services that are registered on the current Mobilis host.
+    This method will automatically be invoked on connection setup when the Mobilis service used is of kind Multi.
+
+    @see ServiceType
+ */
+- (void)discoverServices;
+/*!
+    This method will discover all instances of a specific service that is determined by its namespace, which
+    should be set on connection setup via class constructor.
+ */
+- (void)discoverServiceInstances;
 
 - (void)sendTestMessageWithContent:(NSString* )content to:(NSString* )to;
 - (void)sendElement:(NSXMLElement* )element;

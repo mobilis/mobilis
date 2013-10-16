@@ -23,21 +23,24 @@
 @synthesize jabberID, password, hostName, port, serviceJID, coordinatorJID, serviceNamespace,
 	xmppStream, presenceDelegate, stanzaDelegate, beanDelegate, incomingBeanPrototypes;
 
-+ (id)connectionWithJabberID:(NSString* )aJabberID
-					password:(NSString* )aPassword
-					hostName:(NSString* )aHostName
-						port:(NSInteger )port
-			  coordinatorJID:(NSString* )theCoordinatorJID
-			serviceNamespace:(NSString* )theServiceNamespace
-			presenceDelegate:(id<MXiPresenceDelegate> )aPresenceDelegate
-			  stanzaDelegate:(id<MXiStanzaDelegate> )aStanzaDelegate
-				beanDelegate:(id<MXiBeanDelegate>)aBeanDelegate
-   listeningForIncomingBeans:(NSArray *)theIncomingBeanPrototypes {
++ (id)connectionWithJabberID:(NSString *)aJabberID
+                    password:(NSString *)aPassword
+                    hostName:(NSString *)aHostName
+                        port:(NSInteger)port
+              coordinatorJID:(NSString *)theCoordinatorJID
+            serviceNamespace:(NSString *)theServiceNamespace
+                 serviceType:(ServiceType)serviceType
+            presenceDelegate:(id <MXiPresenceDelegate>)aPresenceDelegate
+              stanzaDelegate:(id <MXiStanzaDelegate>)aStanzaDelegate
+                beanDelegate:(id <MXiBeanDelegate>)aBeanDelegate
+   listeningForIncomingBeans:(NSArray *)theIncomingBeanPrototypes
+{
 	MXiConnection* connection = [[MXiConnection alloc] init];
 	
 	XMPPJID* tempJid = [XMPPJID jidWithString:aJabberID];
 	[connection setJabberID:tempJid];
 	[connection setPassword:aPassword];
+    [connection setServiceType: serviceType];
 	if (aHostName && ![aHostName isEqualToString:@""]) {
 		[connection setHostName:aHostName];
 	} else {
@@ -127,7 +130,9 @@
 
 - (void)xmppStreamDidAuthenticate:(XMPPStream* )sender {
 	[self goOnline];
-	[self discoverService];
+    if (self.serviceType == MULTI)
+        [self discoverServices];
+    else [self discoverServiceInstances];
 }
 
 - (void)xmppStream:(XMPPStream *)sender didNotAuthenticate:(NSXMLElement *)error {
@@ -143,23 +148,9 @@
 	NSXMLElement* childElement = [iq childElement];
 	
 	// Did we get a service discovery response?
-	if ([[childElement name] isEqualToString:@"serviceDiscovery"]) {
-		NSArray* discoveredServiceElements = [childElement children];
-		for (int i = 0; i < [discoveredServiceElements count]; i++) {
-			NSXMLElement* discoveredServiceElement = [discoveredServiceElements objectAtIndex:i];
-            if (i == 0) {
-				// choose the first discovered service jid by default
-				[self setServiceJID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
-                [self setServiceName:[discoveredServiceElement attributeStringValueForName:@"serviceName"]];
-			}
-			[presenceDelegate didDiscoverServiceWithNamespace:[discoveredServiceElement attributeStringValueForName:@"namespace"]
-														 name:[discoveredServiceElement attributeStringValueForName:@"serviceName"]
-													  version:[discoveredServiceElement attributeIntegerValueForName:@"version"]
-												   atJabberID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
-            }
-	}
-	
-	// Did we get an incoming mobilis bean?
+    [self validateDiscoveredServices:childElement];
+
+    // Did we get an incoming mobilis bean?
 	for (MXiBean<MXiIncomingBean>* prototype in incomingBeanPrototypes) {
 		if ([[[prototype class] elementName] isEqualToString:[childElement name]] &&
 				[[[prototype class] iqNamespace] isEqualToString:[childElement xmlns]] &&
@@ -177,6 +168,47 @@
 	
 	return success;
 }
+
+- (void)validateDiscoveredServices:(DDXMLElement *)serviceDiscoveryElement
+{
+    if ([[serviceDiscoveryElement name] isEqualToString:@"serviceDiscovery"]) {
+		NSArray* discoveredServiceElements = [serviceDiscoveryElement children];
+		if (self.serviceType == SINGLE)
+            [self singleModeServiceDetection:discoveredServiceElements];
+        else [self multiModeServiceDetection:discoveredServiceElements];
+	}
+}
+- (void)singleModeServiceDetection:(NSArray *)discoveredServiceElements
+{
+    for (int i = 0; i < [discoveredServiceElements count]; i++) {
+        NSXMLElement* discoveredServiceElement = [discoveredServiceElements objectAtIndex:i];
+        if (i == 0) {
+            // choose the first discovered service jid by default
+            [self setServiceJID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
+            [self setServiceName:[discoveredServiceElement attributeStringValueForName:@"serviceName"]];
+        }
+        [presenceDelegate didDiscoverServiceWithNamespace:[discoveredServiceElement attributeStringValueForName:@"namespace"]
+                                                     name:[discoveredServiceElement attributeStringValueForName:@"serviceName"]
+                                                  version:[discoveredServiceElement attributeIntegerValueForName:@"version"]
+                                               atJabberID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
+    }
+}
+- (void)multiModeServiceDetection:(NSArray *)discoveredServiceElements
+{
+    BOOL concreteServiceFound = NO;
+    for (NSXMLElement *discoveredElement in discoveredServiceElements)
+        if ([[discoveredElement attributeStringValueForName:@"namespace"] isEqualToString:self.serviceNamespace])
+            if ([discoveredElement attributeStringValueForName:@"jid"] && [discoveredElement attributeStringValueForName:@"serviceName"]) {
+                [self.presenceDelegate didDiscoverServiceWithNamespace:[discoveredElement attributeStringValueForName:@"namespace"]
+                                                                  name:[discoveredElement attributeStringValueForName:@"serviceName"]
+                                                               version:[discoveredElement attributeIntegerValueForName:@"version"]
+                                                            atJabberID:[discoveredElement attributeStringValueForName:@"jid"]];
+                concreteServiceFound = YES;
+            }
+    if (!concreteServiceFound && discoveredServiceElements.count > 0)
+        [self discoverServiceInstances];
+}
+
 - (void)handleServiceResponse:(XMPPIQ *)iq
 {
     NSArray *iqChildren = [iq children];
@@ -241,7 +273,22 @@
 	[xmppStream sendElement:presence];
 }
 
-- (void)discoverService {
+- (void)discoverServices
+{
+    NSXMLElement* discoElement =
+    [NSXMLElement elementWithName:@"serviceDiscovery"
+                            xmlns:CoordinatorService];
+    NSXMLElement* iqElement = [NSXMLElement elementWithName:@"iq"];
+    [iqElement addAttributeWithName:@"to"
+                        stringValue:[self coordinatorJID]];
+    [iqElement addAttributeWithName:@"type" stringValue:@"get"];
+    [iqElement addChild:discoElement];
+
+    [self sendElement:iqElement];
+}
+
+- (void)discoverServiceInstances
+{
 	NSXMLElement* namespaceElement =
 		[NSXMLElement elementWithName:@"serviceNamespace"];
 	[namespaceElement setStringValue:[self serviceNamespace]];

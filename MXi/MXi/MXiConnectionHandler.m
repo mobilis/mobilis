@@ -11,7 +11,6 @@
 #import "MXiDelegateDictionary.h"
 #import "MXiDelegateSelectorMapping.h"
 #import "IncomingBeanDetection.h"
-#import "MXiConnection.h"
 
 @interface MXiConnectionHandler ()
 
@@ -57,6 +56,7 @@
 - (void)launchConnectionWithJID:(NSString *)jabberID
                        password:(NSString *)password
                        hostName:(NSString *)hostName
+                    serviceType:(ServiceType)serviceType
                            port:(NSNumber *)hostPort
             authenticationBlock:(AuthenticationBlock)authentication
 {
@@ -68,6 +68,7 @@
                                                        port:[hostPort intValue]
                                              coordinatorJID:[NSString stringWithFormat:@"mobilis@%@/Coordinator", hostName]
                                            serviceNamespace:[settingsDictionary valueForKeyPath:@"jabberInformation.serviceNamespace"]
+                                                serviceType:serviceType
                                            presenceDelegate:self
                                              stanzaDelegate:self
                                                beanDelegate:self
@@ -216,6 +217,13 @@
             }
         }
     }
+}
+
+- (void)serviceInstanceCreating
+{
+    // TODO: implement this method.
+    // Inform the initial sender that the server is creating a new service instance.
+    NSLog(@"Service Instance is being created.");
 }
 
 - (void)didReceiveError:(DDXMLElement *)error
