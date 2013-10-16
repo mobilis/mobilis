@@ -39,6 +39,13 @@ typedef enum {
 typedef void (^ AuthenticationBlock)(BOOL);
 
 /**
+ *  This block will be called when the creation of a service finished successfully.
+ *
+ *  @param serviceJID The full JID of the created service instance.
+*/
+typedef void (^ ServiceCreateCompletionBlock)(NSString *);
+
+/**
  *  The ConnectionHandler class provides global-level information of the XMPP connection to an XMPP server.
  */
 @interface MXiConnectionHandler : NSObject <MXiBeanDelegate, MXiPresenceDelegate, MXiStanzaDelegate>
@@ -90,6 +97,8 @@ typedef void (^ AuthenticationBlock)(BOOL);
                 hostName:(NSString *)hostName
                     port:(NSNumber *)port
      authenticationBlock:(AuthenticationBlock)authentication;
+
+- (void)createServiceWithCompletionBlock:(ServiceCreateCompletionBlock)completionBlock;
 
 /**
  *  This method realizes client-server communication and sends outgoing beans to the service.

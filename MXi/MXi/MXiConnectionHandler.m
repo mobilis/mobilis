@@ -11,6 +11,7 @@
 #import "MXiDelegateDictionary.h"
 #import "MXiDelegateSelectorMapping.h"
 #import "IncomingBeanDetection.h"
+#import "MXiConnection.h"
 
 @interface MXiConnectionHandler ()
 
@@ -24,6 +25,7 @@
 @property (strong, nonatomic) NSMutableArray *delegates;
 
 @property (copy, nonatomic) AuthenticationBlock authenticationBlock;
+@property (copy, nonatomic) ServiceCreateCompletionBlock serviceCreateCompletionBlock;
 
 - (NSArray *)allIncomingBeans;
 - (void)clearOutgoingBeanQueue;
@@ -90,6 +92,14 @@
                                       port:[port integerValue]
                             coordinatorJID:[NSString stringWithFormat:@"mobilis@%@/Coordinator", hostName]
                           serviceNamespace:[[[NSBundle mainBundle] infoDictionary] valueForKeyPath:@"jabberInformation.serviceNamespace"]];
+}
+
+- (void)createServiceWithCompletionBlock:(ServiceCreateCompletionBlock)completionBlock
+{
+    self.serviceCreateCompletionBlock = completionBlock;
+    [self.connection createServiceInstanceWithServiceName:[self.connection serviceName]
+                                          servicePassword:nil
+                                         serviceNamespace:[self.connection serviceNamespace]];
 }
 
 - (void)sendBean:(MXiBean<MXiOutgoingBean> *)outgoingBean
@@ -171,6 +181,11 @@
 - (void)didFailToAuthenticate:(DDXMLElement *)error
 {
     self.authenticationBlock(NO);
+}
+
+- (void)didCreateServiceWithJabberID:(NSString *)jabberID andVersion:(NSString *)version
+{
+    self.serviceCreateCompletionBlock(jabberID);
 }
 
 #pragma mark - MXiStanzaDelegate

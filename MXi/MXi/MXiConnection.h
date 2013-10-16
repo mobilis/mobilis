@@ -26,6 +26,7 @@ static NSString *const CoordinatorService = @"http://mobilis.inf.tu-dresden.de#s
 @property (nonatomic) NSInteger port;
 @property (nonatomic, strong) NSString* serviceJID;
 @property (nonatomic, strong) NSString* serviceNamespace;
+@property (nonatomic, strong) NSString *serviceName;
 @property (nonatomic, strong) NSString* coordinatorJID;
 @property (nonatomic, readonly) XMPPStream* xmppStream;
 @property (nonatomic, strong) id<MXiPresenceDelegate> presenceDelegate;

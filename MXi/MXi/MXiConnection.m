@@ -9,7 +9,6 @@
 #import "MXiConnection.h"
 
 #import "MXiMultiUserChatMessage.h"
-#import "XMPPRoom.h"
 #import "XMPPRoomMemoryStorage.h"
 
 @interface MXiConnection () <XMPPRoomDelegate>
@@ -151,6 +150,7 @@
             if (i == 0) {
 				// choose the first discovered service jid by default
 				[self setServiceJID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
+                [self setServiceName:[discoveredServiceElement attributeStringValueForName:@"serviceName"]];
 			}
 			[presenceDelegate didDiscoverServiceWithNamespace:[discoveredServiceElement attributeStringValueForName:@"namespace"]
 														 name:[discoveredServiceElement attributeStringValueForName:@"serviceName"]
