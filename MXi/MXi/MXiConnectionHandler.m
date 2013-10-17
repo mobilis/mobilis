@@ -125,6 +125,11 @@
     [[MXiDelegateDictionary sharedInstance] addDelegate:delegate withSelector:selector forBeanClass:beanClass];
 }
 
+- (void)removeDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass
+{
+    [[MXiDelegateDictionary sharedInstance] removeDelegate:delegate withSelector:selector forBeanClass:beanClass];
+}
+
 #pragma mark - MXiBeanDelegate
 
 - (void)didReceiveBean:(MXiBean<MXiIncomingBean> *)theBean

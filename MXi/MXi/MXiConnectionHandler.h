@@ -124,6 +124,7 @@ typedef void (^ ServiceCreateCompletionBlock)(NSString *);
  *
  */
 - (void)addDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass;
+- (void)removeDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass;
 
 /**
  *  Objects that are interested in listening to state changes of the overall service available can register as delegates.
