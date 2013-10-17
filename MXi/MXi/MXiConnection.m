@@ -169,7 +169,7 @@
 	return success;
 }
 
-- (void)validateDiscoveredServices:(DDXMLElement *)serviceDiscoveryElement
+- (void)validateDiscoveredServices:(NSXMLElement *)serviceDiscoveryElement
 {
     if ([[serviceDiscoveryElement name] isEqualToString:@"serviceDiscovery"]) {
 		NSArray* discoveredServiceElements = [serviceDiscoveryElement children];

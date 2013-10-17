@@ -12,8 +12,8 @@
 #import "MXiMultiUserChatDelegate.h"
 #else
 #import <MXi/MXi.h>
-#import <MXi/XMPPFramework.h>
-#import <MXi/MXiMultiUserChatDelegate.h>
+#import <XMPPFramework.h>
+#import <MXiMultiUserChatDelegate.h>
 #endif
 
 static NSString *const CoordinatorService = @"http://mobilis.inf.tu-dresden.de#services/CoordinatorService";

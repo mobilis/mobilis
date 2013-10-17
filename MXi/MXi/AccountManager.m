@@ -8,14 +8,15 @@
 
 #import "AccountManager.h"
 
-#import "KeychainItemWrapper.h"
+#import "FXKeychain/FXKeychain.h"
 
 @implementation AccountManager
 
 + (void)storeAccount:(Account *)account
 {
-    KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[[NSBundle mainBundle] infoDictionary] valueForKey:@"CFBundleIdentifier"]
-                                                                        accessGroup:nil];
+    FXKeychain *keychain = [[FXKeychain alloc] initWithService:[[NSBundle mainBundle] bundleIdentifier]
+                                                   accessGroup:nil
+                                                 accessibility:FXKeychainAccessibleWhenUnlocked];
     
     [keychain setObject:account.jid forKey:(__bridge id)(kSecAttrAccount)];
     [keychain setObject:account.hostName forKey:(__bridge id)(kSecAttrService)];
@@ -25,8 +26,9 @@
 
 + (Account *)account
 {
-    KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[[NSBundle mainBundle] infoDictionary] valueForKey:@"CFBundleIdentifier"]
-                                                                        accessGroup:nil];
+    FXKeychain *keychain = [[FXKeychain alloc] initWithService:[[NSBundle mainBundle] bundleIdentifier]
+                                                   accessGroup:nil
+                                                 accessibility:FXKeychainAccessibleWhenUnlocked];
     
     Account *account = [Account new];
     account.jid = [keychain objectForKey:(__bridge id)(kSecAttrAccount)];

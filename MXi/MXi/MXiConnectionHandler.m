@@ -221,7 +221,7 @@
     self.connection = nil;
 }
 
-- (void)didFailToAuthenticate:(DDXMLElement *)error
+- (void)didFailToAuthenticate:(NSXMLElement *)error
 {
     self.authenticationBlock(NO);
 }
@@ -268,7 +268,7 @@
     NSLog(@"Service Instance is being created.");
 }
 
-- (void)didReceiveError:(DDXMLElement *)error
+- (void)didReceiveError:(NSXMLElement *)error
 {
     NSLog(@"%@", error);
 }

@@ -10,6 +10,7 @@
 
 #import "MXiConnection.h"
 #import "MXiService.h"
+#import "MXiMultiUserChatDelegate.h"
 
 /**
  *  The MXiConnectionServiceStateDelegate defines basic methods for objects to implement when information on

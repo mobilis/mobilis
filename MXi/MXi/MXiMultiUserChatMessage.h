@@ -12,7 +12,7 @@
 #import "XMPPFramework.h"
 #import "MXiMultiUserChatMessage.h"
 #else
-#import <MXi/XMPPFramework.h>
+#import <XMPPFramework.h>
 #import <MXi/MXiMultiUserChatMessage.h>
 #endif
 
