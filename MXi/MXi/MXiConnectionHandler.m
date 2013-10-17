@@ -88,12 +88,14 @@
     _connected = NO;
     
     self.authenticationBlock = authentication;
+    NSDictionary *settingsDictionary = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Settings"
+                                                                                                                  ofType:@"plist"]];
     [self.connection reconnectWithJabberID:jabberID
                                   password:password
                                   hostname:hostName
                                       port:[port integerValue]
                             coordinatorJID:[NSString stringWithFormat:@"mobilis@%@/Coordinator", hostName]
-                          serviceNamespace:[[[NSBundle mainBundle] infoDictionary] valueForKeyPath:@"jabberInformation.serviceNamespace"]];
+                          serviceNamespace:[settingsDictionary valueForKeyPath:@"jabberInformation.serviceNamespace"]];
 }
 
 - (void)createServiceWithCompletionBlock:(ServiceCreateCompletionBlock)completionBlock
