@@ -103,6 +103,11 @@ typedef void (^ ServiceCreateCompletionBlock)(NSString *);
                     port:(NSNumber *)port
      authenticationBlock:(AuthenticationBlock)authentication;
 
+/*!
+    Create a new instance of the service the receiver is connected to.
+
+    @param completionBlock  The block that will be executed when the creation of the instance finished.
+ */
 - (void)createServiceWithCompletionBlock:(ServiceCreateCompletionBlock)completionBlock;
 
 /**
@@ -124,6 +129,13 @@ typedef void (^ ServiceCreateCompletionBlock)(NSString *);
  *
  */
 - (void)addDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass;
+/*!
+    Unregister an object from being notified about incoming beans.
+
+    @param delegate     The delegate object that offers the method that should be removed from the list of invoked methods when a bean comes in.
+    @param selector     The selector of the delegate that will no longer be invoked when a bean of a given class comes in.
+    @param beanClass    The class of the bean for which the delegate did unregister.
+ */
 - (void)removeDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass;
 
 /**
