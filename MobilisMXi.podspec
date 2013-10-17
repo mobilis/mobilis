@@ -1,3 +1,4 @@
+#
 # Be sure to run `pod spec lint MobilisMXi.podspec' to ensure this is a
 # valid spec and remove all comments before submitting the spec.
 #
@@ -5,7 +6,7 @@
 #
 Pod::Spec.new do |s|
   s.name         = "MobilisMXi"
-  s.version      = "0.1.0"
+  s.version      = "0.3.0"
   s.summary      = "iOS / OSX Client Library for Mobilis based Services"
   s.homepage     = "http://mobilis.inf.tu-dresden.de"
 
@@ -18,7 +19,7 @@ Pod::Spec.new do |s|
 
   # Specify the location from where the source should be retrieved.
   #
-  s.source       = { :git => "git@github.com:mobilis/mobilis.git" }
+  s.source       = { :git => "https://github.com/mobilis/mobilis.git", :branch => "MXi_DM" }
 
 
   # ――― MULTI-PLATFORM VALUES ――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -43,7 +44,9 @@ Pod::Spec.new do |s|
   # path will automatically have '*.{h,m,mm,c,cpp}' appended.
   #
   s.source_files = 'MXi/MXi'
-  # s.exclude_files = ''
+  
+  non_arc_files = 'MXi/MXi/IncomingBeanDetection.m'
+  s.exclude_files = non_arc_files
 
   # A list of file patterns which select the header files that should be
   # made available to the application. If the pattern is a directory then the
@@ -70,6 +73,11 @@ Pod::Spec.new do |s|
   #
   s.requires_arc = true
 
+  s.subspec 'no_arc' do |sna|
+    sna.requires_arc = false
+    sna.source_files = non_arc_files
+  end
+
   # If you need to specify any other build settings, add them to the
   # xcconfig hash.
   #
@@ -81,6 +89,7 @@ Pod::Spec.new do |s|
   s.dependency 'XMPPFramework/XEP-0045'
   s.dependency 'XMPPFramework/Reconnect'
   s.dependency 'XMPPFramework/Roster'
+  s.dependency 'FXKeychain'
 
   s.header_dir = 'MXi'
 end
