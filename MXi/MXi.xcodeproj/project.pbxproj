@@ -66,6 +66,7 @@
 		BF8CB0449E06092C75361374 /* Account.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CBBDE971A5C43A62477FC /* Account.h */; };
 		BF8CB07BD0F3F870D662874F /* IncomingBeanDetection.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB45C30B5D7AD64060F96 /* IncomingBeanDetection.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		BF8CB0ECFC9A07248564E6F5 /* Account.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CBBDE971A5C43A62477FC /* Account.h */; };
+		BF8CB123D42E28DE3FFAD86C /* DefaultSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CBA5C16CB14C9986547DF /* DefaultSettings.h */; };
 		BF8CB16990C945348CB06D4E /* MXiDelegateSelectorMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CBC6AB63AF23ABCE6F0D5 /* MXiDelegateSelectorMapping.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		BF8CB3C476C799BEA353E883 /* AccountManager.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CB5EB81F5D4F34239D7F2 /* AccountManager.h */; };
 		BF8CB40BE6EBCEC2D52A3F56 /* MXiDelegateDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CB9A73C88963E419ADF97 /* MXiDelegateDictionary.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -74,8 +75,10 @@
 		BF8CB60EB0F0AA251A2F616C /* MXiDelegateDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB5963DED470DCC7E4654 /* MXiDelegateDictionary.m */; };
 		BF8CB6AC574D41F464847F0B /* IncomingBeanDetection.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB45C30B5D7AD64060F96 /* IncomingBeanDetection.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		BF8CB72034006A3E3B0E62BC /* Account.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CBE57C68BAD89074663D0 /* Account.m */; };
+		BF8CB754E5E126DE28D277B9 /* DefaultSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CBA5C16CB14C9986547DF /* DefaultSettings.h */; };
 		BF8CB7EE9BF061534A891A74 /* AccountManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB3DEE0E9030529613B43 /* AccountManager.m */; };
 		BF8CB82094A2C76FBE7D15E2 /* MXiConnectionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB38D33BCC48E269C7C85 /* MXiConnectionHandler.m */; };
+		BF8CB93FB9C9E52EFF8A5249 /* DefaultSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CBC747E27EF22E66F0355 /* DefaultSettings.m */; };
 		BF8CBA044101DB4EE3F44792 /* AccountManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB3DEE0E9030529613B43 /* AccountManager.m */; };
 		BF8CBA0A817ED5B992E06830 /* NSString+Selector.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CBD2F7FCF91F5D3F96386 /* NSString+Selector.h */; };
 		BF8CBA5643DD0E8DCB057D2C /* IncomingBeanDetection.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CB80E5B913C619C492375 /* IncomingBeanDetection.h */; };
@@ -85,6 +88,7 @@
 		BF8CBBE0DDFFFE803C29EBC2 /* MXiDelegateDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB5963DED470DCC7E4654 /* MXiDelegateDictionary.m */; };
 		BF8CBCBA5CBD8D9DEF8F55A2 /* MXiDelegateSelectorMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CBC6AB63AF23ABCE6F0D5 /* MXiDelegateSelectorMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BF8CBD4BDC06BBD7DF70E647 /* AccountManager.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CB5EB81F5D4F34239D7F2 /* AccountManager.h */; };
+		BF8CBD76235D95E4A6A1B264 /* DefaultSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CBC747E27EF22E66F0355 /* DefaultSettings.m */; };
 		BF8CBDABD70C7CAB130A9BA2 /* Account.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CBE57C68BAD89074663D0 /* Account.m */; };
 		BF8CBE0A9B6769F4214647BB /* NSString+Selector.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CBD2F7FCF91F5D3F96386 /* NSString+Selector.h */; };
 		BF8CBE1A3B3C7AC13A75E6C9 /* MXiDelegateDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CB9A73C88963E419ADF97 /* MXiDelegateDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -154,8 +158,10 @@
 		BF8CB80E5B913C619C492375 /* IncomingBeanDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IncomingBeanDetection.h; path = MXi/IncomingBeanDetection.h; sourceTree = "<group>"; };
 		BF8CB857AAAD451374CE2F4D /* NSString+Selector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+Selector.m"; path = "MXi/NSString+Selector.m"; sourceTree = "<group>"; };
 		BF8CB9A73C88963E419ADF97 /* MXiDelegateDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiDelegateDictionary.h; sourceTree = "<group>"; };
+		BF8CBA5C16CB14C9986547DF /* DefaultSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultSettings.h; sourceTree = "<group>"; };
 		BF8CBBDE971A5C43A62477FC /* Account.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Account.h; path = MXi/Account.h; sourceTree = "<group>"; };
 		BF8CBC6AB63AF23ABCE6F0D5 /* MXiDelegateSelectorMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiDelegateSelectorMapping.h; sourceTree = "<group>"; };
+		BF8CBC747E27EF22E66F0355 /* DefaultSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefaultSettings.m; sourceTree = "<group>"; };
 		BF8CBD2F7FCF91F5D3F96386 /* NSString+Selector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+Selector.h"; path = "MXi/NSString+Selector.h"; sourceTree = "<group>"; };
 		BF8CBE57C68BAD89074663D0 /* Account.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Account.m; path = MXi/Account.m; sourceTree = "<group>"; };
 		BF8CBF0B74607A09404C4201 /* MXiConnectionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiConnectionHandler.h; sourceTree = "<group>"; };
@@ -313,6 +319,8 @@
 				BF8CB5EB81F5D4F34239D7F2 /* AccountManager.h */,
 				BF8CBE57C68BAD89074663D0 /* Account.m */,
 				BF8CBBDE971A5C43A62477FC /* Account.h */,
+				BF8CBC747E27EF22E66F0355 /* DefaultSettings.m */,
+				BF8CBA5C16CB14C9986547DF /* DefaultSettings.h */,
 			);
 			name = Utilities;
 			path = ../../MXi;
@@ -346,6 +354,7 @@
 				BF8CBD4BDC06BBD7DF70E647 /* AccountManager.h in Headers */,
 				5B1C4022180EDA720029030E /* MXiService.h in Headers */,
 				BF8CB0ECFC9A07248564E6F5 /* Account.h in Headers */,
+				BF8CB123D42E28DE3FFAD86C /* DefaultSettings.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -374,6 +383,7 @@
 				BF8CB3C476C799BEA353E883 /* AccountManager.h in Headers */,
 				5B1C4023180EDA720029030E /* MXiService.h in Headers */,
 				BF8CB0449E06092C75361374 /* Account.h in Headers */,
+				BF8CB754E5E126DE28D277B9 /* DefaultSettings.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -539,6 +549,7 @@
 				5B1C4024180EDA720029030E /* MXiService.m in Sources */,
 				BF8CBA044101DB4EE3F44792 /* AccountManager.m in Sources */,
 				BF8CBDABD70C7CAB130A9BA2 /* Account.m in Sources */,
+				BF8CBD76235D95E4A6A1B264 /* DefaultSettings.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -559,6 +570,7 @@
 				5B1C4025180EDA720029030E /* MXiService.m in Sources */,
 				BF8CB7EE9BF061534A891A74 /* AccountManager.m in Sources */,
 				BF8CB72034006A3E3B0E62BC /* Account.m in Sources */,
+				BF8CB93FB9C9E52EFF8A5249 /* DefaultSettings.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
