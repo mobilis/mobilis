@@ -6,15 +6,13 @@
 
 #import <Foundation/Foundation.h>
 
-typedef struct _DefaultSettingKeys {
-    __strong NSString *SERVER_PORT = @"server.port";
-    __strong NSString *SERVER_HOSTNAME = @"server.hostname";
-    __strong NSString *SERVER_USERNAME = @"server.username";
-    __strong NSString *SERVICE_JID = @"service.jid";
-    __strong NSString *SERVICE_PASSWORD = @"service.password";
-    __strong NSString *SERVICE_NAMESPACE = @"service.namespace";
-    __strong NSString *SERVICE_TYPE = @"service.type";
-} DefaultSettingKeys;
+const static NSString *SERVER_PORT = @"server.port";
+const static NSString *SERVER_HOSTNAME = @"server.hostname";
+const static NSString *SERVER_USERNAME = @"server.username";
+const static NSString *SERVICE_JID = @"service.jid";
+const static NSString *SERVICE_PASSWORD = @"service.password";
+const static NSString *SERVICE_NAMESPACE = @"service.namespace";
+const static NSString *SERVICE_TYPE = @"service.type";
 
 /*!
     A class that handles the access of the default settings file of the project.
@@ -34,6 +32,6 @@ typedef struct _DefaultSettingKeys {
 
     @see DefaultSettingsKeys
  */
-- (NSString *)valueForKey:(NSString *)key;
+- (NSString *)valueForKey:(const NSString *)key;
 
 @end

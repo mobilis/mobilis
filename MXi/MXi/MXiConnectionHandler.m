@@ -68,8 +68,8 @@
                                                    password:password
                                                    hostName:hostName
                                                        port:[hostPort intValue]
-                                             coordinatorJID:[NSString stringWithFormat:@"%@@%@/Coordinator", DefaultSettingKeys.SERVER_USERNAME, hostName]
-                                           serviceNamespace:[settings valueForKey:DefaultSettingKeys.SERVICE_NAMESPACE]
+                                             coordinatorJID:[NSString stringWithFormat:@"%@@%@/Coordinator", [settings valueForKey:SERVER_USERNAME], hostName]
+                                           serviceNamespace:[settings valueForKey:SERVICE_NAMESPACE]
                                                 serviceType:serviceType
                                            presenceDelegate:self
                                              stanzaDelegate:self
@@ -94,8 +94,8 @@
                                   password:password
                                   hostname:hostName
                                       port:[port integerValue]
-                            coordinatorJID:[NSString stringWithFormat:@"%@@%@/Coordinator", DefaultSettingKeys.SERVER_USERNAME, hostName]
-                          serviceNamespace:[settings valueForKeyPath:DefaultSettingKeys.SERVICE_NAMESPACE]];
+                            coordinatorJID:[NSString stringWithFormat:@"%@@%@/Coordinator", [settings valueForKey:SERVER_USERNAME], hostName]
+                          serviceNamespace:[settings valueForKey:SERVICE_NAMESPACE]];
 }
 
 - (void)createServiceWithCompletionBlock:(ServiceCreateCompletionBlock)completionBlock

@@ -23,17 +23,18 @@
 {
     self = [super init];
     if (self) {
+
         [self readDefaultSettings];
     }
 
     return self;
 }
 
-- (NSString *)valueForKey:(NSString *)key
+- (NSString *)valueForKey:(const NSString *)key
 {
     NSString *value = nil;
     @try {
-        value = [self.settings valueForKeyPath:key];
+        value = [self.settings valueForKeyPath:(NSString *)key];
     } @catch (NSException *exception) {
         NSLog(@"An exception was thrown: %@", exception.name);
     } @finally {
