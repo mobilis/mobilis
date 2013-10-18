@@ -63,6 +63,7 @@
 {
     NSDictionary *settingsDictionary = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Settings"
                                                                                                                   ofType:@"plist"]];
+    DefaultSettings *settings = nil;
     self.connection = [MXiConnection connectionWithJabberID:jabberID
                                                    password:password
                                                    hostName:hostName

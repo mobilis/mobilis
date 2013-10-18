@@ -158,10 +158,10 @@
 		BF8CB80E5B913C619C492375 /* IncomingBeanDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IncomingBeanDetection.h; path = MXi/IncomingBeanDetection.h; sourceTree = "<group>"; };
 		BF8CB857AAAD451374CE2F4D /* NSString+Selector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+Selector.m"; path = "MXi/NSString+Selector.m"; sourceTree = "<group>"; };
 		BF8CB9A73C88963E419ADF97 /* MXiDelegateDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiDelegateDictionary.h; sourceTree = "<group>"; };
-		BF8CBA5C16CB14C9986547DF /* DefaultSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultSettings.h; sourceTree = "<group>"; };
+		BF8CBA5C16CB14C9986547DF /* DefaultSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DefaultSettings.h; path = MXi/DefaultSettings.h; sourceTree = "<group>"; };
 		BF8CBBDE971A5C43A62477FC /* Account.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Account.h; path = MXi/Account.h; sourceTree = "<group>"; };
 		BF8CBC6AB63AF23ABCE6F0D5 /* MXiDelegateSelectorMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiDelegateSelectorMapping.h; sourceTree = "<group>"; };
-		BF8CBC747E27EF22E66F0355 /* DefaultSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefaultSettings.m; sourceTree = "<group>"; };
+		BF8CBC747E27EF22E66F0355 /* DefaultSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DefaultSettings.m; path = MXi/DefaultSettings.m; sourceTree = "<group>"; };
 		BF8CBD2F7FCF91F5D3F96386 /* NSString+Selector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+Selector.h"; path = "MXi/NSString+Selector.h"; sourceTree = "<group>"; };
 		BF8CBE57C68BAD89074663D0 /* Account.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Account.m; path = MXi/Account.m; sourceTree = "<group>"; };
 		BF8CBF0B74607A09404C4201 /* MXiConnectionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiConnectionHandler.h; sourceTree = "<group>"; };
