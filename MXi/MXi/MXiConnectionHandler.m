@@ -11,6 +11,7 @@
 #import "MXiDelegateDictionary.h"
 #import "MXiDelegateSelectorMapping.h"
 #import "IncomingBeanDetection.h"
+#import "DefaultSettings.h"
 
 @interface MXiConnectionHandler ()
 
@@ -61,15 +62,14 @@
                            port:(NSNumber *)hostPort
             authenticationBlock:(AuthenticationBlock)authentication
 {
-    NSDictionary *settingsDictionary = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Settings"
-                                                                                                                  ofType:@"plist"]];
-    DefaultSettings *settings = nil;
+
+    DefaultSettings *settings = [DefaultSettings defaultSettings];
     self.connection = [MXiConnection connectionWithJabberID:jabberID
                                                    password:password
                                                    hostName:hostName
                                                        port:[hostPort intValue]
-                                             coordinatorJID:[NSString stringWithFormat:@"mobilis@%@/Coordinator", hostName]
-                                           serviceNamespace:[settingsDictionary valueForKeyPath:@"jabberInformation.serviceNamespace"]
+                                             coordinatorJID:[NSString stringWithFormat:@"%@@%@/Coordinator", DefaultSettingKeys.SERVER_USERNAME, hostName]
+                                           serviceNamespace:[settings valueForKey:DefaultSettingKeys.SERVICE_NAMESPACE]
                                                 serviceType:serviceType
                                            presenceDelegate:self
                                              stanzaDelegate:self
@@ -89,14 +89,13 @@
     _connected = NO;
     
     self.authenticationBlock = authentication;
-    NSDictionary *settingsDictionary = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Settings"
-                                                                                                                  ofType:@"plist"]];
+    DefaultSettings *settings = [DefaultSettings defaultSettings];
     [self.connection reconnectWithJabberID:jabberID
                                   password:password
                                   hostname:hostName
                                       port:[port integerValue]
-                            coordinatorJID:[NSString stringWithFormat:@"mobilis@%@/Coordinator", hostName]
-                          serviceNamespace:[settingsDictionary valueForKeyPath:@"jabberInformation.serviceNamespace"]];
+                            coordinatorJID:[NSString stringWithFormat:@"%@@%@/Coordinator", DefaultSettingKeys.SERVER_USERNAME, hostName]
+                          serviceNamespace:[settings valueForKeyPath:DefaultSettingKeys.SERVICE_NAMESPACE]];
 }
 
 - (void)createServiceWithCompletionBlock:(ServiceCreateCompletionBlock)completionBlock
