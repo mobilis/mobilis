@@ -12,6 +12,8 @@
 #import "MXiService.h"
 #import "MXiMultiUserChatDelegate.h"
 
+@class MXiMultiUserChatDiscovery;
+
 /**
  *  The MXiConnectionServiceStateDelegate defines basic methods for objects to implement when information on
  *  the service availability are required.
@@ -47,12 +49,24 @@ typedef void (^ AuthenticationBlock)(BOOL);
 */
 typedef void (^ ServiceCreateCompletionBlock)(NSString *);
 
+
+/*!
+    This block will be called when results of a multi user chat room discovery are available.
+
+    @param serviceSupported This flag is 'YES' when the domain supports multi user chat rooms otherwise 'NO'
+    @param discoveredRooms  A list of rooms that are discovered for the respective domain.
+                            This flag will be _nil_ when the service does not support XEP-0045 and empty if no rooms were discovered.
+ */
+typedef void (^DiscoveryCompletionBlock)(BOOL serviceSupported, NSArray *discoveredRooms);
+
 /**
  *  The ConnectionHandler class provides global-level information of the XMPP connection to an XMPP server.
  */
 @interface MXiConnectionHandler : NSObject <MXiBeanDelegate, MXiPresenceDelegate, MXiStanzaDelegate>
 
 @property (strong) NSArray* discoveredServiceInstances;
+
+@property (nonatomic) MXiMultiUserChatDiscovery *multiUserChatDiscovery;
 
 /**
  *  Returns a ConnectionHandler object that manages all relevant information on the connection and incoming and
@@ -120,6 +134,13 @@ typedef void (^ ServiceCreateCompletionBlock)(NSString *);
  */
 - (void)sendBean:(MXiBean<MXiOutgoingBean> *)outgoingBean;
 
+/*!
+    Send a stanza of any kind to the XMPP server.
+
+    @param element The XML stanza that is supposed to be transfered.
+ */
+- (void)sendElement:(NSXMLElement *)element;
+
 /**
  *  Various objects might be interested in incoming beans, but not all of them are interested in all incoming beans.
  *  This method allows objects to register as a delegate for only a specific bean class.
@@ -159,6 +180,17 @@ typedef void (^ ServiceCreateCompletionBlock)(NSString *);
 - (void)removeDelegate:(id<MXiConnectionServiceStateDelegate>)delegate;
 
 #pragma mark - Multi User Chat support
+
+/*!
+    This method is used to discover all available Multi User Chat rooms for a given domain.
+    Discovery follows XEP-0045 specification.
+
+    @param domain           The domain that offers the multi user chat rooms.
+    @param completionBlock  The completion block that is called when results for the discovery are available.
+                            The completion block might be called several times if more than one entity of the given domain
+                            provides Multi-User-Chat-Rooms.
+ */
+- (void)discoverMultiUserChatRoomsInDomain:(NSString *)domain withCompletionBlock:(DiscoveryCompletionBlock)completionBlock;
 
 /*!
     This method will connect to a multi user chat room specified by a given jabber ID of the room.

@@ -12,6 +12,7 @@
 #import "MXiDelegateSelectorMapping.h"
 #import "IncomingBeanDetection.h"
 #import "DefaultSettings.h"
+#import "MXiMultiUserChatDiscovery.h"
 
 @interface MXiConnectionHandler ()
 
@@ -26,6 +27,8 @@
 
 @property (copy, nonatomic) AuthenticationBlock authenticationBlock;
 @property (copy, nonatomic) ServiceCreateCompletionBlock serviceCreateCompletionBlock;
+
+@property (nonatomic, strong) dispatch_queue_t discoveryQueue;
 
 - (NSArray *)allIncomingBeans;
 - (void)clearOutgoingBeanQueue;
@@ -120,6 +123,11 @@
     }
 }
 
+- (void)sendElement:(NSXMLElement *)element
+{
+    [self.connection sendElement:element];
+}
+
 #pragma mark ConnectionHandler Delgation Methods
 
 - (void)addDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass
@@ -161,6 +169,18 @@
 }
 
 #pragma mark - Multi User Chat Support
+
+- (void)discoverMultiUserChatRoomsInDomain:(NSString *)domain withCompletionBlock:(DiscoveryCompletionBlock)completionBlock
+{
+    MXiMultiUserChatDiscovery *discovery = [[MXiMultiUserChatDiscovery alloc] initWithDomainName:domain
+                                                                              andCompletionBlock:completionBlock];
+    self.multiUserChatDiscovery = discovery;
+
+    if (!self.discoveryQueue) {
+        self.discoveryQueue = dispatch_queue_create("mucDiscoveryQueue", DISPATCH_QUEUE_CONCURRENT);
+    }
+    [discovery startDiscoveryOnQueue:self.discoveryQueue];
+}
 
 - (void)connectToMultiUserChatRoom:(NSString *)roomJID
                       withDelegate:(id <MXiMultiUserChatDelegate>)delegate
@@ -242,7 +262,9 @@
 
 - (BOOL)didReceiveIQ:(XMPPIQ *)iq
 {
-#warning incomplete implementation
+    if (self.multiUserChatDiscovery)
+        [self.multiUserChatDiscovery didReceiveIQ:iq];
+    
     return YES;
 }
 
