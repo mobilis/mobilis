@@ -24,6 +24,7 @@
 @property BOOL connected;
 
 @property (strong, nonatomic) NSMutableArray *delegates;
+@property (strong, nonatomic) NSMutableArray *stanzaDelegates;
 
 @property (copy, nonatomic) AuthenticationBlock authenticationBlock;
 @property (copy, nonatomic) ServiceCreateCompletionBlock serviceCreateCompletionBlock;
@@ -138,6 +139,22 @@
 - (void)removeDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass
 {
     [[MXiDelegateDictionary sharedInstance] removeDelegate:delegate withSelector:selector forBeanClass:beanClass];
+}
+
+- (void)addStanzaDelegate:(id)delegate
+{
+    if (!delegate)
+        return;
+    if (!self.stanzaDelegates) {
+        self.stanzaDelegates = [NSMutableArray arrayWithCapacity:10];
+    }
+
+    [self.stanzaDelegates addObject:delegate];
+}
+
+- (void)removeStanzaDelegate:(id)delegate
+{
+    [self.stanzaDelegates removeObject:delegate];
 }
 
 #pragma mark - MXiBeanDelegate
@@ -258,13 +275,24 @@
 - (void)didReceiveMessage:(XMPPMessage *)message
 {
 #warning incomplete implementation
+    for (id delegate in self.stanzaDelegates)
+        if ([delegate respondsToSelector:@selector(messageStanzaReceived:)])
+            [delegate performSelectorOnMainThread:@selector(messageStanzaReceived:)
+                                       withObject:message
+                                    waitUntilDone:NO];
 }
 
 - (BOOL)didReceiveIQ:(XMPPIQ *)iq
 {
     if (self.multiUserChatDiscovery)
         [self.multiUserChatDiscovery didReceiveIQ:iq];
-    
+
+    for (id delegate in self.stanzaDelegates)
+        if ([delegate respondsToSelector:@selector(iqStanzaReceived:)])
+            [delegate performSelectorOnMainThread:@selector(iqStanzaReceived:)
+                                       withObject:iq
+                                    waitUntilDone:NO];
+
     return YES;
 }
 
@@ -283,6 +311,12 @@
             }
         }
     }
+
+    for (id delegate in self.stanzaDelegates)
+        if ([delegate respondsToSelector:@selector(presenceStanzaRecieved:)])
+            [delegate performSelectorOnMainThread:@selector(presenceStanzaReceived)
+                                       withObject:presence
+                                    waitUntilDone:NO];
 }
 
 - (void)serviceInstanceCreating
