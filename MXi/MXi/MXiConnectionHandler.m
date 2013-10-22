@@ -29,7 +29,7 @@
 @property (copy, nonatomic) AuthenticationBlock authenticationBlock;
 @property (copy, nonatomic) ServiceCreateCompletionBlock serviceCreateCompletionBlock;
 
-@property (nonatomic, strong) dispatch_queue_t discoveryQueue;
+@property (nonatomic) dispatch_queue_t discoveryQueue;
 
 - (NSArray *)allIncomingBeans;
 - (void)clearOutgoingBeanQueue;

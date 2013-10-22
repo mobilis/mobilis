@@ -181,7 +181,7 @@ typedef void (^DiscoveryCompletionBlock)(BOOL serviceSupported, NSArray *discove
 - (void)removeDelegate:(id<MXiConnectionServiceStateDelegate>)delegate;
 
 - (void)addStanzaDelegate:(id)delegate;
-- (void)removeStanzaDelegate:(id)delegate
+- (void)removeStanzaDelegate:(id)delegate;
 
 #pragma mark - Multi User Chat support
 
