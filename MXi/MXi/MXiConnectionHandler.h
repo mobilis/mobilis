@@ -121,9 +121,10 @@ typedef void (^DiscoveryCompletionBlock)(BOOL serviceSupported, NSArray *discove
 /*!
     Create a new instance of the service the receiver is connected to.
 
+    @param serviceName      The name of the service instance that is supposed to be created.
     @param completionBlock  The block that will be executed when the creation of the instance finished.
  */
-- (void)createServiceWithCompletionBlock:(ServiceCreateCompletionBlock)completionBlock;
+- (void)createServiceWithName:(NSString *)serviceName completionBlock:(ServiceCreateCompletionBlock)completionBlock;
 
 /**
  *  This method realizes client-server communication and sends outgoing beans to the service.

@@ -102,10 +102,10 @@
                           serviceNamespace:[settings valueForKey:SERVICE_NAMESPACE]];
 }
 
-- (void)createServiceWithCompletionBlock:(ServiceCreateCompletionBlock)completionBlock
+- (void)createServiceWithName:(NSString *)serviceName completionBlock:(ServiceCreateCompletionBlock)completionBlock
 {
     self.serviceCreateCompletionBlock = completionBlock;
-    [self.connection createServiceInstanceWithServiceName:[self.connection serviceName]
+    [self.connection createServiceInstanceWithServiceName:serviceName
                                           servicePassword:nil
                                          serviceNamespace:[self.connection serviceNamespace]];
 }

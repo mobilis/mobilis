@@ -356,8 +356,10 @@
 
 - (void)sendBean:(MXiBean<MXiOutgoingBean>* )bean {
 	[bean setFrom:jabberID];
-	[bean setTo:[XMPPJID jidWithString:serviceJID]];
-	
+    if (self.serviceType == SINGLE) {
+	    [bean setTo:[XMPPJID jidWithString:serviceJID]];
+    }
+
 	[self sendElement:[MXiBeanConverter beanToIQ:bean]];
 }
 
