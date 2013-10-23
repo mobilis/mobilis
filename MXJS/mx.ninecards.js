@@ -1,3 +1,11 @@
+/** File: mx.ninecards.js
+*  Mobilis XMPP for JavaScript Framework 9Cards Plugin
+*
+*  This file will be generated automatically from ninecards.msdl using XSLT-Transformations
+*  It should not be modified manually in the future.
+*/
+
+
 var ninecards = {
 
 
