@@ -1,6 +1,7 @@
 package de.tudresden.inf.rn.mobilis.consoleclient;
 
 import java.io.File;
+import java.util.Date;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.RosterEntry;
@@ -330,9 +331,10 @@ public class Connection {
 	 *            the version of service
 	 */
 	public void sendCreateService( String serviceNamespace, int version ) {
+		
 		final CreateNewServiceInstanceBean bean = new CreateNewServiceInstanceBean(
 				serviceNamespace, null );
-
+		bean.setAnswerID((new Date()).toString());
 		if ( version > 0 ) {
 			bean.serviceVersion = version;
 		}
@@ -356,7 +358,7 @@ public class Connection {
 	public void sendCreateService( String serviceNamespace, int minVersion, int maxVersion ) {
 		final CreateNewServiceInstanceBean bean = new CreateNewServiceInstanceBean(
 				serviceNamespace, null );
-
+		bean.setAnswerID((new Date()).toString());
 		if ( minVersion > 0 ) {
 			bean.minVersion = minVersion;
 		}

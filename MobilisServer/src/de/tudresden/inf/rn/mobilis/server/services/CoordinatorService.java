@@ -418,8 +418,8 @@ public class CoordinatorService extends MobilisService {
 
 	private void inCreateServiceInstanceSet(CreateNewServiceInstanceBean bean) {
 		Boolean createAccepted = false;
-		String answerID = bean.getFrom() + bean.getId();
 		HashSet<String> remoteRuntimesSupportingService = new HashSet<String>();
+		
 		//check remote servers for requested service, but just if the Request was not forwarded yet!
 		if((bean.jidOfOriginalRequestor == null)){
 			remoteRuntimesSupportingService = CoordinationHelper.getServiceOnRemoteRuntime(bean.getServiceNamespace(), bean.getServiceVersion());
@@ -483,11 +483,11 @@ public class CoordinatorService extends MobilisService {
 		
 		//create new Instance local or on remote Runtime
 		if(createAccepted){
-			createServiceInstance(bean, answerID, remoteRuntimesSupportingService, serviceContainer, c);
+			createServiceInstance(bean, remoteRuntimesSupportingService, serviceContainer, c);
 		}
 	}
 	
-	private void createServiceInstance(CreateNewServiceInstanceBean bean, String answerID, HashSet<String> remoteRuntimesSupportingService, ServiceContainer serviceContainer, Connection connection){
+	private void createServiceInstance(CreateNewServiceInstanceBean bean, HashSet<String> remoteRuntimesSupportingService, ServiceContainer serviceContainer, Connection connection){
 		
 		//primarily create service local if possible, else try remote
 		if((null != serviceContainer && serviceContainer.getContainerState() == ServiceContainerState.ACTIVE)){
@@ -499,7 +499,7 @@ public class CoordinatorService extends MobilisService {
 				newService.setName( bean.serviceName );
 				
 				beanAnswer = new SendNewServiceInstanceBean(newService.getAgent().getFullJid(),
-						serviceContainer.getServiceVersion());
+						serviceContainer.getServiceVersion(), bean.getAnswerID());
 			// exception was thrown, respond an error 
 			} catch ( StartNewServiceInstanceException e ) {
 				beanAnswer = new SendNewServiceInstanceBean("wait", "internal-server-error", String.format( "Error starting new instance of service. Reason: %s", e.getMessage() ));
@@ -528,6 +528,7 @@ public class CoordinatorService extends MobilisService {
 			createBean.setServiceNamespace(bean.getServiceNamespace());
 			createBean.setServicePassword(bean.getServicePassword());
 			createBean.setServiceVersion(bean.getServiceVersion());
+			createBean.setAnswerID(bean.getAnswerID());
 			//choose runtime
 			createBean.setTo(loadBalancing.randomRuntimeForCreateInstance(remoteRuntimesSupportingService) + "/Coordinator");
 			connection.sendPacket(new BeanIQAdapter(createBean));
@@ -540,7 +541,7 @@ public class CoordinatorService extends MobilisService {
 
 			
 			//create Answer IQ for original Client Requestor
-			SendNewServiceInstanceBean toOriginalRequestor = new SendNewServiceInstanceBean(inBean.getJidOfNewService(), inBean.getServiceVersion());
+			SendNewServiceInstanceBean toOriginalRequestor = new SendNewServiceInstanceBean(inBean.getJidOfNewService(), inBean.getServiceVersion(), inBean.getAnswerID());
 			toOriginalRequestor.setFrom(inBean.getTo());
 			toOriginalRequestor.setTo(inBean.jidOfOriginalRequestor);
 			

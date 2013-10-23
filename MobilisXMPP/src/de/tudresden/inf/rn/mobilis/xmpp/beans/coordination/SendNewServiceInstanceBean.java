@@ -22,12 +22,14 @@ public class SendNewServiceInstanceBean extends XMPPBean {
 	public int maxVersion = -1;
 	public String jidOfNewService;
 	public String jidOfOriginalRequestor;
+	public String answerID; // to assign this message to the correct previously sent CreateNewServiceInstance Request
 	
 	/** Constructor for sending new Service Instance Information back to original Requestor; type=SET */
-	public SendNewServiceInstanceBean(String jidOfNewService, int serviceVersion) {
+	public SendNewServiceInstanceBean(String jidOfNewService, int serviceVersion, String answerID) {
 		super();
 		this.jidOfNewService=jidOfNewService;
 		this.serviceVersion = serviceVersion;
+		this.answerID = answerID;
 		this.type=XMPPBean.TYPE_SET;
 	}
 		
@@ -44,11 +46,12 @@ public class SendNewServiceInstanceBean extends XMPPBean {
 	
 	@Override
 	public SendNewServiceInstanceBean clone() {
-		SendNewServiceInstanceBean twin = new SendNewServiceInstanceBean(jidOfNewService, serviceVersion);		
+		SendNewServiceInstanceBean twin = new SendNewServiceInstanceBean(jidOfNewService, serviceVersion, answerID);		
 		twin.jidOfNewService = this.jidOfNewService;
 		twin.serviceVersion = this.serviceVersion;
 		twin.minVersion = this.minVersion;
 		twin.maxVersion = this.maxVersion;
+		twin.answerID = this.answerID;
 		
 		twin = (SendNewServiceInstanceBean) cloneBasicAttributes(twin);
 		return twin;
@@ -64,6 +67,8 @@ public class SendNewServiceInstanceBean extends XMPPBean {
 			sb.append("<jidOfNewService>").append(jidOfNewService).append("</jidOfNewService>");
 		if (this.jidOfOriginalRequestor!=null)
 			sb.append("<jidOfOriginalRequestor>").append(jidOfOriginalRequestor).append("</jidOfOriginalRequestor>");
+		if (this.answerID!=null)
+			sb.append("<answerID>").append(answerID).append("</answerID>");
 		if (this.serviceVersion!=-1)
 			sb.append("<serviceVersion>").append(this.serviceVersion).append("</serviceVersion>");
 		if (this.minVersion!=-1)
@@ -92,6 +97,8 @@ public class SendNewServiceInstanceBean extends XMPPBean {
 					this.jidOfNewService = parser.nextText();
 				} else if (tagName.equals("jidOfOriginalRequestor")) {
 					this.jidOfOriginalRequestor = parser.nextText();	
+				} else if (tagName.equals("answerID")) {
+					this.answerID = parser.nextText();
 				} else if (tagName.equals("serviceVersion")) {
 					this.serviceVersion = Integer.parseInt( parser.nextText() );	
 				} else if (tagName.equals("minVersion")) {
@@ -185,6 +192,14 @@ public class SendNewServiceInstanceBean extends XMPPBean {
 	 */
 	public void setMaxVersion( int maxVersion ) {
 		this.maxVersion = maxVersion;
+	}
+
+	public String getAnswerID() {
+		return answerID;
+	}
+
+	public void setAnswerID(String answerID) {
+		this.answerID = answerID;
 	}
 	
 	
