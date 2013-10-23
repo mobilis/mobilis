@@ -1108,7 +1108,6 @@ public class MobilisManager {
 	}
 	
 	private Roster runtimeRoster;
-	private Roster discoveryRoster;
 	private Boolean reinstalling = false;
 	private EntityCapsManager capsManager;
 	private ServiceDiscoveryManager serviceDiscoveryManager;
