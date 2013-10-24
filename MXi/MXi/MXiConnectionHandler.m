@@ -222,6 +222,11 @@
     [self.connection sendMessage:message toRoom:roomJID];
 }
 
+- (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID toUser:(NSString *)userName
+{
+    [self.connection sendMessage:message toRoom:[NSString stringWithFormat:@"%@/%@", roomJID, userName]];
+}
+
 - (BOOL)isMultiUserChatDelegateSet
 {
     return self.connection.mucDelegate != nil;

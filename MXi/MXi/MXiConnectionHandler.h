@@ -217,10 +217,12 @@ typedef void (^DiscoveryCompletionBlock)(BOOL serviceSupported, NSArray *discove
 /*!
     Sends a groupchat message to a multi user chat room specified by a given JID.
 
-    @param message The body of the message as a string.
-    @param roomJID The jabber ID of the room this message is addressed to.
+    @param message  The body of the message as a string.
+    @param roomJID  The jabber ID of the room this message is addressed to.
+    @param userName The resource of the user within the chat room;
  */
 - (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID;
+- (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID toUser:(NSString *)userName;
 /*!
     Tells the sender whether a multi user chat delegate is already set.
 
