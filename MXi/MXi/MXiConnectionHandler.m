@@ -237,7 +237,7 @@
 
 - (void)didAuthenticate
 {
-    _authenticated = YES;
+    self.authenticated = YES;
 }
 
 - (void)didDiscoverServiceWithNamespace:(NSString *)serviceNamespace

@@ -11,7 +11,10 @@
 #import "MXi.h"
 #else
 #import <MXi/MXi.h>
+#import <MXi/MXiOutgoingBean.h>
 #endif
+
+#import "MXiOutgoingBean.h"
 
 @interface MXiBeanConverter : NSObject
 

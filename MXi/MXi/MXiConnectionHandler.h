@@ -11,6 +11,7 @@
 #import "MXiConnection.h"
 #import "MXiService.h"
 #import "MXiMultiUserChatDelegate.h"
+#import "MXiOutgoingBean.h"
 
 @class MXiMultiUserChatDiscovery;
 
