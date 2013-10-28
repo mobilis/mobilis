@@ -29,7 +29,7 @@
 {
     self = [super init];
     if (self) {
-        self.domainName;
+        self.domainName = domainName;
         self.discoveryCompletionBlock = completionBlock;
 
         self.discoveredRooms = [NSMutableArray arrayWithCapacity:10];
@@ -60,10 +60,12 @@
         [self domainItemsRequest:xmppiq];
     }
     if ([xmppiq isResultIQ] && [self isDiscoItemsResult:xmppiq]) {
-        if ([self hasItemMUCFeature:xmppiq])
-            [self constructInformationQueryWithAddressee:[[xmppiq from] full]
-                                               elementID:@"roomDiscovery"
-                                               queryType:serviceDiscoItemsNS];
+        if ([self hasItemMUCFeature:xmppiq]) {
+            XMPPIQ *iq = [self constructInformationQueryWithAddressee:[[xmppiq from] full]
+                                                            elementID:@"roomDiscovery"
+                                                            queryType:serviceDiscoItemsNS];
+            [[MXiConnectionHandler sharedInstance] sendElement:iq];
+        }
     }
     if ([xmppiq isResultIQ] && [[xmppiq attributeStringValueForName:@"id"] isEqualToString:@"roomDiscovery"]) {
         [self readRoomItemsFromIQ:xmppiq];
@@ -75,14 +77,14 @@
 - (XMPPIQ *)constructInformationQueryWithAddressee:(NSString *)jid elementID:(NSString *)elementID queryType:(NSString *)queryType
 {
     NSXMLElement *query = [[NSXMLElement alloc] initWithName:@"query" xmlns:queryType];
-    XMPPIQ *iq = [[XMPPIQ alloc] initWithType:@"GET" to:[XMPPJID jidWithString:jid] elementID:elementID child:query];
+    XMPPIQ *iq = [[XMPPIQ alloc] initWithType:@"get" to:[XMPPJID jidWithString:jid] elementID:elementID child:query];
 
     return iq;
 }
 
 - (void)domainItemsRequest:(XMPPIQ *)xmppiq
 {
-    NSArray *items = [xmppiq elementsForName:@"item"];
+    NSArray *items = [[xmppiq childElement] elementsForName:@"item"];
     self.cachedDomainItems = [NSMutableArray arrayWithCapacity:items.count];
     int index = 0;
     for (NSXMLElement *element in items) {
@@ -114,7 +116,7 @@
 
 - (BOOL)hasItemMUCFeature:(XMPPIQ *)xmppiq
 {
-    NSArray *features = [xmppiq elementsForName:@"feature"];
+    NSArray *features = [[xmppiq childElement] elementsForName:@"feature"];
     BOOL isMUC = NO;
     for (NSXMLElement *element in features)
         if ([[element attributeStringValueForName:@"var"] isEqualToString:@"http://jabber.org/protocol/muc"]) {

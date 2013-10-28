@@ -16,6 +16,36 @@
 		5B1C4023180EDA720029030E /* MXiService.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B1C4020180EDA720029030E /* MXiService.h */; };
 		5B1C4024180EDA720029030E /* MXiService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B1C4021180EDA720029030E /* MXiService.m */; };
 		5B1C4025180EDA720029030E /* MXiService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B1C4021180EDA720029030E /* MXiService.m */; };
+		5B289A1F181D1B0800947F30 /* MXi.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 794491B117199564000D53ED /* MXi.h */; };
+		5B289A20181D1B0800947F30 /* MXiConnection.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79F3944E17200551003F348C /* MXiConnection.h */; };
+		5B289A21181D1B0800947F30 /* MXiConnection.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79F3944F17200551003F348C /* MXiConnection.m */; };
+		5B289A22181D1B0800947F30 /* MXiBean.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */; };
+		5B289A23181D1B0800947F30 /* MXiBean.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */; };
+		5B289A24181D1B0800947F30 /* MXiStanzaDelegate.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DDA1175BA80300E6BDE4 /* MXiStanzaDelegate.h */; };
+		5B289A25181D1B0800947F30 /* MXiBeanDelegate.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DDA7175BF38500E6BDE4 /* MXiBeanDelegate.h */; };
+		5B289A26181D1B0800947F30 /* MXiPresenceDelegate.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DDA4175BA82800E6BDE4 /* MXiPresenceDelegate.h */; };
+		5B289A27181D1B0800947F30 /* MXiOutgoingBean.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD82175A55AC00E6BDE4 /* MXiOutgoingBean.h */; };
+		5B289A28181D1B0800947F30 /* MXiIncomingBean.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD98175A6B4700E6BDE4 /* MXiIncomingBean.h */; };
+		5B289A29181D1B0800947F30 /* MXiBeanConverter.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD8C175A5D2700E6BDE4 /* MXiBeanConverter.h */; };
+		5B289A2A181D1B0800947F30 /* MXiBeanConverter.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD8D175A5D2700E6BDE4 /* MXiBeanConverter.m */; };
+		5B289A2B181D1B0800947F30 /* MXiIQTypeLookup.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD92175A5FD300E6BDE4 /* MXiIQTypeLookup.h */; };
+		5B289A2C181D1B0800947F30 /* MXiIQTypeLookup.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD93175A5FD300E6BDE4 /* MXiIQTypeLookup.m */; };
+		5B289A2D181D1B0800947F30 /* NSString+Selector.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF8CBD2F7FCF91F5D3F96386 /* NSString+Selector.h */; };
+		5B289A2E181D1B0800947F30 /* NSString+Selector.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF8CB857AAAD451374CE2F4D /* NSString+Selector.m */; };
+		5B289A2F181D1B0800947F30 /* IncomingBeanDetection.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF8CB80E5B913C619C492375 /* IncomingBeanDetection.h */; };
+		5B289A30181D1B0800947F30 /* IncomingBeanDetection.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF8CB45C30B5D7AD64060F96 /* IncomingBeanDetection.m */; };
+		5B289A31181D1B0800947F30 /* AccountManager.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF8CB3DEE0E9030529613B43 /* AccountManager.m */; };
+		5B289A32181D1B0800947F30 /* AccountManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF8CB5EB81F5D4F34239D7F2 /* AccountManager.h */; };
+		5B289A33181D1B0800947F30 /* Account.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF8CBE57C68BAD89074663D0 /* Account.m */; };
+		5B289A34181D1B0800947F30 /* Account.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF8CBBDE971A5C43A62477FC /* Account.h */; };
+		5B289A35181D1B0800947F30 /* DefaultSettings.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF8CBC747E27EF22E66F0355 /* DefaultSettings.m */; };
+		5B289A36181D1B0800947F30 /* DefaultSettings.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF8CBA5C16CB14C9986547DF /* DefaultSettings.h */; };
+		5B289A37181D1B0800947F30 /* MXiService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5B1C4020180EDA720029030E /* MXiService.h */; };
+		5B289A38181D1B0800947F30 /* MXiService.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5B1C4021180EDA720029030E /* MXiService.m */; };
+		5B289A39181D1B0800947F30 /* MXiMultiUserChatDiscovery.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF8CB4FFC599C36309F70F9C /* MXiMultiUserChatDiscovery.m */; };
+		5B289A3A181D1B0800947F30 /* MXiMultiUserChatDiscovery.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF8CB24BEE6CABF9B1242256 /* MXiMultiUserChatDiscovery.h */; };
+		5B289A3B181D1B0800947F30 /* MXiMultiUserChatRoom.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF8CB9A9E558869874872CEB /* MXiMultiUserChatRoom.m */; };
+		5B289A3C181D1B0800947F30 /* MXiMultiUserChatRoom.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF8CBB22DC9E48CE9D482547 /* MXiMultiUserChatRoom.h */; };
 		5B63EE5E17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B63EE5D17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5B63EE5F17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B63EE5D17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5B63EE6717D20D8100CD8667 /* MXiMultiUserChatMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B63EE6517D20D8100CD8667 /* MXiMultiUserChatMessage.h */; settings = {ATTRIBUTES = (); }; };
@@ -112,6 +142,36 @@
 			dstPath = "include/${PRODUCT_NAME}";
 			dstSubfolderSpec = 16;
 			files = (
+				5B289A1F181D1B0800947F30 /* MXi.h in CopyFiles */,
+				5B289A20181D1B0800947F30 /* MXiConnection.h in CopyFiles */,
+				5B289A21181D1B0800947F30 /* MXiConnection.m in CopyFiles */,
+				5B289A22181D1B0800947F30 /* MXiBean.h in CopyFiles */,
+				5B289A23181D1B0800947F30 /* MXiBean.m in CopyFiles */,
+				5B289A24181D1B0800947F30 /* MXiStanzaDelegate.h in CopyFiles */,
+				5B289A25181D1B0800947F30 /* MXiBeanDelegate.h in CopyFiles */,
+				5B289A26181D1B0800947F30 /* MXiPresenceDelegate.h in CopyFiles */,
+				5B289A27181D1B0800947F30 /* MXiOutgoingBean.h in CopyFiles */,
+				5B289A28181D1B0800947F30 /* MXiIncomingBean.h in CopyFiles */,
+				5B289A29181D1B0800947F30 /* MXiBeanConverter.h in CopyFiles */,
+				5B289A2A181D1B0800947F30 /* MXiBeanConverter.m in CopyFiles */,
+				5B289A2B181D1B0800947F30 /* MXiIQTypeLookup.h in CopyFiles */,
+				5B289A2C181D1B0800947F30 /* MXiIQTypeLookup.m in CopyFiles */,
+				5B289A2D181D1B0800947F30 /* NSString+Selector.h in CopyFiles */,
+				5B289A2E181D1B0800947F30 /* NSString+Selector.m in CopyFiles */,
+				5B289A2F181D1B0800947F30 /* IncomingBeanDetection.h in CopyFiles */,
+				5B289A30181D1B0800947F30 /* IncomingBeanDetection.m in CopyFiles */,
+				5B289A31181D1B0800947F30 /* AccountManager.m in CopyFiles */,
+				5B289A32181D1B0800947F30 /* AccountManager.h in CopyFiles */,
+				5B289A33181D1B0800947F30 /* Account.m in CopyFiles */,
+				5B289A34181D1B0800947F30 /* Account.h in CopyFiles */,
+				5B289A35181D1B0800947F30 /* DefaultSettings.m in CopyFiles */,
+				5B289A36181D1B0800947F30 /* DefaultSettings.h in CopyFiles */,
+				5B289A37181D1B0800947F30 /* MXiService.h in CopyFiles */,
+				5B289A38181D1B0800947F30 /* MXiService.m in CopyFiles */,
+				5B289A39181D1B0800947F30 /* MXiMultiUserChatDiscovery.m in CopyFiles */,
+				5B289A3A181D1B0800947F30 /* MXiMultiUserChatDiscovery.h in CopyFiles */,
+				5B289A3B181D1B0800947F30 /* MXiMultiUserChatRoom.m in CopyFiles */,
+				5B289A3C181D1B0800947F30 /* MXiMultiUserChatRoom.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -725,9 +785,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 75309DE704624699BD755763 /* Pods.xcconfig */;
 			buildSettings = {
-				DSTROOT = /tmp/MXi.dst;
+				DEPLOYMENT_LOCATION = NO;
+				DSTROOT = /Users/martin/Desktop/MXi.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MXi/MXi-Prefix.pch";
+				INSTALL_PATH = /Library;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -737,7 +799,7 @@
 				PRODUCT_NAME = MXi;
 				PUBLIC_HEADERS_FOLDER_PATH = "include/$(PRODUCT_NAME)";
 				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
+				SKIP_INSTALL = NO;
 			};
 			name = Debug;
 		};
@@ -745,9 +807,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 75309DE704624699BD755763 /* Pods.xcconfig */;
 			buildSettings = {
-				DSTROOT = /tmp/MXi.dst;
+				DEPLOYMENT_LOCATION = NO;
+				DSTROOT = /Users/martin/Desktop/MXi.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MXi/MXi-Prefix.pch";
+				INSTALL_PATH = /Users/martin/Desktop;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -758,7 +822,7 @@
 				PRODUCT_NAME = MXi;
 				PUBLIC_HEADERS_FOLDER_PATH = "include/$(PRODUCT_NAME)";
 				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
+				SKIP_INSTALL = NO;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
