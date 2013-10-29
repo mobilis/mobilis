@@ -129,7 +129,7 @@
 
 - (void)readRoomItemsFromIQ:(XMPPIQ *)xmppiq
 {
-    NSArray *rooms = [xmppiq elementsForName:@"item"];
+    NSArray *rooms = [[xmppiq childElement] elementsForName:@"item"];
     @synchronized (self.discoveredRooms) {
         for (NSXMLElement *roomElement in rooms)
             [self.discoveredRooms addObject:[[MXiMultiUserChatRoom alloc] initWithName:[roomElement attributeStringValueForName:@"name"]
