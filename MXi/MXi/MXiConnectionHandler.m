@@ -46,7 +46,7 @@
     static dispatch_once_t onceToken;
     __strong static MXiConnectionHandler *shared = nil;
     dispatch_once(&onceToken, ^{
-        shared = [[self alloc] initUniqueInstance];
+        shared = [[super allocWithZone:NULL] initUniqueInstance];
     });
     return shared;
 }
