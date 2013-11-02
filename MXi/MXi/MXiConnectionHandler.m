@@ -46,15 +46,20 @@
     static dispatch_once_t onceToken;
     __strong static MXiConnectionHandler *shared = nil;
     dispatch_once(&onceToken, ^{
-        shared = [[super alloc] initUniqueInstance];
+        shared = [[self alloc] initUniqueInstance];
     });
     return shared;
+}
+
++ (id)allocWithZone:(struct _NSZone *)zone
+{
+    return [self sharedInstance];
 }
 
 - (instancetype)initUniqueInstance
 {
     self.delegates = [NSMutableArray arrayWithCapacity:10];
-    return [super init];
+    return [self init];
 }
 
 #pragma mark - Connection Handling

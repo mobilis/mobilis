@@ -20,9 +20,6 @@
 
 @implementation MXiConnection
 
-@synthesize jabberID, password, hostName, port, serviceJID, coordinatorJID, serviceNamespace,
-	xmppStream, presenceDelegate, stanzaDelegate, beanDelegate, incomingBeanPrototypes;
-
 + (id)connectionWithJabberID:(NSString *)aJabberID
                     password:(NSString *)aPassword
                     hostName:(NSString *)aHostName
@@ -121,11 +118,11 @@
 
 - (void)xmppStreamDidConnect:(XMPPStream* )sender {
 	NSError* error = nil;
-	[xmppStream authenticateWithPassword:password error:&error];
+	[self.xmppStream authenticateWithPassword:self.password error:&error];
 }
 
 - (void)xmppStreamDidDisconnect:(XMPPStream *)sender withError:(NSError *)error {
-	[presenceDelegate didDisconnectWithError:error];
+	[self.presenceDelegate didDisconnectWithError:error];
 }
 
 - (void)xmppStreamDidAuthenticate:(XMPPStream* )sender {
@@ -138,11 +135,11 @@
 - (void)xmppStream:(XMPPStream *)sender didNotAuthenticate:(NSXMLElement *)error {
 	NSLog(@"libMXi.a: Authentication failed");
 	
-	[presenceDelegate didFailToAuthenticate:error];
+	[self.presenceDelegate didFailToAuthenticate:error];
 }
 
 - (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq {
-	BOOL success = [stanzaDelegate didReceiveIQ:iq];
+	BOOL success = [self.stanzaDelegate didReceiveIQ:iq];
 
 	NSLog(@"Received iq: %@", [iq prettyXMLString]);
 	NSXMLElement* childElement = [iq childElement];
@@ -151,7 +148,7 @@
     [self validateDiscoveredServices:childElement];
 
     // Did we get an incoming mobilis bean?
-	for (MXiBean<MXiIncomingBean>* prototype in incomingBeanPrototypes) {
+	for (MXiBean<MXiIncomingBean>* prototype in self.incomingBeanPrototypes) {
 		if ([[[prototype class] elementName] isEqualToString:[childElement name]] &&
 				[[[prototype class] iqNamespace] isEqualToString:[childElement xmlns]] &&
 				[[MXiIQTypeLookup stringValueForIQType:[prototype beanType]]
@@ -159,7 +156,7 @@
 			// parse the iq data into the bean object
 			[MXiBeanConverter beanFromIQ:iq intoBean:prototype];
 			// inform the app about this incoming bean
-			[beanDelegate didReceiveBean:prototype];
+			[self.beanDelegate didReceiveBean:prototype];
 		}
 	}
 
@@ -187,7 +184,7 @@
             [self setServiceJID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
             [self setServiceName:[discoveredServiceElement attributeStringValueForName:@"serviceName"]];
         }
-        [presenceDelegate didDiscoverServiceWithNamespace:[discoveredServiceElement attributeStringValueForName:@"namespace"]
+        [self.presenceDelegate didDiscoverServiceWithNamespace:[discoveredServiceElement attributeStringValueForName:@"namespace"]
                                                      name:[discoveredServiceElement attributeStringValueForName:@"serviceName"]
                                                   version:[discoveredServiceElement attributeIntegerValueForName:@"version"]
                                                atJabberID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
@@ -240,15 +237,15 @@
 }
 
 - (void)xmppStream:(XMPPStream *)sender didReceiveMessage:(XMPPMessage *)message {
-	[stanzaDelegate didReceiveMessage:message];
+	[self.stanzaDelegate didReceiveMessage:message];
 }
 
 - (void)xmppStream:(XMPPStream *)sender didReceivePresence:(XMPPPresence *)presence {
-	[stanzaDelegate didReceivePresence:presence];
+	[self.stanzaDelegate didReceivePresence:presence];
 }
 
 - (void)xmppStream:(XMPPStream *)sender didReceiveError:(NSXMLElement *)error {
-	[stanzaDelegate didReceiveError:error];
+	[self.stanzaDelegate didReceiveError:error];
 }
 
 /*
@@ -256,21 +253,21 @@
  */
 
 - (void)setupStream {
-	xmppStream = [[XMPPStream alloc] init];
+    _xmppStream = [[XMPPStream alloc] init];
 	// inform this very object about stream events
-	[xmppStream addDelegate:self delegateQueue:dispatch_get_main_queue()];
+	[self.xmppStream addDelegate:self delegateQueue:dispatch_get_main_queue()];
 }
 
 - (void)goOnline {
 	XMPPPresence* presence = [XMPPPresence presence];
-	[xmppStream sendElement:presence];
+	[self.xmppStream sendElement:presence];
 	
-	[presenceDelegate didAuthenticate];
+	[self.presenceDelegate didAuthenticate];
 }
 
 - (void)goOffline {
 	XMPPPresence* presence = [XMPPPresence presenceWithType:@"unavailable"];
-	[xmppStream sendElement:presence];
+	[self.xmppStream sendElement:presence];
 }
 
 - (void)discoverServices
@@ -306,16 +303,16 @@
 }
 
 - (BOOL)connect {
-	if ([xmppStream isConnected]) {
+	if ([self.xmppStream isConnected]) {
 		return YES;
 	}
 	
-	[xmppStream setMyJID:[self jabberID]];
-	[xmppStream setHostName:[self hostName]];
-	[xmppStream setHostPort:[self port]];
+	[self.xmppStream setMyJID:[self jabberID]];
+	[self.xmppStream setHostName:[self hostName]];
+	[self.xmppStream setHostPort:[self port]];
 	
 	XMPPReconnect* reconnect = [[XMPPReconnect alloc] init];
-	[reconnect activate:xmppStream];
+	[reconnect activate:self.xmppStream];
 	
 	/*
 	NSLog(@"Trying to connect with:");
@@ -326,7 +323,7 @@
 	*/
 	
 	NSError* error = nil;
-	if (![xmppStream connectWithTimeout:30.0 error:&error]) {
+	if (![self.xmppStream connectWithTimeout:30.0 error:&error]) {
 		NSLog(@"Couldn't connect because of error: %@", [error localizedDescription]);
 		return NO;
 	}
@@ -342,22 +339,22 @@
 	NSXMLElement *message = [NSXMLElement elementWithName:@"message"];
 	[message addAttributeWithName:@"type" stringValue:@"chat"];
 	[message addAttributeWithName:@"to" stringValue:to];
-	[message addAttributeWithName:@"from" stringValue:[jabberID full]];
+	[message addAttributeWithName:@"from" stringValue:[self.jabberID full]];
 	[message addChild:body];
 	
-	[xmppStream sendElement:message];
+	[self.xmppStream sendElement:message];
 }
 
 - (void)sendElement:(NSXMLElement* )element {
 	NSLog(@"Sent: %@", [element prettyXMLString]);
 	
-	[xmppStream sendElement:element];
+	[self.xmppStream sendElement:element];
 }
 
 - (void)sendBean:(MXiBean<MXiOutgoingBean>* )bean {
-	[bean setFrom:jabberID];
+	[bean setFrom:self.jabberID];
     if (self.serviceType == SINGLE) {
-	    [bean setTo:[XMPPJID jidWithString:serviceJID]];
+	    [bean setTo:[XMPPJID jidWithString:self.serviceJID]];
     }
 
 	[self sendElement:[MXiBeanConverter beanToIQ:bean]];
@@ -388,7 +385,7 @@
 
 - (void)disconnect {
 	[self goOffline];
-	[xmppStream disconnect];
+	[self.xmppStream disconnect];
 }
 
 #pragma mark - XMPPRoomDelegate

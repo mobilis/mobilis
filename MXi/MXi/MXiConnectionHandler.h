@@ -82,10 +82,6 @@ typedef void (^DiscoveryCompletionBlock)(BOOL serviceSupported, NSArray *discove
  */
 + (instancetype)sharedInstance;
 
-+ (instancetype) alloc __attribute__((unavailable("alloc not available, call sharedInstance instead")));
-- (instancetype) init __attribute__((unavailable("init not available, call sharedInstance instead")));
-+ (instancetype) new __attribute__((unavailable("new not available, call sharedInstance instead")));
-
 /**
  *  Set up a new Connection to a XMPP server. The credentials used in this method will automatically be
  *  stored in the Keychains which means old account information will be overridden.

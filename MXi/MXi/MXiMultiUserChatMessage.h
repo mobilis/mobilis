@@ -10,10 +10,8 @@
 
 #if TARGET_OS_IPHONE
 #import "XMPPFramework.h"
-#import "MXiMultiUserChatMessage.h"
 #else
 #import <XMPPFramework.h>
-#import <MXi/MXiMultiUserChatMessage.h>
 #endif
 
 @interface MXiMultiUserChatMessage : XMPPMessage

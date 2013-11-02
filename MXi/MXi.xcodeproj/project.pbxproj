@@ -65,7 +65,6 @@
 		797C0411171C218B00B40FFC /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 797C040C171C216A00B40FFC /* CFNetwork.framework */; };
 		797C0437171C231C00B40FFC /* libidn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 797C0434171C231C00B40FFC /* libidn.a */; };
 		797C04DA171C23DF00B40FFC /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 797C04D9171C23DF00B40FFC /* libresolv.dylib */; };
-		797C04E3171C266700B40FFC /* libidn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 797C04E2171C266700B40FFC /* libidn.a */; };
 		798D5FBA17CCABB800B27757 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 798D5FB917CCABB800B27757 /* SystemConfiguration.framework */; };
 		79A4DD7E175A22FC00E6BDE4 /* MXiBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		79A4DD7F175A22FC00E6BDE4 /* MXiBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -184,6 +183,7 @@
 		5B63EE5D17D1DC5C00CD8667 /* MXiMultiUserChatDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiMultiUserChatDelegate.h; sourceTree = "<group>"; };
 		5B63EE6517D20D8100CD8667 /* MXiMultiUserChatMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiMultiUserChatMessage.h; sourceTree = "<group>"; };
 		5B63EE6617D20D8100CD8667 /* MXiMultiUserChatMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiMultiUserChatMessage.m; sourceTree = "<group>"; };
+		5BA939881825570100273341 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		5E156E753AD44996897DFA13 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		75309DE704624699BD755763 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		794491A117199564000D53ED /* MXi.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MXi.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -248,7 +248,6 @@
 				797C040F171C218000B40FFC /* Security.framework in Frameworks */,
 				797C040D171C216A00B40FFC /* CFNetwork.framework in Frameworks */,
 				794491A517199564000D53ED /* Cocoa.framework in Frameworks */,
-				797C04E3171C266700B40FFC /* libidn.a in Frameworks */,
 				5B154F5417D0BABF004AAD86 /* SystemConfiguration.framework in Frameworks */,
 				5B154F5517D0BB14004AAD86 /* Foundation.framework in Frameworks */,
 				2674978684C44FDF8BB44FBB /* libPods.a in Frameworks */,
@@ -294,6 +293,7 @@
 		794491A317199564000D53ED /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5BA939881825570100273341 /* XCTest.framework */,
 				5B1FC78617EAEAFA0071C1E3 /* libresolv.dylib */,
 				798D5FB917CCABB800B27757 /* SystemConfiguration.framework */,
 				797C04E5171C270000B40FFC /* lib-os-x */,

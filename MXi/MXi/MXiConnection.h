@@ -9,12 +9,12 @@
 #if TARGET_OS_IPHONE
 #import "MXi.h"
 #import "XMPPFramework.h"
-#import "MXiMultiUserChatDelegate.h"
 #else
 #import <MXi/MXi.h>
 #import <XMPPFramework.h>
-#import <MXiMultiUserChatDelegate.h>
 #endif
+
+#import "MXiMultiUserChatDelegate.h"
 
 static NSString *const CoordinatorService = @"http://mobilis.inf.tu-dresden.de#services/CoordinatorService";
 
