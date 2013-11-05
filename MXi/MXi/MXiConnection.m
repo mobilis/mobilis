@@ -32,28 +32,54 @@
                 beanDelegate:(id <MXiBeanDelegate>)aBeanDelegate
    listeningForIncomingBeans:(NSArray *)theIncomingBeanPrototypes
 {
-	MXiConnection* connection = [[MXiConnection alloc] init];
-	
-	XMPPJID* tempJid = [XMPPJID jidWithString:aJabberID];
-	[connection setJabberID:tempJid];
-	[connection setPassword:aPassword];
-    [connection setServiceType: serviceType];
-	if (aHostName && ![aHostName isEqualToString:@""]) {
-		[connection setHostName:aHostName];
-	} else {
-		[connection setHostName:[tempJid domain]];
-	}
-	[connection setPort:port];
-	[connection setCoordinatorJID:theCoordinatorJID];
-	[connection setServiceNamespace:theServiceNamespace];
-	[connection setPresenceDelegate:aPresenceDelegate];
-	[connection setStanzaDelegate:aStanzaDelegate];
-	[connection setBeanDelegate:aBeanDelegate];
-	[connection setIncomingBeanPrototypes:theIncomingBeanPrototypes];
-	
-	[connection setupStream];
-	[connection connect];
-	return connection;
+	return [[self alloc] initWithJabberID:aJabberID
+                                 password:aPassword
+                                 hostName:aHostName
+                                     port:port
+                           coordinatorJID:theCoordinatorJID
+                         serviceNamespace:theServiceNamespace
+                              serviceType:serviceType
+                         presenceDelegate:aPresenceDelegate
+                           stanzaDelegate:aStanzaDelegate
+                             beanDelegate:aBeanDelegate
+                listeningForIncomingBeans:theIncomingBeanPrototypes];
+}
+
+- (id)initWithJabberID:(NSString *)aJabberID
+                    password:(NSString *)aPassword
+                    hostName:(NSString *)aHostName
+                        port:(NSInteger)port
+              coordinatorJID:(NSString *)theCoordinatorJID
+            serviceNamespace:(NSString *)theServiceNamespace
+                 serviceType:(ServiceType)serviceType
+            presenceDelegate:(id <MXiPresenceDelegate>)aPresenceDelegate
+              stanzaDelegate:(id <MXiStanzaDelegate>)aStanzaDelegate
+                beanDelegate:(id <MXiBeanDelegate>)aBeanDelegate
+   listeningForIncomingBeans:(NSArray *)theIncomingBeanPrototypes
+{
+    self = [super init];
+    if (self) {
+        XMPPJID* tempJid = [XMPPJID jidWithString:aJabberID];
+        [self setJabberID:tempJid];
+        [self setPassword:aPassword];
+        [self setServiceType: serviceType];
+        if (aHostName && ![aHostName isEqualToString:@""]) {
+            [self setHostName:aHostName];
+        } else {
+            [self setHostName:[tempJid domain]];
+        }
+        [self setPort:port];
+        [self setCoordinatorJID:theCoordinatorJID];
+        [self setServiceNamespace:theServiceNamespace];
+        [self setPresenceDelegate:aPresenceDelegate];
+        [self setStanzaDelegate:aStanzaDelegate];
+        [self setBeanDelegate:aBeanDelegate];
+        [self setIncomingBeanPrototypes:theIncomingBeanPrototypes];
+
+        [self setupStream];
+        [self connect];
+    }
+    return self;
 }
 
 - (BOOL)reconnectWithJabberID:(NSString *)aJabberID
