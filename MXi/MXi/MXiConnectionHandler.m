@@ -134,6 +134,22 @@
     [self.connection sendElement:element];
 }
 
+- (void)sendMessageString:(NSString *)messageString toJID:(NSString *)jid
+{
+    NSXMLElement *body = [NSXMLElement elementWithName:@"body" stringValue:messageString];
+    NSXMLElement *message = [NSXMLElement elementWithName:@"message"
+                                                 children:@[body]
+                                               attributes:@[[NSXMLNode attributeWithName:@"to" stringValue:jid],
+                                                            [NSXMLNode attributeWithName:@"type" stringValue:@"chat"],
+                                                            [NSXMLNode attributeWithName:@"from" stringValue:[self.connection.jabberID full]]]];
+    [self sendElement:message];
+}
+
+- (void)sendMessageXML:(NSXMLElement *)messageElement toJID:(NSString *)jid
+{
+    [self sendMessageString:[messageElement XMLString] toJID:jid];
+}
+
 #pragma mark ConnectionHandler Delgation Methods
 
 - (void)addDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass
@@ -277,6 +293,7 @@
 
 - (void)didCreateServiceWithJabberID:(NSString *)jabberID andVersion:(NSString *)version
 {
+    [self.connection discoverServiceInstances];
     self.serviceCreateCompletionBlock(jabberID);
 }
 

@@ -133,8 +133,9 @@
 
 - (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID;
 {
+    XMPPJID *outgoingJID = [XMPPJID jidWithString:roomJID];
     for (XMPPRoom *room in _connectedMUCRooms) {
-        if ([[room.roomJID full] isEqualToString:roomJID]) {
+        if ([[room.roomJID full] isEqualToString:[outgoingJID bare]]) {
             [room sendMessage:[MXiMultiUserChatMessage messageWithBody:message]];
         }
     }

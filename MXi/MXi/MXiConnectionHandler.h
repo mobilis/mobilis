@@ -139,6 +139,9 @@ typedef void (^DiscoveryCompletionBlock)(BOOL serviceSupported, NSArray *discove
  */
 - (void)sendElement:(NSXMLElement *)element;
 
+- (void)sendMessageXML:(NSXMLElement *)messageElement toJID:(NSString *)jid;
+- (void)sendMessageString:(NSString *)messageString toJID:(NSString *)jid;
+
 /**
  *  Various objects might be interested in incoming beans, but not all of them are interested in all incoming beans.
  *  This method allows objects to register as a delegate for only a specific bean class.
