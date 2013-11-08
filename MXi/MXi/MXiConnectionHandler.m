@@ -13,6 +13,7 @@
 #import "IncomingBeanDetection.h"
 #import "DefaultSettings.h"
 #import "MXiMultiUserChatDiscovery.h"
+#import "MXiServiceManager.h"
 
 @interface MXiConnectionHandler ()
 
@@ -73,6 +74,8 @@
 {
 
     DefaultSettings *settings = [DefaultSettings defaultSettings];
+
+
     self.connection = [MXiConnection connectionWithJabberID:jabberID
                                                    password:password
                                                    hostName:hostName
@@ -85,6 +88,9 @@
                                                beanDelegate:self
                                   listeningForIncomingBeans:[self allIncomingBeans]];
 
+    self.serviceManager = [MXiServiceManager serviceManagerWithConnection:self.connection
+                                                              serviceType:serviceType
+                                                                namespace:[settings valueForKey:SERVICE_NAMESPACE]];
     self.authenticationBlock = authentication;
 }
 
@@ -150,17 +156,7 @@
     [self sendMessageString:[messageElement XMLString] toJID:jid];
 }
 
-#pragma mark ConnectionHandler Delgation Methods
-
-- (void)addDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass
-{
-    [[MXiDelegateDictionary sharedInstance] addDelegate:delegate withSelector:selector forBeanClass:beanClass];
-}
-
-- (void)removeDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass
-{
-    [[MXiDelegateDictionary sharedInstance] removeDelegate:delegate withSelector:selector forBeanClass:beanClass];
-}
+#pragma mark ConnectionHandler Delegation Methods
 
 - (void)addStanzaDelegate:(id)delegate
 {

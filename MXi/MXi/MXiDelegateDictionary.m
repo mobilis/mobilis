@@ -15,41 +15,23 @@
 @property (strong, nonatomic) NSMutableDictionary *delegateDictionary;
 
 - (void)initializeDictionaryIfNotExisting;
-- (NSString *)classNameForClass:(Class)class;
 
 @end
 
 @implementation MXiDelegateDictionary
 
-#pragma mark - Singleton stack
-
-+ (instancetype)sharedInstance
-{
-    static dispatch_once_t onceToken;
-    __strong static MXiDelegateDictionary *shared = nil;
-    dispatch_once(&onceToken, ^{
-        shared = [[super alloc] initUniqueInstance];
-    });
-    return shared;
-}
-
-- (instancetype)initUniqueInstance
-{
-    return [super init];
-}
-
 #pragma mark - Delegate Handling
 
-- (void)addDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass
+- (void)addDelegate:(id)delegate withSelector:(SEL)selector forKey:(NSString *)key
 {
     [self initializeDictionaryIfNotExisting];
-    
+
     MXiDelegateSelectorMapping *delegateSelectorMapping = [[MXiDelegateSelectorMapping alloc] initWithDelegate:delegate
                                                                                              andSelector:selector];
-    
-    NSArray *registeredDelegates = [self.delegateDictionary objectForKey:[self classNameForClass:beanClass]];
+
+    NSArray *registeredDelegates = [self.delegateDictionary objectForKey:key];
     if (!registeredDelegates) {
-        [self.delegateDictionary setObject:@[delegateSelectorMapping] forKey:[self classNameForClass:beanClass]];
+        [self.delegateDictionary setObject:@[delegateSelectorMapping] forKey:key];
     } else {
         BOOL duplicate = NO;
         for (MXiDelegateSelectorMapping *mapping in registeredDelegates) {
@@ -59,18 +41,18 @@
             }
         }
         if (duplicate) return;
-        
+
         NSMutableArray *newRegisteredDelegates = [[NSMutableArray alloc] initWithCapacity:registeredDelegates.count+1];
         [newRegisteredDelegates addObjectsFromArray:registeredDelegates];
         [newRegisteredDelegates addObject:delegateSelectorMapping];
-        [self.delegateDictionary setObject:newRegisteredDelegates forKey:[self classNameForClass:beanClass]];
+        [self.delegateDictionary setObject:newRegisteredDelegates forKey:key];
     }
 }
 
-- (void)removeDelegate:(id)delegate forBeanClass:(Class)beanClass
+- (void)removeDelegate:(id)delegate forKey:(NSString *)key
 {
     [self initializeDictionaryIfNotExisting];
-    NSMutableArray *registeredDelegates = [self.delegateDictionary objectForKey:[self classNameForClass:beanClass]];
+    NSMutableArray *registeredDelegates = [self.delegateDictionary objectForKey:key];
     if (registeredDelegates) {
         NSMutableArray *mappingsToDelete = [NSMutableArray arrayWithCapacity:registeredDelegates.count];
         for (MXiDelegateSelectorMapping *mapping in registeredDelegates) {
@@ -79,17 +61,17 @@
             }
         }
         [registeredDelegates removeObjectsInArray:mappingsToDelete];
-        [self.delegateDictionary setObject:registeredDelegates forKey:[self classNameForClass:beanClass]];
+        [self.delegateDictionary setObject:registeredDelegates forKey:key];
     }
 }
 
-- (void)removeDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass
+- (void)removeDelegate:(id)delegate withSelector:(SEL)selector forKey:(NSString *)key
 {
     if (selector == nil) {
-        [self removeDelegate:delegate forBeanClass:beanClass];
+        [self removeDelegate:delegate forKey:key];
     } else {
         [self initializeDictionaryIfNotExisting];
-        NSMutableArray *registeredDelegates = [self.delegateDictionary objectForKey:[self classNameForClass:beanClass]];
+        NSMutableArray *registeredDelegates = [self.delegateDictionary objectForKey:key];
         if (registeredDelegates) {
             MXiDelegateSelectorMapping *mappingToRemove = nil;
             for (MXiDelegateSelectorMapping *mapping in registeredDelegates) {
@@ -99,15 +81,15 @@
                 }
             }
             [registeredDelegates removeObject:mappingToRemove];
-            [self.delegateDictionary setObject:registeredDelegates forKey:[self classNameForClass:beanClass]];
+            [self.delegateDictionary setObject:registeredDelegates forKey:key];
         }
     }
 }
 
-- (NSArray *)delegatesForBeanClass:(Class)beanClass
+- (NSArray *)delegatesForKey:(NSString *)key
 {
     [self initializeDictionaryIfNotExisting];
-    return [self.delegateDictionary objectForKey:[self classNameForClass:beanClass]];
+    return [self.delegateDictionary objectForKey:key];
 }
 
 #pragma mark - Private Methods
@@ -117,11 +99,6 @@
     if (!self.delegateDictionary) {
         self.delegateDictionary = [[NSMutableDictionary alloc] initWithCapacity:10];
     }
-}
-
-- (NSString *)classNameForClass:(Class)class
-{
-    return [class description];
 }
 
 @end

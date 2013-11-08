@@ -10,15 +10,11 @@
 
 @interface MXiDelegateDictionary : NSObject
 
-+ (instancetype)sharedInstance;
+- (void)addDelegate:(id)delegate withSelector:(SEL)selector forKey:(NSString *)key;
 
-+ (instancetype) alloc __attribute__((unavailable("alloc not available, call sharedInstance instead")));
-- (instancetype) init __attribute__((unavailable("init not available, call sharedInstance instead")));
-+ (instancetype) new __attribute__((unavailable("new not available, call sharedInstance instead")));
+- (void)removeDelegate:(id)delegate forKey:(NSString *)key;
 
-- (void)addDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass;
-- (void)removeDelegate:(id)delegate forBeanClass:(Class)beanClass;
-- (void)removeDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass;
-- (NSArray *)delegatesForBeanClass:(Class)beanClass;
+- (void)removeDelegate:(id)delegate withSelector:(SEL)selector forKey:(NSString *)key;
 
+- (NSArray *)delegatesForKey:(NSString *)key;
 @end

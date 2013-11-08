@@ -15,13 +15,7 @@
 #endif
 
 #import "MXiMultiUserChatDelegate.h"
-
-static NSString *const CoordinatorService = @"http://mobilis.inf.tu-dresden.de#services/CoordinatorService";
-
-typedef enum _ServiceType {
-    SINGLE,
-    MULTI
-} ServiceType;
+#import "MXiDefinitions.h"
 
 @interface MXiConnection : NSObject
 
@@ -35,9 +29,6 @@ typedef enum _ServiceType {
 @property (nonatomic) ServiceType serviceType;
 @property (nonatomic, strong) NSString* coordinatorJID;
 @property (nonatomic, readonly) XMPPStream* xmppStream;
-@property (nonatomic, strong) id<MXiPresenceDelegate> presenceDelegate;
-@property (nonatomic, strong) id<MXiStanzaDelegate> stanzaDelegate;
-@property (nonatomic, strong) id<MXiBeanDelegate> beanDelegate;
 @property (nonatomic, strong) id<MXiMultiUserChatDelegate> mucDelegate;
 @property (nonatomic, strong) NSArray* incomingBeanPrototypes;
 
@@ -52,19 +43,6 @@ typedef enum _ServiceType {
               stanzaDelegate:(id <MXiStanzaDelegate>)stanzaDelegate
                 beanDelegate:(id <MXiBeanDelegate>)beanDelegate
    listeningForIncomingBeans:(NSArray *)incomingBeanPrototypes;
-
-/*!
-    This method will discover all services that are registered on the current Mobilis host.
-    This method will automatically be invoked on connection setup when the Mobilis service used is of kind Multi.
-
-    @see ServiceType
- */
-- (void)discoverServices;
-/*!
-    This method will discover all instances of a specific service that is determined by its namespace, which
-    should be set on connection setup via class constructor.
- */
-- (void)discoverServiceInstances;
 
 - (void)sendTestMessageWithContent:(NSString* )content to:(NSString* )to;
 - (void)sendElement:(NSXMLElement* )element;
@@ -86,5 +64,11 @@ typedef enum _ServiceType {
                             serviceNamespace:(NSString *)serviceNamespace;
 
 - (void)disconnect;
+
+- (void)addBeanDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass;
+- (void)addStanzaDelegate:(id)delegate withSelector:(SEL)selector forStanzaElement:(StanzaElement)stanzaElement;
+
+- (void)removeBeanDelegate:(id)delegate forBeanClass:(Class)beanClass;
+- (void)removeStanzaDelegate:(id)delegate forStanzaElement:(StanzaElement)element;
 
 @end

@@ -14,26 +14,8 @@
 #import "MXiOutgoingBean.h"
 
 @class MXiMultiUserChatDiscovery;
-
-/**
- *  The MXiConnectionServiceStateDelegate defines basic methods for objects to implement when information on
- *  the service availability are required.
-*/
-@protocol MXiConnectionServiceStateDelegate
-
-typedef enum {
-    MXiConnectionServiceConnected,
-    MXiConnectionServiceUnconnected
-} MXiConnectionServiceState;
-
-/**
- *  This method is invoked whenever the service availability changes.
- *
- *  @param connectionState The new state of the client - service connection.
-*/
-- (void)connectionStateChanged:(MXiConnectionServiceState)connectionState;
-
-@end
+@protocol MXiConnectionServiceStateDelegate;
+@class MXiServiceManager;
 
 /**
  *  This block will be called when the authentication of the user finished. If the authentication was successfull
@@ -65,7 +47,8 @@ typedef void (^DiscoveryCompletionBlock)(BOOL serviceSupported, NSArray *discove
  */
 @interface MXiConnectionHandler : NSObject <MXiBeanDelegate, MXiPresenceDelegate, MXiStanzaDelegate>
 
-@property (strong) NSArray* discoveredServiceInstances;
+//@property (strong) NSArray* discoveredServiceInstances;
+@property (strong) MXiServiceManager *serviceManager;
 
 @property (nonatomic) MXiMultiUserChatDiscovery *multiUserChatDiscovery;
 
@@ -143,25 +126,6 @@ typedef void (^DiscoveryCompletionBlock)(BOOL serviceSupported, NSArray *discove
 - (void)sendMessageString:(NSString *)messageString toJID:(NSString *)jid;
 
 /**
- *  Various objects might be interested in incoming beans, but not all of them are interested in all incoming beans.
- *  This method allows objects to register as a delegate for only a specific bean class.
- *
- *  @param delegate  Object that wants to act as a delegate for certain bean classes.
- *  @param selector  The selector of the delegate that will be called when a bean of the given class arrives.
- *  @param beanClass The class of the bean for which the delegate registers.
- *
- */
-- (void)addDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass;
-/*!
-    Unregister an object from being notified about incoming beans.
-
-    @param delegate     The delegate object that offers the method that should be removed from the list of invoked methods when a bean comes in.
-    @param selector     The selector of the delegate that will no longer be invoked when a bean of a given class comes in.
-    @param beanClass    The class of the bean for which the delegate did unregister.
- */
-- (void)removeDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass;
-
-/**
  *  Objects that are interested in listening to state changes of the overall service available can register as delegates.
  *  Whenever the service becomes available or unavailable all registered delegates will be notified.
  *
@@ -229,5 +193,25 @@ typedef void (^DiscoveryCompletionBlock)(BOOL serviceSupported, NSArray *discove
     @return `YES` if a delegate was already set, otherwise `NO`.
  */
 - (BOOL)isMultiUserChatDelegateSet;
+
+@end
+
+/**
+ *  The MXiConnectionServiceStateDelegate defines basic methods for objects to implement when information on
+ *  the service availability are required.
+*/
+@protocol MXiConnectionServiceStateDelegate
+
+typedef enum {
+    MXiConnectionServiceConnected,
+    MXiConnectionServiceUnconnected
+} MXiConnectionServiceState;
+
+/**
+ *  This method is invoked whenever the service availability changes.
+ *
+ *  @param connectionState The new state of the client - service connection.
+*/
+- (void)connectionStateChanged:(MXiConnectionServiceState)connectionState;
 
 @end

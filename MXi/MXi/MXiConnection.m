@@ -10,15 +10,26 @@
 
 #import "MXiMultiUserChatMessage.h"
 #import "XMPPRoomMemoryStorage.h"
+#import "MXiBeanDelegateDictionary.h"
+#import "MXiDelegateSelectorMapping.h"
+#import "MXiStanzaDelegateDictionary.h"
+#import "MXiServiceTypeDiscovery.h"
 
 @interface MXiConnection () <XMPPRoomDelegate>
 
 @property (strong, nonatomic) NSMutableArray *connectedMUCRooms;
 @property dispatch_queue_t room_queue;
 
+- (BOOL)isIncomingIQBeanContainer:(XMPPIQ *)incomingIQ;
+- (void)notifyBeanDelegates:(MXiBean<MXiIncomingBean> *)bean;
+- (void)notifyStanzaDelegates:(NSXMLElement *)stanza;
+
 @end
 
-@implementation MXiConnection
+@implementation MXiConnection {
+    __strong MXiBeanDelegateDictionary *_beanDelegateDictionary;
+    __strong MXiStanzaDelegateDictionary *_stanzaDelegateDictionary;
+}
 
 + (id)connectionWithJabberID:(NSString *)aJabberID
                     password:(NSString *)aPassword
@@ -71,9 +82,6 @@
         [self setPort:port];
         [self setCoordinatorJID:theCoordinatorJID];
         [self setServiceNamespace:theServiceNamespace];
-        [self setPresenceDelegate:aPresenceDelegate];
-        [self setStanzaDelegate:aStanzaDelegate];
-        [self setBeanDelegate:aBeanDelegate];
         [self setIncomingBeanPrototypes:theIncomingBeanPrototypes];
 
         [self setupStream];
@@ -166,71 +174,50 @@
 }
 
 - (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq {
-	BOOL success = [self.stanzaDelegate didReceiveIQ:iq];
+    [self notifyStanzaDelegates:iq];
 
-	NSLog(@"Received iq: %@", [iq prettyXMLString]);
-	NSXMLElement* childElement = [iq childElement];
+    NSLog(@"Received iq: %@", [iq prettyXMLString]);
 	
 	// Did we get a service discovery response?
-    [self validateDiscoveredServices:childElement];
+    [self validateDiscoveredServices:[iq childElement]];
 
     // Did we get an incoming mobilis bean?
-	for (MXiBean<MXiIncomingBean>* prototype in self.incomingBeanPrototypes) {
-		if ([[[prototype class] elementName] isEqualToString:[childElement name]] &&
-				[[[prototype class] iqNamespace] isEqualToString:[childElement xmlns]] &&
-				[[MXiIQTypeLookup stringValueForIQType:[prototype beanType]]
-					isEqualToString:[iq attributeStringValueForName:@"type"]]) {
-			// parse the iq data into the bean object
-			[MXiBeanConverter beanFromIQ:iq intoBean:prototype];
-			// inform the app about this incoming bean
-			[self.beanDelegate didReceiveBean:prototype];
-		}
-	}
+    if ([self isIncomingIQBeanContainer:iq]) {
+        NSXMLElement* childElement = [iq childElement];
+        for (MXiBean<MXiIncomingBean>* prototype in self.incomingBeanPrototypes) {
+            if ([[[prototype class] elementName] isEqualToString:[childElement name]] &&
+                    [[[prototype class] iqNamespace] isEqualToString:[childElement xmlns]] &&
+                    [[MXiIQTypeLookup stringValueForIQType:[prototype beanType]]
+                        isEqualToString:[iq attributeStringValueForName:@"type"]]) {
+                // parse the iq data into the bean object
+                [MXiBeanConverter beanFromIQ:iq intoBean:prototype];
+                // inform the app about this incoming bean
+                [self notifyBeanDelegates:prototype];
+            }
+        }
+        return YES;
+    }
 
     // Did we get an incoming service creation response
     [self handleServiceResponse:iq];
 	
-	return success;
+	return YES;
 }
 
-- (void)validateDiscoveredServices:(NSXMLElement *)serviceDiscoveryElement
+- (BOOL)isIncomingIQBeanContainer:(XMPPIQ *)incomingIQ
 {
-    if ([[serviceDiscoveryElement name] isEqualToString:@"serviceDiscovery"]) {
-		NSArray* discoveredServiceElements = [serviceDiscoveryElement children];
-		if (self.serviceType == SINGLE)
-            [self singleModeServiceDetection:discoveredServiceElements];
-        else [self multiModeServiceDetection:discoveredServiceElements];
-	}
-}
-- (void)singleModeServiceDetection:(NSArray *)discoveredServiceElements
-{
-    for (int i = 0; i < [discoveredServiceElements count]; i++) {
-        NSXMLElement* discoveredServiceElement = [discoveredServiceElements objectAtIndex:i];
-        if (i == 0) {
-            // choose the first discovered service jid by default
-            [self setServiceJID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
-            [self setServiceName:[discoveredServiceElement attributeStringValueForName:@"serviceName"]];
+    BOOL isBean = NO;
+    NSXMLElement *childElement = [incomingIQ childElement];
+    for (MXiBean<MXiIncomingBean>* prototype in self.incomingBeanPrototypes) {
+        if ([[[prototype class] elementName] isEqualToString:[childElement name]] &&
+                [[[prototype class] iqNamespace] isEqualToString:[childElement xmlns]] &&
+                [[MXiIQTypeLookup stringValueForIQType:[prototype beanType]]
+                        isEqualToString:[incomingIQ attributeStringValueForName:@"type"]]) {
+            isBean = YES;
+            break;
         }
-        [self.presenceDelegate didDiscoverServiceWithNamespace:[discoveredServiceElement attributeStringValueForName:@"namespace"]
-                                                     name:[discoveredServiceElement attributeStringValueForName:@"serviceName"]
-                                                  version:[discoveredServiceElement attributeIntegerValueForName:@"version"]
-                                               atJabberID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
     }
-}
-- (void)multiModeServiceDetection:(NSArray *)discoveredServiceElements
-{
-    BOOL concreteServiceFound = NO;
-    for (NSXMLElement *discoveredElement in discoveredServiceElements)
-        if ([[discoveredElement attributeStringValueForName:@"namespace"] isEqualToString:self.serviceNamespace])
-            if ([discoveredElement attributeStringValueForName:@"jid"] && [discoveredElement attributeStringValueForName:@"serviceName"]) {
-                [self.presenceDelegate didDiscoverServiceWithNamespace:[discoveredElement attributeStringValueForName:@"namespace"]
-                                                                  name:[discoveredElement attributeStringValueForName:@"serviceName"]
-                                                               version:[discoveredElement attributeIntegerValueForName:@"version"]
-                                                            atJabberID:[discoveredElement attributeStringValueForName:@"jid"]];
-                concreteServiceFound = YES;
-            }
-    if (!concreteServiceFound && discoveredServiceElements.count > 0)
-        [self discoverServiceInstances];
+    return isBean;
 }
 
 - (void)handleServiceResponse:(XMPPIQ *)iq
@@ -264,11 +251,11 @@
 }
 
 - (void)xmppStream:(XMPPStream *)sender didReceiveMessage:(XMPPMessage *)message {
-	[self.stanzaDelegate didReceiveMessage:message];
+    [self notifyStanzaDelegates:message];
 }
 
 - (void)xmppStream:(XMPPStream *)sender didReceivePresence:(XMPPPresence *)presence {
-	[self.stanzaDelegate didReceivePresence:presence];
+	[self notifyStanzaDelegates:presence];
 }
 
 - (void)xmppStream:(XMPPStream *)sender didReceiveError:(NSXMLElement *)error {
@@ -297,38 +284,6 @@
 	[self.xmppStream sendElement:presence];
 }
 
-- (void)discoverServices
-{
-    NSXMLElement* discoElement =
-    [NSXMLElement elementWithName:@"serviceDiscovery"
-                            xmlns:CoordinatorService];
-    NSXMLElement* iqElement = [NSXMLElement elementWithName:@"iq"];
-    [iqElement addAttributeWithName:@"to"
-                        stringValue:[self coordinatorJID]];
-    [iqElement addAttributeWithName:@"type" stringValue:@"get"];
-    [iqElement addChild:discoElement];
-
-    [self sendElement:iqElement];
-}
-
-- (void)discoverServiceInstances
-{
-	NSXMLElement* namespaceElement =
-		[NSXMLElement elementWithName:@"serviceNamespace"];
-	[namespaceElement setStringValue:[self serviceNamespace]];
-	NSXMLElement* discoElement =
-    [NSXMLElement elementWithName:@"serviceDiscovery"
-                            xmlns:CoordinatorService];
-	[discoElement addChild:namespaceElement];
-	NSXMLElement* iqElement = [NSXMLElement elementWithName:@"iq"];
-	[iqElement addAttributeWithName:@"to"
-						stringValue:[self coordinatorJID]];
-	[iqElement addAttributeWithName:@"type" stringValue:@"get"];
-	[iqElement addChild:discoElement];
-	
-	[self sendElement:iqElement];
-}
-
 - (BOOL)connect {
 	if ([self.xmppStream isConnected]) {
 		return YES;
@@ -336,7 +291,7 @@
 	
 	[self.xmppStream setMyJID:[self jabberID]];
 	[self.xmppStream setHostName:[self hostName]];
-	[self.xmppStream setHostPort:[self port]];
+    [self.xmppStream setHostPort:(UInt16) [self port]];
 	
 	XMPPReconnect* reconnect = [[XMPPReconnect alloc] init];
 	[reconnect activate:self.xmppStream];
@@ -413,6 +368,67 @@
 - (void)disconnect {
 	[self goOffline];
 	[self.xmppStream disconnect];
+}
+
+#pragma mark - Manage Bean & Stanza Delegation
+
+- (void)addBeanDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass
+{
+    [_beanDelegateDictionary addDelegate:delegate withSelector:selector forBeanClass:beanClass];
+}
+
+- (void)addStanzaDelegate:(id)delegate withSelector:(SEL)selector forStanzaElement:(StanzaElement)stanzaElement
+{
+    [_stanzaDelegateDictionary addDelegate:delegate withSelector:selector forStanzaElement:stanzaElement];
+}
+
+- (void)removeBeanDelegate:(id)delegate forBeanClass:(Class)beanClass
+{
+    [_beanDelegateDictionary removeDelegate:delegate forBeanClass:beanClass];
+}
+
+- (void)removeStanzaDelegate:(id)delegate forStanzaElement:(StanzaElement)element
+{
+    [_stanzaDelegateDictionary removeDelegate:delegate forStanzaElement:element];
+}
+
+#pragma mark - Delegate Notification
+
+- (void)notifyBeanDelegates:(MXiBean <MXiIncomingBean> *)bean
+{
+    NSArray *registeredDelegates = nil;
+    @synchronized (_beanDelegateDictionary) {
+        registeredDelegates = [NSArray arrayWithArray:[_beanDelegateDictionary delegatesForBeanClass:[bean class]]];
+    }
+    for (MXiDelegateSelectorMapping *mapping in registeredDelegates) {
+        if ([mapping.delegate respondsToSelector:[mapping selector]]) {
+            [mapping.delegate performSelector:[mapping selector] withObject:bean]; // Warning can be ignored.
+        }
+    }
+}
+
+- (void)notifyStanzaDelegates:(NSXMLElement *)stanza
+{
+    NSArray *registeredDelegates = nil;
+    StanzaElement stanzaElement = [self stanzaElementFromStanza:stanza];
+    if (stanzaElement == UNKNOWN_STANZA)
+        return;
+    @synchronized (_stanzaDelegateDictionary) {
+        registeredDelegates = [NSArray arrayWithArray:[_stanzaDelegateDictionary delegatesforStanzaElement:stanzaElement]];
+    }
+    for (MXiDelegateSelectorMapping *mapping in registeredDelegates) {
+        if ([mapping.delegate respondsToSelector:[mapping selector]]) {
+            [mapping.delegate performSelector:[mapping selector] withObject:stanza]; // Warning can be ignored.
+        }
+    }
+}
+- (StanzaElement)stanzaElementFromStanza:(NSXMLElement *)stanza
+{
+    if ([[stanza name] isEqualToString:@"iq"]) return IQ;
+    if ([[stanza name] isEqualToString:@"message"]) return MESSAGE;
+    if ([[stanza name] isEqualToString:@"presence"]) return PRESENCE;
+
+    return UNKNOWN_STANZA;
 }
 
 #pragma mark - XMPPRoomDelegate
