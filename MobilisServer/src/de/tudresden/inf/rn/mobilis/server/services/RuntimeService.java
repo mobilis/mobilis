@@ -425,12 +425,12 @@ public class RuntimeService extends MobilisService {
 					answerBean = BeanHelper
 							.CreateResultBean( inBean, new ExecuteSynchronizeRuntimesBean() );
 				} else {
-					//error bean senden
+					//send error bean
 					answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access-denied",
 							( "Access denied: You need Administrator rights to perform this action "));
 				}
 			} else {
-				//error bean senden
+				//send error bean
 				answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access-denied",
 						( "Access denied: You need Administrator rights to perform this action "));
 			}

@@ -164,7 +164,7 @@ public class DeploymentService extends MobilisService {
 			if ( packet instanceof BeanIQAdapter ) {
 				XMPPBean inBean = ( (BeanIQAdapter)packet ).getBean();
 				
-				//alle AdministrationBeans haben die Felder ServiceNamespace + ServiceVersion die für den Abgleich der Berechtigung nötig sind
+				//all AdministrationBeans have the fields ServiceNamespace + ServiceVersion for checking access rights
 				if ( inBean instanceof AdministrationBean){
 										
 					//check user permission from Rostergroup
@@ -231,8 +231,7 @@ public class DeploymentService extends MobilisService {
 			
 			
 			//MANUELL INSTALLATION DISABLED
-			//bei container.install() wird standardmäßig der defaultAgent der Runtime verwendet. Das führt dann bei einem uninstall des Service zum löschen des Runtime XMPP Accounts.
-			//Um manuelles installieren wieder zu ermöglichen sind sehr umfangreiche Änderungen nötig. Daher wird diese Methode der Dienstinstalltion bis auf weiteres deaktiviert.
+			//on container.install() the defaultAgent of the Runtime is used. on uninstall of the Service it leads to to delete of the runtimes xmpp account.
 			
 			/*Boolean deployAllowed = true;
 			// If user is in the deploy security rostergroup of the runtime, proceed. Else send not authorized error.
@@ -600,17 +599,17 @@ public class DeploymentService extends MobilisService {
 		if(namespace!=null && version>0){
 			serviceName = MobilisManager.getInstance().getServiceContainer(namespace, version).getServiceName();
 		}
-		//Gruppe mit Dienstnamen und Version aus Roster holen
-		//wenn gruppe existiert, existiert dienst
+		//get group with servicename and Version from Roster
+		//if group exists -> service exists
 		if(runtimeRoster.getGroup(MobilisManager.securityUserGroup + serviceName+version)!=null){
-			//In Gruppe schauen ob requestNutzer in Security Gruppe ist
+			//check if requestor is in that security group
 			if(runtimeRoster.getGroup(MobilisManager.securityUserGroup + serviceName+version).getEntry(StringUtils.parseBareAddress(from))!=null){
 				return true;
 			} else {
 				return false;
 			}
 		}
-		//wenn gruppe nicht existiert, existiert dienst nicht. keine beschränkung für dienstzugriff
+		//if group doens't exists, no restrictions of access
 		return true;
 	}
 	

@@ -162,7 +162,7 @@ public class CoordinatorService extends MobilisService {
 		
 		//Remote Service Discovery by looking into the Roster
 		
-		//Roster und Rostergruppe der registrierten Dienste holen
+		//get roster and then the rostergroup sug:services of the registered services
 		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
 		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.remoteServiceGroup + "services");
 		
@@ -228,7 +228,7 @@ public class CoordinatorService extends MobilisService {
 							try {
 								dInfo = MobilisManager.getInstance().getServiceDiscoveryManager().discoverInfo(fullJIDofService);
 								 
-								  //Alle Feature vars des DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
+								  //check all feature vars of the DiscoverInfo of a resource for the mobilis service URN
 								  if(dInfo != null){
 									  Iterator<Feature> infos  = dInfo.getFeatures();
 									  boolean ready=false;
@@ -347,12 +347,12 @@ public class CoordinatorService extends MobilisService {
 							try {
 								dInfo = MobilisManager.getInstance().getServiceDiscoveryManager().discoverInfo(fullJIDofService);
 								 
-								  //Alle Feature vars des DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
+								  //check all feature vars of the DiscoverInfo of a resource for the mobilis service URN
 								  if(dInfo != null){
 									  Iterator<Feature> infos  = dInfo.getFeatures();
 									  boolean ready=false;
 									  
-									  //testen ob service caps dem angeforderten NS bzw. Version des DiscoBeans entsprechen. Wenn ja ServiceInfo hinzufügen
+									  //check if service caps match the requested NS and Version of the DiscoBeans. If so, add to ServiceInfo
 									  while(infos.hasNext() && !ready){
 										  String s = infos.next().getVar();
 										  

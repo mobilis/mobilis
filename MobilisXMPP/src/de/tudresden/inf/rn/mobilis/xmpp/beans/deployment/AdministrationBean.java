@@ -5,7 +5,8 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 public abstract class AdministrationBean extends XMPPBean {
 
 	/**
-	 * 
+	 * generalization of all administrative beans to handle them easier in deployment service
+	 * @author Philipp Grubitzsch
 	 */
 	private static final long serialVersionUID = 1L;
 	public String ServiceNamespace = null;

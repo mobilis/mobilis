@@ -8,7 +8,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 /**
  * This bean is sent to create a new instance of
  * a service on the MobilisServer.
- * @author Robert Lübke, Philipp Grubitzsch
+ * @author Robert Luebke, Philipp Grubitzsch
  */
 public class CreateNewServiceInstanceBean extends XMPPBean {
 
