@@ -9,7 +9,7 @@ import java.util.Random;
  * This Class is a Helper Class of the CoordinatorService. It is implementing different Methods to handle clientside createServiceInstance Requests.
  * The Methods in this Class differ in how the best Runtime is choosed, where the new Serviceinstance should be created.
  */
-public class loadBalancing {
+public class LoadBalancing {
 	
 	/**
 	 * A Runtime is randomly choosen out of a given Set of Runtimes
