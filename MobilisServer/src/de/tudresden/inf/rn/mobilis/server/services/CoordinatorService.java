@@ -54,7 +54,7 @@ import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainer;
 import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainerState;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.StartNewServiceInstanceException;
 import de.tudresden.inf.rn.mobilis.server.services.Coordination.CoordinationHelper;
-import de.tudresden.inf.rn.mobilis.server.services.Coordination.loadBalancing;
+import de.tudresden.inf.rn.mobilis.server.services.Coordination.LoadBalancing;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
@@ -500,6 +500,7 @@ public class CoordinatorService extends MobilisService {
 				
 				beanAnswer = new SendNewServiceInstanceBean(newService.getAgent().getFullJid(),
 						serviceContainer.getServiceVersion(), bean.getAnswerID());
+				beanAnswer.setServiceNamespace(bean.getServiceNamespace());
 			// exception was thrown, respond an error 
 			} catch ( StartNewServiceInstanceException e ) {
 				beanAnswer = new SendNewServiceInstanceBean("wait", "internal-server-error", String.format( "Error starting new instance of service. Reason: %s", e.getMessage() ));
@@ -530,7 +531,7 @@ public class CoordinatorService extends MobilisService {
 			createBean.setServiceVersion(bean.getServiceVersion());
 			createBean.setAnswerID(bean.getAnswerID());
 			//choose runtime
-			createBean.setTo(loadBalancing.randomRuntimeForCreateInstance(remoteRuntimesSupportingService) + "/Coordinator");
+			createBean.setTo(LoadBalancing.randomRuntimeForCreateInstance(remoteRuntimesSupportingService) + "/Coordinator");
 			connection.sendPacket(new BeanIQAdapter(createBean));
 		}
 	}
@@ -544,6 +545,7 @@ public class CoordinatorService extends MobilisService {
 			SendNewServiceInstanceBean toOriginalRequestor = new SendNewServiceInstanceBean(inBean.getJidOfNewService(), inBean.getServiceVersion(), inBean.getAnswerID());
 			toOriginalRequestor.setFrom(inBean.getTo());
 			toOriginalRequestor.setTo(inBean.jidOfOriginalRequestor);
+			toOriginalRequestor.setServiceNamespace(inBean.getServiceNamespace());
 			
 			//create Answer IQ for Remote Server (ok)
 			SendNewServiceInstanceBean toRemoteRuntime = new SendNewServiceInstanceBean();
