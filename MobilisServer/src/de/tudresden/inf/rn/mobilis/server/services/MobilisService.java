@@ -28,6 +28,7 @@ import java.util.logging.Level;
 
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smackx.NodeInformationProvider;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.jivesoftware.smackx.packet.DiscoverItems;
@@ -306,6 +307,12 @@ public abstract class MobilisService implements PacketListener, NodeInformationP
 
 	public void set_serviceNamespace(String _serviceNamespace) {
 		this._serviceNamespace = _serviceNamespace;
+	}
+	
+	@Override
+	public List<PacketExtension> getNodePacketExtensions() {
+		// TODO Auto-generated method stub
+		return null;
 	}
     
 }
