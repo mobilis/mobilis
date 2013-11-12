@@ -218,13 +218,14 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 			}
 		}
 
-		mConnection.login(username, password, resource);
-		mConnection.addConnectionListener(this);
-
 		serviceDiscoveryManager = ServiceDiscoveryManager.getInstanceFor(mConnection);
 		capsMaganger = EntityCapsManager.getInstanceFor(mConnection);
 		capsMaganger.enableEntityCaps();
 		serviceDiscoveryManager.setEntityCapsManager(capsMaganger);
+		
+		
+
+		
 		
 		// Set on every established connection that this client supports the Mobilis
 		// protocol. This information will be used when another client tries to
@@ -247,8 +248,11 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 			//discoName="";
 			discoVer="";
 		}
-		capsMaganger.updateLocalEntityCaps();
-
+		//capsMaganger.updateLocalEntityCaps();
+		
+		mConnection.login(username, password, resource);
+		mConnection.addConnectionListener(this);
+		
 		synchronized(mServices) {
 			for (MobilisService ms : mServices) {
 				try {
