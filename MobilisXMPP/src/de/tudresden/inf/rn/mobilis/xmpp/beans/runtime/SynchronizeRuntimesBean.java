@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.xmpp.beans.runtimeprotocol;
+package de.tudresden.inf.rn.mobilis.xmpp.beans.runtime;
 
 import java.util.ArrayList;
 import java.util.List;

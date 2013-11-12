@@ -21,19 +21,19 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 import de.tudresden.inf.rn.mobilis.consoleclient.listener.IQListener;
 import de.tudresden.inf.rn.mobilis.consoleclient.listener.MessageListener;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.ConfigureServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.InstallServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.RegisterServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UninstallServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UnregisterServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UpdateServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.SendNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ConfigureServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ExecuteSynchronizeRuntimesBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.InstallServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.RegisterServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UninstallServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UnregisterServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UpdateServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
 
 /**

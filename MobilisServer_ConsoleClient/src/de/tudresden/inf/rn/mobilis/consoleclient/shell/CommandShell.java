@@ -26,12 +26,12 @@ import java.io.InputStreamReader;
 
 import de.tudresden.inf.rn.mobilis.consoleclient.Controller;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.AgentConfigInfo;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.ConfigureServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.InstallServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UninstallServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UnregisterServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UpdateServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.AgentConfigInfo;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ConfigureServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.InstallServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UninstallServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UnregisterServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UpdateServiceBean;
 
 /**
  * The Class CommandShell to process input commands.

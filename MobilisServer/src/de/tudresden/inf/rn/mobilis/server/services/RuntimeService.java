@@ -48,7 +48,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ExecuteSynchronizeRuntimesBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.runtimeprotocol.SynchronizeRuntimesBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.runtime.SynchronizeRuntimesBean;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanHelper;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
