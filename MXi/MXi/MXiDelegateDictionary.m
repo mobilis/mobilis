@@ -89,7 +89,7 @@
         [self removeDelegate:delegate forBeanClass:beanClass];
     } else {
         [self initializeDictionaryIfNotExisting];
-        NSMutableArray *registeredDelegates = [self.delegateDictionary objectForKey:[self classNameForClass:beanClass]];
+        NSMutableArray *registeredDelegates = [[self.delegateDictionary objectForKey:[self classNameForClass:beanClass]] mutableCopy];
         if (registeredDelegates) {
             MXiDelegateSelectorMapping *mappingToRemove = nil;
             for (MXiDelegateSelectorMapping *mapping in registeredDelegates) {
