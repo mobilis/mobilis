@@ -341,7 +341,7 @@
 
     for (id delegate in self.stanzaDelegates)
         if ([delegate respondsToSelector:@selector(presenceStanzaRecieved:)])
-            [delegate performSelectorOnMainThread:@selector(presenceStanzaReceived)
+            [delegate performSelectorOnMainThread:@selector(presenceStanzaReceived:)
                                        withObject:presence
                                     waitUntilDone:NO];
 }

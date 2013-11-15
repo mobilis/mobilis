@@ -10,7 +10,7 @@
 
 @protocol MXiMultiUserChatDelegate <NSObject>
 
-- (void)connectionToRoomEstablished:(NSString *)roomJID;
+- (void)connectionToRoomEstablished:(NSString *)roomJID usingRoomJID:(NSString *)myRoomJID;
 
 @optional
 

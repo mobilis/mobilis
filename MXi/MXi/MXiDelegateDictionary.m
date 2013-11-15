@@ -70,7 +70,7 @@
 - (void)removeDelegate:(id)delegate forBeanClass:(Class)beanClass
 {
     [self initializeDictionaryIfNotExisting];
-    NSMutableArray *registeredDelegates = [self.delegateDictionary objectForKey:[self classNameForClass:beanClass]];
+    NSMutableArray *registeredDelegates = [[self.delegateDictionary objectForKey:[self classNameForClass:beanClass]] mutableCopy];
     if (registeredDelegates) {
         NSMutableArray *mappingsToDelete = [NSMutableArray arrayWithCapacity:registeredDelegates.count];
         for (MXiDelegateSelectorMapping *mapping in registeredDelegates) {

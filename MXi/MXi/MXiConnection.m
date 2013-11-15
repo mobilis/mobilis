@@ -115,7 +115,8 @@
                                              dispatchQueue:_room_queue];
     [room activate:self.xmppStream];
     [room addDelegate:self delegateQueue:_room_queue];
-    [room joinRoomUsingNickname:@"acdsense_bot_DG" history:nil];
+    [room joinRoomUsingNickname:[NSString stringWithFormat:@"mobilis_iOS_%f", [[NSDate date] timeIntervalSince1970]]
+                        history:nil];
 }
 
 - (void)leaveMultiUserChatRoom:(NSString *)roomJID
@@ -420,8 +421,10 @@
 - (void)xmppRoomDidJoin:(XMPPRoom *)sender
 {
     [self.connectedMUCRooms addObject:sender];
-    if (_mucDelegate && [_mucDelegate respondsToSelector:@selector(connectionToRoomEstablished:)]) {
-        [_mucDelegate performSelector:@selector(connectionToRoomEstablished:) withObject:[sender.roomJID bare]];
+    if (_mucDelegate && [_mucDelegate respondsToSelector:@selector(connectionToRoomEstablished:usingRoomJID:)]) {
+        [_mucDelegate performSelector:@selector(connectionToRoomEstablished:usingRoomJID:)
+                           withObject:[sender.roomJID bare]
+                           withObject:[sender.myRoomJID full]];
     }
 }
 
