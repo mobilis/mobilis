@@ -24,4 +24,6 @@
 
 - (id)initWithName:(NSString *)serviceName namespace:(NSString *)serviceNamespace version:(NSInteger)serviceVersion jabberID:(NSString *)jabberID;
 
+- (BOOL)isEqalToService:(MXiService *)otherService;
+
 @end

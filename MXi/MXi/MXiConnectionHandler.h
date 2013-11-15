@@ -123,6 +123,8 @@ typedef void (^DiscoveryCompletionBlock)(BOOL serviceSupported, NSArray *discove
  */
 - (void)createServiceWithName:(NSString *)serviceName completionBlock:(ServiceCreateCompletionBlock)completionBlock;
 
+- (void)rediscoverServices:(NSString *)serviceName;
+
 /**
  *  This method realizes client-server communication and sends outgoing beans to the service.
  *

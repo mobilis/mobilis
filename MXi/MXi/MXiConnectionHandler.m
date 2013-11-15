@@ -115,6 +115,12 @@
                                          serviceNamespace:[self.connection serviceNamespace]];
 }
 
+- (void)rediscoverServices:(NSString *)serviceName
+{
+    self.discoveredServiceInstances = [NSArray array];
+    [self.connection discoverServiceInstances];
+}
+
 - (void)sendBean:(MXiBean<MXiOutgoingBean> *)outgoingBean
 {
     if (self.connection && outgoingBean) {
@@ -293,6 +299,7 @@
 
 - (void)didCreateServiceWithJabberID:(NSString *)jabberID andVersion:(NSString *)version
 {
+    self.discoveredServiceInstances = [NSArray array];
     [self.connection discoverServiceInstances];
     self.serviceCreateCompletionBlock(jabberID);
 }

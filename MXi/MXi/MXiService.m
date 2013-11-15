@@ -29,5 +29,18 @@
     return self;
 }
 
+- (BOOL)isEqalToService:(MXiService *)otherService
+{
+    if (otherService == nil || ![otherService isKindOfClass:[self class]])
+        return NO;
+
+    if (    [self.jid isEqualToJID:otherService.jid] &&
+            [self.name isEqualToString:otherService.name] &&
+            [self.namespace isEqualToString:otherService.namespace] &&
+            self.serviceVersion == otherService.serviceVersion) {
+        return YES;
+    } else return NO;
+}
+
 
 @end
