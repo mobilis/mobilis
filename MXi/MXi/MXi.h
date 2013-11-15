@@ -7,9 +7,6 @@
 // Protocolls
 #import "MXiOutgoingBean.h"
 #import "MXiIncomingBean.h"
-#import "MXiStanzaDelegate.h"
-#import "MXiPresenceDelegate.h"
-#import "MXiBeanDelegate.h"
 
 // Custom classes
 #import "MXiConnection.h"
@@ -27,9 +24,6 @@
 // Protocols
 #import <MXi/MXiOutgoingBean.h>
 #import <MXi/MXiIncomingBean.h>
-#import <MXi/MXiStanzaDelegate.h>
-#import <MXi/MXiBeanDelegate.h>
-#import <MXi/MXiPresenceDelegate.h>
 
 // Custom classes
 #import <MXi/MXiConnection.h>

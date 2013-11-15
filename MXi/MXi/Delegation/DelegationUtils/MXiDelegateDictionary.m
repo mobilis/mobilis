@@ -101,4 +101,8 @@
     }
 }
 
+- (NSArray *)allDelegates
+{
+    return [NSArray arrayWithArray:[self.delegateDictionary allValues]];
+}
 @end

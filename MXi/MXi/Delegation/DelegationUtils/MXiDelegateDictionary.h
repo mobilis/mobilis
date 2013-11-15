@@ -17,4 +17,6 @@
 - (void)removeDelegate:(id)delegate withSelector:(SEL)selector forKey:(NSString *)key;
 
 - (NSArray *)delegatesForKey:(NSString *)key;
+
+- (NSArray *)allDelegates;
 @end

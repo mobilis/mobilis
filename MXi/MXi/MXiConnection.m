@@ -14,6 +14,7 @@
 #import "MXiDelegateSelectorMapping.h"
 #import "MXiStanzaDelegateDictionary.h"
 #import "MXiServiceTypeDiscovery.h"
+#import "MXiErrorDelegateDictionary.h"
 
 @interface MXiConnection () <XMPPRoomDelegate>
 
@@ -23,50 +24,22 @@
 - (BOOL)isIncomingIQBeanContainer:(XMPPIQ *)incomingIQ;
 - (void)notifyBeanDelegates:(MXiBean<MXiIncomingBean> *)bean;
 - (void)notifyStanzaDelegates:(NSXMLElement *)stanza;
+- (void)notifyErrorDelegates:(NSXMLElement *)error;
 
 @end
 
 @implementation MXiConnection {
     __strong MXiBeanDelegateDictionary *_beanDelegateDictionary;
     __strong MXiStanzaDelegateDictionary *_stanzaDelegateDictionary;
+    __strong MXiErrorDelegateDictionary *_errorDelegateDictionary;
 }
 
-+ (id)connectionWithJabberID:(NSString *)aJabberID
-                    password:(NSString *)aPassword
-                    hostName:(NSString *)aHostName
-                        port:(NSInteger)port
-              coordinatorJID:(NSString *)theCoordinatorJID
-            serviceNamespace:(NSString *)theServiceNamespace
-                 serviceType:(ServiceType)serviceType
-            presenceDelegate:(id <MXiPresenceDelegate>)aPresenceDelegate
-              stanzaDelegate:(id <MXiStanzaDelegate>)aStanzaDelegate
-                beanDelegate:(id <MXiBeanDelegate>)aBeanDelegate
-   listeningForIncomingBeans:(NSArray *)theIncomingBeanPrototypes
++ (id)connectionWithJabberID:(NSString *)aJabberID password:(NSString *)aPassword hostName:(NSString *)aHostName port:(NSInteger)port coordinatorJID:(NSString *)theCoordinatorJID serviceNamespace:(NSString *)theServiceNamespace serviceType:(ServiceType)serviceType listeningForIncomingBeans:(NSArray *)theIncomingBeanPrototypes connectionDelegate:(id<MXiConnectionDelegate>)delegate
 {
-	return [[self alloc] initWithJabberID:aJabberID
-                                 password:aPassword
-                                 hostName:aHostName
-                                     port:port
-                           coordinatorJID:theCoordinatorJID
-                         serviceNamespace:theServiceNamespace
-                              serviceType:serviceType
-                         presenceDelegate:aPresenceDelegate
-                           stanzaDelegate:aStanzaDelegate
-                             beanDelegate:aBeanDelegate
-                listeningForIncomingBeans:theIncomingBeanPrototypes];
+	return [[self alloc] initWithJabberID:aJabberID password:aPassword hostName:aHostName port:port coordinatorJID:theCoordinatorJID serviceNamespace:theServiceNamespace serviceType:serviceType listeningForIncomingBeans:theIncomingBeanPrototypes connectionDelegate:delegate ];
 }
 
-- (id)initWithJabberID:(NSString *)aJabberID
-                    password:(NSString *)aPassword
-                    hostName:(NSString *)aHostName
-                        port:(NSInteger)port
-              coordinatorJID:(NSString *)theCoordinatorJID
-            serviceNamespace:(NSString *)theServiceNamespace
-                 serviceType:(ServiceType)serviceType
-            presenceDelegate:(id <MXiPresenceDelegate>)aPresenceDelegate
-              stanzaDelegate:(id <MXiStanzaDelegate>)aStanzaDelegate
-                beanDelegate:(id <MXiBeanDelegate>)aBeanDelegate
-   listeningForIncomingBeans:(NSArray *)theIncomingBeanPrototypes
+- (id)initWithJabberID:(NSString *)aJabberID password:(NSString *)aPassword hostName:(NSString *)aHostName port:(NSInteger)port coordinatorJID:(NSString *)theCoordinatorJID serviceNamespace:(NSString *)theServiceNamespace serviceType:(ServiceType)serviceType listeningForIncomingBeans:(NSArray *)theIncomingBeanPrototypes connectionDelegate:(id<MXiConnectionDelegate>)connectionDelegate
 {
     self = [super init];
     if (self) {
@@ -83,6 +56,8 @@
         [self setCoordinatorJID:theCoordinatorJID];
         [self setServiceNamespace:theServiceNamespace];
         [self setIncomingBeanPrototypes:theIncomingBeanPrototypes];
+
+        self.delegate = connectionDelegate;
 
         [self setupStream];
         [self connect];
@@ -157,29 +132,21 @@
 }
 
 - (void)xmppStreamDidDisconnect:(XMPPStream *)sender withError:(NSError *)error {
-	[self.presenceDelegate didDisconnectWithError:error];
+	[self.delegate connectionDidDisconnect:error];
 }
 
 - (void)xmppStreamDidAuthenticate:(XMPPStream* )sender {
 	[self goOnline];
-    if (self.serviceType == MULTI)
-        [self discoverServices];
-    else [self discoverServiceInstances];
 }
 
 - (void)xmppStream:(XMPPStream *)sender didNotAuthenticate:(NSXMLElement *)error {
-	NSLog(@"libMXi.a: Authentication failed");
-	
-	[self.presenceDelegate didFailToAuthenticate:error];
+    [self.delegate connectionAuthenticationFinished:error];
 }
 
 - (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq {
     [self notifyStanzaDelegates:iq];
 
     NSLog(@"Received iq: %@", [iq prettyXMLString]);
-	
-	// Did we get a service discovery response?
-    [self validateDiscoveredServices:[iq childElement]];
 
     // Did we get an incoming mobilis bean?
     if ([self isIncomingIQBeanContainer:iq]) {
@@ -198,9 +165,6 @@
         return YES;
     }
 
-    // Did we get an incoming service creation response
-    [self handleServiceResponse:iq];
-	
 	return YES;
 }
 
@@ -220,36 +184,6 @@
     return isBean;
 }
 
-- (void)handleServiceResponse:(XMPPIQ *)iq
-{
-    NSArray *iqChildren = [iq children];
-    if (iqChildren.count != 1)
-        return;
-
-    if ([iq elementForName:@"createNewServiceInstance"]) {
-        [self.presenceDelegate serviceInstanceCreating];
-    }
-    if ([iq elementForName:@"sendNewServiceInstance"]) {
-        NSXMLElement *element = [iq elementForName:@"sendNewServiceInstance"];
-        NSString *serviceJID = [[element elementForName:@"jidOfNewService"] stringValue];
-        NSString *serviceVersion = [[element elementForName:@"serviceVersion"] stringValue];
-
-        [self.presenceDelegate didCreateServiceWithJabberID:serviceJID andVersion:serviceVersion];
-        
-        [self sendServiceCreationAcknowledgement];
-    }
-}
-- (void)sendServiceCreationAcknowledgement
-{
-    NSXMLElement *ackIQ = [NSXMLElement elementWithName:@"iq"];
-    [ackIQ addAttributeWithName:@"to" stringValue:self.coordinatorJID];
-    [ackIQ addAttributeWithName:@"from" stringValue:self.jabberID.full];
-    [ackIQ addAttributeWithName:@"type" stringValue:@"result"];
-    [ackIQ addChild:[[NSXMLElement alloc] initWithName:@"sendNewServiceInstance" xmlns:CoordinatorService]];
-
-    [self.xmppStream sendElement:ackIQ];
-}
-
 - (void)xmppStream:(XMPPStream *)sender didReceiveMessage:(XMPPMessage *)message {
     [self notifyStanzaDelegates:message];
 }
@@ -259,7 +193,7 @@
 }
 
 - (void)xmppStream:(XMPPStream *)sender didReceiveError:(NSXMLElement *)error {
-	[self.stanzaDelegate didReceiveError:error];
+	[self notifyErrorDelegates:error];
 }
 
 /*
@@ -275,8 +209,8 @@
 - (void)goOnline {
 	XMPPPresence* presence = [XMPPPresence presence];
 	[self.xmppStream sendElement:presence];
-	
-	[self.presenceDelegate didAuthenticate];
+
+    [self.delegate connectionAuthenticationFinished:nil];
 }
 
 - (void)goOffline {
@@ -342,29 +276,6 @@
 	[self sendElement:[MXiBeanConverter beanToIQ:bean]];
 }
 
-- (void)createServiceInstanceWithServiceName:(NSString *)serviceName
-                             servicePassword:(NSString *)password
-                            serviceNamespace:(NSString *)serviceNamespace
-{
-    @autoreleasepool {
-        NSXMLElement *serviceIQ = [NSXMLElement elementWithName:@"iq"];
-        NSXMLElement *serviceBean = [NSXMLElement elementWithName:@"createNewServiceInstance"
-                                                            xmlns:CoordinatorService];
-
-        [serviceBean addChild:[[NSXMLElement alloc] initWithName:@"serviceNamespace" stringValue:serviceNamespace]];
-        [serviceBean addChild:[[NSXMLElement alloc] initWithName:@"password" stringValue:password]];
-        [serviceBean addChild:[[NSXMLElement alloc] initWithName:@"serviceName" stringValue:serviceName]];
-
-        [serviceIQ addAttributeWithName:@"to" stringValue:self.coordinatorJID];
-        [serviceIQ addAttributeWithName:@"from" stringValue:self.jabberID.full];
-        [serviceIQ addAttributeWithName:@"type" stringValue:@"set"];
-
-        [serviceIQ addChild:serviceBean];
-
-        [self.xmppStream sendElement:serviceIQ];
-    }
-}
-
 - (void)disconnect {
 	[self goOffline];
 	[self.xmppStream disconnect];
@@ -382,6 +293,11 @@
     [_stanzaDelegateDictionary addDelegate:delegate withSelector:selector forStanzaElement:stanzaElement];
 }
 
+- (void)addErrorDelegate:(id)delegate withSelecor:(SEL)selector
+{
+    [_errorDelegateDictionary addErrorDelegate:delegate withSelector:selector];
+}
+
 - (void)removeBeanDelegate:(id)delegate forBeanClass:(Class)beanClass
 {
     [_beanDelegateDictionary removeDelegate:delegate forBeanClass:beanClass];
@@ -390,6 +306,11 @@
 - (void)removeStanzaDelegate:(id)delegate forStanzaElement:(StanzaElement)element
 {
     [_stanzaDelegateDictionary removeDelegate:delegate forStanzaElement:element];
+}
+
+- (void)removeErrorDelegate:(id)delegate
+{
+    [_errorDelegateDictionary removeErrorDelegate:delegate];
 }
 
 #pragma mark - Delegate Notification
@@ -429,6 +350,19 @@
     if ([[stanza name] isEqualToString:@"presence"]) return PRESENCE;
 
     return UNKNOWN_STANZA;
+}
+
+- (void)notifyErrorDelegates:(NSXMLElement *)error
+{
+    NSArray *registeredDelegates = nil;
+    @synchronized (_errorDelegateDictionary) {
+        registeredDelegates = [NSArray arrayWithArray:[_errorDelegateDictionary delegates]];
+    }
+    for (MXiDelegateSelectorMapping *mapping in registeredDelegates) {
+        if ([mapping.delegate respondsToSelector:[mapping selector]]) {
+            [mapping.delegate performSelector:[mapping selector] withObject:error];
+        }
+    }
 }
 
 #pragma mark - XMPPRoomDelegate

@@ -8,49 +8,26 @@
 
 #import <Foundation/Foundation.h>
 
-#import "MXiConnection.h"
 #import "MXiService.h"
 #import "MXiMultiUserChatDelegate.h"
 #import "MXiOutgoingBean.h"
 
+@class MXiConnection;
 @class MXiMultiUserChatDiscovery;
 @protocol MXiConnectionServiceStateDelegate;
 @class MXiServiceManager;
-
-/**
- *  This block will be called when the authentication of the user finished. If the authentication was successfull
- *  the block will be called with 'YES' as parameter and 'NO' otherwise.
- *
- *  @param AuthenticationBlock The Block that will be executed after the authentication.
- */
-typedef void (^ AuthenticationBlock)(BOOL);
-
-/**
- *  This block will be called when the creation of a service finished successfully.
- *
- *  @param serviceJID The full JID of the created service instance.
-*/
-typedef void (^ ServiceCreateCompletionBlock)(NSString *);
-
-
-/*!
-    This block will be called when results of a multi user chat room discovery are available.
-
-    @param serviceSupported This flag is 'YES' when the domain supports multi user chat rooms otherwise 'NO'
-    @param discoveredRooms  A list of rooms that are discovered for the respective domain.
-                            This flag will be _nil_ when the service does not support XEP-0045 and empty if no rooms were discovered.
- */
-typedef void (^DiscoveryCompletionBlock)(BOOL serviceSupported, NSArray *discoveredRooms);
+@protocol MXiConnectionHandlerDelegate;
 
 /**
  *  The ConnectionHandler class provides global-level information of the XMPP connection to an XMPP server.
  */
-@interface MXiConnectionHandler : NSObject <MXiBeanDelegate, MXiPresenceDelegate, MXiStanzaDelegate>
+@interface MXiConnectionHandler : NSObject
 
-//@property (strong) NSArray* discoveredServiceInstances;
-@property (strong) MXiServiceManager *serviceManager;
+@property (readonly) MXiConnection *connection;
+@property (readonly) MXiServiceManager *serviceManager;
+@property (readonly) MXiMultiUserChatDiscovery *multiUserChatDiscovery;
 
-@property (nonatomic) MXiMultiUserChatDiscovery *multiUserChatDiscovery;
+@property (nonatomic, weak) id<MXiConnectionHandlerDelegate> delegate;
 
 /**
  *  Returns a ConnectionHandler object that manages all relevant information on the connection and incoming and
@@ -76,12 +53,7 @@ typedef void (^DiscoveryCompletionBlock)(BOOL serviceSupported, NSArray *discove
  *  @param port            The port under which the XMPP server is available, usually 5222.
  *  @param authentication  Callback block to inform the application on the success of the authentication.
  */
-- (void)launchConnectionWithJID:(NSString *)jabberID
-                       password:(NSString *)password
-                       hostName:(NSString *)hostName
-                    serviceType:(enum _ServiceType)serviceType
-                           port:(NSNumber *)hostPort
-            authenticationBlock:(AuthenticationBlock)authentication;
+- (void)launchConnectionWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName serviceType:(ServiceType)serviceType port:(NSNumber *)hostPort;
 
 /**
  *  Use already existing connection delegates and just reconfigure the connection to the server.
@@ -92,19 +64,7 @@ typedef void (^DiscoveryCompletionBlock)(BOOL serviceSupported, NSArray *discove
  *  @param port           The port under which the XMPP server is available, usually 5222.
  *  @param authentication Callback block to inform the sender on the success of the authentication.
  */
-- (void)reconnectWithJID:(NSString *)jabberID
-                password:(NSString *)password
-                hostName:(NSString *)hostName
-                    port:(NSNumber *)port
-     authenticationBlock:(AuthenticationBlock)authentication;
-
-/*!
-    Create a new instance of the service the receiver is connected to.
-
-    @param serviceName      The name of the service instance that is supposed to be created.
-    @param completionBlock  The block that will be executed when the creation of the instance finished.
- */
-- (void)createServiceWithName:(NSString *)serviceName completionBlock:(ServiceCreateCompletionBlock)completionBlock;
+- (void)reconnectWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName port:(NSNumber *)port;
 
 /**
  *  This method realizes client-server communication and sends outgoing beans to the service.
@@ -124,28 +84,6 @@ typedef void (^DiscoveryCompletionBlock)(BOOL serviceSupported, NSArray *discove
 
 - (void)sendMessageXML:(NSXMLElement *)messageElement toJID:(NSString *)jid;
 - (void)sendMessageString:(NSString *)messageString toJID:(NSString *)jid;
-
-/**
- *  Objects that are interested in listening to state changes of the overall service available can register as delegates.
- *  Whenever the service becomes available or unavailable all registered delegates will be notified.
- *
- *  @param delegate The object that wants to be notified on service availability changes.
- *
- *  @see MXiConnectionServiceStateDelegate
-*/
-- (void)addDelegate:(id<MXiConnectionServiceStateDelegate>)delegate;
-
-/**
- *  Remove an object from the receiver's list of objects that want to be notified on service availability changes.
- *
- *  @param delegate The object that should be removed from the receiver's list of delegates.
- *
- *  @see MXiConnectionServiceStateDelegate
-*/
-- (void)removeDelegate:(id<MXiConnectionServiceStateDelegate>)delegate;
-
-- (void)addStanzaDelegate:(id)delegate;
-- (void)removeStanzaDelegate:(id)delegate;
 
 #pragma mark - Multi User Chat support
 
@@ -213,5 +151,12 @@ typedef enum {
  *  @param connectionState The new state of the client - service connection.
 */
 - (void)connectionStateChanged:(MXiConnectionServiceState)connectionState;
+
+@end
+
+@protocol MXiConnectionHandlerDelegate
+
+- (void)authenticationFinishedSuccessfully:(BOOL)authenticationState;
+- (void)connectionDidDisconnect:(NSError *)error;
 
 @end
