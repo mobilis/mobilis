@@ -34,6 +34,7 @@ import java.util.Set;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.keepalive.KeepAliveManager;
@@ -327,7 +328,20 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 				// TODO Auto-generated catch block
 			}
 		}
-
+		
+		/*delete all entries of remote runtimes in the roster of a service - necessary for clean subscription
+		after the offline phase of the xmpp server of a remote runtime*/
+		for(RosterEntry entry : mConnection.getRoster().getEntries()){
+			//just for services, not for runtime roster
+			if(!mDefaultSettings.get("resource").equals("Deployment") && !mDefaultSettings.get("resource").equals("Runtime")
+					&& !mDefaultSettings.get("resource").equals("Coordinator")){
+				//just remove remote runtimes
+				if(!entry.getUser().equals(StringUtils.parseBareAddress(MobilisManager.getInstance().getAgent("runtime").getFullJid()))){
+					mConnection.getRoster().removeEntry(entry);
+				}
+			}
+		}
+		
 		if ((mConnection != null) && mConnection.isConnected()) {
 			mConnection.removeConnectionListener(this);
 			mConnection.disconnect();
