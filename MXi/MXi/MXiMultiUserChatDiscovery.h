@@ -6,19 +6,22 @@
 
 #import <Foundation/Foundation.h>
 
-#import "MXiConnectionHandler.h"
-
 static NSString *const serviceDiscoInfoNS = @"http://jabber.org/protocol/disco#info";
 static NSString *const serviceDiscoItemsNS = @"http://jabber.org/protocol/disco#items";
+static NSString *const mucFeatureString = @"http://jabber.org/protocol/muc";
+
+@protocol MXiMultiUserChatDiscoveryDelegate;
 
 @interface MXiMultiUserChatDiscovery : NSObject
 
-@property (strong, nonatomic) NSString *domainName;
-@property (copy, nonatomic) DiscoveryCompletionBlock discoveryCompletionBlock;
++ (instancetype)multiUserChatDiscoveryWithDomainName:(NSString *)domainName andDelegate:(id<MXiMultiUserChatDiscoveryDelegate>)delegate;
 
-- (id)initWithDomainName:(NSString *)domainName andCompletionBlock:(DiscoveryCompletionBlock)completionBlock;
+- (void)startDiscoveryWithResultQueue:(dispatch_queue_t)resultQueue;
 
-- (void)startDiscoveryOnQueue:(dispatch_queue_t)discoveryQueue;
+@end
 
-- (void)didReceiveIQ:(XMPPIQ *)xmppiq;
+@protocol MXiMultiUserChatDiscoveryDelegate
+
+- (void)multiUserChatRoomsDiscovered:(NSArray *)chatRooms;
+
 @end

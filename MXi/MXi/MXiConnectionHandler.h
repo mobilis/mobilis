@@ -14,9 +14,9 @@
 
 @class MXiConnection;
 @class MXiMultiUserChatDiscovery;
-@protocol MXiConnectionServiceStateDelegate;
 @class MXiServiceManager;
 @protocol MXiConnectionHandlerDelegate;
+@protocol MXiMultiUserChatDiscoveryDelegate;
 
 /**
  *  The ConnectionHandler class provides global-level information of the XMPP connection to an XMPP server.
@@ -88,17 +88,6 @@
 #pragma mark - Multi User Chat support
 
 /*!
-    This method is used to discover all available Multi User Chat rooms for a given domain.
-    Discovery follows XEP-0045 specification.
-
-    @param domain           The domain that offers the multi user chat rooms.
-    @param completionBlock  The completion block that is called when results for the discovery are available.
-                            The completion block might be called several times if more than one entity of the given domain
-                            provides Multi-User-Chat-Rooms.
- */
-- (void)discoverMultiUserChatRoomsInDomain:(NSString *)domain withCompletionBlock:(DiscoveryCompletionBlock)completionBlock;
-
-/*!
     This method will connect to a multi user chat room specified by a given jabber ID of the room.
 
     @param roomJID The jabber ID of the multi user chat room to connect to.
@@ -125,12 +114,6 @@
  */
 - (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID;
 - (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID toUser:(NSString *)userName;
-/*!
-    Tells the sender whether a multi user chat delegate is already set.
-
-    @return `YES` if a delegate was already set, otherwise `NO`.
- */
-- (BOOL)isMultiUserChatDelegateSet;
 
 @end
 
@@ -158,5 +141,7 @@ typedef enum {
 
 - (void)authenticationFinishedSuccessfully:(BOOL)authenticationState;
 - (void)connectionDidDisconnect:(NSError *)error;
+
+- (void)serviceDiscoveryError:(NSError *)error;
 
 @end

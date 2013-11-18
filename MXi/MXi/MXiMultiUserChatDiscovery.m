@@ -5,15 +5,16 @@
 
 
 #import <XMPPFramework/XMPPIQ.h>
+#import <XMPPFramework/NSXMLElement+XMPP.h>
 #import "MXiMultiUserChatDiscovery.h"
 #import "MXiMultiUserChatRoom.h"
+#import "MXiConnectionHandler.h"
+#import "MXiConnection.h"
 
 @interface MXiMultiUserChatDiscovery ()
 
 @property (nonatomic) NSMutableArray *cachedDomainItems;
 @property (nonatomic) NSMutableArray *discoveredRooms;
-
-@property (nonatomic) dispatch_queue_t discoveryQueue;
 
 - (XMPPIQ *)constructInformationQueryWithAddressee:(NSString *)jid elementID:(NSString *)elementID queryType:(NSString *)queryType;
 
@@ -24,34 +25,45 @@
 @end
 
 @implementation MXiMultiUserChatDiscovery
-
-- (id)initWithDomainName:(NSString *)domainName andCompletionBlock:(DiscoveryCompletionBlock)completionBlock
 {
+    __strong NSString *_domainName;
+    __strong dispatch_queue_t _resultQueue;
+    __weak id<MXiMultiUserChatDiscoveryDelegate> _delegate;
+    __weak MXiConnectionHandler *__connectionHandler;
+}
+
++ (instancetype)multiUserChatDiscoveryWithDomainName:(NSString *)domainName andDelegate:(id <MXiMultiUserChatDiscoveryDelegate>)delegate
+{
+    return [[self alloc] initWithDomainName:domainName andDelegate:delegate];
+}
+
+- (instancetype)initWithDomainName:(NSString *)domainName andDelegate:(id <MXiMultiUserChatDiscoveryDelegate>)delegate
+{
+    NSAssert(domainName != nil && ![domainName isEqualToString:@""], @"Domain name must not be nil or empty");
+    NSAssert(delegate != nil, @"Delegate must not be nil");
+    
     self = [super init];
     if (self) {
-        self.domainName = domainName;
-        self.discoveryCompletionBlock = completionBlock;
-
-        self.discoveredRooms = [NSMutableArray arrayWithCapacity:10];
+        _delegate = delegate;
+        _domainName = domainName;
+        
+        __connectionHandler = [MXiConnectionHandler sharedInstance];
     }
-
+    
     return self;
 }
 
-- (void)startDiscoveryOnQueue:(dispatch_queue_t)discoveryQueue
+- (void)startDiscoveryWithResultQueue:(dispatch_queue_t)resultQueue;
 {
-    if (!discoveryQueue)
-        [NSException raise:NSInvalidArgumentException format:@"The Queue to schedule room discovery must not be nil"];
+    if (!resultQueue) _resultQueue = dispatch_get_main_queue();
+    else _resultQueue = resultQueue;
 
-    self.discoveryQueue = discoveryQueue;
+    [__connectionHandler.connection addStanzaDelegate:self withSelector:@selector(didReceiveIQ:) forStanzaElement:IQ];
 
-    dispatch_async(self.discoveryQueue, ^
-    {
-        XMPPIQ *iq = [self constructInformationQueryWithAddressee:self.domainName
-                                                        elementID:@"discoverDomainItems"
-                                                        queryType:serviceDiscoItemsNS];
-        [[MXiConnectionHandler sharedInstance] sendElement:iq];
-    });
+    XMPPIQ *iq = [self constructInformationQueryWithAddressee:_domainName
+                                                    elementID:@"discoverDomainItems"
+                                                    queryType:serviceDiscoItemsNS];
+    [__connectionHandler sendElement:iq];
 }
 
 - (void)didReceiveIQ:(XMPPIQ *)xmppiq
@@ -91,10 +103,7 @@
         NSString *jid = [element attributeStringValueForName:@"jid"];
         NSString *elementID = [NSString stringWithFormat:@"elementDisco_%i", index++];
         XMPPIQ *iq = [self constructInformationQueryWithAddressee:jid elementID:elementID queryType:serviceDiscoInfoNS];
-        dispatch_async(self.discoveryQueue, ^
-        {
-            [[MXiConnectionHandler sharedInstance] sendElement:iq];
-        });
+        [__connectionHandler sendElement:iq];
         [self.cachedDomainItems addObject:jid];
     }
 }
@@ -119,7 +128,7 @@
     NSArray *features = [[xmppiq childElement] elementsForName:@"feature"];
     BOOL isMUC = NO;
     for (NSXMLElement *element in features)
-        if ([[element attributeStringValueForName:@"var"] isEqualToString:@"http://jabber.org/protocol/muc"]) {
+        if ([[element attributeStringValueForName:@"var"] isEqualToString:mucFeatureString]) {
             isMUC = YES;
             break;
         }
@@ -135,7 +144,10 @@
             [self.discoveredRooms addObject:[[MXiMultiUserChatRoom alloc] initWithName:[roomElement attributeStringValueForName:@"name"]
                                                                               jabberID:[XMPPJID jidWithString:[roomElement attributeStringValueForName:@"jid"]]]];
     }
-    self.discoveryCompletionBlock(YES,[NSArray arrayWithArray:self.discoveredRooms]);
+    dispatch_async(_resultQueue, ^
+    {
+        [_delegate multiUserChatRoomsDiscovered:[NSArray arrayWithArray:self.discoveredRooms]];
+    });
 }
 
 @end

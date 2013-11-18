@@ -137,18 +137,6 @@
 
 #pragma mark - Multi User Chat Support
 
-- (void)discoverMultiUserChatRoomsInDomain:(NSString *)domain withCompletionBlock:(DiscoveryCompletionBlock)completionBlock
-{
-    MXiMultiUserChatDiscovery *discovery = [[MXiMultiUserChatDiscovery alloc] initWithDomainName:domain
-                                                                              andCompletionBlock:completionBlock];
-    self.multiUserChatDiscovery = discovery;
-
-    if (!self.discoveryQueue) {
-        self.discoveryQueue = dispatch_queue_create("mucDiscoveryQueue", DISPATCH_QUEUE_CONCURRENT);
-    }
-    [discovery startDiscoveryOnQueue:self.discoveryQueue];
-}
-
 - (void)connectToMultiUserChatRoom:(NSString *)roomJID
                       withDelegate:(id <MXiMultiUserChatDelegate>)delegate
 {
@@ -215,14 +203,11 @@
     }
 }
 
+#pragma mark - MXiServiceManagerDelegate
+
 - (void)serviceDiscoveryFinishedWithError:(NSError *)error
 {
-    #error Unimplemented Method
-}
-
-- (void)createdServiceInstanceSuccessfully:(MXiService *)service
-{
-    #error Unimplemented Method
+    [self.delegate serviceDiscoveryError:error];
 }
 
 @end
