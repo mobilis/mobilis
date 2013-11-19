@@ -329,15 +329,18 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 			}
 		}
 		
-		/*delete all entries of remote runtimes in the roster of a service - necessary for clean subscription
+		/*on server shutdown or service shutdown delete all entries of remote runtimes in the roster of a service - 
+		 * necessary for clean subscription
 		after the offline phase of the xmpp server of a remote runtime*/
-		for(RosterEntry entry : mConnection.getRoster().getEntries()){
-			//just for services, not for runtime roster
-			if(!mDefaultSettings.get("resource").equals("Deployment") && !mDefaultSettings.get("resource").equals("Runtime")
-					&& !mDefaultSettings.get("resource").equals("Coordinator")){
-				//just remove remote runtimes
-				if(!entry.getUser().equals(StringUtils.parseBareAddress(MobilisManager.getInstance().getAgent("runtime").getFullJid()))){
-					mConnection.getRoster().removeEntry(entry);
+		if(!discoName.equals("")){ //disconame is just for the Service Presence Resource not empty! So it must be a server shutdown if true...
+			for(RosterEntry entry : mConnection.getRoster().getEntries()){
+				//just for services, not for runtime roster
+				if(!mDefaultSettings.get("resource").equals("Deployment") && !mDefaultSettings.get("resource").equals("Runtime")
+						&& !mDefaultSettings.get("resource").equals("Coordinator")){
+					//just remove remote runtimes
+					if(!entry.getUser().equals(StringUtils.parseBareAddress(MobilisManager.getInstance().getAgent("runtime").getFullJid()))){
+						mConnection.getRoster().removeEntry(entry);
+					}
 				}
 			}
 		}
