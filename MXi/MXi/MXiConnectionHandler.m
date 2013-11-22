@@ -25,12 +25,10 @@
 @property (strong, nonatomic) NSMutableArray *outgoingBeanQueue;
 
 @property BOOL authenticated;
-@property BOOL connected;
 
 @property (nonatomic) dispatch_queue_t discoveryQueue;
 
 - (NSArray *)allIncomingBeans;
-- (void)clearOutgoingBeanQueue;
 
 @end
 
@@ -67,16 +65,11 @@
 
 
     self.connection = [MXiConnection connectionWithJabberID:jabberID password:password hostName:hostName port:[hostPort intValue] coordinatorJID:[NSString stringWithFormat:@"%@@%@/Coordinator", [settings valueForKey:SERVER_USERNAME], hostName] serviceNamespace:[settings valueForKey:SERVICE_NAMESPACE] serviceType:serviceType listeningForIncomingBeans:[self allIncomingBeans] connectionDelegate:self];
-
-    self.serviceManager = [MXiServiceManager serviceManagerWithConnection:self.connection
-                                                              serviceType:serviceType
-                                                                namespace:[settings valueForKey:SERVICE_NAMESPACE]];
 }
 
 - (void)reconnectWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName port:(NSNumber *)port
 {
     _authenticated = NO;
-    _connected = NO;
 
     DefaultSettings *settings = [DefaultSettings defaultSettings];
     [self.connection reconnectWithJabberID:jabberID
@@ -87,10 +80,14 @@
                           serviceNamespace:[settings valueForKey:SERVICE_NAMESPACE]];
 }
 
-- (void)sendBean:(MXiBean<MXiOutgoingBean> *)outgoingBean
+- (void)sendBean:(MXiBean <MXiOutgoingBean> *)outgoingBean toService:(MXiService *)service
 {
     if (self.connection && outgoingBean) {
-        if (_authenticated && _connected) {
+        if (_authenticated) {
+            if (!service)
+                outgoingBean.to = ((MXiService *)[self.serviceManager.services firstObject]).jid;
+            else
+                outgoingBean.to = service.jid;
             [self.connection sendBean:outgoingBean];
         } else {
             if (!self.outgoingBeanQueue) {
@@ -126,14 +123,20 @@
 
 - (void)connectionDidDisconnect:(NSError *)error
 {
+    _authenticated = NO;
     [self.delegate connectionDidDisconnect:error];
 }
 
 - (void)connectionAuthenticationFinished:(NSXMLElement *)error
 {
-    if (!error)
+    if (!error) {
+        _authenticated = YES;
+        self.serviceManager = [MXiServiceManager serviceManagerWithConnection:self.connection
+                                                                  serviceType:self.connection.serviceType
+                                                                    namespace:self.connection.serviceNamespace];
+        [self.serviceManager addDelegate:self];
         [self.delegate authenticationFinishedSuccessfully:YES];
-    else [self.delegate authenticationFinishedSuccessfully:NO];
+    } else [self.delegate authenticationFinishedSuccessfully:NO];
 }
 
 #pragma mark - Multi User Chat Support
@@ -184,22 +187,12 @@
     return self.incomingBeans;
 }
 
-- (void)clearOutgoingBeanQueue
-{
-    if (self.outgoingBeanQueue && self.outgoingBeanQueue.count > 0) {
-        for (MXiBean<MXiOutgoingBean> *outgoing in self.outgoingBeanQueue) {
-            outgoing.to = [XMPPJID jidWithString:self.connection.serviceJID];
-            [self sendBean:outgoing];
-        }
-    }
-}
-
 - (void)clearOutgoingBeanQueueWithServiceJID:(NSString *)serviceJID
 {
     if (self.outgoingBeanQueue && self.outgoingBeanQueue.count > 0) {
         for (MXiBean<MXiOutgoingBean> *outgoing in self.outgoingBeanQueue) {
             outgoing.to = [XMPPJID jidWithString:serviceJID];
-            [self sendBean:outgoing];
+            [self sendBean:outgoing toService:nil ];
         }
     }
 }

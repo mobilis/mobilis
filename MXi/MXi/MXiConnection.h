@@ -25,7 +25,6 @@
 @property (nonatomic, retain) NSString* password;
 @property (nonatomic, strong) NSString* hostName;
 @property (nonatomic) NSInteger port;
-@property (nonatomic, strong) NSString* serviceJID;
 @property (nonatomic, strong) NSString* serviceNamespace;
 @property (nonatomic, strong) NSString *serviceName;
 @property (nonatomic) ServiceType serviceType;
@@ -41,6 +40,7 @@
 - (void)sendTestMessageWithContent:(NSString* )content to:(NSString* )to;
 - (void)sendElement:(NSXMLElement* )element;
 - (void)sendBean:(MXiBean<MXiOutgoingBean>* )bean;
+- (void)sendBean:(MXiBean <MXiOutgoingBean> *)bean toJid:(XMPPJID *)jid;
 
 - (BOOL)reconnectWithJabberID:(NSString* )jabberID
 					 password:(NSString* )password

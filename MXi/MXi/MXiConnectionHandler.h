@@ -75,7 +75,7 @@
  *
  *  @see MXiOutgoingBean protocol
  */
-- (void)sendBean:(MXiBean<MXiOutgoingBean> *)outgoingBean;
+- (void)sendBean:(MXiBean <MXiOutgoingBean> *)outgoingBean toService:(MXiService *)service;
 
 /*!
     Send a stanza of any kind to the XMPP server.

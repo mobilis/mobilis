@@ -59,10 +59,17 @@
 
         self.delegate = connectionDelegate;
 
+        [self setupDelegateDictionaries];
         [self setupStream];
         [self connect];
     }
     return self;
+}
+- (void)setupDelegateDictionaries
+{
+    _beanDelegateDictionary = [MXiBeanDelegateDictionary new];
+    _stanzaDelegateDictionary = [MXiStanzaDelegateDictionary new];
+    _errorDelegateDictionary = [MXiErrorDelegateDictionary new];
 }
 
 - (BOOL)reconnectWithJabberID:(NSString *)aJabberID
@@ -268,12 +275,15 @@
 }
 
 - (void)sendBean:(MXiBean<MXiOutgoingBean>* )bean {
+    NSAssert(bean.to != nil, @"No addresse of the outgoing bean!");
 	[bean setFrom:self.jabberID];
-    if (self.serviceType == SINGLE) {
-	    [bean setTo:[XMPPJID jidWithString:self.serviceJID]];
-    }
-
 	[self sendElement:[MXiBeanConverter beanToIQ:bean]];
+}
+
+- (void)sendBean:(MXiBean <MXiOutgoingBean> *)bean toJid:(XMPPJID *)jid
+{
+    [bean setTo:jid];
+    [self sendBean:bean];
 }
 
 - (void)disconnect {

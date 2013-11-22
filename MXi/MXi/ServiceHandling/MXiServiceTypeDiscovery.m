@@ -119,6 +119,7 @@
                                                   version:[discoveredServiceElement attributeIntegerValueForName:@"version"]
                                                  jabberID:[discoveredServiceElement attributeStringValueForName:@"jid"]];
         [self.delegate serviceDiscovered:service];
+        [self.delegate discoveryFinishedWithError:nil];
     }
 }
 - (void)multiModeServiceDetection:(NSArray *)discoveredServiceElements
