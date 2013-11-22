@@ -150,6 +150,11 @@
 }
 
 - (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq {
+    if ([self isIncomingIQPing:iq]) {
+        [self pong:iq];
+        return YES;
+    }
+
     [self notifyStanzaDelegates:iq];
 
     NSLog(@"Received iq: %@", [iq prettyXMLString]);
@@ -172,6 +177,26 @@
     }
 
 	return YES;
+}
+
+- (void)pong:(XMPPIQ *)xmppiq
+{
+    NSXMLElement *pong = [NSXMLElement elementWithName:@"iq"
+                                              children:nil
+                                            attributes:@[[NSXMLElement attributeWithName:@"from" stringValue:self.jabberID.full],
+                                            [NSXMLElement attributeWithName:@"to" stringValue:xmppiq.fromStr],
+                                            [NSXMLElement attributeWithName:@"id" stringValue:xmppiq.elementID],
+                                            [NSXMLElement attributeWithName:@"type" stringValue:@"result"]]];
+    [self sendElement:pong];
+}
+
+- (BOOL)isIncomingIQPing:(XMPPIQ *)xmppiq
+{
+    NSXMLElement *childElement = [xmppiq childElement];
+    for (NSXMLNode *namespaceElement in [childElement namespaces])
+        if ([[namespaceElement stringValue] isEqualToString:@"urn:xmpp:ping"])
+            return YES;
+    return NO;
 }
 
 - (BOOL)isIncomingIQBeanContainer:(XMPPIQ *)incomingIQ
