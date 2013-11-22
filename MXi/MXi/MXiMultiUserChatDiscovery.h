@@ -20,7 +20,7 @@ static NSString *const mucFeatureString = @"http://jabber.org/protocol/muc";
 
 @end
 
-@protocol MXiMultiUserChatDiscoveryDelegate
+@protocol MXiMultiUserChatDiscoveryDelegate <NSObject>
 
 - (void)multiUserChatRoomsDiscovered:(NSArray *)chatRooms;
 

@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 TU Dresden. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 #import "MXiDefinitions.h"
 
 @class MXiConnection;
@@ -29,7 +31,7 @@
 
 @end
 
-@protocol MXiServiceManagerDelegate
+@protocol MXiServiceManagerDelegate <NSObject>
 
 - (void)serviceDiscoveryFinishedWithError:(NSError *)error;
 

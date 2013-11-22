@@ -26,8 +26,9 @@
 
 @implementation MXiMultiUserChatDiscovery
 {
+    dispatch_queue_t _resultQueue;
+
     __strong NSString *_domainName;
-    __strong dispatch_queue_t _resultQueue;
     __weak id<MXiMultiUserChatDiscoveryDelegate> _delegate;
     __weak MXiConnectionHandler *__connectionHandler;
 }

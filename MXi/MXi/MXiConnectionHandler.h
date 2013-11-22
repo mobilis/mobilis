@@ -11,12 +11,14 @@
 #import "MXiService.h"
 #import "MXiMultiUserChatDelegate.h"
 #import "MXiOutgoingBean.h"
+#import "MXiDefinitions.h"
 
 @class MXiConnection;
 @class MXiMultiUserChatDiscovery;
 @class MXiServiceManager;
 @protocol MXiConnectionHandlerDelegate;
 @protocol MXiMultiUserChatDiscoveryDelegate;
+@class MXiBean;
 
 /**
  *  The ConnectionHandler class provides global-level information of the XMPP connection to an XMPP server.
@@ -117,27 +119,7 @@
 
 @end
 
-/**
- *  The MXiConnectionServiceStateDelegate defines basic methods for objects to implement when information on
- *  the service availability are required.
-*/
-@protocol MXiConnectionServiceStateDelegate
-
-typedef enum {
-    MXiConnectionServiceConnected,
-    MXiConnectionServiceUnconnected
-} MXiConnectionServiceState;
-
-/**
- *  This method is invoked whenever the service availability changes.
- *
- *  @param connectionState The new state of the client - service connection.
-*/
-- (void)connectionStateChanged:(MXiConnectionServiceState)connectionState;
-
-@end
-
-@protocol MXiConnectionHandlerDelegate
+@protocol MXiConnectionHandlerDelegate <NSObject>
 
 - (void)authenticationFinishedSuccessfully:(BOOL)authenticationState;
 - (void)connectionDidDisconnect:(NSError *)error;

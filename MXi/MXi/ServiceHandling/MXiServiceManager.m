@@ -9,7 +9,6 @@
 #import "MXiServiceManager.h"
 #import "MXiServiceTypeDiscovery.h"
 #import "MXiConnection.h"
-#import "MXiService.h"
 
 @interface MXiServiceManager () <MXiServiceTypeDiscoveryDelegate>
 

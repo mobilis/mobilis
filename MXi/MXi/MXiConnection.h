@@ -65,7 +65,7 @@
 
 @end
 
-@protocol MXiConnectionDelegate
+@protocol MXiConnectionDelegate <NSObject>
 
 /*!
     Indicates when the authentication process finished and therefor if the connection could be set up.

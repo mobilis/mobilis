@@ -54,7 +54,7 @@
 
 @end
 
-@protocol MXiServiceTypeDiscoveryDelegate
+@protocol MXiServiceTypeDiscoveryDelegate <NSObject>
 
 - (void)serviceDiscovered:(MXiService *)service;
 /*!
