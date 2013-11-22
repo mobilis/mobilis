@@ -147,7 +147,7 @@
     }
     dispatch_async(_resultQueue, ^
     {
-        [_delegate multiUserChatRoomsDiscovered:[NSArray arrayWithArray:self.discoveredRooms]];
+        [_delegate multiUserChatRoomsDiscovered:[NSArray arrayWithArray:self.discoveredRooms] inDomain:_domainName];
     });
 }
 
