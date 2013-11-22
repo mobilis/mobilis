@@ -254,20 +254,6 @@
 	return YES;
 }
 
-- (void)sendTestMessageWithContent:(NSString *)content
-								to:(NSString *)to {
-	NSXMLElement *body = [NSXMLElement elementWithName:@"body"];
-	[body setStringValue:content];
-	
-	NSXMLElement *message = [NSXMLElement elementWithName:@"message"];
-	[message addAttributeWithName:@"type" stringValue:@"chat"];
-	[message addAttributeWithName:@"to" stringValue:to];
-	[message addAttributeWithName:@"from" stringValue:[self.jabberID full]];
-	[message addChild:body];
-	
-	[self.xmppStream sendElement:message];
-}
-
 - (void)sendElement:(NSXMLElement* )element {
 	NSLog(@"Sent: %@", [element prettyXMLString]);
 	
@@ -282,6 +268,7 @@
 
 - (void)sendBean:(MXiBean <MXiOutgoingBean> *)bean toJid:(XMPPJID *)jid
 {
+    NSAssert(jid != nil, @"The JID is not allowed to be nil.");
     [bean setTo:jid];
     [self sendBean:bean];
 }

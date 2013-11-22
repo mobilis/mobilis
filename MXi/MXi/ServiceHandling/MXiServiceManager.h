@@ -14,8 +14,12 @@
 @protocol MXiServiceManagerDelegate;
 @class MXiService;
 
+/*!
+    Service instances for MULTI-mode and SINGLE-mode services are stored, manged and discovered by this class.
+ */
 @interface MXiServiceManager : NSObject
 
+/// List of MXiServices that were discovered for the service. A service discovery must complete without errors before this list contains any objects.
 @property (atomic, readonly) NSArray *services;
 
 @property (nonatomic, readonly, weak) MXiConnection *connection;

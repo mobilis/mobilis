@@ -37,9 +37,27 @@
 
 + (id)connectionWithJabberID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName port:(NSInteger)port coordinatorJID:(NSString *)coordinatorJID serviceNamespace:(NSString *)serviceNamespace serviceType:(ServiceType)serviceType listeningForIncomingBeans:(NSArray *)incomingBeanPrototypes connectionDelegate:(id<MXiConnectionDelegate>)delegate;
 
-- (void)sendTestMessageWithContent:(NSString* )content to:(NSString* )to;
 - (void)sendElement:(NSXMLElement* )element;
+
+/*!
+    This method will send a bean to the receiver.
+
+    Note that this method requires the bean to have a set "to" property. An Assertion Failure will ocure otherwise.
+
+    @param bean     The bean to send to a XMPP server.
+
+    @see MXiBean
+ */
 - (void)sendBean:(MXiBean<MXiOutgoingBean>* )bean;
+/*!
+    This method will send a bean to given JID.
+
+    @param bean     The bean to send to a XMPP server.
+    @param jid      The XMPPJID the bean is supposed to be sent to.
+
+    @see MXiBean
+    @see XMPPJID
+ */
 - (void)sendBean:(MXiBean <MXiOutgoingBean> *)bean toJid:(XMPPJID *)jid;
 
 - (BOOL)reconnectWithJabberID:(NSString* )jabberID

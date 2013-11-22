@@ -69,9 +69,15 @@
 - (void)reconnectWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName port:(NSNumber *)port;
 
 /**
- *  This method realizes client-server communication and sends outgoing beans to the service.
+ *  This method realizes client-server communication and sends outgoing beans to a service instance.
  *
- *  @param outgoingBean Bean object that should be send to the service.
+ *  If you run a SINGLE-mode service the service parameter can be nil, so the detected SINGLE-service-instance will be used
+ *  automatically.
+ *  If you run a MULTI-mode service, specify the service instance you want the bean to be sent to. If no service is specified
+ *  the message will be sent to the first service stored by the MXiServiceManager by default.
+ *
+ *  @param outgoingBean     Bean object that should be send to the service.
+ *  @param service          Optional. If the service is not set, the first stored by the MXiServiceManger will be used.
  *
  *  @see MXiOutgoingBean protocol
  */
@@ -80,7 +86,7 @@
 /*!
     Send a stanza of any kind to the XMPP server.
 
-    @param element The XML stanza that is supposed to be transfered.
+    @param element The XML stanza that is supposed to be transferred.
  */
 - (void)sendElement:(NSXMLElement *)element;
 
