@@ -13,7 +13,6 @@
 #import "MXiBeanDelegateDictionary.h"
 #import "MXiDelegateSelectorMapping.h"
 #import "MXiStanzaDelegateDictionary.h"
-#import "MXiServiceTypeDiscovery.h"
 #import "MXiErrorDelegateDictionary.h"
 
 @interface MXiConnection () <XMPPRoomDelegate>

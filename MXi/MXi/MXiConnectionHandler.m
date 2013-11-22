@@ -6,7 +6,6 @@
 //  Copyright (c) 2013 Technische Universität Dresden. All rights reserved.
 //
 
-#import <MobilisMXi/MXi/MXiBean.h>
 #import "MXiConnectionHandler.h"
 
 #import "IncomingBeanDetection.h"
@@ -25,8 +24,6 @@
 @property (strong, nonatomic) NSMutableArray *outgoingBeanQueue;
 
 @property BOOL authenticated;
-
-@property (nonatomic) dispatch_queue_t discoveryQueue;
 
 - (NSArray *)allIncomingBeans;
 
@@ -62,9 +59,7 @@
 {
 
     DefaultSettings *settings = [DefaultSettings defaultSettings];
-
-
-    self.connection = [MXiConnection connectionWithJabberID:jabberID password:password hostName:hostName port:[hostPort intValue] coordinatorJID:[NSString stringWithFormat:@"%@@%@/Coordinator", [settings valueForKey:SERVER_USERNAME], hostName] serviceNamespace:[settings valueForKey:SERVICE_NAMESPACE] serviceType:serviceType listeningForIncomingBeans:[self allIncomingBeans] connectionDelegate:self];
+    self.connection = [MXiConnection connectionWithJabberID:jabberID password:password hostName:hostName port:[hostPort intValue] coordinatorJID:[NSString stringWithFormat:@"%@@%@/%@", [settings valueForKey:SERVER_USERNAME], hostName, CoordinatorResourceName] serviceNamespace:[settings valueForKey:SERVICE_NAMESPACE] serviceType:serviceType listeningForIncomingBeans:[self allIncomingBeans] connectionDelegate:self];
 }
 
 - (void)reconnectWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName port:(NSNumber *)port
@@ -76,7 +71,7 @@
                                   password:password
                                   hostname:hostName
                                       port:[port integerValue]
-                            coordinatorJID:[NSString stringWithFormat:@"%@@%@/Coordinator", [settings valueForKey:SERVER_USERNAME], hostName]
+                            coordinatorJID:[NSString stringWithFormat:@"%@@%@/%@", [settings valueForKey:SERVER_USERNAME], hostName, CoordinatorResourceName]
                           serviceNamespace:[settings valueForKey:SERVICE_NAMESPACE]];
 }
 
@@ -131,10 +126,7 @@
 {
     if (!error) {
         _authenticated = YES;
-        self.serviceManager = [MXiServiceManager serviceManagerWithConnection:self.connection
-                                                                  serviceType:self.connection.serviceType
-                                                                    namespace:self.connection.serviceNamespace];
-        [self.serviceManager addDelegate:self];
+        self.serviceManager = [MXiServiceManager serviceManagerWithConnection:self.connection serviceType:self.connection.serviceType namespace:self.connection.serviceNamespace delegate:self];
         [self.delegate authenticationFinishedSuccessfully:YES];
     } else [self.delegate authenticationFinishedSuccessfully:NO];
 }

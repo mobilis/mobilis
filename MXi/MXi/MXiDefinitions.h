@@ -11,7 +11,8 @@
 
 typedef enum _ServiceType {
     SINGLE,
-    MULTI
+    MULTI,
+    SERVICE
 } ServiceType;
 
 typedef enum _StanzaElement {
@@ -21,6 +22,7 @@ typedef enum _StanzaElement {
     UNKNOWN_STANZA
 } StanzaElement;
 
-static NSString *const CoordinatorService = @"http://mobilis.inf.tu-dresden.de#services/CoordinatorService";
+static NSString *const CoordinatorServiceNS = @"http://mobilis.inf.tu-dresden.de#services/CoordinatorService";
+static NSString *const CoordinatorResourceName = @"Coordinator";
 
 #endif

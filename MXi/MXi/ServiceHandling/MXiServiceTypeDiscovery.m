@@ -63,7 +63,7 @@
 {
     NSXMLElement* discoElement =
     [NSXMLElement elementWithName:@"serviceDiscovery"
-                            xmlns:CoordinatorService];
+                            xmlns:CoordinatorServiceNS];
     NSXMLElement* iqElement = [NSXMLElement elementWithName:@"iq"];
     [iqElement addAttributeWithName:@"to"
                         stringValue:[self.connection coordinatorJID]];
@@ -80,7 +80,7 @@
     [namespaceElement setStringValue:[self.connection serviceNamespace]];
     NSXMLElement* discoElement =
     [NSXMLElement elementWithName:@"serviceDiscovery"
-                            xmlns:CoordinatorService];
+                            xmlns:CoordinatorServiceNS];
     [discoElement addChild:namespaceElement];
     NSXMLElement* iqElement = [NSXMLElement elementWithName:@"iq"];
     [iqElement addAttributeWithName:@"to"

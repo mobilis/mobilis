@@ -26,24 +26,25 @@
     __strong NSMutableArray *_delegates;
 }
 
-+ (instancetype)serviceManagerWithConnection:(MXiConnection *)connection serviceType:(ServiceType)serviceType namespace:(NSString *)namespace
++ (instancetype)serviceManagerWithConnection:(MXiConnection *)connection serviceType:(ServiceType)serviceType namespace:(NSString *)namespace delegate:(id <MXiServiceManagerDelegate>)delegate
 {
-    return [[self alloc] initWithConnection:connection serviceType:serviceType namespace:namespace];
+    return [[self alloc] initWithConnection:connection serviceType:serviceType namespace:namespace delegate:delegate];
 }
 
-- (instancetype)initWithConnection:(MXiConnection *)connection serviceType:(ServiceType)serviceType namespace:(NSString *)namespace
+- (instancetype)initWithConnection:(MXiConnection *)connection serviceType:(ServiceType)serviceType namespace:(NSString *)namespace delegate:(id<MXiServiceManagerDelegate>)delegate
 {
     if (!connection) [NSException raise:NSInvalidArgumentException format:@"The connection object must not be nil"];
     if (!namespace || [namespace isEqualToString:@""]) [NSException raise:NSInvalidArgumentException format:@"The namespace must not be empty or nil"];
 
     self = [super init];
     if (self) {
+        _delegates = [NSMutableArray arrayWithCapacity:5];
+        [_delegates addObject:delegate];
         self.connection = connection;
         self.serviceType = serviceType;
         self.namespace = namespace;
     }
 
-    _delegates = [NSMutableArray arrayWithCapacity:5];
     [self launchServiceDiscovery];
 
     return self;
@@ -86,7 +87,7 @@
     @autoreleasepool {
         NSXMLElement *serviceIQ = [NSXMLElement elementWithName:@"iq"];
         NSXMLElement *serviceBean = [NSXMLElement elementWithName:@"createNewServiceInstance"
-                                                            xmlns:CoordinatorService];
+                                                            xmlns:CoordinatorServiceNS];
 
         [serviceBean addChild:[[NSXMLElement alloc] initWithName:@"serviceNamespace" stringValue:self.namespace]];
         [serviceBean addChild:[[NSXMLElement alloc] initWithName:@"password" stringValue:password]];
@@ -151,7 +152,7 @@
     [ackIQ addAttributeWithName:@"to" stringValue:self.connection.coordinatorJID];
     [ackIQ addAttributeWithName:@"from" stringValue:self.connection.jabberID.full];
     [ackIQ addAttributeWithName:@"type" stringValue:@"result"];
-    [ackIQ addChild:[[NSXMLElement alloc] initWithName:@"sendNewServiceInstance" xmlns:CoordinatorService]];
+    [ackIQ addChild:[[NSXMLElement alloc] initWithName:@"sendNewServiceInstance" xmlns:CoordinatorServiceNS]];
 
     [self.connection sendElement:ackIQ];
 }
