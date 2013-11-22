@@ -130,6 +130,11 @@
 - (void)authenticationFinishedSuccessfully:(BOOL)authenticationState;
 - (void)connectionDidDisconnect:(NSError *)error;
 
+/*!
+    Will be invoked when the service discovery finished.
+
+    @param error    If the service discovery finished regularly, the error object is set to nil. Otherwise not.
+ */
 - (void)serviceDiscoveryError:(NSError *)error;
 
 @end

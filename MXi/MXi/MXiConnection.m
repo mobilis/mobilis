@@ -183,7 +183,7 @@
 {
     NSXMLElement *pong = [NSXMLElement elementWithName:@"iq"
                                               children:nil
-                                            attributes:@[[NSXMLElement attributeWithName:@"from" stringValue:self.jabberID.full],
+                                            attributes:@[[NSXMLElement attributeWithName:@"from" stringValue:xmppiq.to.full],
                                             [NSXMLElement attributeWithName:@"to" stringValue:xmppiq.fromStr],
                                             [NSXMLElement attributeWithName:@"id" stringValue:xmppiq.elementID],
                                             [NSXMLElement attributeWithName:@"type" stringValue:@"result"]]];
