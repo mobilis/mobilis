@@ -6,7 +6,7 @@
 #
 Pod::Spec.new do |s|
   s.name         = "MobilisMXi"
-  s.version      = "0.4.0"
+  s.version      = "0.5.0"
   s.summary      = "iOS / OSX Client Library for Mobilis based Services"
   s.homepage     = "http://mobilis.inf.tu-dresden.de"
 
@@ -43,7 +43,7 @@ Pod::Spec.new do |s|
   # added to the Pods project. If the pattern is a directory then the
   # path will automatically have '*.{h,m,mm,c,cpp}' appended.
   #
-  s.source_files = 'MXi/MXi'
+  s.source_files = 'MXi/MXi/**/*.{h,m}'
   
   non_arc_files = 'MXi/MXi/IncomingBeanDetection.m'
   s.exclude_files = non_arc_files
