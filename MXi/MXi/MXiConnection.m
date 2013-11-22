@@ -14,6 +14,7 @@
 #import "MXiDelegateSelectorMapping.h"
 #import "MXiStanzaDelegateDictionary.h"
 #import "MXiErrorDelegateDictionary.h"
+#import "MXiMultiUserChatDelegateDictionary.h"
 
 @interface MXiConnection () <XMPPRoomDelegate>
 
@@ -31,6 +32,7 @@
     __strong MXiBeanDelegateDictionary *_beanDelegateDictionary;
     __strong MXiStanzaDelegateDictionary *_stanzaDelegateDictionary;
     __strong MXiErrorDelegateDictionary *_errorDelegateDictionary;
+    __strong MXiMultiUserChatDelegateDictionary *_multiUserChatDelegateDictionary;
 }
 
 + (id)connectionWithJabberID:(NSString *)aJabberID password:(NSString *)aPassword hostName:(NSString *)aHostName port:(NSInteger)port coordinatorJID:(NSString *)theCoordinatorJID serviceNamespace:(NSString *)theServiceNamespace serviceType:(ServiceType)serviceType listeningForIncomingBeans:(NSArray *)theIncomingBeanPrototypes connectionDelegate:(id<MXiConnectionDelegate>)delegate
@@ -69,6 +71,7 @@
     _beanDelegateDictionary = [MXiBeanDelegateDictionary new];
     _stanzaDelegateDictionary = [MXiStanzaDelegateDictionary new];
     _errorDelegateDictionary = [MXiErrorDelegateDictionary new];
+    _multiUserChatDelegateDictionary = [MXiMultiUserChatDelegateDictionary new];
 }
 
 - (BOOL)reconnectWithJabberID:(NSString *)aJabberID
@@ -93,7 +96,7 @@
 
 #pragma mark - XEP-0045: Multi-User-Chat
 
-- (void)connectToMultiUserChatRoom:(NSString *)roomJID
+- (void)connectToMultiUserChatRoom:(NSString *)roomJID withDelegate:(id <MXiMultiUserChatDelegate>)delegate
 {
     if (!_connectedMUCRooms) {
         self.connectedMUCRooms = [NSMutableArray arrayWithCapacity:5];
@@ -102,9 +105,14 @@
     XMPPRoom *room = [[XMPPRoom alloc] initWithRoomStorage:[[XMPPRoomMemoryStorage alloc] init]
                                                        jid:[XMPPJID jidWithString:roomJID]
                                              dispatchQueue:_room_queue];
+
+    [self.connectedMUCRooms addObject:room];
+    [_multiUserChatDelegateDictionary addDelegate:delegate forMultiUserChatRoom:roomJID];
+
     [room activate:self.xmppStream];
     [room addDelegate:self delegateQueue:_room_queue];
     [room joinRoomUsingNickname:@"acdsense_bot_DG" history:nil];
+
 }
 
 - (void)leaveMultiUserChatRoom:(NSString *)roomJID
@@ -118,6 +126,8 @@
         }
     }
     [_connectedMUCRooms removeObject:roomToLeave];
+    [_multiUserChatDelegateDictionary removeDelegate:[_multiUserChatDelegateDictionary delegateForMultiUserChatRoom:roomJID]
+                                forMultiUserChatRoom:roomJID];
 }
 
 - (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID;
@@ -391,39 +401,34 @@
 - (void)xmppRoomDidJoin:(XMPPRoom *)sender
 {
     [self.connectedMUCRooms addObject:sender];
-    if (_mucDelegate && [_mucDelegate respondsToSelector:@selector(connectionToRoomEstablished:)]) {
-        [_mucDelegate performSelector:@selector(connectionToRoomEstablished:) withObject:[sender.roomJID bare]];
-    }
+    id<MXiMultiUserChatDelegate> delegate = [_multiUserChatDelegateDictionary delegateForMultiUserChatRoom:sender.roomJID.full];
+    [delegate performSelector:@selector(connectionToRoomEstablished:) withObject:[sender.roomJID bare]];
 }
 
 - (void)xmppRoom:(XMPPRoom *)sender didReceiveMessage:(XMPPMessage *)message fromOccupant:(XMPPJID *)occupantJID
 {
-    if (_mucDelegate && [_mucDelegate respondsToSelector:@selector(didReceiveMultiUserChatMessage:fromUser:publishedInRoom:)]) {
-        [_mucDelegate didReceiveMultiUserChatMessage:[[message elementForName:@"body"] stringValue]
+    id<MXiMultiUserChatDelegate> delegate = [_multiUserChatDelegateDictionary delegateForMultiUserChatRoom:sender.roomJID.full];
+    [delegate didReceiveMultiUserChatMessage:[[message elementForName:@"body"] stringValue]
                                             fromUser:occupantJID.full
                                      publishedInRoom:sender.roomJID.full];
-    }
 }
 
 - (void)xmppRoom:(XMPPRoom *)sender occupantDidJoin:(XMPPJID *)occupantJID withPresence:(XMPPPresence *)presence
 {
-    if (_mucDelegate && [_mucDelegate respondsToSelector:@selector(userWithJid:didJoin:room:)]) {
-        [_mucDelegate userWithJid:occupantJID.full didJoin:presence.status room:[sender.roomJID full]];
-    }
+    id<MXiMultiUserChatDelegate> delegate = [_multiUserChatDelegateDictionary delegateForMultiUserChatRoom:sender.roomJID.full];
+    [delegate userWithJid:occupantJID.full didJoin:presence.status room:[sender.roomJID full]];
 }
 
 - (void)xmppRoom:(XMPPRoom *)sender occupantDidLeave:(XMPPJID *)occupantJID withPresence:(XMPPPresence *)presence
 {
-    if (_mucDelegate && [_mucDelegate respondsToSelector:@selector(userWithJid:didLeaveRoom:)]) {
-        [_mucDelegate userWithJid:occupantJID.full didLeaveRoom:[sender.roomJID full]];
-    }
+    id<MXiMultiUserChatDelegate> delegate = [_multiUserChatDelegateDictionary delegateForMultiUserChatRoom:sender.roomJID.full];
+    [delegate userWithJid:occupantJID.full didLeaveRoom:[sender.roomJID full]];
 }
 
 - (void)xmppRoom:(XMPPRoom *)sender occupantDidUpdate:(XMPPJID *)occupantJID withPresence:(XMPPPresence *)presence
 {
-    if (_mucDelegate && [_mucDelegate respondsToSelector:@selector(userWithJid:didUpdate:inRoom:)]) {
-        [_mucDelegate userWithJid:occupantJID.full didUpdate:presence.status inRoom:[sender.roomJID full]];
-    }
+    id<MXiMultiUserChatDelegate> delegate = [_multiUserChatDelegateDictionary delegateForMultiUserChatRoom:sender.roomJID.full];
+    [delegate userWithJid:occupantJID.full didUpdate:presence.status inRoom:[sender.roomJID full]];
 }
 
 @end

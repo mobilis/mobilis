@@ -29,7 +29,6 @@
 @property (nonatomic) ServiceType serviceType;
 @property (nonatomic, strong) NSString* coordinatorJID;
 @property (nonatomic, readonly) XMPPStream* xmppStream;
-@property (nonatomic, strong) id<MXiMultiUserChatDelegate> mucDelegate;
 @property (nonatomic, strong) NSArray* incomingBeanPrototypes;
 
 @property (nonatomic, weak) id<MXiConnectionDelegate> delegate;
@@ -66,7 +65,7 @@
 			   coordinatorJID:(NSString* )coordinatorJID
 			 serviceNamespace:(NSString* )serviceNamespace;
 
-- (void)connectToMultiUserChatRoom:(NSString *)roomJID;
+- (void)connectToMultiUserChatRoom:(NSString *)roomJID withDelegate:(id <MXiMultiUserChatDelegate>)delegate;
 - (void)leaveMultiUserChatRoom:(NSString *)roomJID;
 - (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID;
 

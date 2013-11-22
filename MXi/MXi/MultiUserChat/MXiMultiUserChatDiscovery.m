@@ -45,6 +45,8 @@
     
     self = [super init];
     if (self) {
+        self.discoveredRooms = [NSMutableArray arrayWithCapacity:10];
+
         _delegate = delegate;
         _domainName = domainName;
         

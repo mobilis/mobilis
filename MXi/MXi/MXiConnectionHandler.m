@@ -131,41 +131,6 @@
     } else [self.delegate authenticationFinishedSuccessfully:NO];
 }
 
-#pragma mark - Multi User Chat Support
-
-- (void)connectToMultiUserChatRoom:(NSString *)roomJID
-                      withDelegate:(id <MXiMultiUserChatDelegate>)delegate
-{
-    if (!self.connection.mucDelegate && !delegate)
-        @throw [NSException exceptionWithName:@"No delegate set."
-                                       reason:@"Please specify a delegate first"
-                                     userInfo:nil];
-    else if (delegate)
-        self.connection.mucDelegate = delegate;
-
-    [self.connection connectToMultiUserChatRoom:roomJID];
-}
-
-- (void)leaveMultiUserChatRoom:(NSString *)roomJID
-{
-    [self.connection leaveMultiUserChatRoom:roomJID];
-}
-
-- (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID
-{
-    [self.connection sendMessage:message toRoom:roomJID];
-}
-
-- (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID toUser:(NSString *)userName
-{
-    [self.connection sendMessage:message toRoom:[NSString stringWithFormat:@"%@/%@", roomJID, userName]];
-}
-
-- (BOOL)isMultiUserChatDelegateSet
-{
-    return self.connection.mucDelegate != nil;
-}
-
 #pragma mark - Private Helper
 
 - (NSArray *)allIncomingBeans

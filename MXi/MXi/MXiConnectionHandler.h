@@ -27,7 +27,6 @@
 
 @property (readonly) MXiConnection *connection;
 @property (readonly) MXiServiceManager *serviceManager;
-@property (readonly) MXiMultiUserChatDiscovery *multiUserChatDiscovery;
 
 @property (nonatomic, weak) id<MXiConnectionHandlerDelegate> delegate;
 
@@ -92,36 +91,6 @@
 
 - (void)sendMessageXML:(NSXMLElement *)messageElement toJID:(NSString *)jid;
 - (void)sendMessageString:(NSString *)messageString toJID:(NSString *)jid;
-
-#pragma mark - Multi User Chat support
-
-/*!
-    This method will connect to a multi user chat room specified by a given jabber ID of the room.
-
-    @param roomJID The jabber ID of the multi user chat room to connect to.
-    @param delegate The delegate incoming multi user chat messages will be delegated to.
-
-    @warning *Important:* If the delegate is _nil_ and no delegate has been set before, this method will throw an exception of kind NSException.
-
-    @see isMultiUserChatDelegateSet
- */
-- (void)connectToMultiUserChatRoom:(NSString *)roomJID withDelegate:(id <MXiMultiUserChatDelegate>)delegate;
-
-/**
-    Disconnects from the room specified by a given JID.
-
-    @param roomJID The jabberID of the room that sould be left.
-*/
-- (void)leaveMultiUserChatRoom:(NSString *)roomJID;
-/*!
-    Sends a groupchat message to a multi user chat room specified by a given JID.
-
-    @param message  The body of the message as a string.
-    @param roomJID  The jabber ID of the room this message is addressed to.
-    @param userName The resource of the user within the chat room;
- */
-- (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID;
-- (void)sendMessage:(NSString *)message toRoom:(NSString *)roomJID toUser:(NSString *)userName;
 
 @end
 
