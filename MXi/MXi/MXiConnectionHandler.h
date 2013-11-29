@@ -67,6 +67,8 @@
  */
 - (void)reconnectWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName port:(NSNumber *)port;
 
+- (void)rediscoverServices:(NSString *)serviceName;
+
 /**
  *  This method realizes client-server communication and sends outgoing beans to a service instance.
  *

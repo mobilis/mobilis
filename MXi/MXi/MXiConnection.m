@@ -111,8 +111,8 @@
 
     [room activate:self.xmppStream];
     [room addDelegate:self delegateQueue:_room_queue];
-    [room joinRoomUsingNickname:@"acdsense_bot_DG" history:nil];
-
+    [room joinRoomUsingNickname:[NSString stringWithFormat:@"mobilis_iOS_%f", [[NSDate date] timeIntervalSince1970]]
+                        history:nil];
 }
 
 - (void)leaveMultiUserChatRoom:(NSString *)roomJID
