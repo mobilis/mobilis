@@ -58,7 +58,6 @@ var ninecards = {
             errorcallback = MX.core.defaulterrorback;
              
         if (gameJid){ 
-            MX.ninecards.gameJID = gameJid;
             var customiq = $iq({
                 to: gameJid,
                 type: 'set'
