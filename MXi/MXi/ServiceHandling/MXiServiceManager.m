@@ -148,7 +148,8 @@
                                                     jabberID:serviceJID];
         [self serviceDiscovered:newService];
         for (id<MXiServiceManagerDelegate> delegate in _delegates)
-            [delegate createdServiceInstanceSuccessfully:newService];
+            if ([delegate respondsToSelector:@selector(createdServiceInstanceSuccessfully:)])
+                [delegate createdServiceInstanceSuccessfully:newService];
 
         [self sendServiceCreationAcknowledgement];
     }

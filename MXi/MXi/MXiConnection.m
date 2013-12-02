@@ -402,7 +402,7 @@
 {
     [self.connectedMUCRooms addObject:sender];
     id<MXiMultiUserChatDelegate> delegate = [_multiUserChatDelegateDictionary delegateForMultiUserChatRoom:sender.roomJID.full];
-    [delegate performSelector:@selector(connectionToRoomEstablished:) withObject:[sender.roomJID bare]];
+    [delegate performSelector:@selector(connectionToRoomEstablished:usingRoomJID:) withObject:[sender.roomJID bare] withObject:sender.myRoomJID.full];
 }
 
 - (void)xmppRoom:(XMPPRoom *)sender didReceiveMessage:(XMPPMessage *)message fromOccupant:(XMPPJID *)occupantJID
