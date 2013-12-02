@@ -8,20 +8,27 @@
 
 #import <Foundation/Foundation.h>
 
-#import <MXi/MXi.h>
+#import "MXiService.h"
+#import "MXiMultiUserChatDelegate.h"
+#import "MXiOutgoingBean.h"
+#import "MXiDefinitions.h"
 
-/**
- *  This block will be called when the authentication of the user finished. If the authentication was successfull
- *  the block will be called with 'YES' as parameter and 'NO' otherwise.
- *
- *  @param AuthenticationBlock The Block that will be executed after the authentication.
- */
-typedef void (^ AuthenticationBlock)(BOOL);
+@class MXiConnection;
+@class MXiMultiUserChatDiscovery;
+@class MXiServiceManager;
+@protocol MXiConnectionHandlerDelegate;
+@protocol MXiMultiUserChatDiscoveryDelegate;
+@class MXiBean;
 
 /**
  *  The ConnectionHandler class provides global-level information of the XMPP connection to an XMPP server.
  */
-@interface MXiConnectionHandler : NSObject <MXiBeanDelegate, MXiPresenceDelegate, MXiStanzaDelegate>
+@interface MXiConnectionHandler : NSObject
+
+@property (readonly) MXiConnection *connection;
+@property (readonly) MXiServiceManager *serviceManager;
+
+@property (nonatomic, weak) id<MXiConnectionHandlerDelegate> delegate;
 
 /**
  *  Returns a ConnectionHandler object that manages all relevant information on the connection and incoming and
@@ -36,10 +43,6 @@ typedef void (^ AuthenticationBlock)(BOOL);
  */
 + (instancetype)sharedInstance;
 
-+ (instancetype) alloc __attribute__((unavailable("alloc not available, call sharedInstance instead")));
-- (instancetype) init __attribute__((unavailable("init not available, call sharedInstance instead")));
-+ (instancetype) new __attribute__((unavailable("new not available, call sharedInstance instead")));
-
 /**
  *  Set up a new Connection to a XMPP server. The credentials used in this method will automatically be
  *  stored in the Keychains which means old account information will be overridden.
@@ -47,48 +50,60 @@ typedef void (^ AuthenticationBlock)(BOOL);
  *  @param jabberID        The full or bare JID of the user who's registered at the XMPP server.
  *  @param password        The user's password associated with the JID and XMPP server.
  *  @param hostName        The host name of XMPP server, e.g. 'jabber.org'.
+ *  @param serviceType     The type of the service which is either MULTI or SINGLE.
  *  @param port            The port under which the XMPP server is available, usually 5222.
  *  @param authentication  Callback block to inform the application on the success of the authentication.
  */
-- (void)launchConnectionWithJID:(NSString *)jabberID
-                       password:(NSString *)password
-                       hostName:(NSString *)hostName
-                           port:(NSNumber *)hostPort
-            authenticationBlock:(AuthenticationBlock)authentication;
+- (void)launchConnectionWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName serviceType:(ServiceType)serviceType port:(NSNumber *)hostPort;
 
 /**
  *  Use already existing connection delegates and just reconfigure the connection to the server.
  *
  *  @param jabberID       The full or bare JID of the user who's registered at the XMPP server.
- *  @param password       The user's password accociated with the JID and XMPP server.
+ *  @param password       The user's password associated with the JID and XMPP server.
  *  @param hostName       The host name of XMPP server, e.g. 'jabber.org'.
  *  @param port           The port under which the XMPP server is available, usually 5222.
  *  @param authentication Callback block to inform the sender on the success of the authentication.
  */
-- (void)reconnectWithJID:(NSString *)jabberID
-                password:(NSString *)password
-                hostName:(NSString *)hostName
-                    port:(NSNumber *)port
-    authtenticationBlock:(AuthenticationBlock)authentication;
+- (void)reconnectWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName port:(NSNumber *)port;
 
 /**
- *  This method realizes client-server communication and sends outgoing beans to the service.
+ *  This method realizes client-server communication and sends outgoing beans to a service instance.
  *
- *  @param outgoingBean Bean object that should be send to the service.
+ *  If you run a SINGLE-mode service the service parameter can be nil, so the detected SINGLE-service-instance will be used
+ *  automatically.
+ *  If you run a MULTI-mode service, specify the service instance you want the bean to be sent to. If no service is specified
+ *  the message will be sent to the first service stored by the MXiServiceManager by default.
+ *
+ *  @param outgoingBean     Bean object that should be send to the service.
+ *  @param service          Optional. If the service is not set, the first stored by the MXiServiceManger will be used.
  *
  *  @see MXiOutgoingBean protocol
  */
-- (void)sendBean:(MXiBean<MXiOutgoingBean> *)outgoingBean;
+- (void)sendBean:(MXiBean <MXiOutgoingBean> *)outgoingBean toService:(MXiService *)service;
 
-/**
- *  Various objects might be interested in incoming beans, but not all of them are interested in all incoming beans.
- *  This method allows objects to register as a delegate for only a specific bean class.
- *
- *  @param delegate  Object that wants to act as a delegate for certain bean classes.
- *  @param selector  The selector of the delegate that will be called when a bean of the given class arrives.
- *  @param beanClass The class of the bean for which the delegate registers.
- *
+/*!
+    Send a stanza of any kind to the XMPP server.
+
+    @param element The XML stanza that is supposed to be transferred.
  */
-- (void)addDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass;
+- (void)sendElement:(NSXMLElement *)element;
+
+- (void)sendMessageXML:(NSXMLElement *)messageElement toJID:(NSString *)jid;
+- (void)sendMessageString:(NSString *)messageString toJID:(NSString *)jid;
+
+@end
+
+@protocol MXiConnectionHandlerDelegate <NSObject>
+
+- (void)authenticationFinishedSuccessfully:(BOOL)authenticationState;
+- (void)connectionDidDisconnect:(NSError *)error;
+
+/*!
+    Will be invoked when the service discovery finished.
+
+    @param error    If the service discovery finished regularly, the error object is set to nil. Otherwise not.
+ */
+- (void)serviceDiscoveryError:(NSError *)error;
 
 @end

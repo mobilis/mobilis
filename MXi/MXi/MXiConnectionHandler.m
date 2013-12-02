@@ -8,23 +8,24 @@
 
 #import "MXiConnectionHandler.h"
 
-#import "MXiDelegateDictionary.h"
-#import "MXiDelegateSelectorMapping.h"
 #import "IncomingBeanDetection.h"
+#import "DefaultSettings.h"
+#import "MXiMultiUserChatDiscovery.h"
+#import "MXiServiceManager.h"
+#import "MXiConnection.h"
 
-@interface MXiConnectionHandler ()
+@interface MXiConnectionHandler () <MXiConnectionDelegate, MXiServiceManagerDelegate>
 
-@property (strong, nonatomic) MXiConnection *connection;
+@property MXiConnection *connection;
+@property MXiServiceManager *serviceManager;
+@property MXiMultiUserChatDiscovery *multiUserChatDiscovery;
+
 @property (strong, nonatomic) NSArray *incomingBeans;
 @property (strong, nonatomic) NSMutableArray *outgoingBeanQueue;
 
 @property BOOL authenticated;
-@property BOOL connected;
-
-@property (copy, nonatomic) AuthenticationBlock authenticationBlock;
 
 - (NSArray *)allIncomingBeans;
-- (void)clearOutgoingBeanQueue;
 
 @end
 
@@ -37,62 +38,51 @@
     static dispatch_once_t onceToken;
     __strong static MXiConnectionHandler *shared = nil;
     dispatch_once(&onceToken, ^{
-        shared = [[super alloc] initUniqueInstance];
+        shared = [[super allocWithZone:NULL] initUniqueInstance];
     });
     return shared;
 }
 
++ (id)allocWithZone:(struct _NSZone *)zone
+{
+    return [self sharedInstance];
+}
+
 - (instancetype)initUniqueInstance
 {
-    return [super init];
+    return [self init];
 }
 
 #pragma mark - Connection Handling
 
-- (void)launchConnectionWithJID:(NSString *)jabberID
-                       password:(NSString *)password
-                       hostName:(NSString *)hostName
-                           port:(NSNumber *)hostPort
-            authenticationBlock:(AuthenticationBlock)authentication
+- (void)launchConnectionWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName serviceType:(ServiceType)serviceType port:(NSNumber *)hostPort
 {
-    NSDictionary *settingsDictionary = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Settings"
-                                                                                                                  ofType:@"plist"]];
-    self.connection = [MXiConnection connectionWithJabberID:jabberID
-                                                   password:password
-                                                   hostName:hostName
-                                                       port:[hostPort intValue]
-                                             coordinatorJID:[NSString stringWithFormat:@"mobilis@%@/Coordinator", hostName]
-                                           serviceNamespace:[settingsDictionary valueForKeyPath:@"jabberInformation.serviceNamespace"]
-                                           presenceDelegate:self
-                                             stanzaDelegate:self
-                                               beanDelegate:self
-                                  listeningForIncomingBeans:[self allIncomingBeans]];
 
-    self.authenticationBlock = authentication;
+    DefaultSettings *settings = [DefaultSettings defaultSettings];
+    self.connection = [MXiConnection connectionWithJabberID:jabberID password:password hostName:hostName port:[hostPort intValue] coordinatorJID:[NSString stringWithFormat:@"%@@%@/%@", [settings valueForKey:SERVER_USERNAME], hostName, CoordinatorResourceName] serviceNamespace:[settings valueForKey:SERVICE_NAMESPACE] serviceType:serviceType listeningForIncomingBeans:[self allIncomingBeans] connectionDelegate:self];
 }
 
-- (void)reconnectWithJID:(NSString *)jabberID
-                password:(NSString *)password
-                hostName:(NSString *)hostName
-                    port:(NSNumber *)port
-    authtenticationBlock:(AuthenticationBlock)authentication
+- (void)reconnectWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName port:(NSNumber *)port
 {
     _authenticated = NO;
-    _connected = NO;
-    
-    self.authenticationBlock = authentication;
+
+    DefaultSettings *settings = [DefaultSettings defaultSettings];
     [self.connection reconnectWithJabberID:jabberID
                                   password:password
                                   hostname:hostName
                                       port:[port integerValue]
-                            coordinatorJID:[NSString stringWithFormat:@"mobilis@%@/Coordinator", hostName]
-                          serviceNamespace:[[[NSBundle mainBundle] infoDictionary] valueForKeyPath:@"jabberInformation.serviceNamespace"]];
+                            coordinatorJID:[NSString stringWithFormat:@"%@@%@/%@", [settings valueForKey:SERVER_USERNAME], hostName, CoordinatorResourceName]
+                          serviceNamespace:[settings valueForKey:SERVICE_NAMESPACE]];
 }
 
-- (void)sendBean:(MXiBean<MXiOutgoingBean> *)outgoingBean
+- (void)sendBean:(MXiBean <MXiOutgoingBean> *)outgoingBean toService:(MXiService *)service
 {
     if (self.connection && outgoingBean) {
-        if (_authenticated && _connected) {
+        if (_authenticated) {
+            if (!service)
+                outgoingBean.to = ((MXiService *)[self.serviceManager.services firstObject]).jid;
+            else
+                outgoingBean.to = service.jid;
             [self.connection sendBean:outgoingBean];
         } else {
             if (!self.outgoingBeanQueue) {
@@ -103,80 +93,42 @@
     }
 }
 
-#pragma mark ConnectionHandler Delgation Methods
-
-- (void)addDelegate:(id)delegate withSelector:(SEL)selector forBeanClass:(Class)beanClass
+- (void)sendElement:(NSXMLElement *)element
 {
-    [[MXiDelegateDictionary sharedInstance] addDelegate:delegate withSelector:selector forBeanClass:beanClass];
+    [self.connection sendElement:element];
 }
 
-#pragma mark - MXiBeanDelegate
-
-- (void)didReceiveBean:(MXiBean<MXiIncomingBean> *)theBean
+- (void)sendMessageString:(NSString *)messageString toJID:(NSString *)jid
 {
-    NSArray *delegates = [[MXiDelegateDictionary sharedInstance] delegatesForBeanClass:[theBean class]];
-    if (delegates) {
-        for (MXiDelegateSelectorMapping *mapping in delegates) {
-            if ([mapping.delegate respondsToSelector:[mapping selector]]) {
-                [mapping.delegate performSelector:[mapping selector] withObject:theBean]; // Warning can be ignored.
-            }
-        }
-    }
+    NSXMLElement *body = [NSXMLElement elementWithName:@"body" stringValue:messageString];
+    NSXMLElement *message = [NSXMLElement elementWithName:@"message"
+                                                 children:@[body]
+                                               attributes:@[[NSXMLNode attributeWithName:@"to" stringValue:jid],
+                                                            [NSXMLNode attributeWithName:@"type" stringValue:@"chat"],
+                                                            [NSXMLNode attributeWithName:@"from" stringValue:[self.connection.jabberID full]]]];
+    [self sendElement:message];
 }
 
-#pragma mark - MXiPresenceDelegate
-
-- (void)didAuthenticate
+- (void)sendMessageXML:(NSXMLElement *)messageElement toJID:(NSString *)jid
 {
-    _authenticated = YES;
+    [self sendMessageString:[messageElement XMLString] toJID:jid];
 }
 
-- (void)didDiscoverServiceWithNamespace:(NSString *)serviceNamespace
-                                   name:(NSString *)serviceName
-                                version:(NSInteger)version
-                             atJabberID:(NSString *)serviceJID
-{
-    self.authenticationBlock(_authenticated);
-    _connected = YES;
-    [self clearOutgoingBeanQueueWithServiceJID:serviceJID];
-}
+#pragma mark - MXiConnectionDelegate
 
-- (void)didDisconnectWithError:(NSError *)error
+- (void)connectionDidDisconnect:(NSError *)error
 {
-#warning didDisconnectWithError: not implemented
-    // TODO: figure out how this could best be handled
-    // View that has initialized the connection might not be visible or allocated anymore
-    _connected = NO;
     _authenticated = NO;
-    self.connection = nil;
+    [self.delegate connectionDidDisconnect:error];
 }
 
-- (void)didFailToAuthenticate:(DDXMLElement *)error
+- (void)connectionAuthenticationFinished:(NSXMLElement *)error
 {
-    self.authenticationBlock(NO);
-}
-
-#pragma mark - MXiStanzaDelegate
-
-- (void)didReceiveMessage:(XMPPMessage *)message
-{
-#warning incomplete implementation
-}
-
-- (BOOL)didReceiveIQ:(XMPPIQ *)iq
-{
-#warning incomplete implementation
-    return YES;
-}
-
-- (void)didReceivePresence:(XMPPPresence *)presence
-{
-#warning incomplete implementation
-}
-
-- (void)didReceiveError:(DDXMLElement *)error
-{
-    NSLog(@"%@", error);
+    if (!error) {
+        _authenticated = YES;
+        self.serviceManager = [MXiServiceManager serviceManagerWithConnection:self.connection serviceType:self.connection.serviceType namespace:self.connection.serviceNamespace delegate:self];
+        [self.delegate authenticationFinishedSuccessfully:YES];
+    } else [self.delegate authenticationFinishedSuccessfully:NO];
 }
 
 #pragma mark - Private Helper
@@ -192,24 +144,21 @@
     return self.incomingBeans;
 }
 
-- (void)clearOutgoingBeanQueue
-{
-    if (self.outgoingBeanQueue && self.outgoingBeanQueue.count > 0) {
-        for (MXiBean<MXiOutgoingBean> *outgoing in self.outgoingBeanQueue) {
-            outgoing.to = [XMPPJID jidWithString:self.connection.serviceJID];
-            [self sendBean:outgoing];
-        }
-    }
-}
-
 - (void)clearOutgoingBeanQueueWithServiceJID:(NSString *)serviceJID
 {
     if (self.outgoingBeanQueue && self.outgoingBeanQueue.count > 0) {
         for (MXiBean<MXiOutgoingBean> *outgoing in self.outgoingBeanQueue) {
             outgoing.to = [XMPPJID jidWithString:serviceJID];
-            [self sendBean:outgoing];
+            [self sendBean:outgoing toService:nil ];
         }
     }
+}
+
+#pragma mark - MXiServiceManagerDelegate
+
+- (void)serviceDiscoveryFinishedWithError:(NSError *)error
+{
+    [self.delegate serviceDiscoveryError:error];
 }
 
 @end

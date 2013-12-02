@@ -1,0 +1,17 @@
+# Use either option
+# Use the following line for OS X projects
+platform :osx, '10.7'
+# Use the following line for iOS projects
+#platform :ios, '7.0'
+
+# Default requirements for XMPPFramwork. Do not modify.
+pod 'XMPPFramework/Core', :podspec => 'xmpp.podspec'
+pod 'XMPPFramework/Reconnect', :podspec => 'xmpp.podspec'
+pod 'XMPPFramework/XEP-0045', :podspec => 'xmpp.podspec'
+pod 'XMPPFramework/Roster', :podspec => 'xmpp.podspec'
+
+# Use either option.
+# Reference the Podfile on your local filesystem.
+#pod 'MobilisMXi', :path => '/path/to/Mobilis'
+# Reference MXi from Git repository
+pod 'MobilisMXi', :podspec => 'mxi.podspec'
