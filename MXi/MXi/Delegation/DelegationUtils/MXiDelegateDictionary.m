@@ -52,7 +52,7 @@
 - (void)removeDelegate:(id)delegate forKey:(NSString *)key
 {
     [self initializeDictionaryIfNotExisting];
-    NSMutableArray *registeredDelegates = [self.delegateDictionary objectForKey:key];
+    NSMutableArray *registeredDelegates = [[self.delegateDictionary objectForKey:key] mutableCopy];
     if (registeredDelegates) {
         NSMutableArray *mappingsToDelete = [NSMutableArray arrayWithCapacity:registeredDelegates.count];
         for (MXiDelegateSelectorMapping *mapping in registeredDelegates) {
@@ -71,7 +71,7 @@
         [self removeDelegate:delegate forKey:key];
     } else {
         [self initializeDictionaryIfNotExisting];
-        NSMutableArray *registeredDelegates = [self.delegateDictionary objectForKey:key];
+        NSMutableArray *registeredDelegates = [[self.delegateDictionary objectForKey:key] mutableCopy];
         if (registeredDelegates) {
             MXiDelegateSelectorMapping *mappingToRemove = nil;
             for (MXiDelegateSelectorMapping *mapping in registeredDelegates) {

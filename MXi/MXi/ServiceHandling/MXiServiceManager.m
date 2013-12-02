@@ -63,6 +63,9 @@
 
 - (void)rediscoverServices
 {
+    self.services = [NSArray array];
+    _serviceTypeDiscovery = nil;
+    
     [self launchServiceDiscovery];
 }
 

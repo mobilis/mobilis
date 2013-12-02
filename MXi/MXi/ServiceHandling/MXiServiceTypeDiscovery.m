@@ -51,8 +51,6 @@
 
 - (void)dealloc
 {
-    [self.connection removeStanzaDelegate:self forStanzaElement:IQ];
-
     free((void *) _serviceType);
     _namespace = nil;
 }
@@ -121,6 +119,7 @@
         [self.delegate serviceDiscovered:service];
         [self.delegate discoveryFinishedWithError:nil];
     }
+    [self.connection removeStanzaDelegate:self forStanzaElement:IQ];
 }
 - (void)multiModeServiceDetection:(NSArray *)discoveredServiceElements
 {
@@ -137,8 +136,10 @@
             }
     if (!concreteServiceFound && discoveredServiceElements.count > 0)
         [self discoverServiceInstances];
-    if (concreteServiceFound)
+    if (concreteServiceFound) {
         [self.delegate discoveryFinishedWithError:nil];
+        [self.connection removeStanzaDelegate:self forStanzaElement:IQ];
+    }
 }
 
 @end
