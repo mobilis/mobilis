@@ -23,7 +23,7 @@
 }
 
 - (id)init {
-	[NSException raise:@"Wrong initializer" format:@"Use initWithElementName:iqNamespace:beanType: or init of subtype"];
+	[NSException raise:@"Wrong initializer" format:@"Use initWithBeanType: or init of subtype"];
 	return nil;
 }
 

@@ -12,8 +12,8 @@
 
 + (NSXMLElement *)beanToIQ:(MXiBean<MXiOutgoingBean> *)outBean {
 	NSXMLElement* beanElement = [outBean toXML];
-	
-	NSXMLElement* iq = [NSXMLElement elementWithName:@"iq" xmlns:[[outBean class] iqNamespace]];
+
+    NSXMLElement* iq = [NSXMLElement elementWithName:@"iq"];
 	[iq addAttributeWithName:@"to" stringValue:[[outBean to] full]];
 	[iq addAttributeWithName:@"from" stringValue:[[outBean from] full]];
 	[iq addAttributeWithName:@"type" stringValue:[MXiIQTypeLookup stringValueForIQType:[outBean beanType]]];
@@ -23,7 +23,7 @@
 }
 
 + (void)beanFromIQ:(XMPPIQ *)iq
-		   intoBean:(MXiBean<MXiIncomingBean> *)inBean {
+		   intoBean:(MXiBean<MXiIncomingBean>  *)inBean {
 	[inBean setTo:[XMPPJID jidWithString:[iq attributeStringValueForName:@"to"]]];
 	[inBean setFrom:[XMPPJID jidWithString:[iq attributeStringValueForName:@"from"]]];
 	

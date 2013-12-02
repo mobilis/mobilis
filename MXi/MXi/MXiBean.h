@@ -20,9 +20,6 @@ typedef enum beanTypes {
 @property (nonatomic, strong) XMPPJID* from;
 @property (nonatomic) BeanType beanType;
 
-//@property (nonatomic, strong) NSString* elementName;
-//@property (nonatomic, strong) NSString* iqNamespace;
-
 - (id) init;
 - (id) initWithBeanType:(BeanType )theBeanType;
 

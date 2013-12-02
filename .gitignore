@@ -9,3 +9,11 @@ gen/
 Emulation/GWTEmulationServer/war/sessions
 DemoServices/TreasureHunt/dist
 MobilisServer/service/services.txt
+
+*.classpath
+*.settings*
+
+#Xcode workspace
+*.xcworkspace
+xcuserdata/
+liststore.xml
