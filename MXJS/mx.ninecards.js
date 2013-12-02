@@ -16,7 +16,7 @@ var ninecards = {
     },
 
 
-    createServiceInstance: function (name, resultcallback, errorcallback) {
+    createServiceInstance: function (name, result_cb, error_cb) {
         var settings = jQuery.jStorage.get('settings');
         var customIq = $iq({
             to: settings.coordinator,
@@ -26,50 +26,39 @@ var ninecards = {
         .c('serviceNamespace').t(MX.NS.SERVICE).up()
         .c('serviceName').t(name);
 
-        MX.core.sendIQ(customIq, resultcallback, errorcallback);
+        MX.core.sendIQ(customIq, result_cb, error_cb);
     },
 
 
-    ConfigureGame: function(gameJID, GameName, MaxPlayers, NumberOfRounds, resultcallback, errorcallback) {
-        if (!resultcallback) 
-            resultcallback = MX.core.defaultcallback; 
-        if (!errorcallback) 
-            errorcallback = MX.core.defaulterrorback;
+    ConfigureGame: function(gameJID, GameName, MaxPlayers, NumberOfRounds, result_cb, error_cb) {
 
         var customIq = $iq({
             to: gameJID,
             type: 'set'
         })
-        .c('ConfigureGameRequest', {xmlns : MX.NS.CONFIGUREGAME})
+        .c('ConfigureGameRequest', {xmlns: MX.NS.CONFIGUREGAME})
         .c('gamename').t(GameName).up()
         .c('players').t(MaxPlayers).up()
         .c('rounds').t(NumberOfRounds).up();
 
-        MX.core.sendIQ(customIq, resultcallback, errorcallback);
+        MX.core.sendIQ(customIq, result_cb, error_cb);
     }, 
 
 
+    joinGame: function(gameJid, result_cb, error_cb) {
 
-
-    joinGame: function(gameJid, resultcallback, errorcallback) {
-        if (!resultcallback) 
-            resultcallback = MX.core.defaultcallback; 
-        if (!errorcallback) 
-            errorcallback = MX.core.defaulterrorback;
-             
         if (gameJid){ 
             var customiq = $iq({
                 to: gameJid,
                 type: 'set'
             })
-            .c('JoinGameRequest' , {xmlns : MX.NS.JOINGAME}).up();
+            .c('JoinGameRequest' , {xmlns: MX.NS.JOINGAME}).up();
         } else {
-            errorcallback(null, 'Game JID not defined');
+            error_cb(null, 'Game JID not defined');
         }
 
-        MX.core.sendIQ(customiq, resultcallback, errorcallback);
+        MX.core.sendIQ(customiq, result_cb, error_cb);
     }
-
 
 
 }
