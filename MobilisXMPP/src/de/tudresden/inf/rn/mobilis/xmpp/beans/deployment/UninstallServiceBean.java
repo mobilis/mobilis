@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.xmpp.beans.admin;
+package de.tudresden.inf.rn.mobilis.xmpp.beans.deployment;
 
 import org.xmlpull.v1.XmlPullParser;
 

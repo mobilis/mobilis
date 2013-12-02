@@ -3,9 +3,10 @@ clientNode=adminclient
 clientPassword=adminclient
 clientResource=JavaClient		
 
+#Renamed AdminService -> DeploymentService and DeploymentService -> RuntimeService
 mobilisCoordinatorResource=Coordinator
-mobilisAdminResource=Admin
-mobilisDeploymentResource=Deployment
+mobilisAdminResource=Deployment
+mobilisDeploymentResource=Runtime
 mobilisServerNode=mobilis
 mobilisServerResource=Smack
 

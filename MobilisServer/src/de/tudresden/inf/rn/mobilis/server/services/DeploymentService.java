@@ -1,246 +1,59 @@
 package de.tudresden.inf.rn.mobilis.server.services;
 
 import java.io.File;
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 
-import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.Roster.SubscriptionMode;
-import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.RosterGroup;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
-import org.jivesoftware.smack.keepalive.KeepAliveManager;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.util.StringUtils;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
-import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
-import org.jivesoftware.smackx.filetransfer.FileTransferListener;
-import org.jivesoftware.smackx.filetransfer.FileTransferManager;
-import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
-import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
-import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
-import org.jivesoftware.smackx.packet.DiscoverInfo;
-import org.jivesoftware.smackx.packet.DiscoverInfo.Feature;
 
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
 import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainer;
+import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainerState;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceException;
+import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceException;
+import de.tudresden.inf.rn.mobilis.server.deployment.exception.UpdateServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileUploadInformation;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ExecuteSynchronizeRuntimesBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.AdministrationBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ConfigureServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.InstallServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.runtimeprotocol.SynchronizeRuntimesBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.RegisterServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UninstallServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UnregisterServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UpdateServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanHelper;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
 
 /**
- * The Class DeploymentService for uploading new mobilis services as jar files.
+ * The Class DeploymentService is used to handle the deployment and the life cycle of a deployed
+ * service.
  */
 public class DeploymentService extends MobilisService {
 
-	// private DateFormat _dateFormatter = null;
-	/** The manager for file transfers. */
-	private FileTransferManager _fileTransferManager = null;
+	public static final String UPLOADED_SERVICE_DICTIONARY_PATH = "service";
 
-	/** The default folder for uploaded jar files. */
-	private String _uploadServiceFolder = "service";
-
-	/**
-	 * The list with expected jar files (a PrepareServiceUploadBean is required
-	 * first).
-	 */
-	private Map< String, FileUploadInformation > _expectedUploads = Collections
-			.synchronizedMap( new HashMap< String, FileUploadInformation >() );
-
-	
-
+	// private DateFormat _dateFormatter;
+	//
 	// public void log( String str ) {
 	// System.out.println( "[" + _dateFormatter.format(
 	// System.currentTimeMillis() ) + "] " + str );
 	// }
 
-	/**
-	 * Creates a new incoming file. If a file of the same name already exists, a
-	 * timestamp will be added at the end of the filename.
-	 * 
-	 * @param fileName
-	 *            the file name for the incoming file
-	 * @return the file which was stored
-	 */
-	private File createNewIncomingFile( String fileName ) {
-		File inFile = new File( _uploadServiceFolder, fileName );
-
-		// If file already exists, create a new file with timestamp
-		if ( inFile.exists() )
-			inFile = new File( _uploadServiceFolder, createNewFileName( fileName ) );
-
-		return inFile;
-	}
-
-	/**
-	 * Creates a new file name. A timestamp will be added to filename if it
-	 * already exist.
-	 * 
-	 * @param fileName
-	 *            the name of the file
-	 * @return the new filename
-	 */
-	private String createNewFileName( String fileName ) {
-		StringBuilder sb = new StringBuilder();
-
-		int pointIndex = fileName.lastIndexOf( "." );
-		int strLength = fileName.length();
-
-		sb.append( fileName.subSequence( 0, pointIndex ) ).append( "_" )
-				.append( System.currentTimeMillis() )
-				.append( fileName.substring( pointIndex, strLength ) );
-
-		return sb.toString();
-	}
-
-	/**
-	 * Inits the file transfer manager.
-	 */
-	private void initFileTransferManager() {
-		_fileTransferManager = new FileTransferManager( getAgent().getConnection() );
-		FileTransferNegotiator.setServiceEnabled( getAgent().getConnection(), true );
-
-		_fileTransferManager.addFileTransferListener( new FileTransferListener() {
-			public void fileTransferRequest(final FileTransferRequest request ) {
-				Thread t = new Thread(new Runnable() {
-					
-					@Override
-					public void run() {
-						String message = "";
-						boolean transmissionSuccessful = false;
-						File incomingFile = createNewIncomingFile( request.getFileName() );
-						
-						MobilisManager.getLogger().log(
-								Level.INFO,
-								String.format( "Incoming FileTransfer from: %s with filename: %s",
-										request.getRequestor(), request.getFileName() ) );
-						
-						// log( "file expected: requestor="
-						// + _expectedUploads.containsKey( request.getRequestor() ) +
-						// " filename="
-						// + _expectedUploads.get( request.getRequestor() ) );
-						
-						// Only if 'preparefile' bean was sent, requestor can upload the
-						// service
-						FileUploadInformation inf = _expectedUploads.get( request.getRequestor() );
-						if ( _expectedUploads.containsKey( request.getRequestor() )
-								&& request.getFileName().equals(
-										inf.fileName )
-								&& null != incomingFile ) {
-							// Accept Filetransfer
-							try {
-								if ( request.getFileSize() > 0 ) {
-									IncomingFileTransfer transfer = request.accept();
-									InputStream recieveFileInputStream = transfer.recieveFile();
-									FileHelper.createFileFromInputStream(recieveFileInputStream, incomingFile.getAbsolutePath());
-									
-		//							if (transfer.getStatus().equals(FileTransfer.Status.complete)) {
-										transmissionSuccessful = true;
-										message = String.format( "Successful FileTransfer of file: %s",
-												incomingFile.getName() );
-										MobilisManager.getLogger().log(
-												Level.INFO,
-												message );
-		//							} else {
-		//								message = String.format( "FileTransfer of file: %s failed: ",
-		//										incomingFile.getName()); 
-		//							}
-		
-								}
-							} catch ( XMPPException e ) {
-								transmissionSuccessful = false;
-								message = String.format( "FileTransfer of file: %s failed: ",
-										incomingFile.getName(), e.getMessage() );
-							}
-						} else {
-							message = "File was not expected.";
-		
-							request.reject();
-						}
-		
-						if ( transmissionSuccessful ) {
-							synchronized ( _expectedUploads ) {
-								_expectedUploads.remove( request.getRequestor() );
-							}
-							//get servicename from serviceContainer for creating Rostergroup
-							ServiceContainer serviceContainer = new ServiceContainer( incomingFile );
-							try {
-								serviceContainer.extractServiceContainerConfig();
-							} catch (InstallServiceException e) {
-							}
-							Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
-							RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityUserGroup + serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
-							String jid = StringUtils.parseBareAddress(request.getRequestor());
-							Date date = new Date();
-							//if roustergroup for service doesn't exist installing new service is allowed for all deploy users
-							if(rg==null){
-								message += MobilisManager.getInstance().installAndConfigureAndRegisterServiceFromFile(
-										incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null, false, date);
-								//create RosterGroup with GroupName=(serviceName+serviceVersion) as Security User Group and add uploading User to group
-								rg = runtimeRoster.createGroup(MobilisManager.securityUserGroup + serviceContainer.getServiceName()+serviceContainer.getServiceVersion());
-								try {
-									rg.addEntry(runtimeRoster.getEntry(jid));
-								} catch (XMPPException e) {
-									System.out.println("Couldn't add user to Rostergroup. Reason: " + e.getMessage());
-									e.printStackTrace();
-								}
-								sendSynchronizeRuntimesBeanSET(MobilisManager.getInstance().getNewServiceJIDByDate(date));
-							}
-							else{
-								//if rostergroup for service exist, check if request user is in that group. if not, he isn't authorized upload and change service
-								if(rg.getEntry(jid)==null){
-									message += "\n[Service not installed]: User " + jid + " is not authorized to change the already installed service " + serviceContainer.getServiceName() + " version " + serviceContainer.getServiceVersion();
-								}
-								else{
-									message += MobilisManager.getInstance().installAndConfigureAndRegisterServiceFromFile(
-											incomingFile, inf.autoDeploy, inf.singleMode, "deployment", null, null, false, null);
-								}
-							}
-							
-							
-						} else if ( message.equals("") || message == null ) {
-							message = "Unknown failure while uploading file";
-						}
-		
-						if ( null != message && !message.equals("") ) {
-							MobilisManager.getLogger().log( Level.INFO, message );
-						}
-		
-						sendServiceUploadConclusionBeanSET( request.getRequestor(), transmissionSuccessful,
-								incomingFile.getName(), message );
-					}
-
-				});
-				t.start();
-			}
-		} );
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -249,72 +62,25 @@ public class DeploymentService extends MobilisService {
 	 */
 	@Override
 	protected void registerPacketListener() {
-		XMPPBean prepareServiceUploadBean = new PrepareServiceUploadBean();
-		XMPPBean serviceUploadConclusionBean = new ServiceUploadConclusionBean();
-		XMPPBean publishNewServiceBean = new SynchronizeRuntimesBean();
-		XMPPBean executeSynchronizeBean = new ExecuteSynchronizeRuntimesBean();
-		( new BeanProviderAdapter( prepareServiceUploadBean ) ).addToProviderManager();
-		( new BeanProviderAdapter( serviceUploadConclusionBean ) ).addToProviderManager();
-		( new BeanProviderAdapter( publishNewServiceBean ) ).addToProviderManager();
-		( new BeanProviderAdapter( executeSynchronizeBean ) ).addToProviderManager();
+		XMPPBean installServiceBean = new InstallServiceBean();
+		XMPPBean configureServiceBean = new ConfigureServiceBean();
+		XMPPBean registerServiceBean = new RegisterServiceBean();
+		XMPPBean unregisterServiceBean = new UninstallServiceBean();
+		XMPPBean uninstallServiceBean = new UnregisterServiceBean();
+		XMPPBean updateServiceBean = new UpdateServiceBean();
+
+		( new BeanProviderAdapter( installServiceBean ) ).addToProviderManager();
+		( new BeanProviderAdapter( configureServiceBean ) ).addToProviderManager();
+		( new BeanProviderAdapter( registerServiceBean ) ).addToProviderManager();
+		( new BeanProviderAdapter( unregisterServiceBean ) ).addToProviderManager();
+		( new BeanProviderAdapter( uninstallServiceBean ) ).addToProviderManager();
+		( new BeanProviderAdapter( updateServiceBean ) ).addToProviderManager();
+
 		IQListener iqListener = new IQListener();
 		PacketTypeFilter locFil = new PacketTypeFilter( IQ.class );
 		getAgent().getConnection().addPacketListener( iqListener, locFil );
 	}
 
-	/**
-	 * Sends a service upload conclusion bean.
-	 * 
-	 * @param requestor
-	 *            the requestor which uploaded the jar file
-	 * @param transmissionSuccessful
-	 *            true if transmission was successful
-	 * @param filename
-	 *            the name of the stored file
-	 * @param message
-	 *            an optional message
-	 */
-	private void sendServiceUploadConclusionBeanSET( String requestor,
-			boolean transmissionSuccessful, String filename, String message ) {
-		ServiceUploadConclusionBean bean = new ServiceUploadConclusionBean( transmissionSuccessful,
-				filename, message );
-		bean.setTo( requestor );
-		bean.setType( XMPPBean.TYPE_SET );
-
-		getAgent().getConnection().sendPacket( new BeanIQAdapter( bean ) );
-	}
-	
-	/**
-	 * Sends the newServiceJID to another Runtime for adding it to their ServiceDiscovery Roster
-	 * @param newServiceJID
-	 */
-	private void sendSynchronizeRuntimesBeanSET(String newServiceJID){
-
-		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
-		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup +"runtimes");
-		if(rg!=null){
-			for(RosterEntry entry : rg.getEntries()){
-				
-				//send SET request of new Services just to online runtimes
-				for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
-				{
-					Presence presence = iter.next();
-					String presenceRessource = StringUtils.parseResource((presence.getFrom()));
-					
-					if(presence.isAvailable() && presenceRessource.equalsIgnoreCase("deployment")){
-						List<String> newServiceJIDs = new ArrayList<String>();
-						newServiceJIDs.add(newServiceJID);
-						SynchronizeRuntimesBean bean = new SynchronizeRuntimesBean(newServiceJIDs);
-						String recipientJIDOfRuntime = entry.getUser() + "/Deployment";
-						bean.setTo(recipientJIDOfRuntime);
-						bean.setType(XMPPBean.TYPE_SET);
-						getAgent().getConnection().sendPacket( new BeanIQAdapter( bean ) );
-					}
-				}
-			}
-		}
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -323,8 +89,6 @@ public class DeploymentService extends MobilisService {
 	 */
 	@Override
 	public void shutdown() throws Exception {
-		_fileTransferManager = null;
-
 		super.shutdown();
 	}
 
@@ -338,21 +102,40 @@ public class DeploymentService extends MobilisService {
 	@Override
 	public void startup( MobilisAgent agent ) throws Exception {
 		super.startup( agent );
-		getRoster(agent);
-		// _dateFormatter = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss:SSS" );
 
-		checkServiceUploadFolder();
-		initFileTransferManager();
+		// _dateFormatter = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss:SSS" );
 	};
 
 	/**
-	 * Checks service upload folder and create it if necessary.
+	 * Gets the existing jar file which was uploaded previously.
+	 * 
+	 * @param filepath
+	 *            the filepath of the jar file
+	 * @param filename
+	 *            the filename of the jarfile
+	 * @return the jar file
 	 */
-	private void checkServiceUploadFolder() {
-		File uploadFolder = new File( _uploadServiceFolder );
+	private File getExistingJarFile( String filepath, String filename ) {
+		File jarFile = null;
 
-		if ( !uploadFolder.exists() )
-			uploadFolder.mkdir();
+		try {
+			ArrayList< String > jarFiles = FileHelper.getFilenames( filepath,
+					new String[] { ".jar" } );
+
+			for ( String file : jarFiles ) {
+				if ( file.matches( String.format( "(?i)(.*?)(%s)$", filename ) ) ) {
+					jarFile = new File( file );
+					break;
+				}
+			}
+		} catch ( IOException e ) {
+			MobilisManager.getLogger().log(
+					Level.WARNING,
+					String.format( "Couldn't find jar file [%s] at [%s]: %s", filename, filepath,
+							e.getMessage() ) );
+		}
+
+		return jarFile;
 	}
 
 	/**
@@ -376,148 +159,55 @@ public class DeploymentService extends MobilisService {
 		 */
 		@Override
 		public void processPacket( Packet packet ) {
+			// log( "AdminService Incoming: " + packet.toXML() );
+
 			if ( packet instanceof BeanIQAdapter ) {
 				XMPPBean inBean = ( (BeanIQAdapter)packet ).getBean();
 				
-				if ( inBean instanceof PrepareServiceUploadBean ) {
-					handlePrepareServiceUploadBean( (PrepareServiceUploadBean)inBean );
-				} else if ( inBean instanceof ServiceUploadConclusionBean
-						&& inBean.getType() == XMPPBean.TYPE_RESULT ) {
-					// Do nothing, just ack
-				} else if ( (inBean instanceof ExecuteSynchronizeRuntimesBean) && (inBean.getType() == XMPPBean.TYPE_SET)){
-					handleExecuteSynchronizeRequest((ExecuteSynchronizeRuntimesBean) inBean);
-				} else if ( inBean instanceof SynchronizeRuntimesBean){
-						SynchronizeRuntimesBean bean = (SynchronizeRuntimesBean) inBean;
-						if(inBean.getType() == XMPPBean.TYPE_SET )
-							handleSynchronizeRuntimesBean(bean);
-						if(inBean.getType() == XMPPBean.TYPE_ERROR) {
-							synchronizeRuntimesErrorBean(bean);
-						} else {
-							if(inBean.getType() == XMPPBean.TYPE_RESULT){
-								if((bean.newServiceJIDs == null) || (bean.newServiceJIDs.size() == 0)){
-									//no services result bean for GET REQUEST or result bean for SET Request.
-								} else {
-									handleSynchronizeRuntimesBeanResult(bean);
-								}
-							}
-							if(inBean.getType() == XMPPBean.TYPE_GET)
-								handleSynchronizeRuntimesGET(bean);
-						}
-				} else {
+				//all AdministrationBeans have the fields ServiceNamespace + ServiceVersion for checking access rights
+				if ( inBean instanceof AdministrationBean){
+										
+					//check user permission from Rostergroup
+					Boolean permission = false;
+					permission = checkServiceModifyPermission(((AdministrationBean) inBean).ServiceNamespace, ((AdministrationBean) inBean).ServiceVersion, inBean.getFrom());
+										
+					//if user has no permission handle as error
+					if(!permission){
+						handlePermissionError((AdministrationBean) inBean);
+					} else if ( inBean instanceof InstallServiceBean ) {
+						handleInstallServiceBean( (InstallServiceBean)inBean );
+					} else if ( inBean instanceof ConfigureServiceBean ) {
+						handleConfigureServiceBean( (ConfigureServiceBean)inBean );
+					} else if ( inBean instanceof RegisterServiceBean ) {
+						handleRegisterServiceBean( (RegisterServiceBean)inBean );
+					} else if ( inBean instanceof UnregisterServiceBean ) {
+						handleUnregisterServiceBean( (UnregisterServiceBean)inBean );
+					} else if ( inBean instanceof UninstallServiceBean ) {
+						handleUninstallServiceBean( (UninstallServiceBean)inBean );
+					} else if ( inBean instanceof UpdateServiceBean ) {
+						handleUpdateServiceBean( (UpdateServiceBean)inBean );
+					} 
+				
+				}else {
 					handleUnknownBean( inBean );
 				}
 			}
 		}
-		
-		/**
-		 * handles a request from a remote client user with administration rights on the server to manually synchronize the 
-		 * remote services with other runtimes
-		 * @param inBean
-		 */
-		private void handleExecuteSynchronizeRequest(
-				ExecuteSynchronizeRuntimesBean inBean) {
-			XMPPBean answerBean = null;
-			Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
-			RosterGroup admins = runtimeRoster.getGroup(MobilisManager.securityUserGroup + "administrators");
-			if(admins != null){
-				if(admins.contains(StringUtils.parseBareAddress(inBean.getFrom()))){
-					updateRemoteServices();
-					answerBean = BeanHelper
-							.CreateResultBean( inBean, new ExecuteSynchronizeRuntimesBean() );
-				} else {
-					//error bean senden
-					answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access-denied",
-							( "Access denied: You need Administrator rights to perform this action "));
-				}
-			} else {
-				//error bean senden
-				answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access-denied",
-						( "Access denied: You need Administrator rights to perform this action "));
-			}
-			
-			getAgent().getConnection().sendPacket( new BeanIQAdapter( answerBean ) );
-			
-		}
 
-		/**
-		 * Process a Result of a GET Request.
-		 * @param inBean
-		 */
-		private void handleSynchronizeRuntimesBeanResult(SynchronizeRuntimesBean inBean) {
-			addRemoteServiceJIDsToRoster(inBean.getNewServiceJIDs());
-		}
-
-		/**
-		 * Process a GET Request for local services and push them to the requestor.
-		 * @param inBean
-		 */
-		private void handleSynchronizeRuntimesGET(SynchronizeRuntimesBean inBean) {
-			XMPPBean answerBean = null;
-			Roster roster = MobilisManager.getInstance().getRuntimeRoster();
-			RosterGroup allowedRuntimes = roster.getGroup(MobilisManager.securityRuntimeGroup + "runtimes");
-
-			//first security check if requesting runtime is in the runtimes rostergroup
-			if(allowedRuntimes !=null){
-				if(allowedRuntimes.getEntry(StringUtils.parseBareAddress(inBean.getFrom()))!=null){
-					// runtime allowed
-					addRemoteServiceJIDsToRoster(inBean.getNewServiceJIDs());
-					answerBean = BeanHelper
-							.CreateResultBean( inBean, new SynchronizeRuntimesBean(getLocalServiceJIDs()) );
-				}	else {
-					answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access-denied",
-							( "Access denied: Runtime is not allowed to request service Informations from " + inBean.getTo()));
-				}
-			} else {
-				answerBean = BeanHelper.CreateErrorBean( inBean, "modify", "access-denied",
-						( "Access denied: Runtime is not allowed to request service Informations from " + inBean.getTo()));
-			}
-			
-			getAgent().getConnection().sendPacket( new BeanIQAdapter( answerBean ) );
-		}
-
-
-		/**
-		 * Handle incoming SET Request to add new ServiceJID to the Roster
-		 * @param inBean
-		 */
-		private void handleSynchronizeRuntimesBean(SynchronizeRuntimesBean inBean) {
-			Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
-			RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup + "runtimes");
+		private void handlePermissionError(AdministrationBean inBean) {
 			XMPPBean outBean = null;
-			if(rg.getEntry(StringUtils.parseBareAddress(inBean.getFrom()))!=null){
-				//if requestor is an accepted runtime, add new service JIDs to rostergroup services
-				String[] groups = {MobilisManager.remoteServiceGroup + "services"};
-				try {
-					for(String jid : inBean.getNewServiceJIDs()){
-					runtimeRoster.createEntry(jid, jid, groups);
-					}
-					outBean = BeanHelper
-							.CreateResultBean( inBean, new SynchronizeRuntimesBean() );
-				} catch (XMPPException e) {
-					System.out.println("Error while adding new Service JID to lokal Roster. Reason: " + e.getMessage());
-					outBean = BeanHelper.CreateErrorBean( inBean, "modify", "unexpected-error",
-							( "Could not add Service JIDs: " + (inBean.getNewServiceJIDs()).toString() + " to Roster of Runtime " + inBean.getTo() + ". Reason: " + e.getMessage()));
-				}
-			} else {
-				outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
-						(StringUtils.parseBareAddress(inBean.getFrom()) + " is not an authorized Runtime of " + inBean.getTo() + ". Publish new service denied.") );
-			}
+			
+			// generate error bean
+			outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
+					("User " + StringUtils.parseBareAddress(inBean.getFrom()) + " is not authorized to modify service " + inBean.ServiceNamespace + " version " + inBean.ServiceVersion + "!") );
 			
 			getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
 		}
-		
+			
+
+
 		/**
-		 * Handle an occouring Error while Publishing a new Service
-		 * @param inBean
-		 */
-		private void synchronizeRuntimesErrorBean(
-				SynchronizeRuntimesBean inBean) {
-			System.out.println("Error while trying to publish a new Service to Runtime " + inBean.getFrom() + ". Reason: " + inBean.errorText );
-			System.out.println("Dienst JID: " + (inBean.getNewServiceJIDs()).toString());
-		}
-		
-		/**
-		 * Handle unknown bean.
+		 * Handle error bean.
 		 * 
 		 * @param inBean
 		 *            the unknown bean
@@ -529,142 +219,404 @@ public class DeploymentService extends MobilisService {
 		}
 
 		/**
-		 * Handle prepare service upload bean.
+		 * Handle install service bean.
 		 * 
 		 * @param inBean
 		 *            the bean
 		 */
-		private void handlePrepareServiceUploadBean( PrepareServiceUploadBean inBean ) {
-			XMPPBean outBean = null;
+		private void handleInstallServiceBean( InstallServiceBean inBean ) {
+			boolean installationSuccessful = false;
+			String message = null;
+			InstallServiceBean responseBean = new InstallServiceBean();
 			
-			MobilisManager.getInstance();
+			
+			//MANUELL INSTALLATION DISABLED
+			//on container.install() the defaultAgent of the Runtime is used. on uninstall of the Service it leads to to delete of the runtimes xmpp account.
+			
+			/*Boolean deployAllowed = true;
 			// If user is in the deploy security rostergroup of the runtime, proceed. Else send not authorized error.
-			if(MobilisManager.getInstance().getRuntimeRoster().getGroup(MobilisManager.securityUserGroup +"deploy").contains(inBean.getFrom())){
-				// if no name was set, respond an error
-				if ( null == inBean.Filename || inBean.Filename.length() < 1 ) {
-					outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
-							"File name is null or empty." );
-				} else {
-					// store information in expected upload collection
-					synchronized ( _expectedUploads ) {
-						_expectedUploads.put( inBean.getFrom(), new FileUploadInformation(inBean.Filename, inBean.autoDeploy, inBean.singleMode) );
-					}
-
-					outBean = BeanHelper
-							.CreateResultBean( inBean, new PrepareServiceUploadBean( true ) );
-				}
-			}
-			else{
-				outBean = BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
-						("User " + StringUtils.parseBareAddress(inBean.getFrom()) + " is not authorized to upload files to runtime " + inBean.getTo() + "!") );
+			if(!MobilisManager.getInstance().getRuntimeRoster().getGroup("deploy").contains(inBean.getFrom())){
+				responseBean = (InstallServiceBean) BeanHelper.CreateErrorBean( inBean, "deploy", "not-acceptable",
+						("User " + StringUtils.parseBareAddress(inBean.getFrom()) + " is not authorized to deploy services on runtime " + inBean.getTo() + "!") );
+				deployAllowed = false;
 			}
 			
+			//enter if installing user is in deploy group
+			if(deployAllowed){
+				
+				
+				// get previously uploaded service via DeploymentService
+				ServiceContainer container = MobilisManager.getInstance().getPendingServiceByFileName(
+						inBean.FileName );
 
-			getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
+				
+				// Look for previously installed service containers
+				if ( null == container ) {
+					container = MobilisManager.getInstance().getServiceContainerByFileName(
+							inBean.FileName );
+				}
+	
+				// Look for all Jar-Archives in service folder
+				if ( null == container ) {
+					File jarFile = getExistingJarFile( UPLOADED_SERVICE_DICTIONARY_PATH,
+							inBean.FileName );
+	
+					if ( null != jarFile ) {
+						container = new ServiceContainer( jarFile );
+					}
+				}
+				
+				
+				
+				try {
+					if ( null != container ) {
+						ServiceContainer tempContainer = container;
+						tempContainer.extractServiceContainerConfig();
+						String servicename = tempContainer.getServiceName();
+						int version = tempContainer.getServiceVersion();
+						tempContainer = null;
+						System.out.println("install: " + servicename + version);
+						Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
+						RosterGroup rg = runtimeRoster.getGroup(servicename+version);
+						Boolean modifyAllowed = true;
+						
+						//if rostergroup not null, service must be already existing
+						if(rg!=null){
+							//check if rostergroup contains requesting user
+							modifyAllowed = rg.contains(StringUtils.parseBareAddress(inBean.getFrom()));
+						} else {
+							//if rostergroup doesn't exist, create it and add requesting user
+							rg = runtimeRoster.createGroup(servicename+version);
+							try {
+								rg.addEntry(runtimeRoster.getEntry(StringUtils.parseBareAddress(inBean.getFrom())));
+							} catch (XMPPException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+						
+						//reinstall just if allowed for requesting user
+						if(modifyAllowed){
+							container.install();
+		
+							// if installation was successful remove service from
+							// pending services and add it to all service containers
+							if ( container.getContainerState() == ServiceContainerState.INSTALLED ) {
+								MobilisManager.getInstance().addServiceContainer( container );
+		
+								MobilisManager.getInstance().removePendingServiceByFileName(
+										inBean.FileName );
+		
+								installationSuccessful = true;
+							} else {
+								message = "Installation failed: Couldn't move service from pending to regular.";
+		
+								MobilisManager.getLogger().log( Level.WARNING, message );
+							}
+		
+							// create response
+							responseBean = (InstallServiceBean)BeanHelper.CreateResultBean( inBean,
+									responseBean );
+							responseBean.InstallationSucessful = installationSuccessful;
+							responseBean.ServiceNamespace = container.getServiceNamespace();
+							responseBean.ServiceVersion = container.getServiceVersion();
+							responseBean.Message = message;
+						} else {
+							//if modify is not allowed create Error Bean with Reason information
+							responseBean = (InstallServiceBean) BeanHelper.CreateErrorBean( inBean, "modify", "not-acceptable",
+									("User " + StringUtils.parseBareAddress(inBean.getFrom()) + " is not authorized to modify service" + container.getServiceNamespace() + " version " + container.getServiceVersion() + "!") );
+						}
+						
+					} else {
+						responseBean = (InstallServiceBean)BeanHelper
+								.CreateErrorBean(
+										inBean,
+										"cancel",
+										"item-not-found",
+										"Service archive not found. Please upload service archive in jar-format via DeploymentService first." );
+	
+						MobilisManager.getLogger().log( Level.WARNING,
+								"Service installation problem: " + responseBean.toXML() );
+					}
+				} catch ( NumberFormatException e ) {
+					responseBean = (InstallServiceBean)BeanHelper.CreateErrorBean( inBean, "modify",
+							"bad-request", "Service installation error: " + e.getMessage() );
+	
+					MobilisManager.getLogger().log( Level.WARNING,
+							"Service installation error: " + responseBean.toXML() );
+				} catch ( InstallServiceException e ) {
+					responseBean = (InstallServiceBean)BeanHelper.CreateErrorBean( inBean, "wait",
+							"internal-server-error", "Service installation error: " + e.getMessage() );
+	
+					MobilisManager.getLogger().log( Level.WARNING,
+							"Service installation error: " + responseBean.toXML() );
+				}
+			}*/
+			
+			
+			responseBean = (InstallServiceBean)BeanHelper.CreateErrorBean( inBean, "install", "not-acceptable",
+					"Command INSTALL is not supported any longer, please use SEND instead!");
+			getAgent().getConnection().sendPacket( new BeanIQAdapter( responseBean ) );
+		}
+
+		/**
+		 * Handle configure service bean.
+		 * 
+		 * @param inBean
+		 *            the bean
+		 */
+		private void handleConfigureServiceBean( ConfigureServiceBean inBean ) {
+			ConfigureServiceBean responseBean = new ConfigureServiceBean();
+
+			// get service container
+			ServiceContainer container = MobilisManager.getInstance().getServiceContainer(
+					inBean.ServiceNamespace, inBean.ServiceVersion );
+
+			// store configuration in container
+			if ( null != container ) {
+				DoubleKeyMap< String, String, Object > configuration = new DoubleKeyMap< String, String, Object >(
+						false );
+				
+				// use data from admins agent / default if nothing was set
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "name",
+						inBean.AgentConfig.Name != null
+							? inBean.AgentConfig.Name
+							: container.getServiceName() );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "mode",
+						inBean.AgentConfig.Mode != null
+							? inBean.AgentConfig.Mode
+							: "single" );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "port",
+						inBean.AgentConfig.Port != null
+							? inBean.AgentConfig.Port
+							: getAgent().getSettingString( "port" ) );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "username",
+						inBean.AgentConfig.Username != null
+							? inBean.AgentConfig.Username
+							: getAgent().getSettingString( "username" ) );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "host",
+						inBean.AgentConfig.Host != null
+							? inBean.AgentConfig.Host
+							: getAgent().getSettingString( "host" ) );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "start",
+						inBean.AgentConfig.Start );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "description",
+						inBean.AgentConfig.Description != null
+							? inBean.AgentConfig.Description
+							: container.getServiceName() );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "service",
+						inBean.AgentConfig.Service != null
+							? inBean.AgentConfig.Service
+							: getAgent().getSettingString( "service" ) );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "resource",
+						inBean.AgentConfig.Resource != null
+							? inBean.AgentConfig.Resource
+							: container.getServiceName() );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "type",
+						inBean.AgentConfig.Type != null
+							? inBean.AgentConfig.Type
+							: "de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent" );
+				
+				configuration.put( MobilisManager.CONFIGURATION_CATEGORY_AGENT_KEY, "password",
+						inBean.AgentConfig.Password != null
+							? inBean.AgentConfig.Password
+							: getAgent().getSettingString( "password" ) );
+
+				container.configure( configuration );
+
+				responseBean = (ConfigureServiceBean)BeanHelper.CreateResultBean( inBean,
+						responseBean );
+			} else {
+				responseBean = (ConfigureServiceBean)BeanHelper.CreateErrorBean( inBean, "cancel",
+						"service-unavailable", "Cannot configure unknown service" );
+
+				MobilisManager.getLogger().log( Level.WARNING,
+						"Service configuration error: " + responseBean.toXML() );
+			}
+
+			getAgent().getConnection().sendPacket( new BeanIQAdapter( responseBean ) );
+		}
+
+		/**
+		 * Handle register service bean.
+		 * 
+		 * @param inBean
+		 *            the bean
+		 */
+		private void handleRegisterServiceBean( RegisterServiceBean inBean ) {
+			RegisterServiceBean responseBean = new RegisterServiceBean();
+
+			// get service container
+			ServiceContainer container = MobilisManager.getInstance().getServiceContainer(
+					inBean.ServiceNamespace, inBean.ServiceVersion );
+
+			if ( null != container ) {
+				try {
+					container.register();
+
+					responseBean = (RegisterServiceBean)BeanHelper.CreateResultBean( inBean,
+							responseBean );
+					responseBean.RegistrationSuccessful = container.getContainerState() == ServiceContainerState.ACTIVE;
+				} catch ( RegisterServiceException e ) {
+					responseBean = (RegisterServiceBean)BeanHelper.CreateErrorBean( inBean, "wait",
+							"internal-server-error",
+							"Service registration error: " + e.getMessage() );
+
+					MobilisManager.getLogger().log( Level.WARNING,
+							"Service registration error: " + responseBean.toXML() );
+				}
+
+			} else {
+				responseBean = (RegisterServiceBean)BeanHelper.CreateErrorBean( inBean, "cancel",
+						"service-unavailable", "Cannot register unknown service" );
+
+				MobilisManager.getLogger().log( Level.WARNING,
+						"Service registration error: " + responseBean.toXML() );
+			}
+
+			getAgent().getConnection().sendPacket( new BeanIQAdapter( responseBean ) );
+		}
+
+		/**
+		 * Handle unregister service bean.
+		 * 
+		 * @param inBean
+		 *            the bean
+		 */
+		private void handleUnregisterServiceBean( UnregisterServiceBean inBean ) {
+			UnregisterServiceBean responseBean = new UnregisterServiceBean();
+			ServiceContainer container = MobilisManager.getInstance().getServiceContainer(
+					inBean.ServiceNamespace, inBean.ServiceVersion );
+
+			if ( null != container ) {
+				container.unregister();
+
+				responseBean = (UnregisterServiceBean)BeanHelper.CreateResultBean( inBean,
+						responseBean );
+			} else {
+				responseBean = (UnregisterServiceBean)BeanHelper.CreateErrorBean( inBean, "cancel",
+						"service-unavailable", "Cannot unregister unknown service" );
+
+				MobilisManager.getLogger().log( Level.WARNING,
+						"Service unregistration error: " + responseBean.toXML() );
+			}
+
+			getAgent().getConnection().sendPacket( new BeanIQAdapter( responseBean ) );
+		}
+
+		/**
+		 * Handle uninstall service bean.
+		 * 
+		 * @param inBean
+		 *            the bean
+		 */
+		private void handleUninstallServiceBean( UninstallServiceBean inBean ) {
+			UninstallServiceBean responseBean = new UninstallServiceBean();
+			ServiceContainer container = MobilisManager.getInstance().getServiceContainer(
+					inBean.ServiceNamespace, inBean.ServiceVersion );
+
+			if ( null != container ) {
+				container.uninstall();
+
+				responseBean = (UninstallServiceBean)BeanHelper.CreateResultBean( inBean,
+						responseBean );
+			} else {
+				responseBean = (UninstallServiceBean)BeanHelper.CreateErrorBean( inBean, "cancel",
+						"service-unavailable", "Cannot uninstall unknown service" );
+
+				MobilisManager.getLogger().log( Level.WARNING,
+						"Service unstallation error: " + responseBean.toXML() );
+			}
+
+			getAgent().getConnection().sendPacket( new BeanIQAdapter( responseBean ) );
+		}
+
+		/**
+		 * Handle update service bean.
+		 * 
+		 * @param inBean
+		 *            the bean
+		 */
+		private void handleUpdateServiceBean( UpdateServiceBean inBean ) {
+			UpdateServiceBean responseBean = new UpdateServiceBean();
+			ServiceContainer container = MobilisManager.getInstance().getServiceContainer(
+					inBean.ServiceNamespace, inBean.ServiceVersion );
+
+			if ( null != container ) {
+				// look for jar file to update the old one
+				File jarFile = getExistingJarFile( UPLOADED_SERVICE_DICTIONARY_PATH,
+						inBean.FileName );
+
+				if ( null != jarFile && jarFile.exists() ) {
+					try {
+						container.update( jarFile );
+
+						responseBean = (UpdateServiceBean)BeanHelper.CreateResultBean( inBean,
+								responseBean );
+						responseBean.NewServiceNamespace = container.getServiceNamespace();
+						responseBean.NewServiceVersion = container.getServiceVersion();
+					} catch ( UpdateServiceException e ) {
+						responseBean = (UpdateServiceBean)BeanHelper.CreateErrorBean( inBean,
+								"cancel", "item-not-found",
+								"Service update error: " + e.getMessage() );
+
+						MobilisManager.getLogger().log( Level.WARNING,
+								"Service update error: " + responseBean.toXML() );
+					}
+				} else {
+					responseBean = (UpdateServiceBean)BeanHelper.CreateErrorBean( inBean, "cancel",
+							"item-not-found", "Cannot find new jar file to update the old one." );
+
+					MobilisManager.getLogger().log( Level.WARNING,
+							"Service update error: " + responseBean.toXML() );
+				}
+			} else {
+				responseBean = (UpdateServiceBean)BeanHelper.CreateErrorBean( inBean, "cancel",
+						"service-unavailable", "Cannot update non existing service!" );
+
+				MobilisManager.getLogger().log( Level.WARNING,
+						"Service update error: " + responseBean.toXML() );
+			}
+
+			getAgent().getConnection().sendPacket( new BeanIQAdapter( responseBean ) );
 		}
 
 	}
-
+	
+	private boolean checkServiceModifyPermission(String namespace, int version, String from){
+		String serviceName ="";
+		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
+		if(namespace!=null && version>0){
+			serviceName = MobilisManager.getInstance().getServiceContainer(namespace, version).getServiceName();
+		}
+		//get group with servicename and Version from Roster
+		//if group exists -> service exists
+		if(runtimeRoster.getGroup(MobilisManager.securityUserGroup + serviceName+version)!=null){
+			//check if requestor is in that security group
+			if(runtimeRoster.getGroup(MobilisManager.securityUserGroup + serviceName+version).getEntry(StringUtils.parseBareAddress(from))!=null){
+				return true;
+			} else {
+				return false;
+			}
+		}
+		//if group doens't exists, no restrictions of access
+		return true;
+	}
+	
 	@Override
 	public List<PacketExtension> getNodePacketExtensions() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	private void getRoster(MobilisAgent agent){
-		
-		Connection connection = agent.getConnection();
 
-		EntityCapsManager capsManager = EntityCapsManager.getInstanceFor(connection);
-		capsManager.updateLocalEntityCaps();
-		ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(connection);
-		sdm.setEntityCapsManager(capsManager);
-		MobilisManager.getInstance().setServiceDiscoveryManager(sdm);
-		
-		Roster runtimeRoster = connection.getRoster();
-		runtimeRoster.setSubscriptionMode(SubscriptionMode.accept_all);
-		MobilisManager.getInstance().setRuntimeRoster(runtimeRoster);
-		MobilisManager.getInstance().setCapsManager(capsManager);
-		//if not already existing, generate standard security group for uploading files
-		if(runtimeRoster.getGroup(MobilisManager.securityUserGroup + "deploy")==null){
-			runtimeRoster.createGroup(MobilisManager.securityUserGroup + "deploy");
-		}
-		
-		//MobilisManager.getInstance().clearRemoteServicesRosterGroup();
-		//updateRemoteServices();
-		Timer timer = new Timer();
-
-	    // delayed update of remote services on server start up
-	    timer.schedule( new UpdateRemoteServices(), 1000 );
-
-
-	}
-	/**
-	 * Delayed Request for synchronizing runtimes
-	 * @author Philipp
-	 *
-	 */
-	private class UpdateRemoteServices extends TimerTask{
-
-		@Override
-		public void run() {
-			updateRemoteServices();
-		}
-		
-	}
-	
-	private void updateRemoteServices(){
-		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
-		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.securityRuntimeGroup + "runtimes");
-		if(rg != null){
-			for(RosterEntry entry : rg.getEntries()){
-				
-				//request new Services just from online runtimes
-				for ( Iterator<Presence> iter = runtimeRoster.getPresences(entry.getUser()); iter.hasNext(); )
-				{
-					Presence presence = iter.next();
-					String presenceRessource = StringUtils.parseResource((presence.getFrom()));
-					
-					if(presence.isAvailable() && presenceRessource.equalsIgnoreCase("deployment")){
-						
-						SynchronizeRuntimesBean outBean = new SynchronizeRuntimesBean(entry.getUser() + "/Deployment");
-						outBean.setNewServiceJID(getLocalServiceJIDs());
-						getAgent().getConnection().sendPacket( new BeanIQAdapter( outBean ) );
-					}
-				}
-			}
-		}
-		
-	}
-	
-	private List<String> getLocalServiceJIDs(){
-		Roster roster = MobilisManager.getInstance().getRuntimeRoster();
-
-		ArrayList<String> serviceJIDs = new ArrayList<String>();
-		
-		RosterGroup services = roster.getGroup(MobilisManager.remoteServiceGroup + "local-services");
-		if(services!=null){
-			for(RosterEntry entry : services.getEntries()){
-				serviceJIDs.add(entry.getUser());
-			}
-		}
-		
-		return serviceJIDs;
-	}
-	
-	/**
-	 * adding a list of services running on a remote runtime to local runtimes roster and rostergroup
-	 * @param serviceJIDs
-	 */
-	private void addRemoteServiceJIDsToRoster(List<String> serviceJIDs){
-		Roster roster = MobilisManager.getInstance().getRuntimeRoster();
-		String[] groups = {MobilisManager.remoteServiceGroup + "services"};
-		try {
-			for(String jid : serviceJIDs){
-			roster.createEntry(jid, jid, groups);
-			}
-		}  catch (XMPPException e){
-			MobilisManager.getLogger().severe("JID could not added cause: " + e.getMessage());
-		}
-	}
 }

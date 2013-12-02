@@ -8,7 +8,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 /**
  * This bean is sent to create a new instance of
  * a service on the MobilisServer.
- * @author Robert Lübke, Philipp Grubitzsch
+ * @author Robert Luebke, Philipp Grubitzsch
  */
 public class CreateNewServiceInstanceBean extends XMPPBean {
 
@@ -21,7 +21,7 @@ public class CreateNewServiceInstanceBean extends XMPPBean {
 	public int minVersion = -1;
 	public int maxVersion = -1;
 	//public String jidOfNewService;
-	//public String answerID; // to ensure recieving the correct answer in later IQs (sendNewServiceInstance)
+	public String answerID; // to ensure recieving the correct answer in later IQs (sendNewServiceInstance)
 	public String jidOfOriginalRequestor; //needed if a runtime forwards the clientrequest to the next runtime
 	
 	/** Constructor for creating a new Service Instance on the MobilisServer; type=SET */
@@ -43,19 +43,12 @@ public class CreateNewServiceInstanceBean extends XMPPBean {
 		this.type=XMPPBean.TYPE_RESULT;
 	}
 	
-	/** Constructor for type=RESULT */
-	public CreateNewServiceInstanceBean(String answerID) {
-		super();
-		//this.answerID = answerID;
-		this.type=XMPPBean.TYPE_RESULT;
-	}
-	
 	@Override
 	public CreateNewServiceInstanceBean clone() {
 		CreateNewServiceInstanceBean twin = new CreateNewServiceInstanceBean(serviceNamespace, servicePassword);		
 		//twin.jidOfNewService = this.jidOfNewService;
 		twin.jidOfOriginalRequestor = this.jidOfOriginalRequestor;
-		//twin.answerID = this.answerID;
+		twin.answerID = this.answerID;
 		twin.serviceVersion = this.serviceVersion;
 		twin.minVersion = this.minVersion;
 		twin.maxVersion = this.maxVersion;
@@ -70,8 +63,8 @@ public class CreateNewServiceInstanceBean extends XMPPBean {
 		
 		if (this.jidOfOriginalRequestor!=null)
 			sb.append("<originalRequestor>").append(jidOfOriginalRequestor).append("</originalRequestor>");
-//		if (this.answerID!=null)
-//			sb.append("<answerID>").append(answerID).append("</answerID>");
+		if (this.answerID!=null)
+			sb.append("<answerID>").append(answerID).append("</answerID>");
 		if (this.serviceNamespace!=null)
 			sb.append("<serviceNamespace>").append(serviceNamespace).append("</serviceNamespace>");
 		if (this.servicePassword!=null)
@@ -108,8 +101,8 @@ public class CreateNewServiceInstanceBean extends XMPPBean {
 					this.servicePassword = parser.nextText();
 				} else if (tagName.equals("originalRequestor")) {
 					this.jidOfOriginalRequestor = parser.nextText();
-//				} else if (tagName.equals("answerID")) {
-//					this.answerID = parser.nextText();
+				} else if (tagName.equals("answerID")) {
+					this.answerID = parser.nextText();
 //				} else if (tagName.equals("jidOfNewService")) {
 //					this.jidOfNewService = parser.nextText();	
 				} else if (tagName.equals("serviceName")) {
@@ -229,6 +222,14 @@ public class CreateNewServiceInstanceBean extends XMPPBean {
 	 */
 	public void setMaxVersion( int maxVersion ) {
 		this.maxVersion = maxVersion;
+	}
+
+	public String getAnswerID() {
+		return answerID;
+	}
+
+	public void setAnswerID(String answerID) {
+		this.answerID = answerID;
 	}
 	
 	

@@ -25,10 +25,10 @@ import java.io.File;
 import de.tudresden.inf.rn.mobilis.consoleclient.Controller;
 import de.tudresden.inf.rn.mobilis.consoleclient.bean.TemplateBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.RegisterServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.UninstallServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.RegisterServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UninstallServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanSenderReceiver;
 
 /**

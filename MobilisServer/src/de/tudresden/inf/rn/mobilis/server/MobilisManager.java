@@ -1070,7 +1070,7 @@ public class MobilisManager {
 					serviceContainer.startNewServiceInstance(null);
 				}
 				else {
-					/*starts a single discovery agent for the new service. It is necessary for discovering services on other runtimes, 
+					/*starts a single "Service Presence Resource" agent for the new service. It is necessary for discovering services on other runtimes, 
 					if no instances of this service are running. it provides the service information by telling other runtimes his entity capabilities and presence*/
 					try {
 						String aId = serviceContainer.getAgentId();
@@ -1108,7 +1108,6 @@ public class MobilisManager {
 	}
 	
 	private Roster runtimeRoster;
-	private Roster discoveryRoster;
 	private Boolean reinstalling = false;
 	private EntityCapsManager capsManager;
 	private ServiceDiscoveryManager serviceDiscoveryManager;
@@ -1123,10 +1122,10 @@ public class MobilisManager {
 		this.serviceDiscoveryManager = serviceDiscoveryManager;
 	}
 
-	/*this Map is needed for pulling new ServiceJids created in the installAndConfigureAndRegisterServiceFromFile Method by the DiscoveryService:
-	Long Version: DiscoveryService calls installAndConfigureAndRegisterServiceFromFile(), but has no idea what the JID of the new Service will be, cause the jid is build out
+	/*this Map is needed for pulling new ServiceJids created in the installAndConfigureAndRegisterServiceFromFile Method by the RuntimeService (should be DeploymentService in future):
+	Long Version: RuntimeService calls installAndConfigureAndRegisterServiceFromFile(), but has no idea what the JID of the new Service will be, cause the jid is build out
 	of the ServiceName and the name part of the Runtime JID. The ServiceName is hide in the ServiceContainer until its first unpack in the installAndConfigureAndRegisterServiceFromFile Method.
-	When deployment service is calling this method it creates a Date key for the special call which identifies the depending newServiceJID. With that key, the deployment service can pull the created newServiceJID
+	When RuntimeService is calling this method it creates a Date key for the special call which identifies the depending newServiceJID. With that key, the RuntimeService can pull the created newServiceJID
 	from this map.
 	*/
 	private HashMap<java.util.Date,String> newServiceJIDs = new HashMap<>();
@@ -1153,14 +1152,6 @@ public class MobilisManager {
 
 	public void setRuntimeRoster(Roster runtimeRoster) {
 		this.runtimeRoster = runtimeRoster;
-	}
-
-	public Roster getDiscoveryRoster() {
-		return discoveryRoster;
-	}
-
-	public void setDiscoveryRoster(Roster discoveryRoster) {
-		this.discoveryRoster = discoveryRoster;
 	}
 	
 	public String getNewServiceJIDByDate(java.util.Date date){

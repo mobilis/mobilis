@@ -21,8 +21,8 @@
 package de.tudresden.inf.rn.mobilis.consoleclient.bean;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.AgentConfigInfo;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.ConfigureServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.AgentConfigInfo;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ConfigureServiceBean;
 
 public class TemplateBean {
 	

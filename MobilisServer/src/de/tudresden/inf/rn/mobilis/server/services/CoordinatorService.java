@@ -54,7 +54,7 @@ import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainer;
 import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainerState;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.StartNewServiceInstanceException;
 import de.tudresden.inf.rn.mobilis.server.services.Coordination.CoordinationHelper;
-import de.tudresden.inf.rn.mobilis.server.services.Coordination.loadBalancing;
+import de.tudresden.inf.rn.mobilis.server.services.Coordination.LoadBalancing;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
@@ -162,7 +162,7 @@ public class CoordinatorService extends MobilisService {
 		
 		//Remote Service Discovery by looking into the Roster
 		
-		//Roster und Rostergruppe der registrierten Dienste holen
+		//get roster and then the rostergroup sug:services of the registered services
 		Roster runtimeRoster = MobilisManager.getInstance().getRuntimeRoster();
 		RosterGroup rg = runtimeRoster.getGroup(MobilisManager.remoteServiceGroup + "services");
 		
@@ -228,7 +228,7 @@ public class CoordinatorService extends MobilisService {
 							try {
 								dInfo = MobilisManager.getInstance().getServiceDiscoveryManager().discoverInfo(fullJIDofService);
 								 
-								  //Alle Feature vars des DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
+								  //check all feature vars of the DiscoverInfo of a resource for the mobilis service URN
 								  if(dInfo != null){
 									  Iterator<Feature> infos  = dInfo.getFeatures();
 									  boolean ready=false;
@@ -347,12 +347,12 @@ public class CoordinatorService extends MobilisService {
 							try {
 								dInfo = MobilisManager.getInstance().getServiceDiscoveryManager().discoverInfo(fullJIDofService);
 								 
-								  //Alle Feature vars des DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
+								  //check all feature vars of the DiscoverInfo of a resource for the mobilis service URN
 								  if(dInfo != null){
 									  Iterator<Feature> infos  = dInfo.getFeatures();
 									  boolean ready=false;
 									  
-									  //testen ob service caps dem angeforderten NS bzw. Version des DiscoBeans entsprechen. Wenn ja ServiceInfo hinzufügen
+									  //check if service caps match the requested NS and Version of the DiscoBeans. If so, add to ServiceInfo
 									  while(infos.hasNext() && !ready){
 										  String s = infos.next().getVar();
 										  
@@ -418,8 +418,8 @@ public class CoordinatorService extends MobilisService {
 
 	private void inCreateServiceInstanceSet(CreateNewServiceInstanceBean bean) {
 		Boolean createAccepted = false;
-		String answerID = bean.getFrom() + bean.getId();
 		HashSet<String> remoteRuntimesSupportingService = new HashSet<String>();
+		
 		//check remote servers for requested service, but just if the Request was not forwarded yet!
 		if((bean.jidOfOriginalRequestor == null)){
 			remoteRuntimesSupportingService = CoordinationHelper.getServiceOnRemoteRuntime(bean.getServiceNamespace(), bean.getServiceVersion());
@@ -483,11 +483,11 @@ public class CoordinatorService extends MobilisService {
 		
 		//create new Instance local or on remote Runtime
 		if(createAccepted){
-			createServiceInstance(bean, answerID, remoteRuntimesSupportingService, serviceContainer, c);
+			createServiceInstance(bean, remoteRuntimesSupportingService, serviceContainer, c);
 		}
 	}
 	
-	private void createServiceInstance(CreateNewServiceInstanceBean bean, String answerID, HashSet<String> remoteRuntimesSupportingService, ServiceContainer serviceContainer, Connection connection){
+	private void createServiceInstance(CreateNewServiceInstanceBean bean, HashSet<String> remoteRuntimesSupportingService, ServiceContainer serviceContainer, Connection connection){
 		
 		//primarily create service local if possible, else try remote
 		if((null != serviceContainer && serviceContainer.getContainerState() == ServiceContainerState.ACTIVE)){
@@ -499,7 +499,8 @@ public class CoordinatorService extends MobilisService {
 				newService.setName( bean.serviceName );
 				
 				beanAnswer = new SendNewServiceInstanceBean(newService.getAgent().getFullJid(),
-						serviceContainer.getServiceVersion());
+						serviceContainer.getServiceVersion(), bean.getAnswerID());
+				beanAnswer.setServiceNamespace(bean.getServiceNamespace());
 			// exception was thrown, respond an error 
 			} catch ( StartNewServiceInstanceException e ) {
 				beanAnswer = new SendNewServiceInstanceBean("wait", "internal-server-error", String.format( "Error starting new instance of service. Reason: %s", e.getMessage() ));
@@ -528,8 +529,9 @@ public class CoordinatorService extends MobilisService {
 			createBean.setServiceNamespace(bean.getServiceNamespace());
 			createBean.setServicePassword(bean.getServicePassword());
 			createBean.setServiceVersion(bean.getServiceVersion());
+			createBean.setAnswerID(bean.getAnswerID());
 			//choose runtime
-			createBean.setTo(loadBalancing.randomRuntimeForCreateInstance(remoteRuntimesSupportingService) + "/Coordinator");
+			createBean.setTo(LoadBalancing.randomRuntimeForCreateInstance(remoteRuntimesSupportingService) + "/Coordinator");
 			connection.sendPacket(new BeanIQAdapter(createBean));
 		}
 	}
@@ -540,9 +542,10 @@ public class CoordinatorService extends MobilisService {
 
 			
 			//create Answer IQ for original Client Requestor
-			SendNewServiceInstanceBean toOriginalRequestor = new SendNewServiceInstanceBean(inBean.getJidOfNewService(), inBean.getServiceVersion());
+			SendNewServiceInstanceBean toOriginalRequestor = new SendNewServiceInstanceBean(inBean.getJidOfNewService(), inBean.getServiceVersion(), inBean.getAnswerID());
 			toOriginalRequestor.setFrom(inBean.getTo());
 			toOriginalRequestor.setTo(inBean.jidOfOriginalRequestor);
+			toOriginalRequestor.setServiceNamespace(inBean.getServiceNamespace());
 			
 			//create Answer IQ for Remote Server (ok)
 			SendNewServiceInstanceBean toRemoteRuntime = new SendNewServiceInstanceBean();

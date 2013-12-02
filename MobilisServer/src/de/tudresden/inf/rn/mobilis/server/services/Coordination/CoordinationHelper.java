@@ -17,7 +17,7 @@ import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 /**
  * 
  * @author Philipp Grubitzsch
- *
+ * Helper Class of CoordinatorService
  */
 public class CoordinationHelper {
 	
@@ -49,12 +49,12 @@ public class CoordinationHelper {
 						try {
 							dInfo = MobilisManager.getInstance().getServiceDiscoveryManager().discoverInfo(fullJIDofService);
 							 
-							  //Alle Feature vars des DiscoInfo einer Ressource nach dem URN für Mobilis Dienste durchsuchen
+							  //check all feature vars of the DiscoverInfo of a resource for the mobilis service URN
 							  if(dInfo != null){
 								  Iterator<Feature> infos  = dInfo.getFeatures();
 								  boolean ready=false;
 								  
-								  //testen ob service caps dem angeforderten NS bzw. Version des DiscoBeans entsprechen. Wenn ja runtimeJID hinzufügen
+								  //check if service caps match the requested NS and Version of the DiscoBeans. if so add runtimeJID
 								  while(infos.hasNext() && !ready){
 									  String s = infos.next().getVar();
 									  

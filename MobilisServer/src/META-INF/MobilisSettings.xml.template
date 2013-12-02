@@ -15,6 +15,18 @@
 				<setting name="conType">xmpp</setting>
 			</settings>
 		</agent>
+		<agent name="runtime" description="Runtime"
+			type="de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent" start="auto">
+			<settings>
+				<setting name="host">mobilis.inf.tu-dresden.de</setting>
+				<setting name="port">5222</setting>
+				<setting name="service">mobilis.inf.tu-dresden.de</setting>
+				<setting name="username">mobilis</setting>
+				<setting name="password">mobilis_pass</setting>
+				<setting name="resource">Runtime</setting>
+				<setting name="conType">xmpp</setting>
+			</settings>
+		</agent>
 		<agent name="deployment" description="Deployment"
 			type="de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent" start="auto">
 			<settings>
@@ -23,19 +35,7 @@
 				<setting name="service">mobilis.inf.tu-dresden.de</setting>
 				<setting name="username">mobilis</setting>
 				<setting name="password">mobilis_pass</setting>
-				<setting name="resource">Deployment</setting>
-				<setting name="conType">xmpp</setting>
-			</settings>
-		</agent>
-		<agent name="admin" description="Admin"
-			type="de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent" start="auto">
-			<settings>
-				<setting name="host">mobilis.inf.tu-dresden.de</setting>
-				<setting name="port">5222</setting>
-				<setting name="service">mobilis.inf.tu-dresden.de</setting>
-				<setting name="username">mobilis</setting>
-				<setting name="password">mobilis_pass</setting>
-				<setting name="resource">Admin</setting>
+				<setting name="resource">Runtime</setting>
 				<setting name="conType">xmpp</setting>
 			</settings>
 		</agent>
@@ -45,13 +45,13 @@
 			type="de.tudresden.inf.rn.mobilis.server.services.CoordinatorService"
 			agent="coordinator" start="auto">
 		</service>
+		<service name="RuntimeService" description="Runtime Service"
+			type="de.tudresden.inf.rn.mobilis.server.services.RuntimeService"
+			agent="runtime" start="auto">
+		</service>
 		<service name="DeploymentService" description="Deployment Service"
 			type="de.tudresden.inf.rn.mobilis.server.services.DeploymentService"
 			agent="deployment" start="auto">
-		</service>
-		<service name="AdminService" description="Admin Service"
-			type="de.tudresden.inf.rn.mobilis.server.services.AdminService"
-			agent="admin" start="auto">
 		</service>
 	</services>
 </config>

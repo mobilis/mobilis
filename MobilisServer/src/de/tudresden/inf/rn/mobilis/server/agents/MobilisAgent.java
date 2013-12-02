@@ -34,6 +34,7 @@ import java.util.Set;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.keepalive.KeepAliveManager;
@@ -218,13 +219,14 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 			}
 		}
 
-		mConnection.login(username, password, resource);
-		mConnection.addConnectionListener(this);
-
 		serviceDiscoveryManager = ServiceDiscoveryManager.getInstanceFor(mConnection);
 		capsMaganger = EntityCapsManager.getInstanceFor(mConnection);
 		capsMaganger.enableEntityCaps();
 		serviceDiscoveryManager.setEntityCapsManager(capsMaganger);
+		
+		
+
+		
 		
 		// Set on every established connection that this client supports the Mobilis
 		// protocol. This information will be used when another client tries to
@@ -247,8 +249,11 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 			//discoName="";
 			discoVer="";
 		}
-		capsMaganger.updateLocalEntityCaps();
-
+		//capsMaganger.updateLocalEntityCaps();
+		
+		mConnection.login(username, password, resource);
+		mConnection.addConnectionListener(this);
+		
 		synchronized(mServices) {
 			for (MobilisService ms : mServices) {
 				try {
@@ -323,7 +328,22 @@ public class MobilisAgent implements NodeInformationProvider, ConnectionListener
 				// TODO Auto-generated catch block
 			}
 		}
-
+		
+		/*on server shutdown or service shutdown delete all entries of remote runtimes in the roster of a service - 
+		 * necessary for clean subscription	after the offline phase of the xmpp server of a remote runtime*/
+		if(!discoName.equals("")){ //disconame is just set for the Service Presence Resource! So it must be a server shutdown or deinstall if true...
+			for(RosterEntry entry : mConnection.getRoster().getEntries()){
+				//just for services, not for runtime roster
+				if(!mDefaultSettings.get("resource").equals("Deployment") && !mDefaultSettings.get("resource").equals("Runtime")
+						&& !mDefaultSettings.get("resource").equals("Coordinator")){
+					//just remove remote runtimes
+					if(!entry.getUser().equals(StringUtils.parseBareAddress(MobilisManager.getInstance().getAgent("runtime").getFullJid()))){
+						mConnection.getRoster().removeEntry(entry);
+					}
+				}
+			}
+		}
+		
 		if ((mConnection != null) && mConnection.isConnected()) {
 			mConnection.removeConnectionListener(this);
 			mConnection.disconnect();

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="libs/swing-worker-1.1.jar"/>
+	<classpathentry kind="lib" path="libs/appframework-1.0.3.jar"/>
+	<classpathentry kind="lib" path="libs/commons-beanutils.jar"/>
+	<classpathentry kind="lib" path="libs/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="libs/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="libs/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="libs/jdom.jar"/>
+	<classpathentry kind="lib" path="libs/mysql-connector-java-5.1.10-bin.jar"/>
+	<classpathentry kind="lib" path="libs/hibernate-annotations.jar"/>
+	<classpathentry kind="lib" path="libs/hibernate-entitymanager.jar"/>
+	<classpathentry kind="lib" path="libs/hibernate3.jar"/>
+	<classpathentry kind="lib" path="libs/hibernate-commons-annotations.jar"/>
+	<classpathentry kind="lib" path="libs/hibernate-core.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/MobilisXMPP"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

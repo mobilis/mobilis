@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.xmpp.beans.runtimeprotocol;
+package de.tudresden.inf.rn.mobilis.xmpp.beans.runtime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.Mobilis;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 /**
- * 
+ * universal message for synchronizing runtimes service registries
  * @author Philipp Grubitzsch
  *
  */
