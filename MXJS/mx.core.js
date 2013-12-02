@@ -57,7 +57,7 @@ var core = {
                     console.log('connected');
 
                     connection.addHandler(
-                        MX.core.onChatMessage,
+                        MX.core.onPrivateMessage,
                         null,
                         'message',
                         'chat'
@@ -80,6 +80,8 @@ var core = {
         MX.connection = connection;
     },
 
+
+
     joinMuc : function(room, onMessage, onPresence, onRoster, result) {
 
         MX.connection.muc.join(
@@ -95,8 +97,7 @@ var core = {
 
 
 
-
-    onChatMessage : function(message){
+    onPrivateMessage : function(message){
         console.log('private message:',message);
     },
 
