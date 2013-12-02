@@ -61,6 +61,11 @@
     else [_serviceTypeDiscovery discoverServices];
 }
 
+- (void)rediscoverServices
+{
+    [self launchServiceDiscovery];
+}
+
 - (void)addDelegate:(id <MXiServiceManagerDelegate>)delegate
 {
     if (![[delegate class] conformsToProtocol:@protocol(MXiServiceManagerDelegate)])

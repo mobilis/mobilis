@@ -48,6 +48,15 @@
  */
 + (instancetype)serviceManagerWithConnection:(MXiConnection *)connection serviceType:(ServiceType)serviceType namespace:(NSString *)namespace delegate:(id <MXiServiceManagerDelegate>)delegate;
 
+/*!
+    Relaunches the service discovery with the given configuration of the receiver.
+    Use this method to synchronize the list of services with the XMPP Mobilis runtime, meaning fetch the service list from the
+    Mobilis runtime.
+
+    Note: this step is not necessary, if the ServiceManager is created. Service discovery will be launched automatically on creation.
+ */
+- (void)rediscoverServices;
+
 - (void)addDelegate:(id <MXiServiceManagerDelegate>)delegate;
 - (void)removeDelegate:(id<MXiServiceManagerDelegate>)delegate;
 
