@@ -80,9 +80,74 @@ var core = {
         MX.connection = connection;
     },
 
+    joinMuc : function(room, onMessage, onPresence, onRoster, result) {
+
+        MX.connection.muc.join(
+            room,
+            jQuery.jStorage.get('settings').username,
+            onMessage,
+            onPresence,
+            onRoster
+        );
+
+        if (result) result('joined', room);
+    },
+
+
+
 
     onChatMessage : function(message){
         console.log('private message:',message);
+    },
+
+
+    buildMessage : function(message,type,returnXml) {
+
+        var xml = $build('mobilismessage',{type:type});
+
+        if (message) {
+            if (typeof message === 'object' ) {
+                $.each(message, function(key,value){
+                    xml.c(key).t(value).up();
+                });
+            } else {
+                xml = xml.t(message);
+            }
+        }
+
+        returnXml( xml.toString() );
+    },
+
+
+    sendChatMessage : function (nick, message) {
+        MX.connection.muc.message(
+            jQuery.jStorage.get('chatroom'),
+            nick,
+            message,
+            null, // no html markup
+            'chat');
+        return true;
+    },
+
+
+    sendGroupchatMessage : function (message) {
+        MX.connection.muc.groupchat(
+            jQuery.jStorage.get('chatroom'),
+            message,
+            null // no html markup
+            );
+        return true;
+    },
+
+
+    leaveMuc : function(room, exitMessage, onLeft){
+        MX.connection.muc.leave(
+            room,
+            jQuery.jStorage.get('settings').username //,
+            // onLeft,  TODO muc.leave() callback not working?
+            // exitMessage
+        );
+        onLeft();
     },
 
 
