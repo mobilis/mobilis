@@ -13,20 +13,6 @@ var core = {
         MX.addNamespace('COORDINATOR', MX.NS.URL + '#services/CoordinatorService');
     },
 
-    Status: { // TODO: refactor this
-        ERROR: 0,
-        CONNECTING: 1,
-        CONNFAIL: 2,
-        AUTHENTICATING: 3,
-        AUTHFAIL: 4,
-        CONNECTED: 5,
-        DISCONNECTED: 6,
-        DISCONNECTING: 7,
-        ATTACHED: 8
-    },
-
-
-
 
     connect: function(server, jid, password, callback) {
 
@@ -43,17 +29,17 @@ var core = {
             jid,
             password,
             function(status) {
-                if (status == MX.core.Status.ERROR) {
+                if (status == Strophe.Status.ERROR) {
                     console.log('connection error');
-                } else if (status == MX.core.Status.CONNECTING) {
+                } else if (status == Strophe.Status.CONNECTING) {
                     console.log('connecting');
-                } else if (status == MX.core.Status.CONNFAIL) {
+                } else if (status == Strophe.Status.CONNFAIL) {
                     console.log('connection fail');
-                } else if (status == MX.core.Status.AUTHENTICATING) {
+                } else if (status == Strophe.Status.AUTHENTICATING) {
                     console.log('authenticating');
-                } else if (status == MX.core.Status.AUTHFAIL) {
+                } else if (status == Strophe.Status.AUTHFAIL) {
                     console.log('authentication fail');
-                } else if (status == MX.core.Status.CONNECTED) {
+                } else if (status == Strophe.Status.CONNECTED) {
                     console.log('connected');
 
                     connection.addHandler(
@@ -81,11 +67,11 @@ var core = {
                     );
                     connection.send($pres());
 
-                } else if (status == MX.core.Status.DISCONNECTED) {
+                } else if (status == Strophe.Status.DISCONNECTED) {
                     console.log('disconnected');
-                } else if (status == MX.core.Status.DISCONNECTING) {
+                } else if (status == Strophe.Status.DISCONNECTING) {
                     console.log('disconnecting');
-                } else if (status == MX.core.Status.ATTACHED) {
+                } else if (status == Strophe.Status.ATTACHED) {
                     console.log('attached');
                 }
                 if (callback) {
