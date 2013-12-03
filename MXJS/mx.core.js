@@ -114,19 +114,19 @@ var core = {
 
 
     onGroupchatMessage : function(message){
-        console.log('Core groupchat message:', message);
+        // console.log('Core groupchat message:', message);
         return true;
     },
     onPrivateMessage : function(message){
-        console.log('Core private message:', message);
+        // console.log('Core private message:', message);
         return true;
     },
     onPresence : function(presence){
-        console.log('Core presence:', presence);
+        // console.log('Core presence:', presence);
         return true;
     },
     onRoster : function(roster){
-        console.log('Core roster:', roster);
+        // console.log('Core roster:', roster);
         return true;
     },
 
