@@ -57,10 +57,27 @@ var core = {
                     console.log('connected');
 
                     connection.addHandler(
+                        MX.core.onGroupchatMessage,
+                        null,
+                        'message',
+                        'groupchat'
+                    );
+                    connection.addHandler(
                         MX.core.onPrivateMessage,
                         null,
                         'message',
                         'chat'
+                    );
+                    connection.addHandler(
+                        MX.core.onPresence,
+                        null,
+                        'presence'
+                    );
+                    connection.addHandler( // TODO: does not work
+                        MX.core.onRoster,
+                        Strophe.NS.ROSTER,
+                        'iq',
+                        'set'
                     );
                     connection.send($pres());
 
@@ -96,26 +113,21 @@ var core = {
     },
 
 
-    onMessage : function (message, handleMobilisMessage, handleChatMessage){
-
-        console.log('MX.core.onMessage',message);
-        var rawMessageBody = $(message).find('body').text();
-        var parsedMessageHtml = $.parseHTML(rawMessageBody)[0];
-        if ( parsedMessageHtml.nodeName.toLowerCase() == 'mobilismessage' ) {
-            // ninecards.handleMobilisMessage(parsedMessageHtml);
-            console.log(handleMobilisMessage);
-            handleMobilisMessage(parsedMessageHtml)
-        } else {
-            // ninecards.handleChatMessage(rawMessageBody);
-            console.log(handleChatMessage);
-            handleChatMessage(rawMessageBody);
-        }
+    onGroupchatMessage : function(message){
+        console.log('Core groupchat message:', message);
         return true;
     },
-
-
     onPrivateMessage : function(message){
-        console.log('private message:',message);
+        console.log('Core private message:', message);
+        return true;
+    },
+    onPresence : function(presence){
+        console.log('Core presence:', presence);
+        return true;
+    },
+    onRoster : function(roster){
+        console.log('Core roster:', roster);
+        return true;
     },
 
 
