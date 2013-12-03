@@ -35,7 +35,7 @@
 				<setting name="service">mobilis.inf.tu-dresden.de</setting>
 				<setting name="username">mobilis</setting>
 				<setting name="password">mobilis_pass</setting>
-				<setting name="resource">Runtime</setting>
+				<setting name="resource">Deployment</setting>
 				<setting name="conType">xmpp</setting>
 			</settings>
 		</agent>
