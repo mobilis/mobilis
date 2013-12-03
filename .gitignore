@@ -1,6 +1,6 @@
 *.class
 *.DS_Store
-#*Thumbs.db
+*Thumbs.db
 
 # Package Files #
 bin/
