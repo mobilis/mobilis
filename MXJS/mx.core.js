@@ -96,6 +96,23 @@ var core = {
     },
 
 
+    onMessage : function (message, handleMobilisMessage, handleChatMessage){
+
+        console.log('MX.core.onMessage',message);
+        var rawMessageBody = $(message).find('body').text();
+        var parsedMessageHtml = $.parseHTML(rawMessageBody)[0];
+        if ( parsedMessageHtml.nodeName.toLowerCase() == 'mobilismessage' ) {
+            // ninecards.handleMobilisMessage(parsedMessageHtml);
+            console.log(handleMobilisMessage);
+            handleMobilisMessage(parsedMessageHtml)
+        } else {
+            // ninecards.handleChatMessage(rawMessageBody);
+            console.log(handleChatMessage);
+            handleChatMessage(rawMessageBody);
+        }
+        return true;
+    },
+
 
     onPrivateMessage : function(message){
         console.log('private message:',message);
