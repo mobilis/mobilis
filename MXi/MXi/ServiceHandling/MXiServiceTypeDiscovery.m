@@ -51,7 +51,6 @@
 
 - (void)dealloc
 {
-    free((void *) _serviceType);
     _namespace = nil;
 }
 
