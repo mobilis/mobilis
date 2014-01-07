@@ -221,10 +221,10 @@ public class CommandShell {
 					_controller.getSettings().setClientResource( inputArray[2] );
 				} else if ( inputArray[1].toLowerCase().equals( "coordinatorresource" ) ) {
 					_controller.getSettings().setMobilisCoordinatorResource( inputArray[2] );
-				} else if ( inputArray[1].toLowerCase().equals( "adminresource" ) ) {
-					_controller.getSettings().setMobilisAdminResource( inputArray[2] );
 				} else if ( inputArray[1].toLowerCase().equals( "deploymentresource" ) ) {
 					_controller.getSettings().setMobilisDeploymentResource( inputArray[2] );
+				} else if ( inputArray[1].toLowerCase().equals( "runtimeresource" ) ) {
+					_controller.getSettings().setMobilisRuntimeResource( inputArray[2] );
 				} else if ( inputArray[1].toLowerCase().equals( "servernode" ) ) {
 					_controller.getSettings().setMobilisServerNode( inputArray[2] );
 				} else if ( inputArray[1].toLowerCase().equals( "serverresource" ) ) {

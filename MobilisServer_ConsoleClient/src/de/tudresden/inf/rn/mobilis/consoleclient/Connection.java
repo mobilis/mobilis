@@ -104,7 +104,7 @@ public class Connection {
 	 * @return true, if successful
 	 */
 	public boolean connectToXMPPServer() {
-		XMPPConnection.DEBUG_ENABLED = true;
+		XMPPConnection.DEBUG_ENABLED = (new Settings()).isSmackDebugMode();
 
 		ConnectionConfiguration connnectionConfig = new ConnectionConfiguration( _controller
 				.getSettings().getXMPPServerAddress(), _controller.getSettings()
