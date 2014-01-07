@@ -27,11 +27,9 @@ public class FileUploadPanel extends JPanel {
         JButton fileChooserButton = new JButton("Choose File");
 
         GridBagConstraints textFieldConstraint = new GridBagConstraints();
-//        textFieldConstraint.anchor = GridBagConstraints.NORTHWEST;
         textFieldConstraint.weightx = 1.0;
         textFieldConstraint.fill = GridBagConstraints.HORIZONTAL;
         GridBagConstraints uploadButtonConstraint = new GridBagConstraints();
-//        uploadButtonConstraint.anchor = GridBagConstraints.NORTHEAST;
         uploadButtonConstraint.weightx = 1.0;
         uploadButtonConstraint.gridwidth = GridBagConstraints.REMAINDER;
         uploadButtonConstraint.anchor = GridBagConstraints.BASELINE_LEADING;

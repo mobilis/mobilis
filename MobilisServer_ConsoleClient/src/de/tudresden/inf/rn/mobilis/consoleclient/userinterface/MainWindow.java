@@ -1,5 +1,6 @@
 package de.tudresden.inf.rn.mobilis.consoleclient.userinterface;
 
+import de.tudresden.inf.rn.mobilis.consoleclient.Controller;
 import de.tudresden.inf.rn.mobilis.consoleclient.ServiceHandler;
 import de.tudresden.inf.rn.mobilis.consoleclient.XMPPConsoleClient;
 import de.tudresden.inf.rn.mobilis.consoleclient.helper.StatusInformation;
@@ -20,12 +21,13 @@ import java.util.Observer;
 public class MainWindow extends JFrame implements Observer {
 
     private XMPPConsoleClient consoleClient;
-    private ServiceHandler serviceHandler;
 
     private void initUI() {
         setLayout(new BorderLayout());
-
         setupSettingsPanel();
+
+        final Controller controller = Controller.getController();
+
         final FileUploadPanel fileUploadPanel = new FileUploadPanel();
         getContentPane().add(fileUploadPanel, BorderLayout.CENTER);
 
@@ -48,13 +50,13 @@ public class MainWindow extends JFrame implements Observer {
         uploadButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                serviceHandler.sendFile(fileUploadPanel.getFilePath(), true, fileUploadPanel.isSingleModeService());
+                controller.getServiceHandler().sendFile(fileUploadPanel.getFilePath(), true, fileUploadPanel.isSingleModeService());
             }
         });
         reconnectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                consoleClient.getController().getConnection().disconnect();
+                controller.getConnection().disconnect();
                 consoleClient.loginClient();
             }
         });
@@ -62,17 +64,19 @@ public class MainWindow extends JFrame implements Observer {
     }
 
     private void setupSettingsPanel() {
+        Controller controller = Controller.getController();
+
         GridBagLayout gridBagLayout = new GridBagLayout();
         JPanel settingsPanel = new JPanel(gridBagLayout);
         getContentPane().add(settingsPanel, BorderLayout.NORTH);
 
-        JPanel resourcePanel = new ResourcePanel(consoleClient.getController().getSettings());
+        JPanel resourcePanel = new ResourcePanel(controller.getSettings());
         GridBagConstraints resourceConstraint = new GridBagConstraints();
         resourceConstraint.anchor = GridBagConstraints.WEST;
         gridBagLayout.setConstraints(resourcePanel, resourceConstraint);
         settingsPanel.add(resourcePanel);
 
-        JPanel userInfoPanel = new UserInfoPanel(consoleClient.getController().getSettings());
+        JPanel userInfoPanel = new UserInfoPanel(controller.getSettings());
         GridBagConstraints userConstraint = new GridBagConstraints();
         userConstraint.anchor = GridBagConstraints.EAST;
         gridBagLayout.setConstraints(userInfoPanel, userConstraint);
@@ -81,7 +85,7 @@ public class MainWindow extends JFrame implements Observer {
 
     public MainWindow(XMPPConsoleClient consoleClient) {
         this.consoleClient = consoleClient;
-        this.serviceHandler = new ServiceHandler(this.consoleClient.getController(), this);
+        Controller.getController().getServiceHandler().addObserver(this);
 
         initUI();
 

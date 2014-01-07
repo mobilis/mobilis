@@ -15,7 +15,7 @@ public class XMPPConsoleClient {
 	 * Instantiates a new xMPP console client.
 	 */
 	public XMPPConsoleClient(){
-		controller = new Controller();
+		controller = Controller.getController();
         loginClient();
     }
 
