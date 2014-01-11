@@ -4,10 +4,7 @@ import de.tudresden.inf.rn.mobilis.consoleclient.Settings;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 
 /**
  * @author cmdaltent
@@ -40,6 +37,52 @@ public class ResourcePanel extends JPanel {
         add(deploymentTextField);
         add(new JLabel("Coordinator"));
         add(coordinatorTextField);
+
+        //FIXME: make the following code block more generic
+        runtimeNameTextField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                _settings.setMobilisServerNode(((JTextField) e.getSource()).getText());
+            }
+        });
+        deploymentTextField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                _settings.setMobilisDeploymentResource(((JTextField)e.getSource()).getText());
+            }
+        });
+        runtimeTextField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                _settings.setMobilisRuntimeResource(((JTextField)e.getSource()).getText());
+            }
+        });
+        coordinatorTextField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                _settings.setMobilisServerNode(((JTextField)e.getSource()).getText());
+            }
+        });
     }
 
 }

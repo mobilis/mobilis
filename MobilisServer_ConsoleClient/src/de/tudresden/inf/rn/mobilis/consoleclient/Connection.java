@@ -1,5 +1,6 @@
 package de.tudresden.inf.rn.mobilis.consoleclient;
 
+import de.tudresden.inf.rn.mobilis.consoleclient.helper.ConnectionStatus;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
@@ -7,21 +8,19 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.SendNewServiceInstanc
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.*;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
-import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.RosterEntry;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smackx.filetransfer.*;
 
 import java.io.File;
 import java.util.Date;
+import java.util.Observable;
 
 /**
  * The Class Connection.
  */
-public class Connection {
+public class Connection extends Observable implements ConnectionListener {
 
 	/** The _controller. */
 	private Controller _controller;
@@ -193,7 +192,8 @@ public class Connection {
 
 				return false;
 			}
-
+            setChanged();
+            notifyObservers(ConnectionStatus.CONNECTED);
 			return true;
 		}
 
@@ -441,4 +441,36 @@ public class Connection {
 
 		return type;
 	}
+
+    @Override
+    public void connectionClosed() {
+        setChanged();
+        notifyObservers(ConnectionStatus.DISCONNECTED);
+    }
+
+    @Override
+    public void connectionClosedOnError(Exception e) {
+        setChanged();
+        notifyObservers(ConnectionStatus.DISCONNECTED);
+        e.printStackTrace();
+    }
+
+    @Override
+    public void reconnectingIn(int i) {
+        setChanged();
+        notifyObservers(ConnectionStatus.RECONNECTING);
+    }
+
+    @Override
+    public void reconnectionSuccessful() {
+        setChanged();
+        notifyObservers(ConnectionStatus.CONNECTED);
+    }
+
+    @Override
+    public void reconnectionFailed(Exception e) {
+        setChanged();
+        notifyObservers(ConnectionStatus.DISCONNECTED);
+        e.printStackTrace();
+    }
 }

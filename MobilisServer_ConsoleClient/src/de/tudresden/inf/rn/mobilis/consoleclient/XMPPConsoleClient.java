@@ -20,12 +20,16 @@ public class XMPPConsoleClient {
     }
 
     public void loginClient() {
-        if (!controller.getConnection().connectToXMPPServer()) {
-            JOptionPane.showMessageDialog(null, "Could not set up connection.\nCheck your internet connection or localhost.", "Connection error", JOptionPane.ERROR_MESSAGE);
+        if (controller.getSettings().allSettingsAvailable()) {
+            if (!controller.getConnection().connectToXMPPServer()) {
+                JOptionPane.showMessageDialog(null, "Could not set up connection.\nCheck your internet connection or localhost.", "Connection error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                 if (!controller.getConnection().loginXMPP()) {
+                     JOptionPane.showMessageDialog(null, "Could not authenticate.\nPlease check your credentials or set them up first.", "Authentication error", JOptionPane.ERROR_MESSAGE);
+                 }
+            }
         } else {
-             if (!controller.getConnection().loginXMPP()) {
-                 JOptionPane.showMessageDialog(null, "Could not authenticate.\nPlease check your credentials or set them up first.", "Authentication error", JOptionPane.ERROR_MESSAGE);
-             }
+            JOptionPane.showMessageDialog(null, "Please specify all required Settings first. Then reconnect.", "Missing Settings", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 

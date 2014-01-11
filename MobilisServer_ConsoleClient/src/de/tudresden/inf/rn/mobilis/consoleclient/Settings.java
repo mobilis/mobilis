@@ -1,9 +1,6 @@
 package de.tudresden.inf.rn.mobilis.consoleclient;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 
 /**
@@ -77,13 +74,19 @@ public class Settings {
 		try {
 			_properties.load(new FileInputStream("Settings.properties"));
 		} catch (FileNotFoundException e) {
-			System.out.println("Couldn\'t find settings file. Aborting...");
-			e.printStackTrace();
-			System.exit(1);
+            File newFile = new File("Settings.properties");
+            try {
+                if (newFile.createNewFile()) {
+                    _properties = new Properties();
+                    setupPropertiesFile();
+                    storeProperties();
+                }
+            } catch (IOException e1) {
+                System.out.println("Could not create settings file. Allow write access to folder");
+                e1.printStackTrace();
+            }
 		} catch (IOException e) {
-			System.out.println("Couldn\'t read settings file. Aborting...");
 			e.printStackTrace();
-			System.exit(2);
 		}
 		
 		_clientNode = _properties.getProperty(CLIENT_NODE).trim();
@@ -104,7 +107,29 @@ public class Settings {
         _smackDebugMode = Boolean.parseBoolean(_properties.getProperty(SMACK_DEBUG_MODE).trim());
 	}
 	
-	
+	private void setupPropertiesFile() {
+        _properties.setProperty(CLIENT_NODE, "");
+        _properties.setProperty(CLIENT_PASSWORD, "");
+        _properties.setProperty(CLIENT_RESOURCE, "");
+
+        _properties.setProperty(MOBILIS_COORDINATOR_RESOURCE, "Coordinator");
+        _properties.setProperty(MOBILIS_DEPLOYMENT_RESOURCE, "Deployment");
+        _properties.setProperty(MOBILIS_RUNTIME_RESOURCE, "Runtime");
+        _properties.setProperty(MOBILIS_SERVER_NODE, "");
+        _properties.setProperty(MOBILIS_SERVER_RESOURCE, "");
+
+        _properties.setProperty(XMPP_SERVER_ADDRESS, "");
+        _properties.setProperty(XMPP_SERVER_PORT, "5222");
+
+        _properties.setProperty(XMPP_SERVER_DOMAIN, "");
+
+        _properties.setProperty(SMACK_DEBUG_MODE, "false");
+    }
+
+    public boolean allSettingsAvailable() {
+        return !"".equals(getXMPPServerAddress());
+    }
+
 	/**
 	 * Gets the client jid.
 	 *

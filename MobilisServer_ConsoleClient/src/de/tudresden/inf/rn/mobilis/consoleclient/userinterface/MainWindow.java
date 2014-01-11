@@ -1,8 +1,10 @@
 package de.tudresden.inf.rn.mobilis.consoleclient.userinterface;
 
+import de.tudresden.inf.rn.mobilis.consoleclient.Connection;
 import de.tudresden.inf.rn.mobilis.consoleclient.Controller;
 import de.tudresden.inf.rn.mobilis.consoleclient.ServiceHandler;
 import de.tudresden.inf.rn.mobilis.consoleclient.XMPPConsoleClient;
+import de.tudresden.inf.rn.mobilis.consoleclient.helper.ConnectionStatus;
 import de.tudresden.inf.rn.mobilis.consoleclient.helper.StatusInformation;
 import de.tudresden.inf.rn.mobilis.consoleclient.userinterface.panels.FileUploadPanel;
 import de.tudresden.inf.rn.mobilis.consoleclient.userinterface.panels.ResourcePanel;
@@ -22,6 +24,8 @@ public class MainWindow extends JFrame implements Observer {
 
     private XMPPConsoleClient consoleClient;
 
+    private JButton uploadButton;
+
     private void initUI() {
         setLayout(new BorderLayout());
         setupSettingsPanel();
@@ -37,8 +41,10 @@ public class MainWindow extends JFrame implements Observer {
         buttonConstraints.weightx = 1.0;
 
         JPanel buttonPanel = new JPanel();
-        JButton uploadButton = new JButton("Upload File");
+        uploadButton = new JButton("Upload File");
         JButton reconnectButton = new JButton("Reconnect");
+
+        uploadButton.setEnabled(controller.getConnection().isConnected());
 
         layout.setConstraints(uploadButton, buttonConstraints);
         layout.setConstraints(reconnectButton, buttonConstraints);
@@ -86,6 +92,7 @@ public class MainWindow extends JFrame implements Observer {
     public MainWindow(XMPPConsoleClient consoleClient) {
         this.consoleClient = consoleClient;
         Controller.getController().getServiceHandler().addObserver(this);
+        Controller.getController().getConnection().addObserver(this);
 
         initUI();
 
@@ -103,5 +110,17 @@ public class MainWindow extends JFrame implements Observer {
                 StatusInformation information = (StatusInformation)arg;
                 JOptionPane.showMessageDialog(this, information.getMessage(), "File Upload Status Information", information.optionPaneStatus());
             }
+        if (o instanceof Connection) {
+            if (arg instanceof ConnectionStatus) {
+                ConnectionStatus status = (ConnectionStatus)arg;
+                switch (status) {
+                    case CONNECTED:
+                        uploadButton.setEnabled(true);
+                        break;
+                    default:
+                        uploadButton.setEnabled(false);
+                }
+            }
+        }
     }
 }
