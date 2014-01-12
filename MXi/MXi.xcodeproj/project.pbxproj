@@ -143,6 +143,18 @@
 		BF8CBF810DB902F3C3E36320 /* MXiDefinitions.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CBAA6DA689E794DEF114F /* MXiDefinitions.h */; };
 		BF8CBF9654CAC6BEFF1EA488 /* MXiDelegateDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8CB948BF12799F803C6CBC /* MXiDelegateDictionary.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		BF8CBFAEF4C444A216FCD97B /* MXiService.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CBCEFBBAB6EFAD305EEE4 /* MXiService.m */; };
+		E6F4706258FD11AC11BBE7BD /* MXiServiceConnectionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = E6F47DC139E63FC421ADA61B /* MXiServiceConnectionHandler.h */; };
+		E6F471B3B6A0D5A56DAE3D55 /* MXiServiceConnectionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = E6F474A81A04F04E1618DCE9 /* MXiServiceConnectionHandler.m */; };
+		E6F472044522E5451D88B7C6 /* MobilisService.h in Headers */ = {isa = PBXBuildFile; fileRef = E6F4716186495FA4CE2BAC32 /* MobilisService.h */; };
+		E6F4730B6A21F8BAB583657E /* MobilisService.h in Headers */ = {isa = PBXBuildFile; fileRef = E6F4716186495FA4CE2BAC32 /* MobilisService.h */; };
+		E6F47399E5F1D59B1651E45F /* MXiAbstractConnectionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = E6F47243613BDF63BAE232E3 /* MXiAbstractConnectionHandler.m */; };
+		E6F47495AA8591A1C6F414C3 /* MXiServiceConnectionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = E6F474A81A04F04E1618DCE9 /* MXiServiceConnectionHandler.m */; };
+		E6F47A416BEA15D7221379E1 /* MobilisService.m in Sources */ = {isa = PBXBuildFile; fileRef = E6F47AA7236F32E2B4610F21 /* MobilisService.m */; };
+		E6F47A9EF336404FCE788A0D /* MXiAbstractConnectionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = E6F47F31399D058A4451214F /* MXiAbstractConnectionHandler.h */; };
+		E6F47C58AB07904E078F8F5B /* MobilisService.m in Sources */ = {isa = PBXBuildFile; fileRef = E6F47AA7236F32E2B4610F21 /* MobilisService.m */; };
+		E6F47D30780D8577CF82B341 /* MXiServiceConnectionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = E6F47DC139E63FC421ADA61B /* MXiServiceConnectionHandler.h */; };
+		E6F47E55F35DBF8FF7768B57 /* MXiAbstractConnectionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = E6F47243613BDF63BAE232E3 /* MXiAbstractConnectionHandler.m */; };
+		E6F47F0AA0EA56052251C28E /* MXiAbstractConnectionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = E6F47F31399D058A4451214F /* MXiAbstractConnectionHandler.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -249,6 +261,12 @@
 		BF8CBF0B74607A09404C4201 /* MXiConnectionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiConnectionHandler.h; sourceTree = "<group>"; };
 		BF8CBF9776D2758DBC32FCE0 /* MXiMultiUserChatDiscovery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiMultiUserChatDiscovery.m; sourceTree = "<group>"; };
 		BF8CBFB9620E82B361CAF6D6 /* MXiServiceTypeDiscovery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiServiceTypeDiscovery.h; sourceTree = "<group>"; };
+		E6F4716186495FA4CE2BAC32 /* MobilisService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobilisService.h; sourceTree = "<group>"; };
+		E6F47243613BDF63BAE232E3 /* MXiAbstractConnectionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiAbstractConnectionHandler.m; sourceTree = "<group>"; };
+		E6F474A81A04F04E1618DCE9 /* MXiServiceConnectionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiServiceConnectionHandler.m; sourceTree = "<group>"; };
+		E6F47AA7236F32E2B4610F21 /* MobilisService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobilisService.m; sourceTree = "<group>"; };
+		E6F47DC139E63FC421ADA61B /* MXiServiceConnectionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiServiceConnectionHandler.h; sourceTree = "<group>"; };
+		E6F47F31399D058A4451214F /* MXiAbstractConnectionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiAbstractConnectionHandler.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -352,6 +370,9 @@
 				BF8CBFD6F36172E4496E479D /* Delegation */,
 				BF8CB4AEFBC5E64659601390 /* ServiceHandling */,
 				BF8CB458401BDC96D54C219E /* MultiUserChat */,
+				E6F47243613BDF63BAE232E3 /* MXiAbstractConnectionHandler.m */,
+				E6F47F31399D058A4451214F /* MXiAbstractConnectionHandler.h */,
+				E6F47D2ADEB790AFD2DEFBC1 /* RuntimeServices */,
 			);
 			path = MXi;
 			sourceTree = "<group>";
@@ -456,6 +477,17 @@
 			path = Delegation;
 			sourceTree = "<group>";
 		};
+		E6F47D2ADEB790AFD2DEFBC1 /* RuntimeServices */ = {
+			isa = PBXGroup;
+			children = (
+				E6F47DC139E63FC421ADA61B /* MXiServiceConnectionHandler.h */,
+				E6F474A81A04F04E1618DCE9 /* MXiServiceConnectionHandler.m */,
+				E6F4716186495FA4CE2BAC32 /* MobilisService.h */,
+				E6F47AA7236F32E2B4610F21 /* MobilisService.m */,
+			);
+			path = RuntimeServices;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -491,6 +523,9 @@
 				BF8CB1CE4950CCCD86211AEF /* MXiMultiUserChatMessage.h in Headers */,
 				BF8CBD359436B0FF67E93B16 /* MXiMultiUserChatRoom.h in Headers */,
 				BF8CB3F7243426162A544C11 /* MXiMultiUserChatDelegateDictionary.h in Headers */,
+				E6F47F0AA0EA56052251C28E /* MXiAbstractConnectionHandler.h in Headers */,
+				E6F47D30780D8577CF82B341 /* MXiServiceConnectionHandler.h in Headers */,
+				E6F472044522E5451D88B7C6 /* MobilisService.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -526,6 +561,9 @@
 				BF8CB4F24CECF12F378349E7 /* MXiMultiUserChatMessage.h in Headers */,
 				BF8CB5FDBFF7B90D97AA648D /* MXiMultiUserChatRoom.h in Headers */,
 				BF8CBF1CB2ED0F583B809BF4 /* MXiMultiUserChatDelegateDictionary.h in Headers */,
+				E6F47A9EF336404FCE788A0D /* MXiAbstractConnectionHandler.h in Headers */,
+				E6F4706258FD11AC11BBE7BD /* MXiServiceConnectionHandler.h in Headers */,
+				E6F4730B6A21F8BAB583657E /* MobilisService.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -700,6 +738,9 @@
 				BF8CBC783F92C4ABCFFDA194 /* MXiMultiUserChatMessage.m in Sources */,
 				BF8CB415AAC14EA1F8107C2B /* MXiMultiUserChatRoom.m in Sources */,
 				BF8CB279F9562FD733FA8732 /* MXiMultiUserChatDelegateDictionary.m in Sources */,
+				E6F47E55F35DBF8FF7768B57 /* MXiAbstractConnectionHandler.m in Sources */,
+				E6F471B3B6A0D5A56DAE3D55 /* MXiServiceConnectionHandler.m in Sources */,
+				E6F47A416BEA15D7221379E1 /* MobilisService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -729,6 +770,9 @@
 				BF8CBB4A71FA2E59F0463094 /* MXiMultiUserChatMessage.m in Sources */,
 				BF8CB0A7AF278827DCB449AB /* MXiMultiUserChatRoom.m in Sources */,
 				BF8CB31D7DD4C3E96B63118F /* MXiMultiUserChatDelegateDictionary.m in Sources */,
+				E6F47399E5F1D59B1651E45F /* MXiAbstractConnectionHandler.m in Sources */,
+				E6F47495AA8591A1C6F414C3 /* MXiServiceConnectionHandler.m in Sources */,
+				E6F47C58AB07904E078F8F5B /* MobilisService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

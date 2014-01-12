@@ -12,7 +12,7 @@
 
 @interface MXiDelegateDictionary ()
 
-@property (strong, nonatomic) NSMutableDictionary *delegateDictionary;
+@property (strong, nonatomic) NSMapTable *delegateDictionary;
 
 - (void)initializeDictionaryIfNotExisting;
 
@@ -97,12 +97,24 @@
 - (void)initializeDictionaryIfNotExisting
 {
     if (!self.delegateDictionary) {
-        self.delegateDictionary = [[NSMutableDictionary alloc] initWithCapacity:10];
+        self.delegateDictionary = [NSMapTable weakToStrongObjectsMapTable];
     }
 }
 
 - (NSArray *)allDelegates
 {
-    return [NSArray arrayWithArray:[self.delegateDictionary allValues]];
+    NSArray *delegates = nil;
+    @autoreleasepool {
+        NSEnumerator *delegateDictionaryEnumerator = [self.delegateDictionary keyEnumerator];
+        NSString *key = nil;
+        NSMutableArray *tempDelegates = [NSMutableArray arrayWithCapacity:self.delegateDictionary.count];
+        while ((key = [delegateDictionaryEnumerator nextObject])) {
+            [tempDelegates addObject:[self delegatesForKey:key]];
+        }
+        
+        delegates = [[NSArray alloc] initWithArray:tempDelegates];
+    }
+    
+    return delegates;
 }
 @end
