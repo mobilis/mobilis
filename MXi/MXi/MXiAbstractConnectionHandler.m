@@ -99,7 +99,7 @@
 
 - (void)connectionAuthenticationFinished:(NSXMLElement *)error
 {
-    if (!error) {
+    if (!error && self.connection.serviceType != RUNTIME) {
         _authenticated = YES;
         self.serviceManager = [MXiServiceManager serviceManagerWithConnection:self.connection serviceType:self.connection.serviceType namespace:self.connection.serviceNamespace delegate:self];
         [self.delegate authenticationFinishedSuccessfully:YES];
