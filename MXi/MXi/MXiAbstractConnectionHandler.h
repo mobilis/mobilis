@@ -5,6 +5,7 @@
 
 #import <Foundation/Foundation.h>
 #import "MXiDefinitions.h"
+#import "MXiServiceManager.h"
 
 @class NSXMLElement;
 @class MXiService;
@@ -15,7 +16,7 @@
 @class MXiConnection;
 
 
-@interface MXiAbstractConnectionHandler : NSObject
+@interface MXiAbstractConnectionHandler : NSObject <MXiServiceManagerDelegate>
 
 @property (readonly) MXiConnection *connection;
 @property (readonly) MXiServiceManager *serviceManager;

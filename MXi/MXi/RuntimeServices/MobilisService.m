@@ -36,7 +36,8 @@
         [self.connectionHandler launchConnectionWithJID:jid.bare
                                                password:password
                                                hostName:hostName
-                                            serviceType:(ServiceType)SERVICE port:port];
+                                            serviceType:SERVICE
+                                                   port:port];
     }
 
     return self;
