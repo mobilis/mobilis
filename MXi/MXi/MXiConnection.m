@@ -164,6 +164,11 @@
         [self pong:iq];
         return YES;
     }
+    if ([iq.type isEqualToString:@"error"])
+    {
+        [self xmppStream:sender didReceiveError:iq];
+        return YES;
+    }
 
     [self notifyStanzaDelegates:iq];
 
@@ -389,10 +394,11 @@
     @synchronized (_errorDelegateDictionary) {
         registeredDelegates = [NSArray arrayWithArray:[_errorDelegateDictionary delegates]];
     }
-    for (MXiDelegateSelectorMapping *mapping in registeredDelegates) {
-        if ([mapping.delegate respondsToSelector:[mapping selector]]) {
-            [mapping.delegate performSelector:[mapping selector] withObject:error];
-        }
+    for (NSArray *mappingArray in registeredDelegates) {
+        for (MXiDelegateSelectorMapping *mapping in mappingArray)
+            if ([mapping.delegate respondsToSelector:[mapping selector]]) {
+                [mapping.delegate performSelector:[mapping selector] withObject:error];
+            }
     }
 }
 

@@ -97,7 +97,7 @@
 - (void)initializeDictionaryIfNotExisting
 {
     if (!self.delegateDictionary) {
-        self.delegateDictionary = [NSMapTable weakToStrongObjectsMapTable];
+        self.delegateDictionary = [NSMapTable strongToStrongObjectsMapTable];
     }
 }
 
