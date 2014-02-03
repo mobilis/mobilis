@@ -12,7 +12,8 @@
 typedef enum _ServiceType {
     SINGLE,
     MULTI,
-    SERVICE
+    SERVICE,
+    RUNTIME
 } ServiceType;
 
 typedef enum _StanzaElement {
