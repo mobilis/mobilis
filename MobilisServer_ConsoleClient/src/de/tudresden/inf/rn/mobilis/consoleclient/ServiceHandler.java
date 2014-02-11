@@ -36,7 +36,7 @@ public class ServiceHandler extends Observable {
                 boolean success = _controller.getConnection().transmitFile(
                         file,
                         "",
-                        _controller.getSettings().getMobilisDeploymentJid() );
+                        _controller.getSettings().getMobilisRuntimeJid() );
 
                 if( success )
                     notifyObservers(new StatusInformation(StatusType.INFORMATION, "File transfer successful"));
@@ -46,7 +46,7 @@ public class ServiceHandler extends Observable {
     }
     private boolean sendPrepareFile(String filename, boolean autoDeploy, boolean singleMode){
         PrepareServiceUploadBean bean = new PrepareServiceUploadBean(filename);
-        bean.setTo( _controller.getSettings().getMobilisDeploymentJid() );
+        bean.setTo( _controller.getSettings().getMobilisRuntimeJid() );
         bean.autoDeploy = autoDeploy;
         bean.singleMode = singleMode;
         bean.setType( XMPPBean.TYPE_SET );

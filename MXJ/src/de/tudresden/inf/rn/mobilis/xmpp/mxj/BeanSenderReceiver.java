@@ -66,15 +66,12 @@ public class BeanSenderReceiver<B extends XMPPBean, ResultBeanType extends XMPPB
 				if (ProviderManager.getInstance().getIQProvider(bean.getChildElement(), bean.getNamespace()) == null) {
 					(new BeanProviderAdapter(bean.getClass().newInstance())).addToProviderManager();
 				} 
-			} catch (InstantiationException e) 
+			} catch (InstantiationException | IllegalAccessException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-			// catch response bean and error bean
+            // catch response bean and error bean
 			this.beanCollector = connection.createPacketCollector(
 					new OrFilter(new BeanFilterAdapter(resultBeanPrototype), new BeanFilterAdapter(bean)));
 			return sendAndWaitForResult(bean);

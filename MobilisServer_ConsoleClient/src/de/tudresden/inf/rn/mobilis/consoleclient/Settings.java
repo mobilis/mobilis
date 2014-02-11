@@ -250,7 +250,7 @@ public class Settings {
 	 *
 	 * @return the mobilis deployment jid
 	 */
-	public String getMobilisDeploymentJid(){
+	public String getMobilisRuntimeJid(){
 		return _mobilisServerNode
 				+ "@"
 				+ _xmppServerDomain

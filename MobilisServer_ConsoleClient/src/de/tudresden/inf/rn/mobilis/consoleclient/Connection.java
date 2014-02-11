@@ -342,7 +342,7 @@ public class Connection extends Observable implements ConnectionListener {
 	 */
 	public void sendExecuteSynchronizeRequest(){
 		final ExecuteSynchronizeRuntimesBean bean = new ExecuteSynchronizeRuntimesBean();
-		bean.setTo( _controller.getSettings().getMobilisDeploymentJid());
+		bean.setTo( _controller.getSettings().getMobilisRuntimeJid());
 		bean.setType( XMPPBean.TYPE_SET );
 		sendXMPPBean(bean);
 	}

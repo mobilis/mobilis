@@ -1,5 +1,9 @@
 package de.tudresden.inf.rn.mobilis.consoleclient.userinterface.panels;
 
+import de.tudresden.inf.rn.mobilis.consoleclient.Connection;
+import de.tudresden.inf.rn.mobilis.consoleclient.Controller;
+import de.tudresden.inf.rn.mobilis.consoleclient.RuntimeDiscovery;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
@@ -16,8 +20,30 @@ public class FileUploadPanel extends JPanel {
     private JRadioButton _singleRadioButton;
     private static JFileChooser _fileChooser;
 
+    private String _acceptedFileExtension;
+    private String _acceptedFileDescription;
+
     public FileUploadPanel() {
+        performRuntimeDiscovery();
         init();
+    }
+    private void performRuntimeDiscovery() {
+        Connection connection = Controller.getController().getConnection();
+        String runtimeJID = Controller.getController().getSettings().getMobilisRuntimeJid();
+
+        RuntimeDiscovery runtimeDiscovery = new RuntimeDiscovery(connection, runtimeJID);
+        runtimeDiscovery.performRuntimeDiscovery();
+
+        if (runtimeDiscovery.isJavaRuntime())
+        {
+            _acceptedFileExtension = "jar";
+            _acceptedFileDescription = "*.jar";
+        }
+        else
+        {
+            _acceptedFileExtension = "bundle";
+            _acceptedFileDescription = "*.bundle";
+        }
     }
     private void init() {
         GridBagLayout layout = new GridBagLayout();
@@ -83,12 +109,12 @@ public class FileUploadPanel extends JPanel {
             FileFilter fileFilter = new FileFilter() {
                 @Override
                 public boolean accept(File f) {
-                    return f.getName().contains("jar") || f.getName().contains("bundle");
+                    return f.getName().contains(_acceptedFileExtension);
                 }
 
                 @Override
                 public String getDescription() {
-                    return "*.jar, *.bundle";
+                    return _acceptedFileDescription;
                 }
             };
             _fileChooser.setAcceptAllFileFilterUsed(false);
