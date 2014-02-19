@@ -119,7 +119,7 @@ var core = {
 
     buildMessage : function(message,type,returnXml) {
 
-        var xml = $build('mobilismessage',{type:type});
+        var xml = $build(type, {xmlns: MX.NS.APP} );
 
         if (message) {
             if (typeof message === 'object' ) {
@@ -132,6 +132,15 @@ var core = {
         }
 
         returnXml( xml.toString() );
+    },
+
+
+    sendDirectMessage : function(receiver, message) {
+
+        MX.connection.send($msg({
+            to: receiver, type: 'chat'
+            }).c('body').t(message)
+        );
     },
 
 
@@ -180,12 +189,6 @@ var core = {
 
     },
 
-
-
-
-    send: function(elem) {
-        MX.connection.send(elem);
-    },
 
 
 

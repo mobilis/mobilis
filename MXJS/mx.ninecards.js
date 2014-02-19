@@ -11,7 +11,7 @@ var ninecards = {
 
     init: function() {
         MX.addNamespace('SERVICE', MX.NS.URL + '#services/MobilisNineCardsService');
-        MX.addNamespace('CONFIGUREGAME', 'mobilisninecards:iq:configuregame');
+        MX.addNamespace('APP', MX.NS.URL + '/apps/9cards');
         MX.addNamespace('JOINGAME', 'mobilisninecards:iq:joingame');
     },
 
@@ -30,19 +30,30 @@ var ninecards = {
     },
 
 
-    ConfigureGame: function(gameJID, GameName, MaxPlayers, NumberOfRounds, result_cb, error_cb) {
+    configureGame: function(gameJid, maxPlayers, numberOfRounds, result_cb, error_cb) {
 
         var customIq = $iq({
-            to: gameJID,
+            to: gameJid,
             type: 'set'
         })
-        .c('ConfigureGameRequest', {xmlns: MX.NS.CONFIGUREGAME})
-        .c('gamename').t(GameName).up()
-        .c('players').t(MaxPlayers).up()
-        .c('rounds').t(NumberOfRounds).up();
+        .c('ConfigureGameRequest', {xmlns: MX.NS.APP})
+        .c('players').t(maxPlayers).up()
+        .c('rounds').t(numberOfRounds).up();
 
         MX.core.sendIQ(customIq, result_cb, error_cb);
     }, 
+
+
+    getGameConfiguration: function(gameJid, result_cb, error_cb) {
+
+        var customIq = $iq({
+            to: gameJid,
+            type: 'set'
+        })
+        .c('GetGameConfigurationRequest', {xmlns: MX.NS.APP})
+        console.log(customIq.toString());
+        MX.core.sendIQ(customIq, result_cb, error_cb);
+    },
 
 
     joinGame: function(gameJid, result_cb, error_cb) {
