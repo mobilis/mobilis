@@ -59,12 +59,6 @@ var core = {
                         null,
                         'presence'
                     );
-                    connection.addHandler( // TODO: does not work
-                        MX.core.onRoster,
-                        Strophe.NS.ROSTER,
-                        'iq',
-                        'set'
-                    );
                     connection.send($pres());
 
                 } else if (status == Strophe.Status.DISCONNECTED) {
@@ -95,7 +89,7 @@ var core = {
             onRoster
         );
 
-        if (result) result('joined', room);
+        if (result) result('joined '+room);
     },
 
 
@@ -123,7 +117,7 @@ var core = {
 
         if (message) {
             if (typeof message === 'object' ) {
-                $.each(message, function(key,value){
+                jQuery.each(message, function(key,value){
                     xml.c(key).t(value).up();
                 });
             } else {
@@ -169,7 +163,7 @@ var core = {
         MX.connection.muc.leave(
             room,
             jQuery.jStorage.get('settings').username //,
-            // onLeft,  TODO muc.leave() callback not working?
+            // onLeft,  TODO muc.leave() callback does not work
             // exitMessage
         );
         onLeft();
