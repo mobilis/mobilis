@@ -11,6 +11,7 @@ static NSString *const serviceDiscoItemsNS = @"http://jabber.org/protocol/disco#
 static NSString *const mucFeatureString = @"http://jabber.org/protocol/muc";
 
 @protocol MXiMultiUserChatDiscoveryDelegate;
+@class MXiAbstractConnectionHandler;
 
 /*!
     This class implements the MultiUserChat discovery functionality.
@@ -24,7 +25,7 @@ static NSString *const mucFeatureString = @"http://jabber.org/protocol/muc";
     @param  delegate        The object implementing the MXiMultiUserChatDiscoveryDelegate protocol to be notified when
                             the service discovery is finished.
  */
-+ (instancetype)multiUserChatDiscoveryWithDomainName:(NSString *)domainName andDelegate:(id<MXiMultiUserChatDiscoveryDelegate>)delegate;
++ (instancetype)forMultiUserChatDiscoveryWithConnectionHandler:(MXiAbstractConnectionHandler *)connectionHandler forDomainName:(NSString *)domainName andDelegate:(id <MXiMultiUserChatDiscoveryDelegate>)delegate;
 
 /*!
     Launch the service discovery.

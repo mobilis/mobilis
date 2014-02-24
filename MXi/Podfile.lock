@@ -1,5 +1,5 @@
 PODS:
-  - CocoaAsyncSocket (7.3.2)
+  - CocoaAsyncSocket (7.3.4)
   - CocoaLumberjack (1.6.5.1):
     - CocoaLumberjack/Core
     - CocoaLumberjack/Extensions
@@ -52,9 +52,9 @@ EXTERNAL SOURCES:
     :podspec: xmpp.podspec
 
 SPEC CHECKSUMS:
-  CocoaAsyncSocket: 977404129ec8505fee1c3701956b769e3bb10ea7
+  CocoaAsyncSocket: 534d09416f992fd51efb23f534742ce70b3a7999
   CocoaLumberjack: 17803afbade3126a377d32b8d23367264b44ced6
   FXKeychain: 649efca683aa602c446620701a46780515d25610
   XMPPFramework: 497aa5e1173ad51124b81f53264fd64e83adc4e3
 
-COCOAPODS: 0.28.0
+COCOAPODS: 0.29.0
