@@ -3,6 +3,7 @@ package de.tudresden.inf.rn.mobilis.consoleclient.userinterface.panels;
 import de.tudresden.inf.rn.mobilis.consoleclient.Connection;
 import de.tudresden.inf.rn.mobilis.consoleclient.Controller;
 import de.tudresden.inf.rn.mobilis.consoleclient.RuntimeDiscovery;
+import de.tudresden.inf.rn.mobilis.consoleclient.exceptions.RuntimeDiscoveryException;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -31,18 +32,25 @@ public class FileUploadPanel extends JPanel {
         Connection connection = Controller.getController().getConnection();
         String runtimeJID = Controller.getController().getSettings().getMobilisRuntimeJid();
 
-        RuntimeDiscovery runtimeDiscovery = new RuntimeDiscovery(connection, runtimeJID);
-        runtimeDiscovery.performRuntimeDiscovery();
+        if (connection.isConnected())
+        {
+            RuntimeDiscovery runtimeDiscovery = new RuntimeDiscovery(connection, runtimeJID);
+            runtimeDiscovery.performRuntimeDiscovery();
 
-        if (runtimeDiscovery.isJavaRuntime())
-        {
-            _acceptedFileExtension = "jar";
-            _acceptedFileDescription = "*.jar";
-        }
-        else
-        {
-            _acceptedFileExtension = "bundle";
-            _acceptedFileDescription = "*.bundle";
+            try {
+                if (runtimeDiscovery.isJavaRuntime())
+                {
+                    _acceptedFileExtension = "jar";
+                    _acceptedFileDescription = "*.jar";
+                }
+                else
+                {
+                    _acceptedFileExtension = "bundle";
+                    _acceptedFileDescription = "*.bundle";
+                }
+            } catch (RuntimeDiscoveryException e) {
+                JOptionPane.showMessageDialog(null, e.getMessage(), "Runtime Discovery Exception", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
     private void init() {
@@ -123,6 +131,11 @@ public class FileUploadPanel extends JPanel {
         }
 
         return _fileChooser;
+    }
+
+    public void discoverRuntimeInformation()
+    {
+        performRuntimeDiscovery();
     }
 
     public String getFilePath() {

@@ -1,5 +1,6 @@
 package de.tudresden.inf.rn.mobilis.consoleclient;
 
+import de.tudresden.inf.rn.mobilis.consoleclient.exceptions.RuntimeDiscoveryException;
 import de.tudresden.inf.rn.mobilis.consoleclient.helper.FeatureInterpreter;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.ServiceDiscoveryManager;
@@ -51,8 +52,10 @@ public class RuntimeDiscovery {
         }
     }
 
-    public Boolean isJavaRuntime()
-    {
+    public Boolean isJavaRuntime() throws RuntimeDiscoveryException {
+        if (_features.get("servicelanguage") == null)
+            throw new RuntimeDiscoveryException("Kind of service Runtime could not be discovered.");
+
         return _features.get("servicelanguage").equalsIgnoreCase("java");
     }
 }

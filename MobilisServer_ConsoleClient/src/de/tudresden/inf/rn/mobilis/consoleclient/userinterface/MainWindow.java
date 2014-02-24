@@ -64,6 +64,7 @@ public class MainWindow extends JFrame implements Observer {
             public void actionPerformed(ActionEvent e) {
                 controller.getConnection().disconnect();
                 consoleClient.loginClient();
+                fileUploadPanel.discoverRuntimeInformation();
             }
         });
 
