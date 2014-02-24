@@ -10,6 +10,7 @@
 #import "MXiMultiUserChatRoom.h"
 #import "MXiConnectionHandler.h"
 #import "MXiConnection.h"
+#import "MXiAbstractConnectionHandler.h"
 
 @interface MXiMultiUserChatDiscovery ()
 
@@ -30,16 +31,21 @@
 
     __strong NSString *_domainName;
     __weak id<MXiMultiUserChatDiscoveryDelegate> _delegate;
-    __weak MXiConnectionHandler *__connectionHandler;
+    __strong MXiAbstractConnectionHandler *__connectionHandler;
 }
 
-+ (instancetype)multiUserChatDiscoveryWithDomainName:(NSString *)domainName andDelegate:(id <MXiMultiUserChatDiscoveryDelegate>)delegate
++ (instancetype)forMultiUserChatDiscoveryWithConnectionHandler:(MXiAbstractConnectionHandler *)connectionHandler
+                                                 forDomainName:(NSString *)domainName
+                                                   andDelegate:(id <MXiMultiUserChatDiscoveryDelegate>)delegate
 {
-    return [[self alloc] initWithDomainName:domainName andDelegate:delegate];
+    return [[self alloc] initWithInitWithConnectionHandler:connectionHandler forDomainName:domainName andDelegate:delegate];
 }
 
-- (instancetype)initWithDomainName:(NSString *)domainName andDelegate:(id <MXiMultiUserChatDiscoveryDelegate>)delegate
+- (instancetype)initWithInitWithConnectionHandler:(MXiAbstractConnectionHandler *)connectionHandler
+                                    forDomainName:(NSString *)domainName
+                                      andDelegate:(id <MXiMultiUserChatDiscoveryDelegate>)delegate
 {
+    NSAssert(connectionHandler != nil, @"Connection Handler reference must not be nil");
     NSAssert(domainName != nil && ![domainName isEqualToString:@""], @"Domain name must not be nil or empty");
     NSAssert(delegate != nil, @"Delegate must not be nil");
     
@@ -50,7 +56,7 @@
         _delegate = delegate;
         _domainName = domainName;
         
-        __connectionHandler = [MXiConnectionHandler sharedInstance];
+        __connectionHandler = connectionHandler;
     }
     
     return self;
