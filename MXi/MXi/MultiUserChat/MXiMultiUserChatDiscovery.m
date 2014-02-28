@@ -34,9 +34,9 @@
     __strong MXiAbstractConnectionHandler *__connectionHandler;
 }
 
-+ (instancetype)forMultiUserChatDiscoveryWithConnectionHandler:(MXiAbstractConnectionHandler *)connectionHandler
-                                                 forDomainName:(NSString *)domainName
-                                                   andDelegate:(id <MXiMultiUserChatDiscoveryDelegate>)delegate
++ (instancetype)multiUserChatDiscoveryWithConnectionHandler:(MXiAbstractConnectionHandler *)connectionHandler
+                                              forDomainName:(NSString *)domainName
+                                                andDelegate:(id <MXiMultiUserChatDiscoveryDelegate>)delegate
 {
     return [[self alloc] initWithInitWithConnectionHandler:connectionHandler forDomainName:domainName andDelegate:delegate];
 }

@@ -25,7 +25,7 @@ static NSString *const mucFeatureString = @"http://jabber.org/protocol/muc";
     @param  delegate        The object implementing the MXiMultiUserChatDiscoveryDelegate protocol to be notified when
                             the service discovery is finished.
  */
-+ (instancetype)forMultiUserChatDiscoveryWithConnectionHandler:(MXiAbstractConnectionHandler *)connectionHandler forDomainName:(NSString *)domainName andDelegate:(id <MXiMultiUserChatDiscoveryDelegate>)delegate;
++ (instancetype)multiUserChatDiscoveryWithConnectionHandler:(MXiAbstractConnectionHandler *)connectionHandler forDomainName:(NSString *)domainName andDelegate:(id <MXiMultiUserChatDiscoveryDelegate>)delegate;
 
 /*!
     Launch the service discovery.
