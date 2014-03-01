@@ -414,27 +414,31 @@
 - (void)xmppRoom:(XMPPRoom *)sender didReceiveMessage:(XMPPMessage *)message fromOccupant:(XMPPJID *)occupantJID
 {
     id<MXiMultiUserChatDelegate> delegate = [_multiUserChatDelegateDictionary delegateForMultiUserChatRoom:sender.roomJID.full];
-    [delegate didReceiveMultiUserChatMessage:[[message elementForName:@"body"] stringValue]
-                                            fromUser:occupantJID.full
-                                     publishedInRoom:sender.roomJID.full];
+    if ([delegate respondsToSelector:@selector(didReceiveMultiUserChatMesssage:fromUser:publishedInRoom:)])
+        [delegate didReceiveMultiUserChatMessage:[[message elementForName:@"body"] stringValue]
+                                        fromUser:occupantJID.full
+                                 publishedInRoom:sender.roomJID.full];
 }
 
 - (void)xmppRoom:(XMPPRoom *)sender occupantDidJoin:(XMPPJID *)occupantJID withPresence:(XMPPPresence *)presence
 {
     id<MXiMultiUserChatDelegate> delegate = [_multiUserChatDelegateDictionary delegateForMultiUserChatRoom:sender.roomJID.full];
-    [delegate userWithJid:occupantJID.full didJoin:presence.status room:[sender.roomJID full]];
+    if ([delegate respondsToSelector:@selector(userWithJid:didJoin:room:)])
+        [delegate userWithJid:occupantJID.full didJoin:presence.status room:[sender.roomJID full]];
 }
 
 - (void)xmppRoom:(XMPPRoom *)sender occupantDidLeave:(XMPPJID *)occupantJID withPresence:(XMPPPresence *)presence
 {
     id<MXiMultiUserChatDelegate> delegate = [_multiUserChatDelegateDictionary delegateForMultiUserChatRoom:sender.roomJID.full];
-    [delegate userWithJid:occupantJID.full didLeaveRoom:[sender.roomJID full]];
+    if ([delegate respondsToSelector:@selector(userWithJid:didLeaveRoom:)])
+        [delegate userWithJid:occupantJID.full didLeaveRoom:[sender.roomJID full]];
 }
 
 - (void)xmppRoom:(XMPPRoom *)sender occupantDidUpdate:(XMPPJID *)occupantJID withPresence:(XMPPPresence *)presence
 {
     id<MXiMultiUserChatDelegate> delegate = [_multiUserChatDelegateDictionary delegateForMultiUserChatRoom:sender.roomJID.full];
-    [delegate userWithJid:occupantJID.full didUpdate:presence.status inRoom:[sender.roomJID full]];
+    if ([delegate respondsToSelector:@selector(userWithJid:didUpdate:inRoom:)])
+        [delegate userWithJid:occupantJID.full didUpdate:presence.status inRoom:[sender.roomJID full]];
 }
 
 @end
