@@ -414,7 +414,7 @@
 - (void)xmppRoom:(XMPPRoom *)sender didReceiveMessage:(XMPPMessage *)message fromOccupant:(XMPPJID *)occupantJID
 {
     id<MXiMultiUserChatDelegate> delegate = [_multiUserChatDelegateDictionary delegateForMultiUserChatRoom:sender.roomJID.full];
-    if ([delegate respondsToSelector:@selector(didReceiveMultiUserChatMesssage:fromUser:publishedInRoom:)])
+    if ([delegate respondsToSelector:@selector(didReceiveMultiUserChatMessage:fromUser:publishedInRoom:)])
         [delegate didReceiveMultiUserChatMessage:[[message elementForName:@"body"] stringValue]
                                         fromUser:occupantJID.full
                                  publishedInRoom:sender.roomJID.full];
