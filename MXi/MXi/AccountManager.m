@@ -22,6 +22,7 @@
     [keychain setObject:account.hostName forKey:(__bridge id)(kSecAttrService)];
     [keychain setObject:account.port forKey:(__bridge id)(kSecAttrDescription)];
     [keychain setObject:account.password forKey:(__bridge id)(kSecValueData)];
+    [keychain setObject:account.runtimeName forKey:(__bridge id)(kSecAttrLabel)];
 }
 
 + (Account *)account
@@ -35,6 +36,7 @@
     account.password = [keychain objectForKey:(__bridge id)(kSecValueData)];
     account.hostName = [keychain objectForKey:(__bridge id)(kSecAttrService)];
     account.port = [keychain objectForKey:(__bridge id)(kSecAttrDescription)];
+    account.runtimeName = [keychain objectForKey:(__bridge id)(kSecAttrLabel)];
     
     return account;
 }

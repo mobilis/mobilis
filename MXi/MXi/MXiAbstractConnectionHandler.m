@@ -30,7 +30,7 @@
 
 #pragma mark - Connection Handling
 
-- (void)launchConnectionWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName serviceType:(ServiceType)serviceType port:(NSNumber *)hostPort
+- (void)launchConnectionWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName runtimeName:(NSString *)runtimeName serviceType:(ServiceType)serviceType port:(NSNumber *)hostPort
 {
 
     DefaultSettings *settings = [DefaultSettings defaultSettings];
@@ -38,14 +38,14 @@
                                                    password:password
                                                    hostName:hostName
                                                        port:[hostPort intValue]
-                                             coordinatorJID:[NSString stringWithFormat:@"%@@%@/%@", [settings valueForKey:SERVER_USERNAME], hostName, CoordinatorResourceName]
+                                             coordinatorJID:[NSString stringWithFormat:@"%@@%@/%@", runtimeName, hostName, CoordinatorResourceName]
                                            serviceNamespace:[settings valueForKey:SERVICE_NAMESPACE]
                                                 serviceType:serviceType
                                   listeningForIncomingBeans:[self allIncomingBeans]
                                          connectionDelegate:self];
 }
 
-- (void)reconnectWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName port:(NSNumber *)port
+- (void)reconnectWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName runtimeName:(NSString *)runtimeName port:(NSNumber *)port
 {
     _authenticated = NO;
 
@@ -54,7 +54,7 @@
                                   password:password
                                   hostname:hostName
                                       port:[port integerValue]
-                            coordinatorJID:[NSString stringWithFormat:@"%@@%@/%@", [settings valueForKey:SERVER_USERNAME], hostName, CoordinatorResourceName]
+                            coordinatorJID:[NSString stringWithFormat:@"%@@%@/%@", runtimeName, hostName, CoordinatorResourceName]
                           serviceNamespace:[settings valueForKey:SERVICE_NAMESPACE]];
 }
 

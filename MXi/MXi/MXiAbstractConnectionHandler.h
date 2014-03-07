@@ -30,11 +30,12 @@
  *  @param jabberID        The full or bare JID of the user who's registered at the XMPP server.
  *  @param password        The user's password associated with the JID and XMPP server.
  *  @param hostName        The host name of XMPP server, e.g. 'jabber.org'.
+ *  @param runtimeName     The XMPP user name of the Mobilis runtime, e.g. 'runtime1'.
  *  @param serviceType     The type of the service which is either MULTI or SINGLE.
  *  @param port            The port under which the XMPP server is available, usually 5222.
  *  @param authentication  Callback block to inform the application on the success of the authentication.
  */
-- (void)launchConnectionWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName serviceType:(ServiceType)serviceType port:(NSNumber *)hostPort;
+- (void)launchConnectionWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName runtimeName:(NSString *)runtimeName serviceType:(ServiceType)serviceType port:(NSNumber *)hostPort;
 
 /**
  *  Use already existing connection delegates and just reconfigure the connection to the server.
@@ -42,10 +43,11 @@
  *  @param jabberID       The full or bare JID of the user who's registered at the XMPP server.
  *  @param password       The user's password associated with the JID and XMPP server.
  *  @param hostName       The host name of XMPP server, e.g. 'jabber.org'.
+ *  @param runtimeName     The XMPP user name of the Mobilis runtime, e.g. 'runtime1'.
  *  @param port           The port under which the XMPP server is available, usually 5222.
  *  @param authentication Callback block to inform the sender on the success of the authentication.
  */
-- (void)reconnectWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName port:(NSNumber *)port;
+- (void)reconnectWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName runtimeName:(NSString *)runtimeName port:(NSNumber *)port;
 
 /**
  *  This method realizes client-server communication and sends outgoing beans to a service instance.

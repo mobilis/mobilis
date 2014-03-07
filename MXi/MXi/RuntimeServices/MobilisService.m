@@ -25,7 +25,7 @@
     [self.connectionHandler.connection removeStanzaDelegate:self forStanzaElement:IQ];
 }
 
-- (instancetype)initServiceWithJID:(XMPPJID *)jid password:(NSString *)password hostName:(NSString *)hostName port:(NSNumber *)port
+- (instancetype)initServiceWithJID:(XMPPJID *)jid password:(NSString *)password hostName:(NSString *)hostName runtimeName:(NSString *)runtimeName port:(NSNumber *)port
 {
     self = [super init];
     if (self) {
@@ -36,6 +36,7 @@
         [self.connectionHandler launchConnectionWithJID:jid.bare
                                                password:password
                                                hostName:hostName
+                                            runtimeName:runtimeName
                                             serviceType:SERVICE
                                                    port:port];
     }

@@ -31,10 +31,11 @@
     @param  jid         The jid of the new service.
     @param  password    The password of the XMPP Account with the given JID.
     @param  hostName    XMPP server to connect to.
+    @param  runtimeName XMPP user name of the server to connect to.
     @param  port        The port number the XMPP listens to.
 
     @retun  A new instance of the MobilisService.
  */
-- (instancetype)initServiceWithJID:(XMPPJID *)jid password:(NSString *)password hostName:(NSString *)hostName port:(NSNumber *)port;
+- (instancetype)initServiceWithJID:(XMPPJID *)jid password:(NSString *)password hostName:(NSString *)hostName runtimeName:(NSString *)runtimeName port:(NSNumber *)port;
 
 @end

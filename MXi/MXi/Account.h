@@ -10,12 +10,13 @@
 
 @interface Account : NSObject
 
-@property (strong, nonatomic) NSString *jid, *password, *hostName;
+@property (strong, nonatomic) NSString *jid, *password, *hostName, *runtimeName;
 @property (strong, nonatomic) NSNumber *port;
 
 - (id)initWithJID:(NSString *)jabberID
          password:(NSString *)password
          hostName:(NSString *)hostName
+      runtimeName:(NSString *)runtimeName
              port:(NSNumber *)port;
 
 @end

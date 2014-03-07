@@ -10,7 +10,7 @@
 
 @implementation Account
 
-- (id)initWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName port:(NSNumber *)port
+- (id)initWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName runtimeName:(NSString *)runtimeName port:(NSNumber *)port
 {
     self = [super init];
     if (self) {
@@ -18,6 +18,7 @@
         self.password = password;
         self.hostName = hostName;
         self.port = port;
+        self.runtimeName = runtimeName;
     }
     return self;
 }
