@@ -106,7 +106,6 @@
                                                        jid:[XMPPJID jidWithString:roomJID]
                                              dispatchQueue:_room_queue];
 
-    [self.connectedMUCRooms addObject:room];
     [_multiUserChatDelegateDictionary addDelegate:delegate forMultiUserChatRoom:roomJID];
 
     [room activate:self.xmppStream];
@@ -120,7 +119,7 @@
     XMPPRoom *roomToLeave = nil;
     for (XMPPRoom *room in _connectedMUCRooms) {
         if ([[room.roomJID full] isEqualToString:roomJID]) {
-            [room leaveRoom];
+            [room deactivate];
             roomToLeave = room;
             break;
         }
