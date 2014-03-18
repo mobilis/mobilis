@@ -46,6 +46,6 @@ static NSString *const mucFeatureString = @"http://jabber.org/protocol/muc";
     @param  chatRooms       An array of chat rooms offered by the domain that was under investigation.
     @param  domainName      The name of the domain which was under investigation.
  */
-- (void)multiUserChatRoomsDiscovered:(NSArray *)chatRooms inDomain:(NSString *)domainName;
+- (void)multiUserChatRoomsDiscovery:(MXiMultiUserChatDiscovery *)chatDiscovery discoveredChatRooms:(NSArray *)chatRooms inDomain:(NSString *)domainName;
 
 @end

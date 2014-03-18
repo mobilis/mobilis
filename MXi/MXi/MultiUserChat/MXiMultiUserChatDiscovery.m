@@ -155,8 +155,26 @@
     }
     dispatch_async(_resultQueue, ^
     {
-        [_delegate multiUserChatRoomsDiscovered:[NSArray arrayWithArray:self.discoveredRooms] inDomain:_domainName];
+        if ([_delegate respondsToSelector:@selector(multiUserChatRoomsDiscovery:discoveredChatRooms:inDomain:)])
+            [_delegate multiUserChatRoomsDiscovery:self
+                               discoveredChatRooms:[NSArray arrayWithArray:self.discoveredRooms]
+                                          inDomain:_domainName];
     });
+}
+
+#pragma mark - Equality
+
+- (BOOL)isEqual:(id)object
+{
+    if (![object isKindOfClass:[self class]]) return NO;
+
+    if ([object hash] == [self hash]) return YES;
+    else return NO;
+}
+
+- (NSUInteger)hash
+{
+    return [_domainName hash];
 }
 
 @end
