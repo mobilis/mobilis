@@ -18,3 +18,7 @@ MobilisServer/service/services.txt
 *.xcworkspace
 xcuserdata/
 liststore.xml
+
+#Eclipse and IntelliJ
+.metadata/
+.idea/
