@@ -43,6 +43,7 @@ static NSString *const mucFeatureString = @"http://jabber.org/protocol/muc";
 
 /*!
     Method gets invoked when multi user chat rooms were discovered.
+    @param  chatDiscovery   The MXiMultiUserChatDiscovery object that ran the XEP-30 disco.
     @param  chatRooms       An array of chat rooms offered by the domain that was under investigation.
     @param  domainName      The name of the domain which was under investigation.
  */
