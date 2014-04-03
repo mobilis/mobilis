@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
 
   # Specify the location from where the source should be retrieved.
   #
-  s.source       = { :git => "https://github.com/mobilis/mobilis.git", :branch => "MXi_DM" }
+  s.source       = { :git => "https://github.com/mobilis/mobilis.git" }
 
 
   # ――― MULTI-PLATFORM VALUES ――――――――――――――――――――――――――――――――――――――――――――――――― #
