@@ -31,7 +31,8 @@
 	return nil;
 }
 
-+ (NSString* )iqNamespace {
++ (NSString* )namespace
+{
 	return nil;
 }
 

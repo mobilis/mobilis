@@ -24,6 +24,6 @@ typedef enum beanTypes {
 - (id) initWithBeanType:(BeanType )theBeanType;
 
 + (NSString* )elementName;
-+ (NSString* )iqNamespace;
++ (NSString* )namespace;
 
 @end
