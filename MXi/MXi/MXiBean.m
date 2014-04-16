@@ -7,6 +7,7 @@
 //
 
 #import "MXiBean.h"
+#import "DDXML.h"
 
 @implementation MXiBean : NSObject
 
@@ -37,12 +38,12 @@
 
 #pragma mark - (De-)Serialization
 
-- (void)fromXML:(DDXMLElement *)xml
+- (void)fromXML:(NSXMLElement *)xml
 {
     [NSException raise:@"Abstract Method" format:@"Subclasses of %@ have to implement -fromXML:", [MXiBean class]];
 }
 
-- (DDXMLElement *)toXML
+- (NSXMLElement *)toXML
 {
     [NSException raise:@"Abstract Method" format:@"Subclasses of %@ have to implement -toXML", [MXiBean class]];
 }

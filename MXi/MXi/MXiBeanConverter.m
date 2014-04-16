@@ -10,7 +10,7 @@
 
 @implementation MXiBeanConverter
 
-+ (NSXMLElement *)beanToIQ:(MXiBean<MXiOutgoingBean> *)outBean {
++ (NSXMLElement *)beanToIQ:(MXiBean *)outBean {
 	NSXMLElement* beanElement = [outBean toXML];
 
     NSXMLElement* iq = [NSXMLElement elementWithName:@"iq"];
@@ -23,7 +23,7 @@
 }
 
 + (void)beanFromIQ:(XMPPIQ *)iq
-		   intoBean:(MXiBean<MXiIncomingBean>  *)inBean {
+		   intoBean:(MXiBean *)inBean {
 	[inBean setTo:[XMPPJID jidWithString:[iq attributeStringValueForName:@"to"]]];
 	[inBean setFrom:[XMPPJID jidWithString:[iq attributeStringValueForName:@"from"]]];
 	

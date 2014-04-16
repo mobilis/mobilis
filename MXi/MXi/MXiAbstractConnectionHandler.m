@@ -5,8 +5,6 @@
 
 #import "MXiAbstractConnectionHandler.h"
 #import "MXiService.h"
-#import "MXiOutgoingBean.h"
-#import "MXiServiceManager.h"
 #import "MXiConnection.h"
 #import "DefaultSettings.h"
 #import "IncomingBeanDetection.h"
@@ -58,7 +56,7 @@
                           serviceNamespace:[settings valueForKey:SERVICE_NAMESPACE]];
 }
 
-- (void)sendBean:(MXiBean <MXiOutgoingBean> *)outgoingBean toService:(MXiService *)service
+- (void)sendBean:(MXiBean* )outgoingBean toService:(MXiService *)service
 {
     if (self.connection && outgoingBean) {
         if (_authenticated) {
@@ -135,7 +133,7 @@
 - (void)clearOutgoingBeanQueueWithServiceJID:(NSString *)serviceJID
 {
     if (self.outgoingBeanQueue && self.outgoingBeanQueue.count > 0) {
-        for (MXiBean<MXiOutgoingBean> *outgoing in self.outgoingBeanQueue) {
+        for (MXiBean *outgoing in self.outgoingBeanQueue) {
             outgoing.to = [XMPPJID jidWithString:serviceJID];
             [self sendBean:outgoing toService:nil ];
         }

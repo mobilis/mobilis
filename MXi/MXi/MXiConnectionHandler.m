@@ -8,8 +8,6 @@
 
 #import "MXiConnectionHandler.h"
 
-#import "MXiConnection.h"
-
 @implementation MXiConnectionHandler
 
 #pragma mark - Singleton stack

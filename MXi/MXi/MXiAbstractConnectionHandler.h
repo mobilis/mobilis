@@ -9,7 +9,6 @@
 
 @class NSXMLElement;
 @class MXiService;
-@protocol MXiOutgoingBean;
 @class MXiBean;
 @protocol MXiConnectionHandlerDelegate;
 @class MXiServiceManager;
@@ -62,7 +61,7 @@
  *
  *  @see MXiOutgoingBean protocol
  */
-- (void)sendBean:(MXiBean <MXiOutgoingBean> *)outgoingBean toService:(MXiService *)service;
+- (void)sendBean:(MXiBean *)outgoingBean toService:(MXiService *)service;
 
 /*!
     Send a stanza of any kind to the XMPP server.

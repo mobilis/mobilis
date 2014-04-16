@@ -10,7 +10,6 @@
 
 #import "MXiService.h"
 #import "MXiMultiUserChatDelegate.h"
-#import "MXiOutgoingBean.h"
 #import "MXiDefinitions.h"
 #import "MXiAbstractConnectionHandler.h"
 

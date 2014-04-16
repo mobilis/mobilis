@@ -22,7 +22,7 @@
 @property dispatch_queue_t room_queue;
 
 - (BOOL)isIncomingIQBeanContainer:(XMPPIQ *)incomingIQ;
-- (void)notifyBeanDelegates:(MXiBean<MXiIncomingBean> *)bean;
+- (void)notifyBeanDelegates:(MXiBean *)bean;
 - (void)notifyStanzaDelegates:(NSXMLElement *)stanza;
 - (void)notifyErrorDelegates:(NSXMLElement *)error;
 
@@ -176,7 +176,7 @@
     // Did we get an incoming mobilis bean?
     if ([self isIncomingIQBeanContainer:iq]) {
         NSXMLElement* childElement = [iq childElement];
-        for (MXiBean<MXiIncomingBean>* prototype in self.incomingBeanPrototypes) {
+        for (MXiBean* prototype in self.incomingBeanPrototypes) {
             if ([[[prototype class] elementName] isEqualToString:[childElement name]] &&
                     [[[prototype class] namespace] isEqualToString:[childElement xmlns]] &&
                     [[MXiIQTypeLookup stringValueForIQType:[prototype beanType]]
@@ -217,7 +217,7 @@
 {
     BOOL isBean = NO;
     NSXMLElement *childElement = [incomingIQ childElement];
-    for (MXiBean<MXiIncomingBean>* prototype in self.incomingBeanPrototypes) {
+    for (MXiBean* prototype in self.incomingBeanPrototypes) {
         if ([[[prototype class] elementName] isEqualToString:[childElement name]] &&
                 [[[prototype class] namespace] isEqualToString:[childElement xmlns]] &&
                 [[MXiIQTypeLookup stringValueForIQType:[prototype beanType]]
@@ -298,13 +298,13 @@
 	[self.xmppStream sendElement:element];
 }
 
-- (void)sendBean:(MXiBean<MXiOutgoingBean>* )bean {
+- (void)sendBean:(MXiBean* )bean {
     NSAssert(bean.to != nil, @"No addresse of the outgoing bean!");
 	[bean setFrom:self.jabberID];
 	[self sendElement:[MXiBeanConverter beanToIQ:bean]];
 }
 
-- (void)sendBean:(MXiBean <MXiOutgoingBean> *)bean toJid:(XMPPJID *)jid
+- (void)sendBean:(MXiBean *)bean toJid:(XMPPJID *)jid
 {
     NSAssert(jid != nil, @"The JID is not allowed to be nil.");
     [bean setTo:jid];
@@ -350,7 +350,7 @@
 
 #pragma mark - Delegate Notification
 
-- (void)notifyBeanDelegates:(MXiBean <MXiIncomingBean> *)bean
+- (void)notifyBeanDelegates:(MXiBean *)bean
 {
     NSArray *registeredDelegates = nil;
     @synchronized (_beanDelegateDictionary) {

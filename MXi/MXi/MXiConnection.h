@@ -18,6 +18,7 @@
 #import "MXiDefinitions.h"
 
 @protocol MXiConnectionDelegate;
+@class MXiBean;
 
 @interface MXiConnection : NSObject
 
@@ -46,7 +47,7 @@
 
     @see MXiBean
  */
-- (void)sendBean:(MXiBean<MXiOutgoingBean>* )bean;
+- (void)sendBean:(MXiBean* )bean;
 /*!
     This method will send a bean to given JID.
 
@@ -56,7 +57,7 @@
     @see MXiBean
     @see XMPPJID
  */
-- (void)sendBean:(MXiBean <MXiOutgoingBean> *)bean toJid:(XMPPJID *)jid;
+- (void)sendBean:(MXiBean *)bean toJid:(XMPPJID *)jid;
 
 - (BOOL)reconnectWithJabberID:(NSString* )jabberID
 					 password:(NSString* )password

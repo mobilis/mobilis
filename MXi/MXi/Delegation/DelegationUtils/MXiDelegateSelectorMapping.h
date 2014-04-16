@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <MXi/MXiBean.h>
-#import <MXi/MXiIncomingBean.h>
 
 @interface MXiDelegateSelectorMapping : NSObject
 

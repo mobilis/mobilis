@@ -4,10 +4,6 @@
 #import "XMPP.h"
 #import "XMPPReconnect.h"
 
-// Protocolls
-#import "MXiOutgoingBean.h"
-#import "MXiIncomingBean.h"
-
 // Custom classes
 #import "MXiConnection.h"
 #import "MXiConnectionHandler.h"
@@ -20,10 +16,6 @@
 // Third party stuff
 #import <XMPP.h>
 #import <XMPPReconnect.h>
-
-// Protocols
-#import <MXi/MXiOutgoingBean.h>
-#import <MXi/MXiIncomingBean.h>
 
 // Custom classes
 #import <MXi/MXiConnection.h>
