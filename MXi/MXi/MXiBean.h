@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "XMPPJID.h"
+#import "DDXMLElement.h"
 
 @interface MXiBean : NSObject
 
@@ -29,5 +30,8 @@ typedef NS_ENUM(NSUInteger , BeanType)
 
 + (NSString* )elementName;
 + (NSString* )namespace;
+
+- (void)fromXML:(DDXMLElement* )xml;
+- (DDXMLElement* )toXML;
 
 @end

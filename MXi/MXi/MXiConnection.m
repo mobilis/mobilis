@@ -178,7 +178,7 @@
         NSXMLElement* childElement = [iq childElement];
         for (MXiBean<MXiIncomingBean>* prototype in self.incomingBeanPrototypes) {
             if ([[[prototype class] elementName] isEqualToString:[childElement name]] &&
-                    [[[prototype class] iqNamespace] isEqualToString:[childElement xmlns]] &&
+                    [[[prototype class] namespace] isEqualToString:[childElement xmlns]] &&
                     [[MXiIQTypeLookup stringValueForIQType:[prototype beanType]]
                         isEqualToString:[iq attributeStringValueForName:@"type"]]) {
                 // parse the iq data into the bean object
@@ -219,7 +219,7 @@
     NSXMLElement *childElement = [incomingIQ childElement];
     for (MXiBean<MXiIncomingBean>* prototype in self.incomingBeanPrototypes) {
         if ([[[prototype class] elementName] isEqualToString:[childElement name]] &&
-                [[[prototype class] iqNamespace] isEqualToString:[childElement xmlns]] &&
+                [[[prototype class] namespace] isEqualToString:[childElement xmlns]] &&
                 [[MXiIQTypeLookup stringValueForIQType:[prototype beanType]]
                         isEqualToString:[incomingIQ attributeStringValueForName:@"type"]]) {
             isBean = YES;

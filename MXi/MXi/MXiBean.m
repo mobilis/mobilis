@@ -24,7 +24,6 @@
 
 - (id)init {
 	[NSException raise:@"Wrong initializer" format:@"Use initWithBeanType: or init of subtype"];
-	return nil;
 }
 
 + (NSString* )elementName {
@@ -35,5 +34,18 @@
 {
 	return nil;
 }
+
+#pragma mark - (De-)Serialization
+
+- (void)fromXML:(DDXMLElement *)xml
+{
+    [NSException raise:@"Abstract Method" format:@"Subclasses of %@ have to implement -fromXML:", [MXiBean class]];
+}
+
+- (DDXMLElement *)toXML
+{
+    [NSException raise:@"Abstract Method" format:@"Subclasses of %@ have to implement -toXML", [MXiBean class]];
+}
+
 
 @end
