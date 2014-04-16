@@ -11,9 +11,13 @@
 
 @interface MXiBean : NSObject
 
-typedef enum beanTypes {
-	GET, SET, RESULT, ERROR
-} BeanType;
+typedef NS_ENUM(NSUInteger , BeanType)
+{
+	GET,
+    SET,
+    RESULT,
+    ERROR
+};
 
 @property (nonatomic, strong) NSString* beanId;
 @property (nonatomic, strong) XMPPJID* to;
