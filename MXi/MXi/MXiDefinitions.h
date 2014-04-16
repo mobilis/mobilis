@@ -9,19 +9,19 @@
 #ifndef MXi_MXiDefinitions____FILEEXTENSION___
 #define MXi_MXiDefinitions____FILEEXTENSION___
 
-typedef enum _ServiceType {
+typedef NS_ENUM(NSUInteger , ServiceType) {
     SINGLE,
     MULTI,
     SERVICE,
     RUNTIME
-} ServiceType;
+};
 
-typedef enum _StanzaElement {
+typedef NS_ENUM(NSUInteger , StanzaElement){
     PRESENCE,
     MESSAGE,
     IQ,
     UNKNOWN_STANZA
-} StanzaElement;
+};
 
 static NSString *const CoordinatorServiceNS = @"http://mobilis.inf.tu-dresden.de#services/CoordinatorService";
 static NSString *const CoordinatorResourceName = @"Coordinator";
