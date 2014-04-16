@@ -22,3 +22,4 @@ liststore.xml
 #Eclipse and IntelliJ
 .metadata/
 .idea/
+*.iml
