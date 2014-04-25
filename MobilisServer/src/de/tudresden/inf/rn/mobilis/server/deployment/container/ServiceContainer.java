@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import java.util.logging.Level;
 
 import javax.swing.event.EventListenerList;
 
+import de.tudresden.inf.rn.mobilis.server.deployment.helper.XPDReader;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
@@ -51,8 +53,7 @@ import de.tudresden.inf.rn.mobilis.server.deployment.exception.StartNewServiceIn
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.UpdateServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
 import de.tudresden.inf.rn.mobilis.server.deployment.helper.JarClassLoader;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.MSDLReader;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.MSDLReader.ServiceDependency;
+import de.tudresden.inf.rn.mobilis.server.deployment.helper.XPDReader.ServiceDependency;
 import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
 
@@ -63,17 +64,11 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
 public class ServiceContainer implements IServiceContainerTransitions,
 		IContainerStateChangable {
 
-	/** The key for the service class in manifest file. */
-	private final String MANIFEST_SERVICECLASS_KEY = "Service-Class";
-
-	/** The key for the msdl file in manifest file. */
-	private final String MANIFEST_MSDLFILE_KEY = "MSDL-File";
-
-	/** The jar file of this service. */
+    /** The jar file of this service. */
 	private File _jarFile;
 
 	/** The msdl file of this service. */
-	private File _msdlFile;
+	private File _xpdFile;
 
 	/** The running service instances (jid, service). */
 	private Map<String, MobilisService> _runningServiceInstances;
@@ -202,8 +197,8 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	private void resetContainer() {
 		changeContainerState(ServiceContainerState.UNINSTALLED);
 
-		_msdlFile.delete();
-		_msdlFile = null;
+		_xpdFile.delete();
+		_xpdFile = null;
 
 		_serviceClassTemplate = null;
 
@@ -407,89 +402,72 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	public void install() throws InstallServiceException {
 		if (_containerState == ServiceContainerState.UNINSTALLED
 				|| _containerState == ServiceContainerState.INSTALLED) {
-			try {
-				if (!configExtracted) {
-					extractServiceContainerConfig();
-				}
-				
-				// Switch ContainerState to INSTALLED if everything goes right
-				changeContainerState(ServiceContainerState.INSTALLED);
-				
-				MobilisManager
-				.getLogger()
-				.log(Level.INFO,
-						String.format(
-								"Service [ %s ] version [ %d ] sucessfully installed.",
-								_serviceNamespace, _serviceVersion));
-			} catch (InstallServiceException e) {
-				throw e;
-			}
-		}
+            if (!configExtracted) {
+                extractServiceContainerConfig();
+            }
+            changeContainerState(ServiceContainerState.INSTALLED);
+            MobilisManager
+            .getLogger()
+            .log(Level.INFO,
+                    String.format(
+                            "Service [ %s ] version [ %d ] sucessfully installed.",
+                            _serviceNamespace, _serviceVersion));
+        }
 	}
 
 	public void extractServiceContainerConfig() throws InstallServiceException {
 		if (jarClassLoader == null) {
-			jarClassLoader = new JarClassLoader();
+            URL[] urls;
+            urls = new URL[1];
+            try {
+                urls[0] = _jarFile.toURI().toURL();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            jarClassLoader = new JarClassLoader(urls);
 		}
-		String msdlFilepath = null;
+		String xpdFilepath = null;
 		String serviceFilePath = null;
 
 		try {
-			// read msdl file from manifest of jar file
-			jarClassLoader.addFilePathAbsolute(_jarFile.getAbsolutePath());
-			// Read MSDL file location from MANIFEST.MF
-			msdlFilepath = FileHelper.getJarManifestValue(_jarFile,
-					MANIFEST_MSDLFILE_KEY);
+            List<String> xpdFiles = FileHelper.getJarFiles(_jarFile, "xpd");
 
-			// If MSDL was not found at described location, query whole jar
-			// archive for a msdl file and use the first match
-			if (null == msdlFilepath) {
-				List<String> msdlFiles = FileHelper.getJarFiles(_jarFile,
-						".msdl");
+            if (xpdFiles.size() > 0) {
+                xpdFilepath = xpdFiles.get(0);
+            } else {
+                jarClassLoader.close();
+                throw new InstallServiceException("Cannot find XPD file in jar archive.");
+            }
 
-				if (msdlFiles.size() > 0) {
-					msdlFilepath = msdlFiles.get(0);
-				} else {
-					jarClassLoader.close();
-					throw new InstallServiceException(
-							"Cannot find MSDL file in jar archive.");
-				}
-			}
+            // Load XPD file from jar archive and cache it locally in temp
+            // directory using the name of the jar archive extended by .xpd
+            _xpdFile = FileHelper.createFileFromInputStream(
+                    jarClassLoader.getResourceAsStream(xpdFilepath),
+                    MobilisManager.DIRECTORY_TEMP_PATH + File.separator
+                            + _jarFile.getName() + ".xpd");
 
-			// Load MSDL file from jar archive and cache it localy in temp
-			// directory using the name of the jar archive extended by .msdl
-			_msdlFile = FileHelper.createFileFromInputStream(
-					jarClassLoader.getResourceAsStream(msdlFilepath),
-					MobilisManager.DIRECTORY_TEMP_PATH + File.separator
-							+ _jarFile.getName() + ".msdl");
-
-			// if msdl was not found, throw InstallServiceException
-			if (null == _msdlFile) {
+			// if XPD was not found, throw InstallServiceException
+			if (null == _xpdFile) {
 				jarClassLoader.close();
-				throw new InstallServiceException(
-						"Result of MSDL file was NULL while loading from jar archive.");
+				throw new InstallServiceException("Result of XPD file was NULL while loading from jar archive.");
 			}
-			else
-				MobilisManager.getLogger().log(Level.INFO,
-						String.format("MSDL found"));
+			else MobilisManager.getLogger().log(Level.INFO,String.format("XPD found"));
 
-			// TODO: validate MSDL file against schema
-
-			// read service namespace, version and name from msdl file
-			_serviceNamespace = MSDLReader.getServiceNamespace(_msdlFile);
-			_serviceVersion = MSDLReader.getServiceVersion(_msdlFile);
-			_serviceName = MSDLReader.getServiceName(_msdlFile);
+			// read service namespace, version and name from XPD file
+			_serviceNamespace = XPDReader.getServiceNamespace(_xpdFile);
+			_serviceVersion = XPDReader.getServiceVersion(_xpdFile);
+			_serviceName = XPDReader.getServiceName(_xpdFile);
 
 			MobilisManager.getLogger().log(
 					Level.INFO,
-					String.format("MSDL properties read (ns="
+					String.format("XPD properties read (ns="
 							+ _serviceNamespace + "; version="
 							+ _serviceVersion + ")"));
 
 			// read path of the MobilisService class from manifest of jar
 			// file
-			serviceFilePath = FileHelper.getJarManifestValue(_jarFile,
-					MANIFEST_SERVICECLASS_KEY);
+			/* The key for the service class in manifest file. */
+            serviceFilePath = FileHelper.getJarManifestValue(_jarFile, "Service-Class");
 
 			// generate template class of service to instantiate service
 			// instance
@@ -500,11 +478,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 					"Service class template created.");
 
 			configExtracted  = true;
-		} catch (UnsupportedClassVersionError e) {
-			throw new InstallServiceException(e.getMessage());
-		} catch (MalformedURLException e) {
-			throw new InstallServiceException(e.getMessage());
-		} catch (IOException e) {
+		} catch (UnsupportedClassVersionError | IOException e) {
 			throw new InstallServiceException(e.getMessage());
 		} catch (ClassNotFoundException e) {
 			try {
@@ -746,7 +720,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			}
 
 			// read dependencies of this service
-			List<MSDLReader.ServiceDependency> dependencyServices = getServiceDependencies();
+			List<XPDReader.ServiceDependency> dependencyServices = getServiceDependencies();
 			List<String> missingDependencies = new ArrayList<String>();
 
 			for (ServiceDependency serviceDependency : dependencyServices) {
@@ -902,7 +876,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	 * @return the msdl file
 	 */
 	public File getMsdlFile() {
-		return _msdlFile;
+		return _xpdFile;
 	}
 
 	/**
@@ -928,8 +902,8 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	 * 
 	 * @return the service dependencies
 	 */
-	public List<MSDLReader.ServiceDependency> getServiceDependencies() {
-		return MSDLReader.getServiceDependencies(_msdlFile);
+	public List<XPDReader.ServiceDependency> getServiceDependencies() {
+		return XPDReader.getServiceDependencies(_xpdFile);
 	}
 
 	/**
@@ -981,7 +955,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 		boolean isRequired = false;
 
 		if (null != namespace && namespace.length() > 0) {
-			for (MSDLReader.ServiceDependency serviceDependency : getServiceDependencies()) {
+			for (XPDReader.ServiceDependency serviceDependency : getServiceDependencies()) {
 				if (namespace.equals(serviceDependency.getServiceNameSpace())) {
 					// if version doesn't matter
 					isRequired = (version < 0)
