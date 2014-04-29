@@ -229,8 +229,40 @@
     return isBean;
 }
 
-- (void)xmppStream:(XMPPStream *)sender didReceiveMessage:(XMPPMessage *)message {
-    [self notifyStanzaDelegates:message];
+- (void)xmppStream:(XMPPStream *)sender didReceiveMessage:(XMPPMessage *)message
+{
+    if ([self isIncomingMessageBeanContainer:message])
+    {
+        NSXMLElement* childElement = [[NSXMLElement alloc] initWithXMLString:message.body error:nil];
+        for (MXiBean* prototype in self.incomingBeanPrototypes) {
+            if ([[[prototype class] elementName] isEqualToString:[childElement name]] &&
+                    [[[prototype class] namespace] isEqualToString:[childElement xmlns]]) {
+                [MXiBeanConverter beanFromMessage:message intoBean:prototype];
+                [self notifyBeanDelegates:prototype];
+            }
+        }
+    }
+    else
+    {
+        [self notifyStanzaDelegates:message];
+    }
+}
+
+- (BOOL)isIncomingMessageBeanContainer:(XMPPMessage *)message
+{
+    if (message.childCount < 1) return NO;
+
+    BOOL isBean = NO;
+    NSXMLElement *childElement = [[NSXMLElement alloc] initWithXMLString:message.body error:nil];
+    for (MXiBean* prototype in self.incomingBeanPrototypes) {
+        if (    [[[prototype class] elementName] isEqualToString:[childElement name]] &&
+                [[[prototype class] namespace] isEqualToString:[childElement xmlns]]
+           ) {
+            isBean = YES;
+            break;
+        }
+    }
+    return isBean;
 }
 
 - (void)xmppStream:(XMPPStream *)sender didReceivePresence:(XMPPPresence *)presence {

@@ -30,4 +30,15 @@
 	return nil;
 }
 
++ (BeanType)beanTypeForStringIQType:(NSString *)stringIQType
+{
+    if ([stringIQType caseInsensitiveCompare:@"get"] == NSOrderedSame) return GET;
+    if ([stringIQType caseInsensitiveCompare:@"set"] == NSOrderedSame) return SET;
+    if ([stringIQType caseInsensitiveCompare:@"result"] == NSOrderedSame) return RESULT;
+    if ([stringIQType caseInsensitiveCompare:@"error"] == NSOrderedSame) return ERROR;
+
+    return UNKNOWN;
+}
+
+
 @end

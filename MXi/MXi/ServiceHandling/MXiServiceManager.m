@@ -11,6 +11,11 @@
 #import "MXiConnection.h"
 
 @interface MXiServiceManager () <MXiServiceTypeDiscoveryDelegate>
+{
+    struct {
+        unsigned short serviceCreation : 1;
+    } _stanzaDelegate;
+}
 
 @property (readwrite) NSArray *services;
 
@@ -91,9 +96,14 @@
 
 - (void)createServiceWithName:(NSString *)serviceName andPassword:(NSString *)password
 {
-    [self.connection addStanzaDelegate:self withSelector:@selector(handleServiceResponse:) forStanzaElement:IQ];
+    if (!_stanzaDelegate.serviceCreation)
+    {
+        [self.connection addStanzaDelegate:self withSelector:@selector(handleServiceResponse:) forStanzaElement:IQ];
+        _stanzaDelegate.serviceCreation = YES;
+    }
+    NSXMLElement *serviceIQ;
     @autoreleasepool {
-        NSXMLElement *serviceIQ = [NSXMLElement elementWithName:@"iq"];
+        serviceIQ = [NSXMLElement elementWithName:@"iq"];
         NSXMLElement *serviceBean = [NSXMLElement elementWithName:@"createNewServiceInstance"
                                                             xmlns:CoordinatorServiceNS];
 
@@ -107,8 +117,8 @@
 
         [serviceIQ addChild:serviceBean];
 
-        [self.connection sendElement:serviceIQ];
     }
+    if (serviceIQ) [self.connection sendElement:serviceIQ];
 }
 
 #pragma mark - MXiServiceTypeDiscovery

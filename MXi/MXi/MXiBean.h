@@ -17,7 +17,8 @@ typedef NS_ENUM(NSUInteger , BeanType)
 	GET,
     SET,
     RESULT,
-    ERROR
+    ERROR,
+    UNKNOWN
 };
 
 @property (nonatomic, strong) NSString* beanId;

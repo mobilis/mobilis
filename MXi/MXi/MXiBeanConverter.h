@@ -16,6 +16,9 @@
 @interface MXiBeanConverter : NSObject
 
 + (NSXMLElement* )beanToIQ:(MXiBean* )outBean;
++ (NSXMLElement *)beanToMessage:(MXiBean *)outBean;
+
 + (void)beanFromIQ:(XMPPIQ* )xml intoBean:(MXiBean *)inBean;
++ (void)beanFromMessage:(XMPPMessage *)message intoBean:(MXiBean *)inBean;
 
 @end

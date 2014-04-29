@@ -13,21 +13,69 @@
 + (NSXMLElement *)beanToIQ:(MXiBean *)outBean {
 	NSXMLElement* beanElement = [outBean toXML];
 
-    NSXMLElement* iq = [NSXMLElement elementWithName:@"iq"];
-	[iq addAttributeWithName:@"to" stringValue:[[outBean to] full]];
-	[iq addAttributeWithName:@"from" stringValue:[[outBean from] full]];
-	[iq addAttributeWithName:@"type" stringValue:[MXiIQTypeLookup stringValueForIQType:[outBean beanType]]];
+    NSXMLElement* iq = [[MXiBeanConverter class] p_headerFromOutBean:outBean forStanzaElement:IQ];
 	
 	[iq addChild:beanElement];
 	return iq;
+}
+
++ (NSXMLElement *)beanToMessage:(MXiBean *)outBean
+{
+    NSXMLElement *beanElement = [outBean toXML];
+
+    NSXMLElement *message = [[MXiBeanConverter class] p_headerFromOutBean:outBean forStanzaElement:MESSAGE];
+
+    [message addChild:beanElement];
+    return message;
 }
 
 + (void)beanFromIQ:(XMPPIQ *)iq
 		   intoBean:(MXiBean *)inBean {
 	[inBean setTo:[XMPPJID jidWithString:[iq attributeStringValueForName:@"to"]]];
 	[inBean setFrom:[XMPPJID jidWithString:[iq attributeStringValueForName:@"from"]]];
-	
+    [inBean setBeanType:[MXiIQTypeLookup beanTypeForStringIQType:[iq attributeStringValueForName:@"type"]]];
+
 	[inBean fromXML:[iq childElement]];
+}
+
++ (void)beanFromMessage:(XMPPMessage *)message intoBean:(MXiBean *)inBean
+{
+    // TODO if it is working like this, merge to messages to one
+    [inBean setTo:[XMPPJID jidWithString:[message attributeStringValueForName:@"to"]]];
+    [inBean setFrom:[XMPPJID jidWithString:[message attributeStringValueForName:@"from"]]];
+    [inBean setBeanType:[MXiIQTypeLookup beanTypeForStringIQType:[message attributeStringValueForName:@"type"]]];
+
+    NSError *error = nil;
+    [inBean fromXML:[[NSXMLElement alloc] initWithXMLString:message.body error:&error]]; // TODO check if this is working
+    if (error != nil)
+    {
+        inBean = nil; // TODO guess this is not allowed from a mm perspective, it looks ugly nonetheless
+    }
+}
+
+#pragma mark - Helper
+
++ (NSXMLElement *)p_headerFromOutBean:(MXiBean *)outBean forStanzaElement:(StanzaElement)stanzaElement
+{
+    NSXMLElement *headerElement = nil;
+    switch (stanzaElement) // No default case is intentional to get compiler warnings when enumeration has grown.
+    {
+        case IQ:
+            headerElement = [NSXMLElement elementWithName:@"iq"];
+            break;
+        case MESSAGE:
+            headerElement = [NSXMLElement elementWithName:@"message"];
+            break;
+        case UNKNOWN_STANZA:
+        case PRESENCE:
+            break;
+    }
+
+    [headerElement addAttributeWithName:@"to" stringValue:[[outBean to] full]];
+    [headerElement addAttributeWithName:@"from" stringValue:[[outBean from] full]];
+    [headerElement addAttributeWithName:@"type" stringValue:[MXiIQTypeLookup stringValueForIQType:[outBean beanType]]];
+
+    return headerElement;
 }
 
 @end
