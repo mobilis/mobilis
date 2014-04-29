@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universit�t Dresden
+ * Copyright (C) 2010 Technische Universität Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,11 @@
  * Computer Networks Group: http://www.rn.inf.tu-dresden.de
  * mobilis project: http://mobilisplatform.sourceforge.net
  ******************************************************************************/
-
-/**
- * Copied from MobilisServer_ConsoleClient
- */
-
 package de.tudresden.inf.rn.mobilis.xmpp.mxj;
 
 import org.jivesoftware.smack.packet.IQ;
 
+import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 public class BeanIQAdapter extends IQ {
@@ -118,4 +114,19 @@ public class BeanIQAdapter extends IQ {
 		this.adaptee.setId(packetID);
 	}
 	
+	
+	
+	public boolean isProxyBean(){
+		return ( this.adaptee instanceof ProxyBean );
+	}
+	
+	public boolean isBeanTypeOf( String namespace, String childElement ) {
+		return this.getNamespace().equals( namespace ) && this.getChildElement().equals( childElement );
+	}
+	
+	public XMPPBean unpackProxyBean(XMPPBean toBean){
+		return this.isProxyBean()
+				? ((ProxyBean)this.adaptee).parsePayload( toBean )
+				: this.getBean();
+	}
 }

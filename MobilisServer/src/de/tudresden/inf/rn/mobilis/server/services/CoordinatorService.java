@@ -61,9 +61,9 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscove
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.SendNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.server.BeanHelper;
-import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
-import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanHelper;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
 
 /**
  * 

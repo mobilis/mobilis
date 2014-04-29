@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universit�t Dresden
+ * Copyright (C) 2010 Technische Universität Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.xmpp.mxj;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
@@ -26,15 +29,11 @@ import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
-/**
- * BeanProviderAdapter from Mobilis Server project adapted to standard Java environment.
- * 
- * @author bendel
- *
- */
 public class BeanProviderAdapter implements IQProvider {
 	
 	private XMPPBean prototype;
+	
+	private static final Logger LOGGER = Logger.getLogger(BeanProviderAdapter.class.getCanonicalName());
 	
 	public BeanProviderAdapter(XMPPBean prototype) {
 		this.prototype = prototype;
@@ -47,9 +46,9 @@ public class BeanProviderAdapter implements IQProvider {
 		try{
 			bean.fromXML(parser);
 		} catch (Exception e) {
-			System.out.println(String.format( "Error while parsing bean prototype=%s error=%s",
+			LOGGER.log( Level.WARNING, String.format( "Error while parsing bean prototype=%s error=%s",
 					bean.toString(),
-					e.getMessage()));
+					e.getMessage()) );
 		}
 		
 		return new BeanIQAdapter(bean);

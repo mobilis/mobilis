@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Technische Universit�t Dresden
+ * Copyright (C) 2010 Technische Universität Dresden
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,32 +17,33 @@
  * Computer Networks Group: http://www.rn.inf.tu-dresden.de
  * mobilis project: http://mobilisplatform.sourceforge.net
  ******************************************************************************/
-
 package de.tudresden.inf.rn.mobilis.xmpp.mxj;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.PacketCollector;
-import org.jivesoftware.smack.XMPPConnection;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanFilterAdapter;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
 
 public class BeanExchanger<B extends XMPPBean> {
 
 	private static final int TIMEOUT = 2000; 
-	private XMPPConnection connection;
-	private XMPPBean beanOut;
-	private XMPPBean beanIn;
+	private Connection connection;
+	private B beanOut;
+	private B beanIn;
 	private PacketCollector beanCollector;
 
 	static private ExecutorService threads = Executors.newSingleThreadExecutor();
 	
-	public BeanExchanger(XMPPConnection connection) {
+	public BeanExchanger(Connection connection) {
 		this.connection = connection;
 	}
 	
-	public XMPPBean exchange(B bean) {
+	public B exchange(B bean) {
 		synchronized (this) {
 			BeanExchanger<B> owner = BeanExchanger.this;
 			this.beanOut = bean;
@@ -66,7 +67,7 @@ public class BeanExchanger<B extends XMPPBean> {
 			BeanExchanger<B> owner = BeanExchanger.this;
 			synchronized (BeanExchanger.this) {
 				BeanIQAdapter adapter = (BeanIQAdapter)(owner.beanCollector.nextResult());
-				owner.beanIn = (XMPPBean)(adapter.getBean());
+				owner.beanIn = (B)(adapter.getBean());
 				owner.notify();
 			}
 		}

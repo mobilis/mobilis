@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.xmpp.server;
+package de.tudresden.inf.rn.mobilis.xmpp.mxj;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 

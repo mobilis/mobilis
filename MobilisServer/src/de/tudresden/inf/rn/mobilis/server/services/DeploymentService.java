@@ -35,9 +35,9 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UninstallServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UnregisterServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UpdateServiceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
-import de.tudresden.inf.rn.mobilis.xmpp.server.BeanHelper;
-import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
-import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanHelper;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
 
 /**
  * The Class DeploymentService is used to handle the deployment and the life cycle of a deployed

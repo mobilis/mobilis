@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="libs/hibernate-commons-annotations.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-core.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/MobilisXMPP"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/MXJ"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
