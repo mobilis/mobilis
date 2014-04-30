@@ -35,7 +35,7 @@ import java.util.logging.Level;
 
 import javax.swing.event.EventListenerList;
 
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.XPDReader;
+import de.tudresden.inf.rn.mobilis.server.deployment.helper.*;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
@@ -51,9 +51,7 @@ import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceExc
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.StartNewServiceInstanceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.UpdateServiceException;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.JarClassLoader;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.XPDReader.ServiceDependency;
+import de.tudresden.inf.rn.mobilis.server.deployment.helper.IFFReader.ServiceDependency;
 import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
 
@@ -68,7 +66,11 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	private File _jarFile;
 
 	/** The msdl file of this service. */
-	private File _xpdFile;
+	private File _interfaceFile;
+    /**
+     * File path to the copied and extracted MSDL or XPD.
+     */
+    private String _interfaceFilePath;
 
 	/** The running service instances (jid, service). */
 	private Map<String, MobilisService> _runningServiceInstances;
@@ -197,8 +199,8 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	private void resetContainer() {
 		changeContainerState(ServiceContainerState.UNINSTALLED);
 
-		_xpdFile.delete();
-		_xpdFile = null;
+		_interfaceFile.delete();
+		_interfaceFile = null;
 
 		_serviceClassTemplate = null;
 
@@ -426,37 +428,47 @@ public class ServiceContainer implements IServiceContainerTransitions,
             }
             jarClassLoader = new JarClassLoader(urls);
 		}
-		String xpdFilepath = null;
+
 		String serviceFilePath = null;
 
 		try {
-            List<String> xpdFiles = FileHelper.getJarFiles(_jarFile, "xpd");
+            List<String> interfaceFiles = FileHelper.getJarFiles(_jarFile, "xpd");
 
-            if (xpdFiles.size() > 0) {
-                xpdFilepath = xpdFiles.get(0);
+            if (interfaceFiles.size() > 0) {
+                _interfaceFilePath = interfaceFiles.get(0);
             } else {
-                jarClassLoader.close();
-                throw new InstallServiceException("Cannot find XPD file in jar archive.");
+                MobilisManager.getLogger().log(Level.INFO, "No XPD found. Try MSDL");
+                interfaceFiles = FileHelper.getJarFiles(_jarFile, "msdl");
+                if (interfaceFiles.size() > 0)
+                {
+                    _interfaceFilePath = interfaceFiles.get(0);
+                }
+                else
+                {
+                    jarClassLoader.close();
+                    throw new InstallServiceException("Could neither found XPD nor MSDL.");
+                }
             }
 
             // Load XPD file from jar archive and cache it locally in temp
             // directory using the name of the jar archive extended by .xpd
-            _xpdFile = FileHelper.createFileFromInputStream(
-                    jarClassLoader.getResourceAsStream(xpdFilepath),
+            _interfaceFile = FileHelper.createFileFromInputStream(
+                    jarClassLoader.getResourceAsStream(_interfaceFilePath),
                     MobilisManager.DIRECTORY_TEMP_PATH + File.separator
-                            + _jarFile.getName() + ".xpd");
+                            + _jarFile.getName() + ".iff");
 
 			// if XPD was not found, throw InstallServiceException
-			if (null == _xpdFile) {
+			if (null == _interfaceFile) {
 				jarClassLoader.close();
-				throw new InstallServiceException("Result of XPD file was NULL while loading from jar archive.");
+				throw new InstallServiceException("Result of XPD or MSDL file was NULL while loading from jar archive.");
 			}
-			else MobilisManager.getLogger().log(Level.INFO,String.format("XPD found"));
+			else MobilisManager.getLogger().log(Level.INFO,String.format("XPD or MSDL found"));
 
 			// read service namespace, version and name from XPD file
-			_serviceNamespace = XPDReader.getServiceNamespace(_xpdFile);
-			_serviceVersion = XPDReader.getServiceVersion(_xpdFile);
-			_serviceName = XPDReader.getServiceName(_xpdFile);
+            IFFReader iffReader = (new IFFReaderFactory(_interfaceFilePath)).getIFFReader();
+			_serviceNamespace = iffReader.getServiceNamespace(_interfaceFile);
+			_serviceVersion = iffReader.getServiceVersion(_interfaceFile);
+			_serviceName = iffReader.getServiceName(_interfaceFile);
 
 			MobilisManager.getLogger().log(
 					Level.INFO,
@@ -493,7 +505,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.tudresden.inf.rn.mobilis.server.deployment.container.
 	 * IServiceContainerTransitions#uninstall()
 	 */
@@ -876,7 +888,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	 * @return the msdl file
 	 */
 	public File getMsdlFile() {
-		return _xpdFile;
+		return _interfaceFile;
 	}
 
 	/**
@@ -903,7 +915,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	 * @return the service dependencies
 	 */
 	public List<XPDReader.ServiceDependency> getServiceDependencies() {
-		return XPDReader.getServiceDependencies(_xpdFile);
+        return (new IFFReaderFactory(_interfaceFilePath)).getIFFReader().getServiceDependencies(_interfaceFile);
 	}
 
 	/**
