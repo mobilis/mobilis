@@ -1,16 +1,27 @@
 package de.tudresden.inf.rn.mobilis.consoleclient;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 
 /**
  * The Class Settings.
  */
 public class Settings {
-	
-	/** The client node. */
+
+    private static final String CLIENT_NODE = "clientNode";
+    private static final String CLIENT_PASSWORD = "clientPassword";
+    private static final String CLIENT_RESOURCE = "clientResource";
+    private static final String MOBILIS_COORDINATOR_RESOURCE = "mobilisCoordinatorResource";
+    private static final String MOBILIS_DEPLOYMENT_RESOURCE = "mobilisDeploymentResource";
+    private static final String MOBILIS_RUNTIME_RESOURCE = "mobilisRuntimeResource";
+    private static final String MOBILIS_SERVER_NODE = "mobilisServerNode";
+    private static final String MOBILIS_SERVER_RESOURCE = "mobilisServerResource";
+    private static final String XMPP_SERVER_ADDRESS = "xmppServerAddress";
+    private static final String XMPP_SERVER_PORT = "xmppServerPort";
+    private static final String XMPP_SERVER_DOMAIN = "xmppServerDomain";
+    private static final String SMACK_DEBUG_MODE = "smackDebugMode";
+
+    /** The client node. */
 	private String _clientNode;	
 	
 	/** The client password. */
@@ -23,10 +34,10 @@ public class Settings {
 	private String _mobilisCoordinatorResource;
 	
 	/** The mobilis coordinator resource. */
-	private String _mobilisAdminResource;
+	private String _mobilisDeploymentResource;
 	
 	/** The mobilis coordinator resource. */
-	private String _mobilisDeploymentResource;
+	private String _mobilisRuntimeResource;
 	
 	/** The mobilis server node. */
 	private String _mobilisServerNode;
@@ -42,7 +53,10 @@ public class Settings {
 	
 	/** The xmpp server port. */
 	private int _xmppServerPort;
-	
+
+    private boolean _smackDebugMode;
+
+    private Properties _properties;
 	
 	/**
 	 * Instantiates a new settings.
@@ -56,36 +70,66 @@ public class Settings {
 	 * Inits the default values.
 	 */
 	private void init() {
-		Properties properties = new Properties();
+		_properties = new Properties();
 		try {
-			properties.load(new FileInputStream("Settings.properties"));
+			_properties.load(new FileInputStream("Settings.properties"));
 		} catch (FileNotFoundException e) {
-			System.out.println("Couldn\'t find settings file. Aborting...");
-			e.printStackTrace();
-			System.exit(1);
+            File newFile = new File("Settings.properties");
+            try {
+                if (newFile.createNewFile()) {
+                    _properties = new Properties();
+                    setupPropertiesFile();
+                    storeProperties();
+                }
+            } catch (IOException e1) {
+                System.out.println("Could not create settings file. Allow write access to folder");
+                e1.printStackTrace();
+            }
 		} catch (IOException e) {
-			System.out.println("Couldn\'t read settings file. Aborting...");
 			e.printStackTrace();
-			System.exit(2);
 		}
 		
-		_clientNode = properties.getProperty("clientNode").trim();
-		_clientPassword = properties.getProperty("clientPassword").trim();
-		_clientResource = properties.getProperty("clientResource").trim();		
+		_clientNode = _properties.getProperty(CLIENT_NODE).trim();
+		_clientPassword = _properties.getProperty(CLIENT_PASSWORD).trim();
+		_clientResource = _properties.getProperty(CLIENT_RESOURCE).trim();
 		
-		_mobilisCoordinatorResource = properties.getProperty("mobilisCoordinatorResource").trim();
-		_mobilisAdminResource = properties.getProperty("mobilisAdminResource").trim();
-		_mobilisDeploymentResource = properties.getProperty("mobilisDeploymentResource").trim();
-		_mobilisServerNode = properties.getProperty("mobilisServerNode").trim();
-		_mobilisServerResource = properties.getProperty("mobilisServerResource").trim();
+		_mobilisCoordinatorResource = _properties.getProperty(MOBILIS_COORDINATOR_RESOURCE).trim();
+		_mobilisDeploymentResource = _properties.getProperty(MOBILIS_DEPLOYMENT_RESOURCE).trim();
+		_mobilisRuntimeResource = _properties.getProperty(MOBILIS_RUNTIME_RESOURCE).trim();
+		_mobilisServerNode = _properties.getProperty(MOBILIS_SERVER_NODE).trim();
+		_mobilisServerResource = _properties.getProperty(MOBILIS_SERVER_RESOURCE).trim();
 		
-		_xmppServerAddress = properties.getProperty("xmppServerAddress").trim();
-		_xmppServerPort = Integer.parseInt(properties.getProperty("xmppServerPort").trim());				
+		_xmppServerAddress = _properties.getProperty(XMPP_SERVER_ADDRESS).trim();
+		_xmppServerPort = Integer.parseInt(_properties.getProperty(XMPP_SERVER_PORT).trim());
 		
-		_xmppServerDomain = properties.getProperty("xmppServerDomain").trim();
+		_xmppServerDomain = _properties.getProperty(XMPP_SERVER_DOMAIN).trim();
+
+        _smackDebugMode = Boolean.parseBoolean(_properties.getProperty(SMACK_DEBUG_MODE).trim());
 	}
 	
-	
+	private void setupPropertiesFile() {
+        _properties.setProperty(CLIENT_NODE, "");
+        _properties.setProperty(CLIENT_PASSWORD, "");
+        _properties.setProperty(CLIENT_RESOURCE, "");
+
+        _properties.setProperty(MOBILIS_COORDINATOR_RESOURCE, "Coordinator");
+        _properties.setProperty(MOBILIS_DEPLOYMENT_RESOURCE, "Deployment");
+        _properties.setProperty(MOBILIS_RUNTIME_RESOURCE, "Runtime");
+        _properties.setProperty(MOBILIS_SERVER_NODE, "");
+        _properties.setProperty(MOBILIS_SERVER_RESOURCE, "");
+
+        _properties.setProperty(XMPP_SERVER_ADDRESS, "");
+        _properties.setProperty(XMPP_SERVER_PORT, "5222");
+
+        _properties.setProperty(XMPP_SERVER_DOMAIN, "");
+
+        _properties.setProperty(SMACK_DEBUG_MODE, "false");
+    }
+
+    public boolean allSettingsAvailable() {
+        return !"".equals(getXMPPServerAddress());
+    }
+
 	/**
 	 * Gets the client jid.
 	 *
@@ -127,6 +171,7 @@ public class Settings {
 	 */
 	public void setClientNode(String clientNode) {
 		_clientNode = clientNode;
+        saveProperty(CLIENT_NODE, _clientNode);
 	}
 
 
@@ -147,6 +192,7 @@ public class Settings {
 	 */
 	public void setClientPassword(String clientPassword) {
 		_clientPassword = clientPassword;
+        saveProperty(CLIENT_PASSWORD, _clientPassword);
 	}
 
 
@@ -167,6 +213,7 @@ public class Settings {
 	 */
 	public void setClientResource(String clientResource) {
 		_clientResource = clientResource;
+        saveProperty(CLIENT_RESOURCE, _clientResource);
 	}
 	
 	
@@ -193,8 +240,8 @@ public class Settings {
 		return _mobilisServerNode
 				+ "@"
 				+ _xmppServerDomain
-				+ ( null !=_mobilisAdminResource
-					? ( "/" + _mobilisAdminResource )
+				+ ( null != _mobilisDeploymentResource
+					? ( "/" + _mobilisDeploymentResource)
 					: "" );
 	}
 	
@@ -203,12 +250,12 @@ public class Settings {
 	 *
 	 * @return the mobilis deployment jid
 	 */
-	public String getMobilisDeploymentJid(){
+	public String getMobilisRuntimeJid(){
 		return _mobilisServerNode
 				+ "@"
 				+ _xmppServerDomain
-				+ ( null !=_mobilisDeploymentResource
-					? ( "/" + _mobilisDeploymentResource )
+				+ ( null != _mobilisRuntimeResource
+					? ( "/" + _mobilisRuntimeResource)
 					: "" );
 	}	
 	
@@ -229,6 +276,7 @@ public class Settings {
 	 */
 	public void setMobilisCoordinatorResource(String mobilisCoordinatorResource) {
 		_mobilisCoordinatorResource = mobilisCoordinatorResource;
+        saveProperty(MOBILIS_COORDINATOR_RESOURCE, _mobilisCoordinatorResource);
 	}
 
 
@@ -263,6 +311,7 @@ public class Settings {
 	 */
 	public void setMobilisServerNode(String serverNode) {
 		_mobilisServerNode = serverNode;
+        saveProperty(MOBILIS_SERVER_NODE, _mobilisServerNode);
 	}
 	
 	/**
@@ -282,6 +331,7 @@ public class Settings {
 	 */
 	public void setMobilisServerResource(String serverResource) {
 		_mobilisServerResource = serverResource;
+        saveProperty(MOBILIS_SERVER_RESOURCE, _mobilisServerResource);
 	}
 	
 	
@@ -302,6 +352,7 @@ public class Settings {
 	 */
 	public void setXMPPServerAddress(String serverAddress) {
 		_xmppServerAddress = serverAddress;
+        saveProperty(XMPP_SERVER_ADDRESS, _xmppServerAddress);
 	}
 
 
@@ -322,6 +373,7 @@ public class Settings {
 	 */
 	public void setXMPPServerPort(int serverPort) {
 		_xmppServerPort = serverPort;
+        saveProperty(XMPP_SERVER_PORT, String.valueOf(_xmppServerPort));
 	}
 
 
@@ -342,24 +394,9 @@ public class Settings {
 	 */
 	public void setXMPPServerDomain(String xmppDomain) {
 		_xmppServerDomain = xmppDomain;
+        saveProperty(XMPP_SERVER_DOMAIN, _xmppServerDomain);
 	}
 	
-	/**
-	 * @return the _mobilisAdminResource
-	 */
-	public String getMobilisAdminResource() {
-		return _mobilisAdminResource;
-	}
-
-
-	/**
-	 * @param _mobilisAdminResource the _mobilisAdminResource to set
-	 */
-	public void setMobilisAdminResource( String mobilisAdminResource ) {
-		this._mobilisAdminResource = mobilisAdminResource;
-	}
-
-
 	/**
 	 * @return the _mobilisDeploymentResource
 	 */
@@ -369,14 +406,52 @@ public class Settings {
 
 
 	/**
-	 * @param _mobilisDeploymentResource the _mobilisDeploymentResource to set
+	 * @param mobilisDeploymentResource the _mobilisDeploymentResource to set
 	 */
 	public void setMobilisDeploymentResource( String mobilisDeploymentResource ) {
-		this._mobilisDeploymentResource = mobilisDeploymentResource;
+        _mobilisDeploymentResource = mobilisDeploymentResource;
+        saveProperty(MOBILIS_DEPLOYMENT_RESOURCE, _mobilisDeploymentResource);
+	}
+
+	/**
+	 * @return the _mobilisRuntimeResource
+	 */
+	public String getMobilisRuntimeResource() {
+		return _mobilisRuntimeResource;
 	}
 
 
-	@Override
+	/**
+	 * @param mobilisRuntimeResource the _mobilisRuntimeResource to set
+	 */
+	public void setMobilisRuntimeResource( String mobilisRuntimeResource ) {
+		_mobilisRuntimeResource = mobilisRuntimeResource;
+        saveProperty(MOBILIS_RUNTIME_RESOURCE, _mobilisRuntimeResource);
+	}
+
+    public boolean isSmackDebugMode() {
+        return _smackDebugMode;
+    }
+
+    public void setSmackDebugMode(boolean enabled) {
+        _smackDebugMode = enabled;
+        saveProperty(SMACK_DEBUG_MODE, Boolean.valueOf(_smackDebugMode).toString());
+    }
+
+    private void saveProperty(String key, String value) {
+        _properties.setProperty(key, value);
+        storeProperties();
+    }
+
+    private void storeProperties() {
+        try {
+            _properties.store(new FileOutputStream("Settings.properties"), "");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		

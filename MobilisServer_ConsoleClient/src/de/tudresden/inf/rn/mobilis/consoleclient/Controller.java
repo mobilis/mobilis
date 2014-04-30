@@ -1,52 +1,40 @@
 package de.tudresden.inf.rn.mobilis.consoleclient;
 
-import de.tudresden.inf.rn.mobilis.consoleclient.shell.CommandShell;
-
 /**
  * The Class Controller.
  */
 public class Controller {
-	
-	/** The command shell. */
-	private CommandShell _commandShell;
-	
+
+    private static Controller instance;
+
 	/** The connection. */
 	private Connection _connection;
-	
-	/** The logger. */
-	private Log _log;
-	
+
 	/** The settings. */
-	private Settings _settings;	
-	
-	
-	/**
-	 * Instantiates a new controller.
-	 */
-	public Controller(){
+	private Settings _settings;
+
+    private ServiceHandler _serviceHandler;
+
+	private Controller(){
 		init();
-	};
+	}
+
+    public static Controller getController() {
+        if (instance == null)
+            synchronized (Controller.class) {
+                if (instance == null) instance = new Controller();
+            }
+        return instance;
+    }
 	
 	/**
 	 * Inits the controller.
 	 */
 	private void init(){
 		_settings = new Settings();
-		_log = new Log();
-		_commandShell = new CommandShell(this);
 		_connection = new Connection(this);
+        _serviceHandler = new ServiceHandler(this);
 	}
-
-
-	/**
-	 * Gets the command shell.
-	 *
-	 * @return the command shell
-	 */
-	public CommandShell getCommandShell() {
-		return _commandShell;
-	}
-
 
 	/**
 	 * Gets the connection.
@@ -57,17 +45,6 @@ public class Controller {
 		return _connection;
 	}
 
-
-	/**
-	 * Gets the log.
-	 *
-	 * @return the log
-	 */
-	public Log getLog() {
-		return _log;
-	}
-
-
 	/**
 	 * Gets the settings.
 	 *
@@ -76,6 +53,8 @@ public class Controller {
 	public Settings getSettings() {
 		return _settings;
 	}
+
+    public ServiceHandler getServiceHandler() { return _serviceHandler; };
 	
 	
 }

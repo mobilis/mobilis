@@ -32,7 +32,6 @@
         self.connectionHandler = [MXiServiceConnectionHandler new];
         self.connectionHandler.delegate = self;
 
-        // TODO: check if it is truly the bare JID. @see In-band registration.
         [self.connectionHandler launchConnectionWithJID:jid.bare
                                                password:password
                                                hostName:hostName

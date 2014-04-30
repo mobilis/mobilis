@@ -1,54 +1,29 @@
 package de.tudresden.inf.rn.mobilis.consoleclient;
 
-import java.io.File;
-import java.util.Date;
-
-import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.RosterEntry;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.filter.PacketTypeFilter;
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.IQ.Type;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smackx.filetransfer.FileTransferListener;
-import org.jivesoftware.smackx.filetransfer.FileTransferManager;
-import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
-import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
-import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
-import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
-
-import de.tudresden.inf.rn.mobilis.consoleclient.listener.IQListener;
-import de.tudresden.inf.rn.mobilis.consoleclient.listener.MessageListener;
+import de.tudresden.inf.rn.mobilis.consoleclient.helper.ConnectionStatus;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.SendNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.StopServiceInstanceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ConfigureServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ExecuteSynchronizeRuntimesBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.InstallServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.RegisterServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ServiceUploadConclusionBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UninstallServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UnregisterServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UpdateServiceBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.*;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
+import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.IQ.Type;
+import org.jivesoftware.smackx.filetransfer.*;
+
+import java.io.File;
+import java.util.Date;
+import java.util.Observable;
 
 /**
  * The Class Connection.
  */
-public class Connection {
+public class Connection extends Observable implements ConnectionListener {
 
 	/** The _controller. */
 	private Controller _controller;
-
-	/** The _iq listener. */
-	private IQListener _iqListener;
-
-	/** The _message listener. */
-	private MessageListener _messageListener;
 
 	/** The _xmpp connection. */
 	private XMPPConnection _xmppConnection;
@@ -56,13 +31,7 @@ public class Connection {
 	/** The _file transfer manager. */
 	private FileTransferManager _fileTransferManager;
 
-	/** The _filetransfer timeout. */
-	private int _filetransferTimeout = 15;
-
-	/** The _upload folder. */
-	private String _uploadFolder = "upload";
-
-	/**
+    /**
 	 * Instantiates a new connection.
 	 * 
 	 * @param controller
@@ -104,7 +73,7 @@ public class Connection {
 	 * @return true, if successful
 	 */
 	public boolean connectToXMPPServer() {
-		XMPPConnection.DEBUG_ENABLED = true;
+		XMPPConnection.DEBUG_ENABLED = (new Settings()).isSmackDebugMode();
 
 		ConnectionConfiguration connnectionConfig = new ConnectionConfiguration( _controller
 				.getSettings().getXMPPServerAddress(), _controller.getSettings()
@@ -149,9 +118,6 @@ public class Connection {
 						IncomingFileTransfer transfer = request.accept();
 
 						transfer.recieveFile( incomingFile );
-
-						_controller.getLog().writeToConsole(
-								"File Received: " + incomingFile.getName() );
 					}
 				} catch ( XMPPException e ) {
 					e.printStackTrace();
@@ -168,11 +134,13 @@ public class Connection {
 	 * @return the file
 	 */
 	private File createNewIncomingFile( String fileName ) {
-		File inFile = new File( _uploadFolder, fileName );
+		/* The _upload folder. */
+        String _uploadFolder = "upload";
+        File inFile = new File(_uploadFolder, fileName );
 
 		// If file already exists, create a new file with timestamp
 		if ( inFile.exists() )
-			inFile = new File( _uploadFolder, createNewFileName( fileName ) );
+			inFile = new File(_uploadFolder, createNewFileName( fileName ) );
 
 		return inFile;
 	}
@@ -217,9 +185,6 @@ public class Connection {
 				_xmppConnection.login( _controller.getSettings().getClientNode(), _controller
 						.getSettings().getClientPassword(), _controller.getSettings()
 						.getClientResource() );
-
-				setUpXMPPListeners();
-
 				_controller.getSettings().setXMPPServerDomain( _xmppConnection.getServiceName() );
 				_controller.getSettings().setClientJid( _xmppConnection.getUser() );
 			} catch ( XMPPException e ) {
@@ -227,7 +192,8 @@ public class Connection {
 
 				return false;
 			}
-
+            setChanged();
+            notifyObservers(ConnectionStatus.CONNECTED);
 			return true;
 		}
 
@@ -261,8 +227,6 @@ public class Connection {
 		sb.append( _controller.getSettings().toString() );
 
 		sb.append( "\n\\==========================================/" );
-
-		_controller.getLog().writeToConsole( sb.toString() );
 	}
 
 	/**
@@ -378,7 +342,7 @@ public class Connection {
 	 */
 	public void sendExecuteSynchronizeRequest(){
 		final ExecuteSynchronizeRuntimesBean bean = new ExecuteSynchronizeRuntimesBean();
-		bean.setTo( _controller.getSettings().getMobilisDeploymentJid());
+		bean.setTo( _controller.getSettings().getMobilisRuntimeJid());
 		bean.setType( XMPPBean.TYPE_SET );
 		sendXMPPBean(bean);
 	}
@@ -414,8 +378,6 @@ public class Connection {
 
 		// check if file exists
 		if ( file.exists() ) {
-			_controller.getLog().writeToConsole(
-					"Start transmitting file: " + file.getAbsolutePath() + " to: " + toJid );
 			try {
 				// counter for sending tries
 				int counter = 0;
@@ -424,10 +386,12 @@ public class Connection {
 				transfer.sendFile( file, fileDesc );
 
 				// while file is sending
-				while ( !transfer.isDone() ) {
+				/* The _filetransfer timeout. */
+                int _filetransferTimeout = 15;
+                while ( !transfer.isDone() ) {
 					// if counter of maximum tries has reached, cancel
 					// transmission
-					if ( counter == _filetransferTimeout ) {
+					if ( counter == _filetransferTimeout) {
 						// _controller.getLog().writeToConsole("ERROR: Filetransfer canceled. No Response!");
 						break;
 					}
@@ -438,21 +402,15 @@ public class Connection {
 					try {
 						Thread.sleep( 1000 );
 					} catch ( InterruptedException e1 ) {
-						_controller.getLog().writeToConsole(
-								"ERROR: Thread interrupted while transmitting file: "
-										+ file.getName() );
+                        e1.printStackTrace();
 					}
 				}
 
 				transferSuccessful = transfer.isDone() && counter < _filetransferTimeout && transfer.getBytesSent() > -1;
 			} catch ( XMPPException e ) {
-				_controller.getLog().writeToConsole( "FileTransfer throws XMPPException:" );
 				e.printStackTrace();
 			}
 		}
-
-		// _controller.getLog().writeToConsole("FileTransfer successful?: " +
-		// transferSuccessful);
 
 		return transferSuccessful;
 	}
@@ -484,19 +442,35 @@ public class Connection {
 		return type;
 	}
 
-	/**
-	 * Sets up the xmpp listeners.
-	 */
-	private void setUpXMPPListeners() {
-		registerExtensions();
+    @Override
+    public void connectionClosed() {
+        setChanged();
+        notifyObservers(ConnectionStatus.DISCONNECTED);
+    }
 
-		_iqListener = new IQListener( _controller );
-		PacketTypeFilter iqFilter = new PacketTypeFilter( IQ.class );
-		_xmppConnection.addPacketListener( _iqListener, iqFilter );
+    @Override
+    public void connectionClosedOnError(Exception e) {
+        setChanged();
+        notifyObservers(ConnectionStatus.DISCONNECTED);
+        e.printStackTrace();
+    }
 
-		_messageListener = new MessageListener( _controller );
-		PacketTypeFilter messageFilter = new PacketTypeFilter( Message.class );
-		_xmppConnection.addPacketListener( _messageListener, messageFilter );
-	}
+    @Override
+    public void reconnectingIn(int i) {
+        setChanged();
+        notifyObservers(ConnectionStatus.RECONNECTING);
+    }
 
+    @Override
+    public void reconnectionSuccessful() {
+        setChanged();
+        notifyObservers(ConnectionStatus.CONNECTED);
+    }
+
+    @Override
+    public void reconnectionFailed(Exception e) {
+        setChanged();
+        notifyObservers(ConnectionStatus.DISCONNECTED);
+        e.printStackTrace();
+    }
 }
