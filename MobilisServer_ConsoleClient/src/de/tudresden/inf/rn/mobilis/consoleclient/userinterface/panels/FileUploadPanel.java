@@ -202,7 +202,7 @@ public class FileUploadPanel extends JPanel {
             String serviceType = iffReader.getServiceType(interfaceFile);
             if (serviceType != null)
                 _singleService = iffReader.getServiceType(interfaceFile).equalsIgnoreCase("single");
-            throw new Exception("Could not determine if service is single or multi.");
+            else throw new Exception("Could not determine if service is single or multi.");
 
         } catch (UnsupportedClassVersionError | IOException e) {
             throw new Exception(e.getMessage());
