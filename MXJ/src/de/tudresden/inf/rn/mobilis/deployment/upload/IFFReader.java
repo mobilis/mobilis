@@ -42,6 +42,8 @@ public interface IFFReader {
     /** The xml tag for the service name element. */
     static final String XPD_SERVICE_NAME = "name";
 
+    static final String SERVICE_TYPE = "type";
+
 
     /**
      * Gets the service version.
@@ -69,6 +71,8 @@ public interface IFFReader {
      * @return the service name
      */
     public String getServiceName( File msdlFile );
+
+    public String getServiceType( File interfaceFile );
 
     /**
      * Gets the service dependencies.

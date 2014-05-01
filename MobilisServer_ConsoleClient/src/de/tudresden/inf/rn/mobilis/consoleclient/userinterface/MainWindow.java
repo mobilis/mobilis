@@ -33,6 +33,7 @@ public class MainWindow extends JFrame implements Observer {
         final Controller controller = Controller.getController();
 
         final FileUploadPanel fileUploadPanel = new FileUploadPanel();
+        fileUploadPanel.setMainWindow(this);
         getContentPane().add(fileUploadPanel, BorderLayout.CENTER);
 
         GridBagLayout layout = new GridBagLayout();
@@ -98,7 +99,7 @@ public class MainWindow extends JFrame implements Observer {
         initUI();
 
         setTitle("MobilisServer Console Client");
-        setSize(500, 300);
+        setSize(500, 220);
         setResizable(false);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -123,5 +124,10 @@ public class MainWindow extends JFrame implements Observer {
                 }
             }
         }
+    }
+
+    public void setAllowUpload(boolean allowUpload)
+    {
+        uploadButton.setEnabled(allowUpload);
     }
 }

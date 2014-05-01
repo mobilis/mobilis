@@ -68,7 +68,21 @@ public class XPDReader implements IFFReader {
 		return entity;
 	}
 
-	@Override
+    @Override
+    public String getServiceType(File interfaceFile) {
+        String serviceType = null;
+
+        try {
+            serviceType = getXMLAttribute(interfaceFile.getAbsolutePath(), SERVICE_TYPE);
+        } catch (Exception e)
+        {
+            MobilisLogger.getLogger().log(Level.WARNING, String.format("Exception while reading the service type from xpd: %s", e.getMessage()));
+        }
+
+        return serviceType;
+    }
+
+    @Override
 	public List< ServiceDependency > getServiceDependencies( File msdlFile ) {
 		List< ServiceDependency > resultList = new ArrayList< XPDReader.ServiceDependency >();
 

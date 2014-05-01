@@ -1,16 +1,28 @@
 package de.tudresden.inf.rn.mobilis.consoleclient.userinterface.panels;
 
+import de.tudresden.inf.rn.mobilis.MobilisLogger;
 import de.tudresden.inf.rn.mobilis.consoleclient.Connection;
 import de.tudresden.inf.rn.mobilis.consoleclient.Controller;
 import de.tudresden.inf.rn.mobilis.consoleclient.RuntimeDiscovery;
 import de.tudresden.inf.rn.mobilis.consoleclient.exceptions.RuntimeDiscoveryException;
+import de.tudresden.inf.rn.mobilis.consoleclient.userinterface.MainWindow;
+import de.tudresden.inf.rn.mobilis.deployment.upload.FileHelper;
+import de.tudresden.inf.rn.mobilis.deployment.upload.IFFReader;
+import de.tudresden.inf.rn.mobilis.deployment.upload.IFFReaderFactory;
+import de.tudresden.inf.rn.mobilis.deployment.upload.JarClassLoader;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * @author cmdaltent
@@ -18,11 +30,14 @@ import java.io.File;
 public class FileUploadPanel extends JPanel {
 
     private JTextField _filePathTextField;
-    private JRadioButton _singleRadioButton;
     private static JFileChooser _fileChooser;
 
     private String _acceptedFileExtension;
     private String _acceptedFileDescription;
+
+    private boolean _singleService;
+
+    private MainWindow __mainWindow;
 
     public FileUploadPanel() {
         performRuntimeDiscovery();
@@ -74,30 +89,6 @@ public class FileUploadPanel extends JPanel {
         add(_filePathTextField);
         add(fileChooserButton);
 
-        JLabel modeLabel = new JLabel("Service Mode");
-        _singleRadioButton = new JRadioButton("SINGLE");
-        JRadioButton multiRadioButton = new JRadioButton("MULTI");
-
-        ButtonGroup modeRadioGroup = new ButtonGroup();
-        modeRadioGroup.add(_singleRadioButton);
-        modeRadioGroup.add(multiRadioButton);
-        multiRadioButton.setSelected(true);
-
-        JPanel modeRadioPanel = new JPanel(new GridLayout(1, 2));
-        modeRadioPanel.add(_singleRadioButton);
-        modeRadioPanel.add(multiRadioButton);
-
-        GridBagConstraints modeLabelConstraints = new GridBagConstraints();
-        modeLabelConstraints.gridwidth = GridBagConstraints.RELATIVE;
-        GridBagConstraints radioConstraints = new GridBagConstraints();
-        radioConstraints.gridwidth = GridBagConstraints.REMAINDER;
-
-        layout.setConstraints(modeLabel, modeLabelConstraints);
-        layout.setConstraints(modeRadioPanel, radioConstraints);
-
-        add(modeLabel);
-        add(modeRadioPanel);
-
         fileChooserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -105,10 +96,23 @@ public class FileUploadPanel extends JPanel {
                 if (fileChooser.showDialog(null, "Choose") == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     _filePathTextField.setText(selectedFile.getAbsolutePath());
+                    try {
+                        determineServiceType(selectedFile);
+                        __mainWindow.setAllowUpload(true);
+                    } catch (Exception e1) {
+                        displayErrorView(e1.getMessage());
+                        __mainWindow.setAllowUpload(false);
+                    }
+
                 }
             }
         });
     }
+
+    private void displayErrorView(String message) {
+        JOptionPane.showMessageDialog(null, message, "Interface File Error", JOptionPane.ERROR_MESSAGE);
+    }
+
     private JFileChooser getFileChooser() {
         if (_fileChooser == null) {
             _fileChooser = new JFileChooser();
@@ -143,6 +147,86 @@ public class FileUploadPanel extends JPanel {
     }
 
     public boolean isSingleModeService() {
-        return _singleRadioButton.isSelected();
+        return _singleService;
+    }
+
+    private void determineServiceType(File file) throws Exception {
+        if (_acceptedFileExtension.equalsIgnoreCase("jar"))
+        {
+            this.determineServiceTypeForJarFile(file);
+        }
+        else
+        {
+            this.determineServiceTypeForBundleFile(file);
+        }
+    }
+
+    private void determineServiceTypeForJarFile(File jarFile) throws Exception {
+        URL[] urls;
+        urls = new URL[1];
+        try {
+            urls[0] = jarFile.toURI().toURL();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        JarClassLoader jarClassLoader = new JarClassLoader(urls);
+
+        String interfaceFilePath;
+        File interfaceFile;
+        try {
+            List<String> interfaceFiles = FileHelper.getJarFiles(jarFile, "xpd");
+
+            if (interfaceFiles.size() > 0) {
+                interfaceFilePath = interfaceFiles.get(0);
+            } else {
+                MobilisLogger.getLogger().log(Level.INFO, "No XPD found. Try MSDL");
+                interfaceFiles = FileHelper.getJarFiles(jarFile, "msdl");
+                if (interfaceFiles.size() > 0) {
+                    interfaceFilePath = interfaceFiles.get(0);
+                } else {
+                    jarClassLoader.close();
+                    throw new Exception("Could neither find an XPD nor an MSDL.");
+                }
+            }
+
+            interfaceFile = FileHelper.createFileFromInputStream(
+                    jarClassLoader.getResourceAsStream(interfaceFilePath),
+                    "tmp" + File.separator + jarFile.getName() + ".iff");
+
+            if (null == interfaceFile) {
+                jarClassLoader.close();
+                throw new Exception("Result of XPD or MSDL file was NULL while loading from jar archive.");
+            } else MobilisLogger.getLogger().log(Level.INFO, String.format("XPD or MSDL found"));
+
+            IFFReader iffReader = (new IFFReaderFactory(interfaceFilePath)).getIFFReader();
+            String serviceType = iffReader.getServiceType(interfaceFile);
+            if (serviceType != null)
+                _singleService = iffReader.getServiceType(interfaceFile).equalsIgnoreCase("single");
+            throw new Exception("Could not determine if service is single or multi.");
+
+        } catch (UnsupportedClassVersionError | IOException e) {
+            throw new Exception(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            try {
+                jarClassLoader.close();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    private void determineServiceTypeForBundleFile(File bundleFile)
+    {
+        // TODO needs to be implemented.
+    }
+
+    public MainWindow getMainWindow() {
+        return __mainWindow;
+    }
+
+    public void setMainWindow(MainWindow mainWindow) {
+        this.__mainWindow = mainWindow;
     }
 }

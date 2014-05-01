@@ -72,6 +72,20 @@ public class MSDLReader implements IFFReader {
     }
 
     @Override
+    public String getServiceType(File interfaceFile) {
+        String serviceType = "";
+
+        try {
+            serviceType = getXMLAttribute(interfaceFile.getAbsolutePath(), MSDL_ELEMENT_SERVICE, SERVICE_TYPE);
+        } catch (Exception e)
+        {
+            MobilisLogger.getLogger().log(Level.WARNING, String.format("Exception while reading the service type from msdl: %s", e.getMessage()));
+        }
+
+        return serviceType;
+    }
+
+    @Override
     public List< ServiceDependency > getServiceDependencies( File msdlFile ) {
         List< ServiceDependency > resultList = new ArrayList< MSDLReader.ServiceDependency >();
 
