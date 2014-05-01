@@ -35,7 +35,10 @@ import java.util.logging.Level;
 
 import javax.swing.event.EventListenerList;
 
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.*;
+import de.tudresden.inf.rn.mobilis.deployment.upload.FileHelper;
+import de.tudresden.inf.rn.mobilis.deployment.upload.IFFReader;
+import de.tudresden.inf.rn.mobilis.deployment.upload.IFFReaderFactory;
+import de.tudresden.inf.rn.mobilis.deployment.upload.JarClassLoader;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
@@ -51,7 +54,6 @@ import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceExc
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.StartNewServiceInstanceException;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.UpdateServiceException;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.IFFReader.ServiceDependency;
 import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
 
@@ -732,10 +734,10 @@ public class ServiceContainer implements IServiceContainerTransitions,
 			}
 
 			// read dependencies of this service
-			List<XPDReader.ServiceDependency> dependencyServices = getServiceDependencies();
+			List<IFFReader.ServiceDependency> dependencyServices = getServiceDependencies();
 			List<String> missingDependencies = new ArrayList<String>();
 
-			for (ServiceDependency serviceDependency : dependencyServices) {
+			for (IFFReader.ServiceDependency serviceDependency : dependencyServices) {
 				MobilisManager.getLogger().log(
 						Level.INFO,
 						"Requires following services NS="
@@ -914,7 +916,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 	 * 
 	 * @return the service dependencies
 	 */
-	public List<XPDReader.ServiceDependency> getServiceDependencies() {
+	public List<IFFReader.ServiceDependency> getServiceDependencies() {
         return (new IFFReaderFactory(_interfaceFilePath)).getIFFReader().getServiceDependencies(_interfaceFile);
 	}
 
@@ -967,7 +969,7 @@ public class ServiceContainer implements IServiceContainerTransitions,
 		boolean isRequired = false;
 
 		if (null != namespace && namespace.length() > 0) {
-			for (XPDReader.ServiceDependency serviceDependency : getServiceDependencies()) {
+			for (IFFReader.ServiceDependency serviceDependency : getServiceDependencies()) {
 				if (namespace.equals(serviceDependency.getServiceNameSpace())) {
 					// if version doesn't matter
 					isRequired = (version < 0)

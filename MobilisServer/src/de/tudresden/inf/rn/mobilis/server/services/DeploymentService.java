@@ -1,43 +1,31 @@
 package de.tudresden.inf.rn.mobilis.server.services;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-
+import de.tudresden.inf.rn.mobilis.server.MobilisManager;
+import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
+import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainer;
+import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainerState;
+import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceException;
+import de.tudresden.inf.rn.mobilis.server.deployment.exception.UpdateServiceException;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.*;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanHelper;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
+import de.tudresden.inf.rn.mobilis.deployment.upload.FileHelper;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
-import org.jivesoftware.smack.RosterGroup;
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.util.StringUtils;
 
-import de.tudresden.inf.rn.mobilis.server.MobilisManager;
-import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
-import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainer;
-import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainerState;
-import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceException;
-import de.tudresden.inf.rn.mobilis.server.deployment.exception.RegisterServiceException;
-import de.tudresden.inf.rn.mobilis.server.deployment.exception.UpdateServiceException;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileUploadInformation;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.AdministrationBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ConfigureServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.InstallServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.RegisterServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UninstallServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UnregisterServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.UpdateServiceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.helper.DoubleKeyMap;
-import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanHelper;
-import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
-import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * The Class DeploymentService is used to handle the deployment and the life cycle of a deployed
@@ -145,8 +133,6 @@ public class DeploymentService extends MobilisService {
 	 * component's <code>addIQListener<code> method. When
 	 * the IQ event occurs, that object's appropriate
 	 * method is invoked.
-	 * 
-	 * @see IQEvent
 	 */
 	private class IQListener implements PacketListener {
 

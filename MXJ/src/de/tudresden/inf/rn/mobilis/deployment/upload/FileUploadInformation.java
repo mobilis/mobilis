@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.server.deployment.helper;
+package de.tudresden.inf.rn.mobilis.deployment.upload;
 
 /**
  * This class stores information about an upcoming file upload.

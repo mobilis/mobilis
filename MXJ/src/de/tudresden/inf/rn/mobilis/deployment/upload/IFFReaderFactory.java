@@ -1,6 +1,4 @@
-package de.tudresden.inf.rn.mobilis.server.deployment.helper;
-
-import java.io.File;
+package de.tudresden.inf.rn.mobilis.deployment.upload;
 
 /**
  * @author cmdaltent

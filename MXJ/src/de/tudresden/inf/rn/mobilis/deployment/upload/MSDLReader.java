@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.server.deployment.helper;
+package de.tudresden.inf.rn.mobilis.deployment.upload;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,11 +10,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import de.tudresden.inf.rn.mobilis.MobilisLogger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 
 /**
  * The Class MSDLReader to query information of a MSDL file.
@@ -29,7 +28,7 @@ public class MSDLReader implements IFFReader {
             entity = Integer.parseInt( getXMLAttribute( msdlFile.getAbsolutePath(),
                     MSDL_ELEMENT_SERVICE, MSDL_ATTRIBUTE_SERVICE_VERSION ) );
         } catch ( Exception e ) {
-            MobilisManager.getLogger().log(
+            MobilisLogger.getLogger().log(
                     Level.WARNING,
                     String.format( "Exception while reading the service verion from msdl: %s",
                             e.getMessage() ) );
@@ -46,7 +45,7 @@ public class MSDLReader implements IFFReader {
             entity = getXMLAttribute( msdlFile.getAbsolutePath(), MSDL_ELEMENT_SERVICE,
                     MSDL_ATTRIBUTE_SERVICE_NAMESPACE );
         } catch ( Exception e ) {
-            MobilisManager.getLogger().log(
+            MobilisLogger.getLogger().log(
                     Level.WARNING,
                     String.format( "Exception while reading the service namespace from msdl: %s",
                             e.getMessage() ) );
@@ -63,7 +62,7 @@ public class MSDLReader implements IFFReader {
             entity = getXMLAttribute( msdlFile.getAbsolutePath(), MSDL_ELEMENT_SERVICE,
                     MSDL_ATTRIBUTE_SERVICE_NAME );
         } catch ( Exception e ) {
-            MobilisManager.getLogger().log(
+            MobilisLogger.getLogger().log(
                     Level.WARNING,
                     String.format( "Exception while reading the service name from msdl: %s",
                             e.getMessage() ) );
@@ -86,7 +85,7 @@ public class MSDLReader implements IFFReader {
 
             resultList = saxHandler.getResultList();
         } catch ( Exception e ) {
-            MobilisManager.getLogger().log(
+            MobilisLogger.getLogger().log(
                     Level.WARNING,
                     String.format(
                             "Exception while reading the service dependencies from msdl: %s",

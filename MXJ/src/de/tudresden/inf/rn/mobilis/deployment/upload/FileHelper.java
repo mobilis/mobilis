@@ -1,4 +1,6 @@
-package de.tudresden.inf.rn.mobilis.server.deployment.helper;
+package de.tudresden.inf.rn.mobilis.deployment.upload;
+
+import de.tudresden.inf.rn.mobilis.MobilisLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,8 +17,6 @@ import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 
 /**
  * The Class FileHelper to simplify the file handling.
@@ -53,7 +53,7 @@ public abstract class FileHelper {
 				outputStream.close();
 				inputStream.close();
 			} catch ( IOException e ) {
-				MobilisManager.getLogger().log( Level.WARNING,
+				MobilisLogger.getLogger().log( Level.WARNING,
 						"createFileFromInputStream Error: " + e.getMessage() );
 			}
 		}

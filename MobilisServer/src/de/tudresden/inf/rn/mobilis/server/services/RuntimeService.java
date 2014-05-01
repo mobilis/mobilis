@@ -1,49 +1,11 @@
 package de.tudresden.inf.rn.mobilis.server.services;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.logging.Level;
-
-import org.jivesoftware.smack.Connection;
-import org.jivesoftware.smack.PacketListener;
-import org.jivesoftware.smack.Roster;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.Roster.SubscriptionMode;
-import org.jivesoftware.smack.RosterEntry;
-import org.jivesoftware.smack.RosterGroup;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.filter.PacketTypeFilter;
-import org.jivesoftware.smack.keepalive.KeepAliveManager;
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.util.StringUtils;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
-import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
-import org.jivesoftware.smackx.filetransfer.FileTransferListener;
-import org.jivesoftware.smackx.filetransfer.FileTransferManager;
-import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
-import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
-import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
-import org.jivesoftware.smackx.packet.DiscoverInfo;
-import org.jivesoftware.smackx.packet.DiscoverInfo.Feature;
-
+import de.tudresden.inf.rn.mobilis.deployment.upload.FileHelper;
+import de.tudresden.inf.rn.mobilis.deployment.upload.FileUploadInformation;
 import de.tudresden.inf.rn.mobilis.server.MobilisManager;
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
 import de.tudresden.inf.rn.mobilis.server.deployment.container.ServiceContainer;
 import de.tudresden.inf.rn.mobilis.server.deployment.exception.InstallServiceException;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileHelper;
-import de.tudresden.inf.rn.mobilis.server.deployment.helper.FileUploadInformation;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.ExecuteSynchronizeRuntimesBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PrepareServiceUploadBean;
@@ -52,6 +14,22 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.runtime.SynchronizeRuntimesBean;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanHelper;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanProviderAdapter;
+import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.Roster.SubscriptionMode;
+import org.jivesoftware.smack.filter.PacketTypeFilter;
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smackx.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
+import org.jivesoftware.smackx.filetransfer.*;
+
+import java.io.File;
+import java.io.InputStream;
+import java.util.*;
+import java.util.logging.Level;
 
 /**
  * The Class RuntimeService for uploading new mobilis services as jar files.
@@ -69,7 +47,7 @@ public class RuntimeService extends MobilisService {
 	 * The list with expected jar files (a PrepareServiceUploadBean is required
 	 * first).
 	 */
-	private Map< String, FileUploadInformation > _expectedUploads = Collections
+	private Map< String, FileUploadInformation> _expectedUploads = Collections
 			.synchronizedMap( new HashMap< String, FileUploadInformation >() );
 
 	
@@ -362,8 +340,7 @@ public class RuntimeService extends MobilisService {
 	 * component's <code>addIQListener<code> method. When
 	 * the IQ event occurs, that object's appropriate
 	 * method is invoked.
-	 * 
-	 * @see IQEvent
+
 	 */
 	private class IQListener implements PacketListener {
 
