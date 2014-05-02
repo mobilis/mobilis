@@ -333,7 +333,15 @@
 - (void)sendBean:(MXiBean* )bean {
     NSAssert(bean.to != nil, @"No addresse of the outgoing bean!");
 	[bean setFrom:self.jabberID];
-	[self sendElement:[MXiBeanConverter beanToIQ:bean]];
+    switch (bean.beanContainer)
+    {
+        case BEAN_CONTAINER_IQ:
+            [self sendElement:[MXiBeanConverter beanToIQ:bean]];
+            break;
+        case BEAN_CONTAINER_MESSAGE:
+            [self sendElement:[MXiBeanConverter beanToMessage:bean]];
+            break;
+    }
 }
 
 - (void)sendBean:(MXiBean *)bean toJid:(XMPPJID *)jid

@@ -25,7 +25,10 @@
 
     NSXMLElement *message = [[MXiBeanConverter class] p_headerFromOutBean:outBean forStanzaElement:MESSAGE];
 
-    [message addChild:beanElement];
+    NSXMLElement *body = [NSXMLElement elementWithName:@"body"];
+
+    [body addChild:beanElement];
+    [message addChild:body];
     return message;
 }
 
@@ -33,7 +36,6 @@
 		   intoBean:(MXiBean *)inBean {
 	[inBean setTo:[XMPPJID jidWithString:[iq attributeStringValueForName:@"to"]]];
 	[inBean setFrom:[XMPPJID jidWithString:[iq attributeStringValueForName:@"from"]]];
-    [inBean setBeanType:[MXiIQTypeLookup beanTypeForStringIQType:[iq attributeStringValueForName:@"type"]]];
 
 	[inBean fromXML:[iq childElement]];
 }
@@ -43,7 +45,6 @@
     // TODO if it is working like this, merge to messages to one
     [inBean setTo:[XMPPJID jidWithString:[message attributeStringValueForName:@"to"]]];
     [inBean setFrom:[XMPPJID jidWithString:[message attributeStringValueForName:@"from"]]];
-    [inBean setBeanType:[MXiIQTypeLookup beanTypeForStringIQType:[message attributeStringValueForName:@"type"]]];
 
     NSError *error = nil;
     [inBean fromXML:[[NSXMLElement alloc] initWithXMLString:message.body error:&error]]; // TODO check if this is working

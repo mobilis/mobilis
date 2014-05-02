@@ -58,12 +58,15 @@
 
 - (void)sendBean:(MXiBean* )outgoingBean toService:(MXiService *)service
 {
+    if (!service) [self sendBean:outgoingBean toJID:((MXiService *)[self.serviceManager.services firstObject]).jid.full];
+    else [self sendBean:outgoingBean toJID:service.jid.full];
+}
+
+- (void)sendBean:(MXiBean *)outgoingBean toJID:(NSString *)jid
+{
     if (self.connection && outgoingBean) {
         if (_authenticated) {
-            if (!service)
-                outgoingBean.to = ((MXiService *)[self.serviceManager.services firstObject]).jid;
-            else
-                outgoingBean.to = service.jid;
+            outgoingBean.to = [XMPPJID jidWithString:jid];
             [self.connection sendBean:outgoingBean];
         } else {
             if (!self.outgoingBeanQueue) {
@@ -88,11 +91,6 @@
                                                        [NSXMLNode attributeWithName:@"type" stringValue:@"chat"],
                                                        [NSXMLNode attributeWithName:@"from" stringValue:[self.connection.jabberID full]]]];
     [self sendElement:message];
-}
-
-- (void)sendMessageXML:(NSXMLElement *)messageElement toJID:(NSString *)jid
-{
-    [self sendMessageString:[messageElement XMLString] toJID:jid];
 }
 
 #pragma mark - MXiConnectionDelegate

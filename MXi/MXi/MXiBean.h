@@ -24,13 +24,20 @@ typedef NS_ENUM(NSUInteger , BeanType)
     UNKNOWN
 };
 
+typedef NS_ENUM(NSUInteger , BeanContainer)
+{
+    BEAN_CONTAINER_IQ,
+    BEAN_CONTAINER_MESSAGE,
+};
+
 @property (nonatomic, strong) NSString* beanId;
 @property (nonatomic, strong) XMPPJID* to;
 @property (nonatomic, strong) XMPPJID* from;
-@property (nonatomic) BeanType beanType;
+@property (nonatomic, readonly) BeanType beanType;
+@property (nonatomic, readonly) BeanContainer beanContainer;
 
 - (id) init;
-- (id) initWithBeanType:(BeanType )theBeanType;
+- (id) initWithBeanType:(BeanType )beanType andBeanContainer:(BeanContainer)beanContainer;
 
 + (NSString* )elementName;
 + (NSString* )namespace;

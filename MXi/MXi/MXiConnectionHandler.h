@@ -19,9 +19,10 @@
 @protocol MXiMultiUserChatDiscoveryDelegate;
 @class MXiBean;
 
-/**
- *  The ConnectionHandler class provides global-level information of the XMPP connection to an XMPP server.
- */
+/*!
+	@class MXiConnectionHandler
+    The ConnectionHandler class provides global-level information of the XMPP connection to an XMPP server.
+*/
 @interface MXiConnectionHandler : MXiAbstractConnectionHandler
 
 /**

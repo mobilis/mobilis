@@ -31,7 +31,7 @@
  *  @param hostName        The host name of XMPP server, e.g. 'jabber.org'.
  *  @param runtimeName     The XMPP user name of the Mobilis runtime, e.g. 'runtime1'.
  *  @param serviceType     The type of the service which is either MULTI or SINGLE.
- *  @param port            The port under which the XMPP server is available, usually 5222.
+ *  @param hostPort        The port under which the XMPP server is available, usually 5222.
  *  @param authentication  Callback block to inform the application on the success of the authentication.
  */
 - (void)launchConnectionWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName runtimeName:(NSString *)runtimeName serviceType:(ServiceType)serviceType port:(NSNumber *)hostPort;
@@ -59,9 +59,17 @@
  *  @param outgoingBean     Bean object that should be send to the service.
  *  @param service          Optional. If the service is not set, the first stored by the MXiServiceManger will be used.
  *
- *  @see MXiOutgoingBean protocol
  */
 - (void)sendBean:(MXiBean *)outgoingBean toService:(MXiService *)service;
+/*!
+    This method realizes bean communication with a specific jid.
+
+    If you want to communicate with a mobilis service use `-sendBean:toService` method.
+
+    @param outgoingBean     Bean object that should be send to the service.
+    @param jid              The jid to deliver the bean to.
+ */
+- (void)sendBean:(MXiBean *)outgoingBean toJID:(NSString *)jid;
 
 /*!
     Send a stanza of any kind to the XMPP server.
@@ -70,7 +78,6 @@
  */
 - (void)sendElement:(NSXMLElement *)element;
 
-- (void)sendMessageXML:(NSXMLElement *)messageElement toJID:(NSString *)jid;
 - (void)sendMessageString:(NSString *)messageString toJID:(NSString *)jid;
 
 @end

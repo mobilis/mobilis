@@ -12,6 +12,5 @@
 @interface MXiIQTypeLookup : NSObject
 
 + (NSString* )stringValueForIQType:(BeanType)beanType;
-+ (BeanType)beanTypeForStringIQType:(NSString *)stringIQType;
 
 @end

@@ -10,13 +10,13 @@
 
 @implementation MXiBean : NSObject
 
-@synthesize beanId, beanType, to, from;
-
-- (id)initWithBeanType:(BeanType)theBeanType {
+- (id)initWithBeanType:(BeanType)beanType andBeanContainer:(BeanContainer)beanContainer
+{
 	self = [super init];
 	
 	if (self) {
-		beanType = theBeanType;
+		_beanType = beanType;
+        _beanContainer = beanContainer;
 	}
 	
 	return self;
