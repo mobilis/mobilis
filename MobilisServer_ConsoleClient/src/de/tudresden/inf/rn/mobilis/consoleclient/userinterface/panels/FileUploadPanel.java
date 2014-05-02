@@ -10,6 +10,7 @@ import de.tudresden.inf.rn.mobilis.deployment.upload.FileHelper;
 import de.tudresden.inf.rn.mobilis.deployment.upload.IFFReader;
 import de.tudresden.inf.rn.mobilis.deployment.upload.IFFReaderFactory;
 import de.tudresden.inf.rn.mobilis.deployment.upload.JarClassLoader;
+import org.jivesoftware.smack.XMPPException;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -50,7 +51,11 @@ public class FileUploadPanel extends JPanel {
         if (connection.isConnected())
         {
             RuntimeDiscovery runtimeDiscovery = new RuntimeDiscovery(connection, runtimeJID);
-            runtimeDiscovery.performRuntimeDiscovery();
+            try {
+                runtimeDiscovery.performRuntimeDiscovery();
+            } catch (XMPPException e) {
+                JOptionPane.showMessageDialog(null, e.getMessage(), "Specified Runtime NOT Available", JOptionPane.ERROR_MESSAGE);
+            }
 
             try {
                 if (runtimeDiscovery.isJavaRuntime())

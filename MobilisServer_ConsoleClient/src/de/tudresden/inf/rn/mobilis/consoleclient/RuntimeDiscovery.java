@@ -27,17 +27,10 @@ public class RuntimeDiscovery {
         _jid = jid;
     }
 
-    public void performRuntimeDiscovery()
-    {
+    public void performRuntimeDiscovery() throws XMPPException {
         ServiceDiscoveryManager manager = ServiceDiscoveryManager.getInstanceFor(_connection.getXMPPConnection());
 
-        DiscoverInfo discoverInfo;
-        try {
-            discoverInfo = manager.discoverInfo(_jid);
-        } catch (XMPPException e) {
-            e.printStackTrace();
-            return;
-        }
+        DiscoverInfo discoverInfo = manager.discoverInfo(_jid);
 
         Iterator<DiscoverInfo.Feature> features = discoverInfo.getFeatures();
         while (features.hasNext())
@@ -53,7 +46,7 @@ public class RuntimeDiscovery {
     }
 
     public Boolean isJavaRuntime() throws RuntimeDiscoveryException {
-        if (_features.get("servicelanguage") == null)
+        if (_features == null || _features.get("servicelanguage") == null)
             throw new RuntimeDiscoveryException("Kind of service Runtime could not be discovered.");
 
         return _features.get("servicelanguage").equalsIgnoreCase("java");
