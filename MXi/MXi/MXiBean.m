@@ -7,7 +7,6 @@
 //
 
 #import "MXiBean.h"
-#import "DDXML.h"
 
 @implementation MXiBean : NSObject
 
@@ -46,6 +45,7 @@
 - (NSXMLElement *)toXML
 {
     [NSException raise:@"Abstract Method" format:@"Subclasses of %@ have to implement -toXML", [MXiBean class]];
+    return nil;
 }
 
 
