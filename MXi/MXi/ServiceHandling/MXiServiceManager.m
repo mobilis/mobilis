@@ -99,7 +99,7 @@
     if (!_stanzaDelegate.serviceCreation)
     {
         [self.connection addStanzaDelegate:self withSelector:@selector(handleServiceResponse:) forStanzaElement:IQ];
-        _stanzaDelegate.serviceCreation = YES;
+        _stanzaDelegate.serviceCreation = 1;
     }
     NSXMLElement *serviceIQ;
     @autoreleasepool {
@@ -167,6 +167,7 @@
 - (void)sendServiceCreationAcknowledgement
 {
     [self.connection removeStanzaDelegate:self forStanzaElement:IQ];
+    _stanzaDelegate.serviceCreation = 0;
     NSXMLElement *ackIQ = [NSXMLElement elementWithName:@"iq"];
     [ackIQ addAttributeWithName:@"to" stringValue:self.connection.coordinatorJID];
     [ackIQ addAttributeWithName:@"from" stringValue:self.connection.jabberID.full];
