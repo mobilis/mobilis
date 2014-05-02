@@ -217,9 +217,28 @@ public class FileUploadPanel extends JPanel {
         }
     }
 
-    private void determineServiceTypeForBundleFile(File bundleFile)
-    {
-        // TODO needs to be implemented.
+    private void determineServiceTypeForBundleFile(File bundleFile) throws Exception {
+        try {
+            String resourceDirPath = bundleFile.getCanonicalPath() + "/Contents/Resources";
+            File resourceDir = new File(resourceDirPath);
+            if (resourceDir.isDirectory())
+            {
+                File[] fileArray = resourceDir.listFiles(new java.io.FileFilter() {
+                    @Override
+                    public boolean accept(File f) {
+                        return f.getName().contains("msdl") || f.getName().contains("xpd");
+                    }});
+                File resourceFile = null;
+                if (fileArray.length > 0) resourceFile = fileArray[0];
+                else throw new Exception("No interface files found!");
+
+                IFFReader iffReader = (new IFFReaderFactory(resourceFile.getCanonicalPath())).getIFFReader();
+                _singleService = iffReader.getServiceType(resourceFile).equalsIgnoreCase("single");
+            }
+        } catch (IOException e) {
+            throw new Exception("Error reading bundle's resource directory.");
+        }
+        MobilisLogger.getLogger().log(Level.WARNING, "Objective-C");
     }
 
     public MainWindow getMainWindow() {
