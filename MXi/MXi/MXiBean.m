@@ -24,6 +24,7 @@
 
 - (id)init {
 	[NSException raise:@"Wrong initializer" format:@"Use initWithBeanType: or init of subtype"];
+    return nil;
 }
 
 + (NSString* )elementName {
