@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>--company-id</key>
+	<string>de.tu-dresden.inf.rn.mobilis.mxi</string>
+	<key>--create-docset</key>
+	<true/>
+	<key>--ignore</key>
+	<array>
+		<string>Pods</string>
+	</array>
+	<key>--install-docset</key>
+	<true/>
+	<key>--docset-platform-family</key>
+	<string>macosx</string>
+	<key>--output</key>
+	<string>/tmp</string>
+	<key>--project-company</key>
+	<string>TU Dresden</string>
+	<key>--project-name</key>
+	<string>MXi</string>
+	<key>--project-version</key>
+	<string>0.1</string>
+	<key>--keep-undocumented-objects</key>
+	<true/>
+	<key>--keep-undocumented-members</key>
+	<true/>
+	<key>--warn-undocumented-object</key>
+	<false/>
+	<key>--warn-undocumented-member</key>
+	<false/>
+	<key>--warn-empty-description</key>
+	<true/>
+	<key>--warn-missing-arg</key>
+	<true/>
+	<key>--warn-unknown-directive</key>
+	<true/>
+	<key>--logformat</key>
+	<string>xcode</string>
+	<key>--exit-threshold</key>
+	<integer>2</integer>
+</dict>
+</plist>

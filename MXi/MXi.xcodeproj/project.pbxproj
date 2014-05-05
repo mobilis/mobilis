@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		630BCC581913CFDE0014DBB6 /* Documentation */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 630BCC591913CFDE0014DBB6 /* Build configuration list for PBXAggregateTarget "Documentation" */;
+			buildPhases = (
+				630BCC5C1913CFE50014DBB6 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Documentation;
+			productName = Documentation;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		2674978684C44FDF8BB44FBB /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E156E753AD44996897DFA13 /* libPods.a */; };
 		5B154F5417D0BABF004AAD86 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 798D5FB917CCABB800B27757 /* SystemConfiguration.framework */; };
@@ -17,8 +31,6 @@
 		5B289A21181D1B0800947F30 /* MXiConnection.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79F3944F17200551003F348C /* MXiConnection.m */; };
 		5B289A22181D1B0800947F30 /* MXiBean.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */; };
 		5B289A23181D1B0800947F30 /* MXiBean.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */; };
-		5B289A27181D1B0800947F30 /* MXiOutgoingBean.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD82175A55AC00E6BDE4 /* MXiOutgoingBean.h */; };
-		5B289A28181D1B0800947F30 /* MXiIncomingBean.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD98175A6B4700E6BDE4 /* MXiIncomingBean.h */; };
 		5B289A29181D1B0800947F30 /* MXiBeanConverter.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD8C175A5D2700E6BDE4 /* MXiBeanConverter.h */; };
 		5B289A2A181D1B0800947F30 /* MXiBeanConverter.m in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD8D175A5D2700E6BDE4 /* MXiBeanConverter.m */; };
 		5B289A2B181D1B0800947F30 /* MXiIQTypeLookup.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 79A4DD92175A5FD300E6BDE4 /* MXiIQTypeLookup.h */; };
@@ -36,6 +48,7 @@
 		5B7784AC17D0C00700135C17 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 794491BE171995FF000D53ED /* Foundation.framework */; };
 		5BA1E7A918081F5F0030C1FF /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B1FC78617EAEAFA0071C1E3 /* libresolv.dylib */; };
 		5BD4E2B1D20A44FAA71F9E1F /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E156E753AD44996897DFA13 /* libPods.a */; };
+		630BCC571913CF830014DBB6 /* AppledocSettings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 630BCC561913CF830014DBB6 /* AppledocSettings.plist */; };
 		794491A517199564000D53ED /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 794491A417199564000D53ED /* Cocoa.framework */; };
 		794491AF17199564000D53ED /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 794491AD17199564000D53ED /* InfoPlist.strings */; };
 		794491CA171996A4000D53ED /* MXi.h in Headers */ = {isa = PBXBuildFile; fileRef = 794491B117199564000D53ED /* MXi.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -51,8 +64,6 @@
 		79A4DD7F175A22FC00E6BDE4 /* MXiBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		79A4DD80175A22FC00E6BDE4 /* MXiBean.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */; };
 		79A4DD81175A22FC00E6BDE4 /* MXiBean.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */; };
-		79A4DD84175A55AC00E6BDE4 /* MXiOutgoingBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD82175A55AC00E6BDE4 /* MXiOutgoingBean.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		79A4DD85175A55AC00E6BDE4 /* MXiOutgoingBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD82175A55AC00E6BDE4 /* MXiOutgoingBean.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		79A4DD8E175A5D2700E6BDE4 /* MXiBeanConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD8C175A5D2700E6BDE4 /* MXiBeanConverter.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		79A4DD8F175A5D2700E6BDE4 /* MXiBeanConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD8C175A5D2700E6BDE4 /* MXiBeanConverter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		79A4DD90175A5D2700E6BDE4 /* MXiBeanConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD8D175A5D2700E6BDE4 /* MXiBeanConverter.m */; };
@@ -61,8 +72,6 @@
 		79A4DD95175A5FD300E6BDE4 /* MXiIQTypeLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD92175A5FD300E6BDE4 /* MXiIQTypeLookup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		79A4DD96175A5FD300E6BDE4 /* MXiIQTypeLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD93175A5FD300E6BDE4 /* MXiIQTypeLookup.m */; };
 		79A4DD97175A5FD300E6BDE4 /* MXiIQTypeLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = 79A4DD93175A5FD300E6BDE4 /* MXiIQTypeLookup.m */; };
-		79A4DD99175A6B4700E6BDE4 /* MXiIncomingBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD98175A6B4700E6BDE4 /* MXiIncomingBean.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		79A4DD9A175A6B4700E6BDE4 /* MXiIncomingBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 79A4DD98175A6B4700E6BDE4 /* MXiIncomingBean.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		79F3945017200551003F348C /* MXiConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 79F3944E17200551003F348C /* MXiConnection.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		79F3945117200551003F348C /* MXiConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 79F3944E17200551003F348C /* MXiConnection.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		79F3945217200551003F348C /* MXiConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 79F3944F17200551003F348C /* MXiConnection.m */; };
@@ -169,8 +178,6 @@
 				5B289A21181D1B0800947F30 /* MXiConnection.m in CopyFiles */,
 				5B289A22181D1B0800947F30 /* MXiBean.h in CopyFiles */,
 				5B289A23181D1B0800947F30 /* MXiBean.m in CopyFiles */,
-				5B289A27181D1B0800947F30 /* MXiOutgoingBean.h in CopyFiles */,
-				5B289A28181D1B0800947F30 /* MXiIncomingBean.h in CopyFiles */,
 				5B289A29181D1B0800947F30 /* MXiBeanConverter.h in CopyFiles */,
 				5B289A2A181D1B0800947F30 /* MXiBeanConverter.m in CopyFiles */,
 				5B289A2B181D1B0800947F30 /* MXiIQTypeLookup.h in CopyFiles */,
@@ -194,6 +201,7 @@
 		5B1FC78617EAEAFA0071C1E3 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/usr/lib/libresolv.dylib; sourceTree = DEVELOPER_DIR; };
 		5BA939881825570100273341 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		5E156E753AD44996897DFA13 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		630BCC561913CF830014DBB6 /* AppledocSettings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = AppledocSettings.plist; sourceTree = "<group>"; };
 		75309DE704624699BD755763 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		794491A117199564000D53ED /* MXi.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MXi.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		794491A417199564000D53ED /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -215,12 +223,10 @@
 		798D5FB917CCABB800B27757 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiBean.h; sourceTree = "<group>"; };
 		79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiBean.m; sourceTree = "<group>"; };
-		79A4DD82175A55AC00E6BDE4 /* MXiOutgoingBean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiOutgoingBean.h; sourceTree = "<group>"; };
 		79A4DD8C175A5D2700E6BDE4 /* MXiBeanConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiBeanConverter.h; sourceTree = "<group>"; };
 		79A4DD8D175A5D2700E6BDE4 /* MXiBeanConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiBeanConverter.m; sourceTree = "<group>"; };
 		79A4DD92175A5FD300E6BDE4 /* MXiIQTypeLookup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiIQTypeLookup.h; sourceTree = "<group>"; };
 		79A4DD93175A5FD300E6BDE4 /* MXiIQTypeLookup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiIQTypeLookup.m; sourceTree = "<group>"; };
-		79A4DD98175A6B4700E6BDE4 /* MXiIncomingBean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiIncomingBean.h; sourceTree = "<group>"; };
 		79F3944E17200551003F348C /* MXiConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiConnection.h; sourceTree = "<group>"; };
 		79F3944F17200551003F348C /* MXiConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXiConnection.m; sourceTree = "<group>"; };
 		BF8CB08EC43680A83916C108 /* MXiStanzaDelegateDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXiStanzaDelegateDictionary.h; sourceTree = "<group>"; };
@@ -356,8 +362,6 @@
 				79F3944F17200551003F348C /* MXiConnection.m */,
 				79A4DD7C175A22FC00E6BDE4 /* MXiBean.h */,
 				79A4DD7D175A22FC00E6BDE4 /* MXiBean.m */,
-				79A4DD82175A55AC00E6BDE4 /* MXiOutgoingBean.h */,
-				79A4DD98175A6B4700E6BDE4 /* MXiIncomingBean.h */,
 				79A4DD8C175A5D2700E6BDE4 /* MXiBeanConverter.h */,
 				79A4DD8D175A5D2700E6BDE4 /* MXiBeanConverter.m */,
 				79A4DD92175A5FD300E6BDE4 /* MXiIQTypeLookup.h */,
@@ -380,6 +384,7 @@
 		794491AB17199564000D53ED /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				630BCC561913CF830014DBB6 /* AppledocSettings.plist */,
 				794491AC17199564000D53ED /* MXi-Info.plist */,
 				794491AD17199564000D53ED /* InfoPlist.strings */,
 				794491B017199564000D53ED /* MXi-Prefix.pch */,
@@ -497,10 +502,8 @@
 			files = (
 				794491CA171996A4000D53ED /* MXi.h in Headers */,
 				79F3945017200551003F348C /* MXiConnection.h in Headers */,
-				79A4DD84175A55AC00E6BDE4 /* MXiOutgoingBean.h in Headers */,
 				79A4DD8E175A5D2700E6BDE4 /* MXiBeanConverter.h in Headers */,
 				79A4DD94175A5FD300E6BDE4 /* MXiIQTypeLookup.h in Headers */,
-				79A4DD99175A6B4700E6BDE4 /* MXiIncomingBean.h in Headers */,
 				79A4DD7E175A22FC00E6BDE4 /* MXiBean.h in Headers */,
 				5B154F5B17D0BED3004AAD86 /* MXi-Prefix.pch in Headers */,
 				BF8CBE9AA20EF758CDFAF014 /* MXiConnectionHandler.h in Headers */,
@@ -536,10 +539,8 @@
 				794491CC171996D2000D53ED /* MXi.h in Headers */,
 				79F3945117200551003F348C /* MXiConnection.h in Headers */,
 				79A4DD7F175A22FC00E6BDE4 /* MXiBean.h in Headers */,
-				79A4DD85175A55AC00E6BDE4 /* MXiOutgoingBean.h in Headers */,
 				79A4DD8F175A5D2700E6BDE4 /* MXiBeanConverter.h in Headers */,
 				79A4DD95175A5FD300E6BDE4 /* MXiIQTypeLookup.h in Headers */,
-				79A4DD9A175A6B4700E6BDE4 /* MXiIncomingBean.h in Headers */,
 				5B154F5C17D0BED4004AAD86 /* MXi-Prefix.pch in Headers */,
 				BF8CBE5CFF39A20AF6A3C5F5 /* MXiConnectionHandler.h in Headers */,
 				BF8CBA0A817ED5B992E06830 /* NSString+Selector.h in Headers */,
@@ -633,6 +634,7 @@
 			targets = (
 				794491A017199564000D53ED /* MXi.framework */,
 				794491BC171995FF000D53ED /* libMXi.a */,
+				630BCC581913CFDE0014DBB6 /* Documentation */,
 			);
 		};
 /* End PBXProject section */
@@ -643,12 +645,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				794491AF17199564000D53ED /* InfoPlist.strings in Resources */,
+				630BCC571913CF830014DBB6 /* AppledocSettings.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		630BCC5C1913CFE50014DBB6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/opt/local/bin/appledoc \"$SOURCE_ROOT/$PROJECT_NAME\"\n\n/usr/bin/xar -xf /tmp/publish/de.tu-dresden.inf.rn.mobilis.mxi.Mobilis-MXi-0.1.xar -C /tmp/unpacked_docset/\ncp -R /tmp/unpacked_docset/de.tu-dresden.inf.rn.mobilis.mxi.Mobilis-MXi.docset/Contents/Resources/Documents \"$SOURCE_ROOT/Documentation\"";
+		};
 		6CF0ED58F5654EA58275CAAB /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -790,6 +806,20 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		630BCC5A1913CFDE0014DBB6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		630BCC5B1913CFDE0014DBB6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		794491B417199564000D53ED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -948,6 +978,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		630BCC591913CFDE0014DBB6 /* Build configuration list for PBXAggregateTarget "Documentation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				630BCC5A1913CFDE0014DBB6 /* Debug */,
+				630BCC5B1913CFDE0014DBB6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		7944919B17199564000D53ED /* Build configuration list for PBXProject "MXi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
