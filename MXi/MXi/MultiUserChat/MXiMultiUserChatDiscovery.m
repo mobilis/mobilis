@@ -12,6 +12,10 @@
 #import "MXiConnection.h"
 #import "MXiAbstractConnectionHandler.h"
 
+NSString *const serviceDiscoInfoNS = @"http://jabber.org/protocol/disco#info";
+NSString *const serviceDiscoItemsNS = @"http://jabber.org/protocol/disco#items";
+NSString *const mucFeatureString = @"http://jabber.org/protocol/muc";
+
 @interface MXiMultiUserChatDiscovery ()
 
 @property (nonatomic) NSMutableArray *cachedDomainItems;

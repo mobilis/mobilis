@@ -29,8 +29,6 @@ const static NSString *SERVICE_TYPE = @"service.type";
     @param key  The key of the settings value to retrieve. This key must be one of the DefaultSettingsKey.
 
     @return The value of the default settings for the given value or nil, if no key could be found.
-
-    @see DefaultSettingsKeys
  */
 - (NSString *)valueForKey:(const NSString *)key;
 

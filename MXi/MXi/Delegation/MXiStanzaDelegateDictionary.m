@@ -8,10 +8,11 @@
 #import "MXiDelegateDictionary.h"
 
 @interface MXiStanzaDelegateDictionary ()
+
 - (void)initializeDelegateDictionaryIfNotExisting;
 
-
 - (NSString *)keyForStanzaElement:(StanzaElement)element;
+
 @end
 
 @implementation MXiStanzaDelegateDictionary {

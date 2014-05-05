@@ -55,7 +55,6 @@
     @param jid      The XMPPJID the bean is supposed to be sent to.
 
     @see MXiBean
-    @see XMPPJID
  */
 - (void)sendBean:(MXiBean *)bean toJid:(XMPPJID *)jid;
 

@@ -21,6 +21,7 @@
 
 /*!
 	@class MXiConnectionHandler
+
     The ConnectionHandler class provides global-level information of the XMPP connection to an XMPP server.
 */
 @interface MXiConnectionHandler : MXiAbstractConnectionHandler
@@ -31,8 +32,6 @@
  *
  *  Because there is only one active connection supposed to exist at a time, always the same instance of the object
  *  will be returned.
- *
- *  @see ConnectionHandlerDelegate protocol
  *
  *  @return The ConnectionHandler object.
  */

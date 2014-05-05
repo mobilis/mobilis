@@ -17,9 +17,25 @@
 
 @interface MXiAbstractConnectionHandler : NSObject <MXiServiceManagerDelegate>
 
-@property (readonly) MXiConnection *connection;
-@property (readonly) MXiServiceManager *serviceManager;
+/*!
+    @property connection
 
+    Object representing the underlying XMPP connection and handling basic delegate mechanisms.
+ */
+@property (readonly) MXiConnection *connection;
+/*!
+    @property serviceManager
+ 
+    A globally available reference to a service manager handling service discovery and creation.
+ */
+@property (readonly) MXiServiceManager *serviceManager;
+/*!
+    @property delegate
+ 
+    Delegate notified on important events regarding XMPP network connectivity.
+    
+    @see MXiConnectionHandlerDelegate
+ */
 @property (nonatomic, weak) id<MXiConnectionHandlerDelegate> delegate;
 
 /**
@@ -32,7 +48,6 @@
  *  @param runtimeName     The XMPP user name of the Mobilis runtime, e.g. 'runtime1'.
  *  @param serviceType     The type of the service which is either MULTI or SINGLE.
  *  @param hostPort        The port under which the XMPP server is available, usually 5222.
- *  @param authentication  Callback block to inform the application on the success of the authentication.
  */
 - (void)launchConnectionWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName runtimeName:(NSString *)runtimeName serviceType:(ServiceType)serviceType port:(NSNumber *)hostPort;
 
@@ -44,7 +59,6 @@
  *  @param hostName       The host name of XMPP server, e.g. 'jabber.org'.
  *  @param runtimeName     The XMPP user name of the Mobilis runtime, e.g. 'runtime1'.
  *  @param port           The port under which the XMPP server is available, usually 5222.
- *  @param authentication Callback block to inform the sender on the success of the authentication.
  */
 - (void)reconnectWithJID:(NSString *)jabberID password:(NSString *)password hostName:(NSString *)hostName runtimeName:(NSString *)runtimeName port:(NSNumber *)port;
 
@@ -78,10 +92,24 @@
  */
 - (void)sendElement:(NSXMLElement *)element;
 
+/*!
+    Send an arbitrary message to a given JID.
+ 
+    @discussion If you want to transmit Mobilis Beans to a given JID, i.e. a multi-user-chat room address use the
+                `-sendBean:toJID:` message.
+ 
+    @param  messageString   The message to be transmitted to a remote JID.
+    @param  jid             The address to transmit the message to.
+ */
 - (void)sendMessageString:(NSString *)messageString toJID:(NSString *)jid;
 
 @end
 
+/*!
+    @protocol MXiConnectionHandlerDelegate
+ 
+    Interface definition all objects need to conform to in order to act a delegate for this object.
+ */
 @protocol MXiConnectionHandlerDelegate <NSObject>
 
 - (void)authenticationFinishedSuccessfully:(BOOL)authenticationState;

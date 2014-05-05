@@ -15,6 +15,8 @@
 @class MXiService;
 
 /*!
+    @class MXiServiceManager
+
     Service instances for MULTI-mode and SINGLE-mode services are stored, manged and discovered by this class.
  */
 @interface MXiServiceManager : NSObject
@@ -53,17 +55,28 @@
     Use this method to synchronize the list of services with the XMPP Mobilis runtime, meaning fetch the service list from the
     Mobilis runtime.
 
-    Note: this step is not necessary, if the ServiceManager is created. Service discovery will be launched automatically on creation.
+    @discussion This step is not necessary, if the ServiceManager is created. Service discovery will be launched automatically on creation.
  */
 - (void)rediscoverServices;
 
 - (void)addDelegate:(id <MXiServiceManagerDelegate>)delegate;
 - (void)removeDelegate:(id<MXiServiceManagerDelegate>)delegate;
 
+/*!
+    Launch the creation of a new Multi-Service-Instance.
+
+    @param  serviceName     The display name of the new service instance.
+    @param  password        The password to limit access to the new service instance.
+ */
 - (void)createServiceWithName:(NSString *)serviceName andPassword:(NSString *)password;
 
 @end
 
+/*!
+    @protocol MXiServiceManagerDelegate
+
+    A protocol declaring a common interface objects acting as delegates of the `MXiServiceManager` class should implement.
+ */
 @protocol MXiServiceManagerDelegate <NSObject>
 
 - (void)serviceDiscoveryFinishedWithError:(NSError *)error;
